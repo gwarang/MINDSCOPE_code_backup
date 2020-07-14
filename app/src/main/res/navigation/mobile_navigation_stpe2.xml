@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation_step2"
+    app:startDestination="@+id/navigation_me_step2">
+
+    <fragment
+        android:id="@+id/navigation_me_step2"
+        android:name="kr.ac.inha.mindscope.fragment.MeFragmentStep2"
+        tools:layout="@layout/fragment_me_step2" />
+
+    <fragment
+        android:id="@+id/navigation_care_step2"
+        android:name="kr.ac.inha.mindscope.fragment.CareFragmentStep2"
+        tools:layout="@layout/fragment_care_step2" />
+
+    <fragment
+        android:id="@+id/navigation_report_step2"
+        android:name="kr.ac.inha.mindscope.fragment.ReportFragmentStep2"
+        tools:layout="@layout/fragment_report_step2" />
+
+</navigation>

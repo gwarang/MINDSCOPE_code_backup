@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.StressReportFragment1">
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/frg_report_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/bg_toolbar"
+            android:elevation="10dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:elevation="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stress_report_title"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:includeFontPadding="false"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:textSize="@dimen/my_text_size20"/>
+
+
+                <Button
+                    android:id="@+id/toolbar_report_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="확인"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:textSize="@dimen/my_text_size16"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/textColor_blue"
+                    android:background="#00000000"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ImageView
+            android:layout_marginTop="54dp"
+            android:id="@+id/report_step2_img"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/icon_low"
+            android:layout_marginBottom="6dp"
+            app:layout_constraintBottom_toTopOf="@id/report_step2_date"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <TextView
+            android:id="@+id/report_step2_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/report_step2_time"
+            android:layout_marginBottom="6dp"
+            android:text="test"
+            android:textAlignment="center"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size14"/>
+        <TextView
+            android:id="@+id/report_step2_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/report_step2_result"
+            android:layout_marginBottom="3dp"
+            android:text="test"
+            android:textAlignment="center"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size14"/>
+        <TextView
+            android:id="@+id/report_step2_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="3dp"
+            android:text="test"
+            android:textAlignment="center"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size16"/>
+
+        <TextView
+            android:id="@+id/txt_actual_stress_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/report_step2_result"
+            app:layout_constraintBottom_toTopOf="@id/acual_answer_container"
+            android:layout_marginTop="58dp"
+            android:text="@string/string_actual_stress_question"
+            android:textAlignment="center"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size16"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/acual_answer_container"
+            app:layout_constraintTop_toBottomOf="@id/txt_actual_stress_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="80dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/actual_stress_answer1"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/txt_actual_stress_answer1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/actual_stress_answer2"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                android:background="#00000000"
+                android:src="@drawable/btn_low"/>
+
+            <TextView
+                android:id="@+id/txt_actual_stress_answer1"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toBottomOf="@id/actual_stress_answer1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/string_low"
+                android:textAlignment="center"
+                android:textColor="@color/color_low"
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/my_text_size15"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"/>
+
+            <ImageButton
+                android:id="@+id/actual_stress_answer2"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/txt_actual_stress_answer2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                android:background="#00000000"
+                android:src="@drawable/btn_littlehigh"/>
+
+            <TextView
+                android:id="@+id/txt_actual_stress_answer2"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toBottomOf="@id/actual_stress_answer2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/string_littlehigh"
+                android:textAlignment="center"
+                android:textColor="@color/color_littlehigh"
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/my_text_size15"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"/>
+
+            <ImageButton
+                android:id="@+id/actual_stress_answer3"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/actual_stress_answer3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/actual_stress_answer2"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                android:background="#00000000"
+                android:src="@drawable/btn_high"/>
+            <TextView
+                android:id="@+id/txt_actual_stress_answer3"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/my_text_size15"
+                app:layout_constraintTop_toBottomOf="@id/actual_stress_answer3"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/string_high"
+                android:textAlignment="center"
+                android:textColor="@color/color_high"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

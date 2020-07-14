@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="?actionBarSize"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/AppThemeNoActionBar"
+    tools:context=".fragment.MeFragmentStep1">
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/frg_me_step2_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingHorizontal="20dp"
+            android:background="@color/color_white"
+            android:elevation="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:elevation="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/navigation_first"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="@dimen/my_text_size20"/>
+
+            <Button
+                android:id="@+id/step_test_btn_step2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="step test"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <Button
+                android:id="@+id/report_test_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="report test"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/step_test_btn_step2"/>
+
+
+            <ImageButton
+                android:id="@+id/fragment_me_step2_btn_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_map_24px"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@android:color/transparent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ImageView
+        android:layout_marginTop="60dp"
+        android:id="@+id/frg_me_step2_img1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/icon_low"
+        app:layout_constraintTop_toBottomOf="@id/frg_me_step2_app_bar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frg_me_date_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginHorizontal="45dp"
+        app:layout_constraintTop_toBottomOf="@id/frg_me_step2_img1">
+
+        <TextView
+            android:id="@+id/frg_me_step2_date1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="date"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/frg_me_step2_time1"/>
+        <TextView
+            android:id="@+id/frg_me_step2_time1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="time"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/frg_me_step2_date1"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/txt_stress_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/frg_me_date_container"
+        android:textAlignment="center"
+        android:textSize="@dimen/my_text_size14"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/textColor_default"
+        android:text="stress level text"/>
+
+    <TextView
+        android:id="@+id/txt_reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
+        app:layout_constraintBottom_toTopOf="@id/stress_reason_container"
+        android:textAlignment="center"
+        android:layout_marginTop="24dp"
+        android:textSize="@dimen/my_text_size16"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/textColor_default"
+        android:text="@string/string_stress_why"/>
+
+    <LinearLayout
+        android:layout_marginHorizontal="14dp"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/stress_reason_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/txt_reason"
+        app:layout_constraintBottom_toTopOf="@id/txt_wait_next_report"
+        android:background="@color/color_low_bg">
+
+        <LinearLayout
+            android:paddingVertical="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/view_bottom_border">
+
+            <ImageView
+                android:layout_marginHorizontal="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_f_phoneusage"
+                android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="휴대폰 사용"
+                android:textSize="@dimen/my_text_size16"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:paddingVertical="4dp"
+            android:id="@+id/txt_phone_reason1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="phone_reason1"
+            android:background="@drawable/view_bottom_border"/>
+
+        <TextView
+            android:paddingVertical="4dp"
+            android:id="@+id/txt_phone_reason2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="phone_reason1"
+            android:background="@drawable/view_bottom_border"/>
+
+        <TextView
+            android:paddingVertical="4dp"
+            android:id="@+id/txt_phone_reason3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="phone_reason1"
+            android:background="@drawable/view_bottom_border"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/view_bottom_border">
+
+            <ImageView
+                android:layout_marginHorizontal="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_f_location"
+                android:layout_gravity="center"/>
+            <TextView
+                android:paddingVertical="3dp"
+                android:textSize="@dimen/my_text_size16"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="활동반경"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:paddingVertical="4dp"
+            android:id="@+id/txt_location_reason1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="location_reason2"
+            android:background="@drawable/view_bottom_border"/>
+
+        <TextView
+            android:paddingVertical="4dp"
+            android:id="@+id/txt_location_reason2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="location_reason2"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_wait_next_report"
+        android:layout_marginTop="19dp"
+        app:layout_constraintTop_toBottomOf="@id/stress_reason_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAlignment="center"
+        android:textSize="@dimen/my_text_size16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/string_wait_next_report"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/textColor_blue"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

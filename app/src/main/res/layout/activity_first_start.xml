@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FirstStartActivity"
+    android:orientation="vertical">
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_weight="1"
+        android:id="@+id/viewPager2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal">
+    </androidx.viewpager2.widget.ViewPager2>
+
+
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:id="@+id/fsv_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fsv_checkbox_text"
+        app:layout_constraintBottom_toTopOf="@id/spring_dots_indicator"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="50dp"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"/>
+
+    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+        android:id="@+id/spring_dots_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:dampingRatio="0.5"
+        app:dotsColor="@color/color_fsv_title"
+        app:dotsStrokeColor="@color/color_fsv_title"
+        app:layout_constraintBottom_toTopOf="@id/fsv_start_btn"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="23dp"
+        app:dotsCornerRadius="30dp"
+        app:dotsSize="16dp"
+        app:dotsSpacing="6dp"
+        app:dotsStrokeWidth="2dp"
+        app:stiffness="300"
+        android:layout_gravity="center"/>
+
+
+    <Button
+        android:id="@+id/fsv_start_btn"
+        android:layout_width="180dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="123dp"
+        android:background="@drawable/btn_start_disable"
+        android:textAlignment="center"
+        android:enabled="false"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:text="시작하기"
+        android:gravity="center"
+        android:textColor="@color/color_white"
+        android:textSize="@dimen/my_text_size16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

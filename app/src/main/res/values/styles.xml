@@ -1,0 +1,31 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/color_white</item>
+    </style>
+
+    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/toolbar_background</item>
+        <item name="colorPrimaryDark">@color/toolbar_background</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/color_white</item>
+    </style>
+    <!-- Toolbar -->
+    <style name="Toolbar" parent="AppThemeNoActionBar">
+        <item name="android:titleTextColor">@color/textColor_default</item>
+        <item name="android:background">@color/toolbar_background</item>
+        <item name="actionMenuTextColor">@color/textColor_blue</item>
+    </style>
+
+    <style name="tab_text" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/my_text_size16</item>
+        <item name="android:fontFamily">@font/notosanscjkkrregular</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+</resources>

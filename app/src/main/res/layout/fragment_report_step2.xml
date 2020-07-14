@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/AppThemeNoActionBar"
+    android:paddingBottom="?actionBarSize"
+    tools:context=".fragment.ReportFragmentStep2">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/frg_report_step2_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="20dp"
+        android:background="@color/color_white"
+        android:elevation="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:elevation="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/navigation_third"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="@dimen/my_text_size20"/>
+
+
+            <ImageButton
+                android:id="@+id/fragment_me_step2_btn_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_settings_24px"
+                app:layout_constraintRight_toLeftOf="@id/fragment_me_step2_btn_help"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"/>
+
+            <ImageButton
+                android:id="@+id/fragment_me_step2_btn_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_help"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@android:color/transparent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="?actionBarSize">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="?actionBarSize">
+
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:mcv_selectionColor="@color/textColor_blue"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <View
+                android:id="@+id/border_bottom_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border_color"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/calendarView"/>
+
+            <TextView
+                android:id="@+id/report_step2_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/border_bottom_calendar"
+                android:layout_marginTop="10dp"
+                android:text="test"
+                android:textAlignment="center"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/my_text_size20"/>
+
+            <LinearLayout
+                android:id="@+id/frg_report_step2_point_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="18dp"
+                app:layout_constraintTop_toBottomOf="@id/report_step2_date">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:paddingRight="20dp">
+
+                        <TextView
+                            android:id="@+id/point_day_info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:text="이날의 포인트:"
+                            android:textSize="@dimen/my_text_size16"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/point_my_info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="나의 포인트:"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:textSize="@dimen/my_text_size16"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/point_day_info" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/point_day"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:includeFontPadding="false"
+                            android:text="0"
+                            android:textSize="@dimen/my_text_size16"
+                            android:textColor="@color/textColor_blue"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintRight_toLeftOf="@id/summary_point_day_point"/>
+
+                        <TextView
+                            android:id="@+id/summary_point_day_point"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:text="point"
+                            android:paddingLeft="10dp"
+                            android:textSize="@dimen/my_text_size16"/>
+
+                        <TextView
+                            android:id="@+id/summary_point_my"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/textColor_blue"
+                            android:fontFamily="@font/notosanscjkkrmedium"
+                            android:includeFontPadding="false"
+                            android:textSize="@dimen/my_text_size16"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/point_day"
+                            app:layout_constraintRight_toLeftOf="@id/point_my_point"/>
+
+                        <TextView
+                            android:id="@+id/point_my_point"
+                            android:layout_width="wrap_content"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/summary_point_day_point"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:text="point"
+                            android:paddingLeft="10dp"
+                            android:textSize="@dimen/my_text_size16" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_marginTop="30dp"
+                android:id="@+id/frg_report_step2_img1"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/icon_low"
+                app:layout_constraintTop_toBottomOf="@id/frg_report_step2_point_container"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:id="@+id/txt_stress_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img1"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size16"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textColor="@color/textColor_default"
+                android:text="stress level text"/>
+
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="24dp"
+                android:paddingVertical="7dp"
+                android:id="@+id/report_result1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/view_top_bottom_border">
+
+                <CheckBox
+                    android:id="@+id/ch_report1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"/>
+
+                <TextView
+                    android:id="@+id/txt_report_time1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ch_report1"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="10dp"
+                    android:textSize="@dimen/my_text_size16"
+                    android:text="@string/time_step2_duration1"/>
+
+                <ImageView
+                    android:id="@+id/img_report_result1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/txt_report_time1"
+                    android:layout_marginStart="20dp"
+                    android:layout_gravity="center"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_low"/>
+
+                <TextView
+                    android:id="@+id/txt_report_result1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/img_report_result1"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/my_text_size14"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:text="@string/string_low"/>
+
+                <ImageButton
+                    android:id="@+id/arrow_result1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow"
+                    android:background="#00000000"
+                    android:layout_gravity="center"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:paddingVertical="7dp"
+                android:id="@+id/report_result2"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/report_result1"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/view_bottom_border">
+
+                <CheckBox
+                    android:id="@+id/ch_report2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"/>
+
+                <TextView
+                    android:id="@+id/txt_report_time2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ch_report2"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="10dp"
+                    android:textSize="@dimen/my_text_size16"
+                    android:text="@string/time_step2_duration2"/>
+
+                <ImageView
+                    android:id="@+id/img_report_result2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/txt_report_time2"
+                    android:layout_marginStart="20dp"
+                    android:layout_gravity="center"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_littlehigh"/>
+
+                <TextView
+                    android:id="@+id/txt_report_result2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/img_report_result2"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/my_text_size14"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:text="@string/string_littlehigh"/>
+
+                <ImageButton
+                    android:id="@+id/arrow_result2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow"
+                    android:background="#00000000"
+                    android:layout_gravity="center"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:paddingVertical="7dp"
+                android:id="@+id/report_result3"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/report_result2"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/view_bottom_border">
+
+                <CheckBox
+                    android:id="@+id/ch_report3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"/>
+
+                <TextView
+                    android:id="@+id/txt_report_time3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ch_report3"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="10dp"
+                    android:textSize="@dimen/my_text_size16"
+                    android:text="@string/time_step2_duration3"/>
+
+                <ImageView
+                    android:id="@+id/img_report_result3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/txt_report_time3"
+                    android:layout_marginStart="20dp"
+                    android:layout_gravity="center"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_high"/>
+
+                <TextView
+                    android:id="@+id/txt_report_result3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/img_report_result3"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/my_text_size14"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:text="@string/string_high"/>
+
+                <ImageButton
+                    android:id="@+id/arrow_result3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow"
+                    android:background="#00000000"
+                    android:layout_gravity="center"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:paddingVertical="7dp"
+                android:id="@+id/report_result4"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/report_result3"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/view_bottom_border">
+
+                <CheckBox
+                    android:id="@+id/ch_report4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:clickable="false"/>
+
+                <TextView
+                    android:id="@+id/txt_report_time4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ch_report4"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="10dp"
+                    android:textSize="@dimen/my_text_size16"
+                    android:text="@string/time_step2_duration4"/>
+
+                <ImageView
+                    android:id="@+id/img_report_result4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/txt_report_time4"
+                    android:layout_marginStart="20dp"
+                    android:layout_gravity="center"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_low"/>
+
+                <TextView
+                    android:id="@+id/txt_report_result4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/img_report_result4"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/my_text_size14"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:text="@string/string_low"/>
+
+                <ImageButton
+                    android:id="@+id/arrow_result4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow"
+                    android:background="#00000000"
+                    android:layout_gravity="center"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/intervention_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/report_result4"
+                android:background="@drawable/view_bottom_border"
+                android:paddingHorizontal="37dp"
+                android:paddingVertical="13dp">
+
+                <TextView
+                    android:id="@+id/txt_intervention"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/string_intervention"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/my_text_size16"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/txt_intervention"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:textSize="@dimen/my_text_size16"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/textColor_blue"
+                    android:layout_marginTop="13dp"
+                    android:text="#testintervention"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/intervention_container"
+                android:paddingHorizontal="37dp"
+                android:paddingVertical="13dp">
+
+                <TextView
+                    android:id="@+id/txt_daily_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/string_daily_comment"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/my_text_size16"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/txt_daily_comment"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:textSize="@dimen/my_text_size14"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="오늘은 날씨가 좋아서 기분이 좋았음. 밖에 안나가고 낮 내내 집에서 핸드폰 하면서 놀았음. 인터넷 쇼핑함. 저녁에는 친구들이랑 오래 카톡했는데 조금 피곤했음."/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

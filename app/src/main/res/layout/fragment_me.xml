@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="?actionBarSize"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/AppThemeNoActionBar"
+    tools:context=".fragment.MeFragmentStep1">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/frg_me_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="20dp"
+        android:background="@color/bg_toolbar"
+        android:elevation="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:elevation="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/navigation_first"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="@dimen/my_text_size20"/>
+
+            <Button
+                android:id="@+id/step_test_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="step test"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <Button
+                android:id="@+id/ema_test_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ema test"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/step_test_btn"/>
+
+            <ImageButton
+                android:id="@+id/fragment_me_btn_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_map_24px"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@android:color/transparent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/frg_me_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/frg_me_app_bar"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="24dp"
+        android:textSize="@dimen/my_text_size14"
+        android:fontFamily="@font/notosanscjkkrlight"
+        android:includeFontPadding="false"
+        android:text="dummy date"/>
+
+    <TextView
+        android:layout_marginHorizontal="24dp"
+        android:id="@+id/today_survey_attd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/frg_me_date"
+        android:text="오늘의 설문 참여 현황"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size16"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/time1_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="7dp">
+
+            <TextView
+                android:id="@+id/time1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/time1_btn"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:text="@string/time_duration1"
+                android:textSize="@dimen/my_text_size16"/>
+            <Button
+                android:layout_marginHorizontal="20dp"
+                android:id="@+id/time1_btn"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:enabled="false"
+                android:text=" "
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_time_inarrived"/>
+            <TextView
+                android:id="@+id/time1_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/time1_btn"
+                android:text="test"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/my_text_size16"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_below="@id/time1_container"
+            android:id="@+id/time2_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="7dp">
+
+            <TextView
+                android:id="@+id/time2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/time2_btn"
+                android:text="@string/time_duration2"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/my_text_size16"/>
+            <Button
+                android:layout_marginHorizontal="20dp"
+                android:id="@+id/time2_btn"
+                android:enabled="false"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:text=" "
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_time_inarrived"/>
+            <TextView
+                android:id="@+id/time2_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/time2_btn"
+                android:text="test"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/my_text_size16"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_below="@id/time2_container"
+            android:id="@+id/time3_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="7dp">
+
+            <TextView
+                android:id="@+id/time3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/time3_btn"
+                android:text="@string/time_duration3"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/my_text_size16"/>
+            <Button
+                android:layout_marginHorizontal="20dp"
+                android:id="@+id/time3_btn"
+                android:layout_width="25dp"
+                android:enabled="false"
+                android:layout_height="25dp"
+                android:text=" "
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_time_inarrived"/>
+            <TextView
+                android:id="@+id/time3_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/time3_btn"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:text="설문미완료"
+                android:textSize="@dimen/my_text_size16"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_below="@id/time3_container"
+            android:id="@+id/time4_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp">
+
+            <TextView
+                android:id="@+id/time4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/time4_btn"
+                android:text="@string/time_duration4"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:layout_centerVertical="true"
+                android:textSize="@dimen/my_text_size16"/>
+            <Button
+                android:layout_marginHorizontal="20dp"
+                android:id="@+id/time4_btn"
+                android:enabled="false"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:text=" "
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_time_inarrived"/>
+            <TextView
+                android:id="@+id/time4_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/time4_btn"
+                android:text="test"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/my_text_size16"/>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/color_bg1">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingRight="20dp">
+
+                <TextView
+                    android:id="@+id/point_today_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:text="오늘의 포인트:"
+                    android:textSize="@dimen/my_text_size16"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/point_my_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/point_today_info"
+                    android:text="나의 포인트:"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/my_text_size16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/point_today_info" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/point_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:text="0"
+                    android:textSize="@dimen/my_text_size16"
+                    android:textColor="@color/textColor_blue"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/point_today_point"/>
+
+                <TextView
+                    android:id="@+id/point_today_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:text="point"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/my_text_size16"/>
+
+                <TextView
+                    android:id="@+id/point_my"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/textColor_blue"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/my_text_size16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/point_today"
+                    app:layout_constraintRight_toLeftOf="@id/point_my_point"/>
+
+                <TextView
+                    android:id="@+id/point_my_point"
+                    android:layout_width="wrap_content"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/point_today_point"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="point"
+                    android:paddingLeft="10dp"
+                    android:textSize="@dimen/my_text_size16" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

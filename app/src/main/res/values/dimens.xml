@@ -1,0 +1,24 @@
+<resources>
+
+
+    <dimen name="question_txt_title_size">18sp</dimen>
+    <dimen name="question_txt_size">16sp</dimen>
+
+    <dimen name="question_txt_big_size">20sp</dimen>
+
+    <dimen name="titles_txt_size">24sp</dimen>
+
+    <dimen  name="fsv_title_text_size">30sp</dimen>
+    <dimen  name="fsv_contents_text_size">16sp</dimen>
+
+    <dimen  name="guide_text_size">10sp</dimen>
+
+
+    <dimen  name="my_text_size14">14sp</dimen>
+    <dimen  name="my_text_size15">15sp</dimen>
+    <dimen  name="my_text_size16">16sp</dimen>
+    <dimen  name="my_text_size20">20sp</dimen>
+    <dimen  name="my_text_size30">30sp</dimen>
+
+
+</resources>

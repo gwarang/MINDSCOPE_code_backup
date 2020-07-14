@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.CareChildFragment3">
+
+    <TextView
+        android:id="@+id/child3_txt1"
+        app:layout_constraintBottom_toTopOf="@id/child3_txt2"
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/my_text_size16"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/textColor_default"
+        android:text="@string/string_child3_txt1"/>
+
+    <TextView
+        android:id="@+id/child3_txt2"
+        app:layout_constraintBottom_toTopOf="@id/child3_comment"
+        android:layout_marginBottom="30dp"
+        android:paddingHorizontal="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/my_text_size14"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textColor="@color/textColor_default_light"
+        android:text="@string/string_child3_txt2"/>
+
+    <EditText
+        android:id="@+id/child3_comment"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="25dp"
+        android:layout_height="250dp"
+        android:cursorVisible="true"
+        android:padding="20dp"
+        android:gravity="top"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:textSize="@dimen/my_text_size14"
+        android:textColor="@color/textColor_default"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:background="@drawable/comment_box_border"/>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:id="@+id/child3_save_btn"
+        app:layout_constraintTop_toBottomOf="@id/child3_comment"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:text="저장"
+        android:stateListAnimator="@null"
+        android:background="@drawable/btn_design"/>
+
+    <LinearLayout
+        android:id="@+id/child3_txt34_container"
+        app:layout_constraintTop_toBottomOf="@id/child3_save_btn"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/view_top_border"
+        android:paddingHorizontal="35dp"
+        android:paddingVertical="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/child3_txt3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:textColor="@color/textColor_default"
+            android:text="@string/string_child3_txt3"/>
+
+        <TextView
+            android:id="@+id/child3_txt4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/my_text_size14"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:textColor="@color/textColor_light"
+            android:text="#다른사람 #태그 #테스트"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

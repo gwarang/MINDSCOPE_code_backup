@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#555</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#2A94EE</color>
+
+    <color name="black">#555</color>
+    <color name="white">#FFFFFF</color>
+    <color name="red">#E90404</color>
+    <color name="green">#45CC4B</color>
+
+    <color name="splash_start">#c1d7e7</color>
+    <color name="splash_end">#dfbac0</color>
+    <color name="splash_shadow">#80000000</color>
+
+    <color name="color_fsv_title">#6390c3</color>
+    <color name="color_fsv_title2">#636363</color>
+    <color name="color_fsv_contents">#7a7a7a</color>
+    <color name="color_btn_fsv_start_enable">#5999E3</color>
+    <color name="color_btn_fsv_start_disable">#B4C6DA</color>
+    <color name="color_white">#FFFFFF</color>
+
+    <color name="textColor_default">#636363</color>
+    <color name="textColor_default_light">#7a7a7a</color>
+    <color name="textColor_light">#8d8d8d</color>
+    <color name="textColor_blue">#3e89e0</color>
+    <color name="hintColor">#B5B5B5</color>
+
+    <color name="toolbar_background">#f1f1f1</color>
+
+    <color name="item_color_active">#3e89e0</color>
+    <color name="item_color_inactive">#8d8d8d</color>
+    <color name="btn_txt_blue_inactive">#b4cdeb</color>
+
+    <color name="border_color">#AEAEAE</color>
+    <color name="border_color2">#f9f4f5</color>
+
+    <color name="color_current_location_btn">#9FFFFFFF</color>
+
+    <color name="color_bg1">#f2f2f2</color>
+
+    <color name="border_btn_gray">#c7c7c7</color>
+    <color name="border_btn_blue">#659ddd</color>
+
+    <color name="color_point_bg">#f1f5fa</color>
+
+    <color name="color_low_bg">#f7f9fc</color>
+    <color name="color_littlehigh_bg">#fefcf2</color>
+    <color name="color_high_bg">#f9f4f5</color>
+
+    <color name="color_low">#86a9d5</color>
+    <color name="color_littlehigh">#e6ca62</color>
+    <color name="color_high">#db969d</color>
+
+    <color name="bg_toolbar">#f6f6f6</color>
+
+</resources>

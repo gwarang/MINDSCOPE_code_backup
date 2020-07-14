@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- REST API Server URLs -->
+    <string name="grpc_host">165.246.21.202</string>
+    <string name="grpc_port">50051</string>
+    <string name="url_user_register">http://%1$s/user/register</string>
+    <string name="url_user_login">http://%1$s/user/login</string>
+    <string name="url_heartbeat">http://%1$s/user/heartbeat_smartphone</string>
+    <string name="url_usr_stat">http://%1$s/user/get_user_stat</string>
+    <string name="url_sensor_data_submit">http://%1$s/sensor_data/submit</string>
+    <string name="url_usage_stats">http://%1$s/sensor_data/app_usage_stats</string>
+    <string name="url_ema_submit">http://%1$s/ema/submit</string>
+    <string name="get_mood_data">http://%1$s/get_mood_data/</string>
+    <string name="url_audio_submit">http://%1$s/submit_audio</string>
+    <string name="url_location_submit">http://%1$s/sensor_data/locations_submit</string>
+
+    <string name="stress_campaign_id">13</string>
+
+    <string name="app_name">MINDSCOPE</string>
+    <string name="ConnectionEstablishedMsg">Connection established</string>
+    <string name="ConnectionTerminateddMsg">Connection terminated</string>
+    <string name="ConnectionAlreadyExist">Already connected</string>
+    <string name="ConnectionDoesNotExists">Connection doesn\'t exist</string>
+    <string name="ConnectionFailure">Connection failure occurred</string>
+    <string name="NoPeersFound">No peers found</string>
+    <string name="buttonConnect">Connect Device</string>
+    <string name="buttonDisconnect">Disconnect Device</string>
+    <string name="buttonSend">Send</string>
+    <string name="dummy">Dummy</string>
+    <string name="status">Status for today:</string>
+    <string name="database">Database</string>
+    <string name="refresh_window">Refresh window</string>
+    <string name="authentication_txt">Authentication</string>
+    <string name="authentication_btn">Authenticate</string>
+
+    <string name="ema_explanation">* 0(Never) ~ 4(Very Often)</string>
+    <string name="ema_question_1">1. In the past 3 hours, did you feel nervous or stressful?</string>
+    <string name="ema_question_2">2. In the past 3 hours, did you feel bad because something unexpected happened?</string>
+    <string name="ema_question_3">3. For the past 3 hours, did you feel you were controlling everything?</string>
+    <string name="ema_question_4">4. In the past three hours, have you successfully dealt with annoying things?</string>
+    <string name="ema_question_5">5. What is your stress level in the last 3 hours?</string>
+
+    <string name="submit">Submit</string>
+    <string name="next">Next</string>
+
+    <string name="notif_channel_id">StressSensor_notif_chanel</string>
+    <string name="daily_notif_text">Hey there! Please, fill in the questionnaire :)</string>
+    <string name="daily_notif_report_text">Hey there! Please, check your stress level :)</string>
+    <string name="smartphone">smartphone</string>
+    <string name="smartwatch">smartwatch</string>
+    <string name="submit_to_server">Submit to Server</string>
+    <string name="uploading">Uploading…</string>
+    <string name="files_from_watch_transfer_status">Files coming from watch</string>
+    <string name="view_files">View files</string>
+
+    <string name="day_num">Duration: %1$d day</string>
+    <string name="ema_responses_rate">EMA responses: %1$d/6</string>
+    <string name="ema_responses">EMA responses</string>
+    <string name="data_loaded">Data loaded:  %1$s</string>
+    <string name="last_active">Last active:  %1$s</string>
+
+
+    <string name="responses_delimiter">&#160;</string>
+    <string name="restart_data_collection">Restart service</string>
+    <string name="set_locations">Set locations</string>
+    <string name="stop_data_collection">Stop</string>
+    <string name="upload_sensor_data">Upload</string>
+    <string name="service_runnig">Service: Running :)</string>
+    <string name="service_stopped">Service: Not running :(</string>
+
+    <string name="file_count">Total files number: %1$d</string>
+
+    <string name="internet_on">Internet: Connected :)</string>
+    <string name="internet_off">Internet: Not connected :(</string>
+    <string name="update_stats">Update</string>
+    <string name="no_data">No data</string>
+    <string name="log_out">Log out</string>
+    <string name="set_home_location">Home</string>
+    <string name="set_dorm_location">Dormitory</string>
+    <string name="set_university_location">University</string>
+    <string name="set_library_location">Library</string>
+    <string name="set_additional_location">Other place</string>
+    <string name="locations_set_instruction">Place the pin where you want it on the map and press the corresponding place button to set the place.</string>
+
+    <string name="log_out_confirmation">Are you sure you want to log out?</string>
+    <string name="location_removed">Location has been removed!</string>
+    <string name="location_remove_confirmation">Are you sure you want to remove this location?</string>
+    <string name="location_set"> location has been set!</string>
+    <string name="location_set_confirmation">Are you sure it\'s your \"%1$s\" location?</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="grant_permissions">Please, grant permissions or turn on locations!</string>
+    <string name="permissions">Permissions</string>
+    <string name="answer_last_ema">answer last EMA</string>
+    <string name="_11_00">11:00</string>
+    <string name="_15_00">15:00</string>
+    <string name="_19_00">19:00</string>
+    <string name="_23_00">23:00</string>
+
+    <string name="fsv_step">STEP</string>
+    <string name="fsv_point">Point</string>
+    <string name="fsv_checkbox_text">모든 설명을 이해하였으며 실험 참가에 동의합니다.</string>
+    <string name="fsv_contents_one">마인드스코프는\n스트레스를 관리하기 위한 서비스 입니다.\n마인드스코프의 스트레스 관리는\n두 단계로 진행됩니다!</string>
+    <string name="fsv_contents_two">당신을 위한 맞춤 스트레스 관리를 위해\n2주간 스트레스를 측정합니다.\n하루에 4번오는 설문에 답해주세요!\n꼼꼼히 답해줄수록 정확한 예측이 가능하답니다.</string>
+    <string name="fsv_contents_three">2주 간의 설문과 측정이 끝나면\n마인드스코프가 4주 동안 매일\n당신의 스트레스를 분석하여 보내드립니다.\n스트레스 해소를 위한 방법도\n추천 받을 수 있답니다.</string>
+    <string name="fsv_contents_four">6주 간의 실험동안 포인트를 모아보세요!\n\nstep 1에서는 설문 1개를 완료할 때마다\nstep 2에서는 리포트 1개를 확인할 때마다\n250원씩의 포인트가 차곡차곡 쌓인답니다.\n실험 중에 총 42,000원을 쌓을 수 있어요!</string>
+    <string name="fsv_contents_five">기본 사례비는 18,000원이며\n실험 종료 인터뷰에 참여하면\n20,000원을 추가지급합니다.\n\n성실하게 실험에 참여하신다면\n총 80,000원을 받을 수 있답니다!</string>
+    <string name="fsv_contents_six">이제 마인드스코프에 대해\n다 알게 되었군요!\n실험 동의에 체크하고\n마인드스코프를 시작해 볼까요?\n\n</string>
+
+    <string name="map_explain">집, 기숙사, 학교, 학습공간, 작업공간, 동아리방, 헬스장 등\n여러분이 자주 방문하는 장소를 검색하여 추가해주세요.</string>
+    <string name="map_first">저장된 장소가 아직 없습니다.\n첫 장소로 집을 설정해주세요!</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="navigation_first">지금의 나</string>
+    <string name="navigation_second">마음 케어</string>
+    <string name="navigation_third">마음 기록</string>
+
+    <string name="map_help_contents">마인드스코프에서 정확하게 스트레스를 측정할 수 있도록 위치를 설정해주세요</string>
+
+    <string name="time_duration1">07:00 - 11:00</string>
+    <string name="time_duration2">11:00 - 03:00</string>
+    <string name="time_duration3">03:00 - 07:00</string>
+    <string name="time_duration4">07:00 - 11:00</string>
+    <string name="time_step2_duration1">07:00 AM - 11:00 AM</string>
+    <string name="time_step2_duration2">11:00 AM - 03:00 PM</string>
+    <string name="time_step2_duration3">03:00 PM - 07:00 PM</string>
+    <string name="time_step2_duration4">07:00 PM - 11:00 PM</string>
+    <string name="time_report_duration1">During 07:00 AM - 11:00 AM</string>
+    <string name="time_report_duration2">During 11:00 AM - 03:00 PM</string>
+    <string name="time_report_duration3">During 03:00 PM - 07:00 PM</string>
+    <string name="time_report_duration4">During 07:00 PM - 11:00 PM</string>
+
+    <string name="step1_notice">이 기능은 2주 간의 설문을 마친 뒤\nSTEP 2부터 잠금 해제 됩니다</string>
+
+    <string name="place_name">Location</string>
+    <string name="place_address">Address</string>
+    <string name="place_user_name">Place Name</string>
+
+    <string name="saved_location">Saved Locations</string>
+
+    <string name="ema_num_info1">오전 07:00 - 오전 11:00 까지의\n스트레스 측정테스트입니다. (1/4)</string>
+    <string name="ema_num_info2">오전 11:00 - 오후 03:00 까지의\n스트레스 측정테스트입니다. (2/4)</string>
+    <string name="ema_num_info3">오후 03:00 - 오후 07:00 까지의\n스트레스 측정테스트입니다. (3/4)</string>
+    <string name="ema_num_info4">오후 07:00 - 오후 11:00 까지의\n스트레스 측정테스트입니다. (4/4)</string>
+
+    <string name="tag_3hours_ago">My Tag before 3 hours</string>
+    <string name="string_tag_guide1">지금 내 상태에 대해 자세히 기록해 볼까요?</string>
+
+    <string name="string_tag_guide2">*태그는 최대 30자까지 작성 가능합니다.\n*태그는 다른 사용자들에게 익명으로 공유될 수 있습니다.</string>
+    <string name="string_tag_my">지금 나의 태그</string>
+
+    <string name="string_today_point">오늘의 포인트</string>
+    <string name="string_sum_point">누적 포인트</string>
+    <string name="string_point_dialog_title">250 포인트 적립 완료!</string>
+
+    <string name="string_stress_level_low"><![CDATA[스트레스 단계는 <font color="#86a9d5">낮음</font>입니다.]]></string>
+    <string name="string_stress_level_littlehigh"><![CDATA[스트레스 단계는 <font color="#e6ca62">조금 높음</font>입니다.]]></string>
+    <string name="string_stress_level_high"><![CDATA[스트레스 단계는 <font color=""#db969d">높음</font>입니다.]]></string>
+
+    <string name="string_wait_next_report">다음 스트레스 리포트를 준비중입니다.</string>
+
+    <string name="string_low">낮음</string>
+    <string name="string_littlehigh">조금 높음</string>
+    <string name="string_high">높음</string>
+
+    <string name="string_intervention">실천한 스트레스 해소 방안</string>
+    <string name="string_daily_comment">데일리 코멘트</string>
+
+    <string name="stress_report_title">Stress Report</string>
+
+    <string name="string_stress_report_low"><![CDATA[스트레스는 <font color="#86a9d5">낮음</font>으로 예측되었습니다.]]></string>
+    <string name="string_stress_report_littlehigh"><![CDATA[스트레스는 <font color="#e6ca62">조금 높음</font>으로 예측되었습니다.]]></string>
+    <string name="string_stress_report_high"><![CDATA[스트레스는 <font color=""#db969d">높음</font>으로 예측되었습니다.]]></string>
+
+    <string name="string_actual_stress_question">당신의 실제 스트레스 단계는 어땠나요?</string>
+
+    <string name="string_stress_why">이유는 무엇일까요?</string>
+
+    <string name="string_stress_result_low"><![CDATA[스트레스 <font color="#86a9d5">낮음</font>]]></string>
+    <string name="string_stress_result_littlehigh"><![CDATA[스트레스 <font color="#e6ca62">조금 높음</font>]]></string>
+    <string name="string_stress_result_high"><![CDATA[스트레스 <font color=""#db969d">높음</font>]]></string>
+
+    <string name="string_prediction_correct">제 예측이 맞았네요!</string>
+    <string name="string_prediction_incorrect">제 예측이 틀렸네요!</string>
+
+    <string name="string_am_i_right">제 분석이 맞았나요?</string>
+
+
+    <string name="care_step2_title">마음 케어</string>
+    <string name="tab_title1_care_step2">스트레스 분석</string>
+    <string name="tab_title2_care_step2">스트레스 해소</string>
+    <string name="tab_title3_care_step2">오늘의 코멘트</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="string_child3_txt1">어떤 하루였나요?</string>
+    <string name="string_child3_txt2">오늘 하루에 대해 조금 더 자세히 기록해보세요</string>
+    <string name="string_child3_txt3">다른 사람들의 스트레스 원인은 무엇일까요?</string>
+
+    <string name="string_child2_txt1">나의 스트레스 해소 방법</string>
+    <string name="string_child2_txt2">* 마인드스코프가 예상한 적절한 시간에 해소방안 수행 알림이 올 거에요!</string>
+    <string name="string_child2_txt4">추천하는 스트레스 해소방법</string>
+    <string name="string_child2_txt5">오늘의 알림 받기</string>
+
+    <string name="string_intervention_txt">새로운 해소 방법 만들기</string>
+
+    <!--Zaturi start-->
+    <string name="intervention_time">Time for stress relief!</string>
+    <string name="next_time">Next time</string>
+    <string name="mute_today">Mute today\'s notifications</string>
+    <string name="do_intervention">Relieve stress</string>
+    <!--Zaturi end-->
+
+
+</resources>

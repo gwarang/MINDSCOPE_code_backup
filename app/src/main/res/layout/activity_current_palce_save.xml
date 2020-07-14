@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SelectedPlaceSaveActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_map_current_save"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="10dp"
+        android:theme="@style/Toolbar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/toolbar_map_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="장소 저장"
+            android:textSize="20sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/container_current_place_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_map_current_save"
+        android:padding="30dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/place_name"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"/>
+        <TextView
+            android:id="@+id/current_place_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Current Place Name"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size16"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/border_place_name"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_color"
+        app:layout_constraintTop_toBottomOf="@id/container_current_place_name"/>
+
+    <LinearLayout
+        android:id="@+id/container_current_place_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/border_place_name"
+        android:padding="30dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/place_address"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"/>
+        <TextView
+            android:id="@+id/current_place_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:text="Current Place Adress"
+            android:textSize="@dimen/my_text_size16"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/border_place_address"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_color"
+        app:layout_constraintTop_toBottomOf="@id/container_current_place_address"/>
+
+    <LinearLayout
+        android:id="@+id/container_current_place_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/border_place_address"
+        android:padding="30dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="@string/place_user_name"/>
+
+        <EditText
+            android:id="@+id/current_place_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size16"
+            android:textColorHint="@color/hintColor"
+            android:hint="저장하시려는 장소에 이름을 붙여주세요"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/border_place_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_color"
+        app:layout_constraintTop_toBottomOf="@id/container_current_place_user_name"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
