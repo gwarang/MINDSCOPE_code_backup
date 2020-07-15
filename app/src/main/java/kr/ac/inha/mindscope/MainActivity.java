@@ -1,6 +1,7 @@
 package kr.ac.inha.mindscope;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -43,12 +44,12 @@ import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import kr.ac.inha.mindscope.receivers.AppUseNotifierReceiver;
 import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
 import kr.ac.inha.mindscope.services.MainService;
 
 import static kr.ac.inha.mindscope.services.MainService.HEARTBEAT_PERIOD;
 import static kr.ac.inha.mindscope.services.MainService.PERMISSION_REQUEST_NOTIFICATION_ID;
-import static kr.ac.inha.mindscope.services.MainService.permissionNotificationPosted;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -90,12 +91,6 @@ public class MainActivity extends AppCompatActivity {
     private Handler heartBeatHandler = new Handler();
     private Runnable heartBeatSendRunnable = new Runnable() {
         public void run() {
-            //before sending hear-beat check permissions granted or not. If not grant first
-            if (!Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS) && !permissionNotificationPosted) {
-                permissionNotificationPosted = true;
-                sendNotificationForPermissionSetting();
-            }
-
             try {
                 if (Tools.heartbeatNotSent(MainActivity.this)) {
                     Log.e(TAG, "Heartbeat not sent");
@@ -329,6 +324,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        SharedPreferences.Editor editor = loginPrefs.edit();
+        editor.putLong("lastUsageTimestamp", Calendar.getInstance().getTimeInMillis());
+        editor.apply();
+
         super.onStop();
 //        loadingPanel.setVisibility(View.GONE);
     }
@@ -344,14 +343,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-//        loadingPanel.setVisibility(View.GONE);
+        // loadingPanel.setVisibility(View.GONE);
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
         }
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
+
+        cancelPreviousAppUseNotification();
+        setUpNewAppUseNotification();
+
+        super.onDestroy();
     }
 
     public void initUserStats(boolean error, long joinedTimesamp, long hbPhone, String dataLoadedPhone) {
@@ -408,6 +411,26 @@ public class MainActivity extends AppCompatActivity {
 //            ema_tv_3.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.unchecked_box, 0, 0);
 //            ema_tv_4.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.unchecked_box, 0, 0);
         }
+    }
+
+    private void cancelPreviousAppUseNotification() {
+        Intent intent = new Intent(this, AppUseNotifierReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 109, intent, PendingIntent.FLAG_NO_CREATE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    private void setUpNewAppUseNotification() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 3);
+
+        Intent intent = new Intent(this, AppUseNotifierReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 109, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
     private void updateEmaResponseView(List<String> values) {
