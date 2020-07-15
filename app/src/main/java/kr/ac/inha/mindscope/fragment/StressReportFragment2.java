@@ -56,7 +56,7 @@ public class StressReportFragment2 extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putInt("stressLevel", stressLevel);
         bundle.putInt("reportAnswer", reportAnswer);
-        bundle.putInt("dya_num", day_num);
+        bundle.putInt("day_num", day_num);
         bundle.putInt("order", order);
         bundle.putInt("accuracy", accuracy);
         bundle.putString("feature_ids", feature_ids);
@@ -107,7 +107,7 @@ public class StressReportFragment2 extends Fragment {
             this.order = getArguments().getInt("order");
             this.accuracy = getArguments().getInt("accuracy");
             this.featrue_ids = getArguments().getString("feature_ids");
-            Log.i(TAG, "Stress report stressLevel, answer from fragment1: " + stressLevel + ", " + reportAnswer);
+            Log.i(TAG, String.format("%d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, featrue_ids));
             saveStressReport();
         }else{
             Log.i(TAG, "getArguments null");
@@ -198,7 +198,6 @@ public class StressReportFragment2 extends Fragment {
             editor.putInt("reportAnswer", reportAnswer);
             editor.putInt("day_num", day_num);
             editor.putInt("order", order);
-            editor.putInt("day_num", day_num);
             editor.putInt("accuracy", accuracy);
             editor.putString("feature_ids", featrue_ids);
             editor.apply();
@@ -220,7 +219,6 @@ public class StressReportFragment2 extends Fragment {
             editor.putInt("reportAnswer", reportAnswer);
             editor.putInt("day_num", day_num);
             editor.putInt("order", order);
-            editor.putInt("day_num", day_num);
             editor.putInt("accuracy", accuracy);
             editor.putString("feature_ids", featrue_ids);
             editor.apply();

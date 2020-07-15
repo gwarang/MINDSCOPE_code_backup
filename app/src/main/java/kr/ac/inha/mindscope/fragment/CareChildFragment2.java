@@ -84,6 +84,8 @@ public class CareChildFragment2 extends Fragment {
         if(!curIntervention.equals("")){
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
+        }else{
+            currentInterventionContainer.setVisibility(View.INVISIBLE);
         }
     }
 

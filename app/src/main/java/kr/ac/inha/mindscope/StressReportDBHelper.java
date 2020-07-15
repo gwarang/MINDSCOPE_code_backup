@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class StressReportDBHelper extends SQLiteOpenHelper {
 
@@ -42,26 +43,31 @@ public class StressReportDBHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public synchronized void insertStressReportData(int stress_level, int day_num, int report_order, int accuracy, String featrue_ids){
+    public synchronized void insertStressReportData(int stress_level, int day_num, int report_order, int accuracy, String feature_ids){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(STRESS_REPORT_COL_1, stress_level);
         contentValues.put(STRESS_REPORT_COL_2, day_num);
         contentValues.put(STRESS_REPORT_COL_3, report_order);
         contentValues.put(STRESS_REPORT_COL_4, accuracy);
-        contentValues.put(STRESS_REPORT_COL_5, featrue_ids);
+        contentValues.put(STRESS_REPORT_COL_5, feature_ids);
         db.insert(STRESS_REPORT_TABLE, null, contentValues);
     }
 
     public ArrayList getStressReportData(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from " + STRESS_REPORT_TABLE, null);
+//        Cursor res = db.rawQuery("select  from " + STRESS_REPORT_TABLE, null);
 
         ArrayList stressReportDataArray = new ArrayList<StressReportData>();
 
         if(res != null && res.moveToFirst()){
             do{
-                stressReportDataArray.add(new StressReportData(res.getInt(0), res.getInt(1), res.getInt(2), res.getInt(3), res.getString(4)));
+                stressReportDataArray.add(new StressReportData(res.getInt(res.getColumnIndex(STRESS_REPORT_COL_1)),
+                        res.getInt(res.getColumnIndex(STRESS_REPORT_COL_2)),
+                        res.getInt(res.getColumnIndex(STRESS_REPORT_COL_3)),
+                        res.getInt(res.getColumnIndex(STRESS_REPORT_COL_4)),
+                        res.getString(res.getColumnIndex(STRESS_REPORT_COL_5))));
             }while(res.moveToNext());
         }
         return stressReportDataArray;
@@ -80,6 +86,10 @@ public class StressReportDBHelper extends SQLiteOpenHelper {
             this.report_order = report_order;
             this.accuracy = accuracy;
             this.featrue_ids = featrue_ids;
+        }
+
+        public String toString(){
+            return String.format(Locale.KOREA, "%d %d %d %d %s", stress_level, day_num, report_order, accuracy, featrue_ids);
         }
 
 

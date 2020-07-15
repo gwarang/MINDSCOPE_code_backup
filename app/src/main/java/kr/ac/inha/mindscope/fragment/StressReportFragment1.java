@@ -320,7 +320,7 @@ public class StressReportFragment1 extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+            Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
             ((StressReportActivity)getActivity()).replaceFragment(StressReportFragment2.newInstance(stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
 
 //            Toast.makeText(getApplicationContext(), "Response saved", Toast.LENGTH_SHORT).show();
@@ -350,7 +350,9 @@ public class StressReportFragment1 extends Fragment {
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
-
+        // test
+        long fillMillis = 1593532800000l;
+        long tillTime = 1593786707000l;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -361,27 +363,30 @@ public class StressReportFragment1 extends Fragment {
                 .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1)) // TODO change STRESS_PREDICTION
-                .setFromTimestamp(fromCalendar.getTimeInMillis())
-                .setTillTimestamp(tillCalendar.getTimeInMillis())
+                .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1)) // TODO change STRESS_PREDICTION
+                .setFromTimestamp(fillMillis) // fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillTime) // tillCalendar.getTimeInMillis()
                 .build();
 
         final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
         if (responseMessage.getDoneSuccessfully()) {
             List<String> values = responseMessage.getValueList();
             if(!values.isEmpty()){
-                Log.i(TAG, "data from gRPC, user answer5: " + values.toString() + ", " + values.get(0).charAt(values.get(0).length() - 1));
-                stressLevel = Character.getNumericValue(values.get(0).charAt(values.get(0).length() - 1));
+                Log.i(TAG, "stress report data from gRPC: " + values.toString());
+//                stressLevel = Character.getNumericValue(values.get(0).charAt(values.get(0).length() - 1));
                 stresReportStr = values.get(0);
             }
 
         }
 
+
+        // TODO STRESS_PREDICTION parsing
+//          파싱 후 stressLevel 업데이트
         SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = reportPrefs.edit();
         editor.putInt("result", stressLevel);
         editor.apply();
-        // TODO STRESS_PREDICTION parsing
+
         //end getting data from gRPC
 
         return stresReportStr;

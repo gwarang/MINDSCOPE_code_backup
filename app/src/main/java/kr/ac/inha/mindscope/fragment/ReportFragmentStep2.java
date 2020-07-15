@@ -72,6 +72,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
 
         dataArray = dbHelper.getStressReportData();
+        if(dataArray.isEmpty())
+            Log.i(TAG, "dataArray is empty");
+        for(StressReportDBHelper.StressReportData temp : dataArray){
+            Log.i(TAG, temp.toString());
+        }
 
         sumPointsView = root.findViewById(R.id.summary_point_my);
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
