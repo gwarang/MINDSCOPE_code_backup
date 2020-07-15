@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -136,6 +137,13 @@ public class StressReportFragment1 extends Fragment {
 
         String stressReportStr =  gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
         parsingStressReport(STRESS_REPORT_EXAMPLE); // TODO gRPS로부터 받아온 Stress Prediction String (stressReportStr)으로 교체할 것
+
+        // TODO STRESS_PREDICTION parsing
+//          파싱 후 stressLevel 업데이트
+        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = reportPrefs.edit();
+        editor.putInt("result", stressLevel);
+        editor.apply();
 
         for(short i = 0; i < jsonObjects.length; i++){
             try {
@@ -351,8 +359,8 @@ public class StressReportFragment1 extends Fragment {
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // test
-        long fillMillis = 1593532800000l;
-        long tillTime = 1593786707000l;
+        long fillMillis = 1593554400000l;
+        long tillTime = 1593568801000l;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -368,25 +376,16 @@ public class StressReportFragment1 extends Fragment {
                 .setTillTimestamp(tillTime) // tillCalendar.getTimeInMillis()
                 .build();
 
+
         final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
         if (responseMessage.getDoneSuccessfully()) {
             List<String> values = responseMessage.getValueList();
             if(!values.isEmpty()){
-                Log.i(TAG, "stress report data from gRPC: " + values.toString());
-//                stressLevel = Character.getNumericValue(values.get(0).charAt(values.get(0).length() - 1));
                 stresReportStr = values.get(0);
+            }else{
+                Log.d(TAG, "values empty");
             }
-
         }
-
-
-        // TODO STRESS_PREDICTION parsing
-//          파싱 후 stressLevel 업데이트
-        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = reportPrefs.edit();
-        editor.putInt("result", stressLevel);
-        editor.apply();
-
         //end getting data from gRPC
 
         return stresReportStr;
@@ -414,33 +413,15 @@ public class StressReportFragment1 extends Fragment {
         }
     }
 
-    public void parsingStressReport(String originStressReportStr){
+    public void parsingStressReport(String originStressReportStr) {
         // REPORT Parsing
         String str = originStressReportStr;
-        String timestampFromResult = str.substring(0, TIMESTAMP_END_INDEX);
-        String exceptTimestamp = str.substring(RESULTS_START_INDEX);
-        Log.i(TAG, "PARSINGTEST timestamp from result: " + timestampFromResult);
-        Log.i(TAG, "PARSINGTEST other: " + exceptTimestamp);
-        String[] resultStringArray = exceptTimestamp.split("(\\},)");
-        for(short i = 0; i < resultStringArray.length; i++){
-            if(i != resultStringArray.length - 1)
-                resultStringArray[i] = resultStringArray[i].substring(RESULTS_INDICATOR_INDEX) + "}";
-            else
-                resultStringArray[i] = resultStringArray[i].substring(RESULTS_INDICATOR_INDEX);
-        }
         jsonObjects = new JSONObject[3];
         try {
-            for(short i=0; i<jsonObjects.length; i++){
-                jsonObjects[i] = new JSONObject(resultStringArray[i]);
-                Log.i(TAG, "PARSINGTEST jsonObjects" + i + ": " + jsonObjects[i].toString());
-                Log.i(TAG, "PARSINGTEST jsonObjects acc" + i + ": " + jsonObjects[i].getInt("accuracy"));
-            }
-//            jsonResult[0] = new JSONObject(resultStringArray[0]);
-//            JSONObject obj2 = new JSONObject(resultStringArray[1]);
-//            JSONObject obj3 = new JSONObject(resultStringArray[2]);
-//            Log.i(TAG, "PARSINGTEST jsonObj1: " + obj1.toString());
-//            Log.i(TAG, "PARSINGTEST jsonObj2: " + obj2.toString());
-//            Log.i(TAG, "PARSINGTEST jsonObj3: " + obj3.toString());
+            JSONObject jsonObject = new JSONObject(str);
+            jsonObjects[0] = jsonObject.getJSONObject("1");
+            jsonObjects[1] = jsonObject.getJSONObject("2");
+            jsonObjects[2] = jsonObject.getJSONObject("3");
         } catch (JSONException e) {
             e.printStackTrace();
         }

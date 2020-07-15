@@ -24,8 +24,6 @@ import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,13 +69,13 @@ public class MainService extends Service {
     public static final long EMA_RESPONSE_EXPIRE_TIME = 3600;  //in sec
     public static final long REPORT_RESPONSE_EXPIRE_TIME = 3600;  //in sec
     public static final int SERVICE_START_X_MIN_BEFORE_EMA = (int) (EMA_NOTIF_HOURS[1] - EMA_NOTIF_HOURS[0]) * 60 * 60; //in sec
-    public static final int SERVICE_START_X_MIN_BEFORE_REPORT = (int) (REPORT_NOTIF_HOURS[1] - REPORT_NOTIF_HOURS[0]) * 60 * 60; //in sec
     public static final short HEARTBEAT_PERIOD = 30;  //in sec
-    public static final short DATA_SUBMIT_PERIOD = 5 * 60;  //in sec
+    public static final short DATA_SUBMIT_PERIOD = 60;  //in sec
     private static final short AUDIO_RECORDING_PERIOD = 20 * 60;  //in sec
     private static final short AUDIO_RECORDING_DURATION = 5;  //in sec
     private static final int ACTIVITY_RECOGNITION_INTERVAL = 40; //in sec
-    private static final int APP_USAGE_SEND_PERIOD = 3; //in sec
+    private static final int APP_USAGE_SAVE_PERIOD = 3; //in sec
+    private static final int APP_USAGE_SUBMIT_PERIOD = 30; //in sec
     private static final int KINDS_NOTI_EMA = 1;
     private static final int KINDS_NOTI_REPORT = 2;
     //endregion
@@ -112,6 +110,12 @@ public class MainService extends Service {
         @Override
         public void run() {
 
+            //permissions granted or not. If not grant first
+            if (!Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS) && !permissionNotificationPosted) {
+                permissionNotificationPosted = true;
+                sendNotificationForPermissionSetting();
+            }
+
             //check if all permissions are set then dismiss notification for request
             if (Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS)) {
                 mNotificationManager.cancel(PERMISSION_REQUEST_NOTIFICATION_ID);
@@ -139,7 +143,6 @@ public class MainService extends Service {
                 /* Zaturi end */
                 editor.apply();
                 canSendNotif = false;
-                saveSomeStats(); //save some stats that we need only once per EMA is posted
             }
 
             if (curCal.get(Calendar.MINUTE) > 0)
@@ -163,7 +166,6 @@ public class MainService extends Service {
                 /* Zaturi end */
                 editor.apply();
                 canSendNotif = false;
-                saveSomeStats(); //save some stats that we need only once per Stress Report is posted
             }
 
             if (curCal.get(Calendar.MINUTE) > 0)
@@ -187,79 +189,109 @@ public class MainService extends Service {
             }
             //endregion
 
-            mainHandler.postDelayed(this, 2 * 1000);
+            mainHandler.postDelayed(this, 5 * 1000);
         }
     };
 
-    private boolean stopDataSubmitThread = false;
+
+    private Handler dataSubmissionHandler = new Handler();
     private Runnable dataSubmitRunnable = new Runnable() {
         @Override
         public void run() {
-            Cursor cursor = DbMgr.getSensorData();
-            if (cursor.moveToFirst()) {
-                ManagedChannel channel = ManagedChannelBuilder.forAddress(
-                        getString(R.string.grpc_host),
-                        Integer.parseInt(getString(R.string.grpc_port))
-                ).usePlaintext().build();
-                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+            new Thread(() -> {
+                if (Tools.isNetworkAvailable()) {
+                    Cursor cursor = DbMgr.getSensorData();
+                    if (cursor.moveToFirst()) {
+                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
+                                getString(R.string.grpc_host),
+                                Integer.parseInt(getString(R.string.grpc_port))
+                        ).usePlaintext().build();
+                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
-                loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
-                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                        loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
+                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
 
-                try {
-                    do {
-                        EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
-                                .setUserId(userId)
-                                .setEmail(email)
-                                .setDataSource(cursor.getInt(1))
-                                .setTimestamp(cursor.getLong(2))
-                                .setValues(cursor.getString(4))
-                                .build();
-                        //String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
-                        //Log.e("submitThread", "Submission: " + res);
-                        EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
+                        try {
+                            do {
+                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
+                                        .setUserId(userId)
+                                        .setEmail(email)
+                                        .setDataSource(cursor.getInt(1))
+                                        .setTimestamp(cursor.getLong(2))
+                                        .setValues(cursor.getString(4))
+                                        .build();
+                                //String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
+                                //Log.e("submitThread", "Submission: " + res);
+                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
 
-                        if (responseMessage.getDoneSuccessfully()) {
-                            DbMgr.deleteRecord(cursor.getInt(0));
+                                if (responseMessage.getDoneSuccessfully()) {
+                                    DbMgr.deleteRecord(cursor.getInt(0));
+                                }
+
+                            } while (cursor.moveToNext());
+                        } catch (StatusRuntimeException e) {
+                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
+                            e.printStackTrace();
+                        } finally {
+                            channel.shutdown();
                         }
-
-                    } while (cursor.moveToNext());
-                } catch (StatusRuntimeException e) {
-                    Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
-                    e.printStackTrace();
-                } finally {
-                    channel.shutdown();
+                    }
+                    cursor.close();
                 }
-            }
-            cursor.close();
+            }).start();
+            dataSubmissionHandler.postDelayed(dataSubmitRunnable, DATA_SUBMIT_PERIOD * 1000);
+
         }
     };
-    private Thread dataSubmissionThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            while (!stopDataSubmitThread) {
-
-                if (Tools.isNetworkAvailable())
-                    dataSubmitRunnable.run();
-                try {
-                    Thread.sleep(DATA_SUBMIT_PERIOD * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    });
 
     private Handler appUsageSubmitHandler = new Handler();
     private Runnable appUsageSubmitRunnable = new Runnable() {
+        //TODO: test how it works
+        @Override
+        public void run() {
+            Log.e(TAG, "APP usage submit");
+            final long app_usage_time_end = System.currentTimeMillis();
+            final long app_usage_time_start = (app_usage_time_end - APP_USAGE_SUBMIT_PERIOD * 1000) + 1000; // add one second to start time
+            new Thread(() -> {
+                Log.e(TAG, "here 1");
+                SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
+                assert dataSourceId != -1;
+                Cursor cursor = AppUseDb.getAppUsage();
+                if (cursor.moveToFirst()) {
+                    Log.e(TAG, "here 2");
+                    do {
+                        String package_name = cursor.getString(1);
+                        long start_time = cursor.getLong(2);
+                        long end_time = cursor.getLong(3);
+                        Log.e(TAG, "here 3");
+                        if (Tools.inRange(start_time, app_usage_time_start, app_usage_time_end) && Tools.inRange(end_time, app_usage_time_start, app_usage_time_end)) {
+                            Log.e(TAG, "here 4");
+                            if (start_time < end_time) {
+                                Log.e(TAG, "saveMixedData -> package: " + package_name + "; start: " + start_time + "; end: " + end_time);
+                                DbMgr.saveMixedData(dataSourceId, start_time, 1.0f, start_time, end_time, package_name);
+                            }
+                        }
+                    }
+                    while (cursor.moveToNext());
+                }
+                cursor.close();
+            }).start();
+            appUsageSubmitHandler.postDelayed(appUsageSubmitRunnable, APP_USAGE_SUBMIT_PERIOD * 1000);
+        }
+    };
+
+
+    private Handler appUsageSaveHandler = new Handler();
+    private Runnable appUsageSaveRunnable = new Runnable() {
         public void run() {
             try {
                 Tools.checkAndSendUsageAccessStats(getApplicationContext());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            appUsageSubmitHandler.postDelayed(this, APP_USAGE_SEND_PERIOD * 1000);
+            appUsageSaveHandler.postDelayed(this, APP_USAGE_SAVE_PERIOD * 1000);
         }
     };
 
@@ -278,34 +310,14 @@ public class MainService extends Service {
         activityRecognitionClient = ActivityRecognition.getClient(getApplicationContext());
         activityRecPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 2, new Intent(getApplicationContext(), ActivityRecognitionReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient.requestActivityUpdates(ACTIVITY_RECOGNITION_INTERVAL * 1000, activityRecPendingIntent)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Registered: Activity Recognition");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Failed: Activity Recognition");
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Registered: Activity Recognition"))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed: Activity Recognition"));
 
         activityTransitionClient = ActivityRecognition.getClient(getApplicationContext());
         activityTransPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(getApplicationContext(), ActivityTransitionsReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT);
         activityTransitionClient.requestActivityTransitionUpdates(new ActivityTransitionRequest(getActivityTransitions()), activityTransPendingIntent)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Registered: Activity Transition");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Failed: Activity Transition " + e.toString());
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Registered: Activity Transition"))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed: Activity Transition " + e.toString()));
 
         //region Register Phone unlock and Screen On state receiver
         mPhoneUnlockedReceiver = new ScreenAndUnlockReceiver();
@@ -337,8 +349,9 @@ public class MainService extends Service {
         //endregion
 
         mainHandler.post(mainRunnable);
+        appUsageSaveHandler.post(appUsageSaveRunnable);
+        dataSubmissionHandler.post(dataSubmitRunnable);
         appUsageSubmitHandler.post(appUsageSubmitRunnable);
-        dataSubmissionThread.start();
 
         permissionNotificationPosted = false;
     }
@@ -374,9 +387,10 @@ public class MainService extends Service {
             audioFeatureRecorder.stop();
         unregisterReceiver(mPhoneUnlockedReceiver);
         unregisterReceiver(mCallReceiver);
-        stopDataSubmitThread = true;
         mainHandler.removeCallbacks(mainRunnable);
+        appUsageSaveHandler.removeCallbacks(appUsageSaveRunnable);
         appUsageSubmitHandler.removeCallbacks(appUsageSubmitRunnable);
+        dataSubmissionHandler.removeCallbacks(dataSubmitRunnable);
         //endregion
 
         //region Stop foreground service
@@ -522,6 +536,36 @@ public class MainService extends Service {
         final Notification notification = builder.build();
         if (notificationManager != null) {
             notificationManager.notify(EMA_NOTIFICATION_ID, notification);
+        }
+    }
+
+    private void sendNotificationForPermissionSetting() {
+        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent notificationIntent = new Intent(MainService.this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(MainService.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String channelId = "StressSensor_permission_notif";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
+        builder.setContentTitle(this.getString(R.string.app_name))
+                .setContentText(this.getString(R.string.grant_permissions))
+                .setTicker("New Message Alert!")
+                .setOngoing(true)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+        final Notification notification = builder.build();
+        if (notificationManager != null) {
+            notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
         }
     }
 
