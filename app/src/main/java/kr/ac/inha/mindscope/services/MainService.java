@@ -38,6 +38,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -90,7 +91,6 @@ public class MainService extends Service {
 
     //private StationaryDetector mStationaryDetector;
     static NotificationManager mNotificationManager;
-    static Boolean permissionNotificationPosted;
     private SensorManager mSensorManager;
 
     private ScreenAndUnlockReceiver mPhoneUnlockedReceiver;
@@ -107,6 +107,7 @@ public class MainService extends Service {
     private boolean canSendNotif = true;
 
     private Handler mainHandler = new Handler();
+    public static Boolean permissionNotificationPosted;
     private Runnable mainRunnable = new Runnable() {
         @Override
         public void run() {
@@ -262,28 +263,6 @@ public class MainService extends Service {
         }
     };
 
-    private Handler heartBeatHandler = new Handler();
-    private Runnable heartBeatSendRunnable = new Runnable() {
-        public void run() {
-            //before sending hear-beat check permissions granted or not. If not grant first
-            if (!Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS) && !permissionNotificationPosted) {
-                permissionNotificationPosted = true;
-                sendNotificationForPermissionSetting();
-            }
-
-            try {
-                if (Tools.heartbeatNotSent(MainService.this)) {
-                    Log.e(TAG, "Heartbeat not sent");
-                    /*Tools.perform_logout(CustomSensorsService.this);
-                    stopSelf();*/
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            heartBeatHandler.postDelayed(this, HEARTBEAT_PERIOD * 1000);
-        }
-    };
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -358,7 +337,6 @@ public class MainService extends Service {
         //endregion
 
         mainHandler.post(mainRunnable);
-        heartBeatHandler.post(heartBeatSendRunnable);
         appUsageSubmitHandler.post(appUsageSubmitRunnable);
         dataSubmissionThread.start();
 
@@ -398,7 +376,6 @@ public class MainService extends Service {
         unregisterReceiver(mCallReceiver);
         stopDataSubmitThread = true;
         mainHandler.removeCallbacks(mainRunnable);
-        heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
         appUsageSubmitHandler.removeCallbacks(appUsageSubmitRunnable);
         //endregion
 
@@ -498,7 +475,7 @@ public class MainService extends Service {
         PendingIntent pendingIntent;
         NotificationCompat.Builder builder;
         String channelId;
-        if(kinds_ema_or_report == KINDS_NOTI_EMA){
+        if (kinds_ema_or_report == KINDS_NOTI_EMA) {
             Intent notificationIntent = new Intent(MainService.this, EMAActivity.class);
             notificationIntent.putExtra("ema_order", order);
             //PendingIntent pendingIntent = PendingIntent.getActivities(CustomSensorsService.this, 0, new Intent[]{notificationIntent}, 0);
@@ -515,7 +492,7 @@ public class MainService extends Service {
                     .setSmallIcon(R.mipmap.ic_launcher_no_bg)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(Notification.DEFAULT_ALL);
-        }else{
+        } else {
             Intent notificationIntent = new Intent(MainService.this, StressReportActivity.class);
             notificationIntent.putExtra("report_order", order);
             //PendingIntent pendingIntent = PendingIntent.getActivities(CustomSensorsService.this, 0, new Intent[]{notificationIntent}, 0);
@@ -535,8 +512,6 @@ public class MainService extends Service {
         }
 
 
-
-
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT);
             if (notificationManager != null) {
@@ -547,36 +522,6 @@ public class MainService extends Service {
         final Notification notification = builder.build();
         if (notificationManager != null) {
             notificationManager.notify(EMA_NOTIFICATION_ID, notification);
-        }
-    }
-
-    private void sendNotificationForPermissionSetting() {
-        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Intent notificationIntent = new Intent(MainService.this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(MainService.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        String channelId = "StressSensor_permission_notif";
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
-        builder.setContentTitle(this.getString(R.string.app_name))
-                .setContentText(this.getString(R.string.grant_permissions))
-                .setTicker("New Message Alert!")
-                .setOngoing(true)
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_ALL);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-        final Notification notification = builder.build();
-        if (notificationManager != null) {
-            notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
         }
     }
 

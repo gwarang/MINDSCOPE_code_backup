@@ -2,12 +2,16 @@ package kr.ac.inha.mindscope;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,10 +32,12 @@ import java.util.Locale;
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -39,6 +45,10 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
 import kr.ac.inha.mindscope.services.MainService;
+
+import static kr.ac.inha.mindscope.services.MainService.HEARTBEAT_PERIOD;
+import static kr.ac.inha.mindscope.services.MainService.PERMISSION_REQUEST_NOTIFICATION_ID;
+import static kr.ac.inha.mindscope.services.MainService.permissionNotificationPosted;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,6 +87,59 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog dialog;
     private PointCustomDialog pointCustomDialog;
 
+    private Handler heartBeatHandler = new Handler();
+    private Runnable heartBeatSendRunnable = new Runnable() {
+        public void run() {
+            //before sending hear-beat check permissions granted or not. If not grant first
+            if (!Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS) && !permissionNotificationPosted) {
+                permissionNotificationPosted = true;
+                sendNotificationForPermissionSetting();
+            }
+
+            try {
+                if (Tools.heartbeatNotSent(MainActivity.this)) {
+                    Log.e(TAG, "Heartbeat not sent");
+                    /*Tools.perform_logout(CustomSensorsService.this);
+                    stopSelf();*/
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            heartBeatHandler.postDelayed(this, HEARTBEAT_PERIOD * 1000);
+        }
+    };
+
+    private void sendNotificationForPermissionSetting() {
+        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String channelId = "StressSensor_permission_notif";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
+        builder.setContentTitle(this.getString(R.string.app_name))
+                .setContentText(this.getString(R.string.grant_permissions))
+                .setTicker("New Message Alert!")
+                .setOngoing(true)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+        final Notification notification = builder.build();
+        if (notificationManager != null) {
+            notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
+        }
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -89,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        if(intent.getExtras() != null)
+        if (intent.getExtras() != null)
             updatePointAndShowDialog(intent);
 
 
@@ -174,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
         changeNav();
 
+        heartBeatHandler.post(heartBeatSendRunnable);
     }
 
     @Override
@@ -286,6 +350,8 @@ public class MainActivity extends AppCompatActivity {
             dialog.dismiss();
             dialog = null;
         }
+
+        heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
     }
 
     public void initUserStats(boolean error, long joinedTimesamp, long hbPhone, String dataLoadedPhone) {
@@ -374,107 +440,69 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateStats() {
         if (Tools.isNetworkAvailable())
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-                    ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                    EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
-                            .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                            .build();
-                    try {
-                        EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-                        if (responseMessage.getDoneSuccessfully()) {
-                            final long join_timestamp = responseMessage.getCampaignJoinTimestamp();
-                            final long hb_phone = responseMessage.getLastHeartbeatTimestamp();
-                            final int samples_amount = responseMessage.getAmountOfSubmittedDataSamples();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    initUserStats(false, join_timestamp, hb_phone, String.valueOf(samples_amount));
-                                }
-                            });
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    initUserStats(true, 0, 0, null);
-                                }
-                            });
-                        }
-                    } catch (StatusRuntimeException e) {
-                        Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
-                        e.printStackTrace();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initUserStats(true, 0, 0, null);
-                            }
-                        });
-
+            new Thread(() -> {
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .build();
+                try {
+                    EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        final long join_timestamp = responseMessage.getCampaignJoinTimestamp();
+                        final long hb_phone = responseMessage.getLastHeartbeatTimestamp();
+                        final int samples_amount = responseMessage.getAmountOfSubmittedDataSamples();
+                        runOnUiThread(() -> initUserStats(false, join_timestamp, hb_phone, String.valueOf(samples_amount)));
+                    } else {
+                        runOnUiThread(() -> initUserStats(true, 0, 0, null));
                     }
+                } catch (StatusRuntimeException e) {
+                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                    e.printStackTrace();
+                    runOnUiThread(() -> initUserStats(true, 0, 0, null));
 
-                    Calendar fromCal = Calendar.getInstance();
-                    fromCal.set(Calendar.HOUR_OF_DAY, 0);
-                    fromCal.set(Calendar.MINUTE, 0);
-                    fromCal.set(Calendar.SECOND, 0);
-                    fromCal.set(Calendar.MILLISECOND, 0);
-                    Calendar tillCal = (Calendar) fromCal.clone();
-                    tillCal.set(Calendar.HOUR_OF_DAY, 23);
-                    tillCal.set(Calendar.MINUTE, 59);
-                    tillCal.set(Calendar.SECOND, 59);
-                    EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                            .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                            .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
-                            .setFromTimestamp(fromCal.getTimeInMillis())
-                            .setTillTimestamp(tillCal.getTimeInMillis())
-                            .build();
-                    try {
-                        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
-                        if (responseMessage.getDoneSuccessfully()) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateEmaResponseView(responseMessage.getValueList());
-                                }
-                            });
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    initUserStats(true, 0, 0, null);
-                                }
-                            });
-                        }
-                    } catch (StatusRuntimeException e) {
-                        Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
-                        e.printStackTrace();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateEmaResponseView(null);
-                            }
-                        });
+                }
 
-                    } finally {
-                        channel.shutdown();
+                Calendar fromCal = Calendar.getInstance();
+                fromCal.set(Calendar.HOUR_OF_DAY, 0);
+                fromCal.set(Calendar.MINUTE, 0);
+                fromCal.set(Calendar.SECOND, 0);
+                fromCal.set(Calendar.MILLISECOND, 0);
+                Calendar tillCal = (Calendar) fromCal.clone();
+                tillCal.set(Calendar.HOUR_OF_DAY, 23);
+                tillCal.set(Calendar.MINUTE, 59);
+                tillCal.set(Calendar.SECOND, 59);
+                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
+                        .setFromTimestamp(fromCal.getTimeInMillis())
+                        .setTillTimestamp(tillCal.getTimeInMillis())
+                        .build();
+                try {
+                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        runOnUiThread(() -> updateEmaResponseView(responseMessage.getValueList()));
+                    } else {
+                        runOnUiThread(() -> initUserStats(true, 0, 0, null));
                     }
+                } catch (StatusRuntimeException e) {
+                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                    e.printStackTrace();
+                    runOnUiThread(() -> updateEmaResponseView(null));
+
+                } finally {
+                    channel.shutdown();
                 }
             }).start();
         else {
             Toast.makeText(MainActivity.this, "Please connect to Internet!", Toast.LENGTH_SHORT).show();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    initUserStats(true, 0, 0, null);
-                }
-            });
+            runOnUiThread(() -> initUserStats(true, 0, 0, null));
         }
     }
 
@@ -493,12 +521,7 @@ public class MainActivity extends AppCompatActivity {
         if (item != null) {
             stopService(customSensorsService);
             if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog = Tools.requestPermissions(MainActivity.this);
-                    }
-                });
+                runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
             } else {
                 Log.e(TAG, "restartServiceClick: 3");
                 if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
@@ -515,12 +538,7 @@ public class MainActivity extends AppCompatActivity {
                 customSensorsService = new Intent(this, MainService.class);
                 stopService(customSensorsService);
                 if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialog = Tools.requestPermissions(MainActivity.this);
-                        }
-                    });
+                    runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
                 } else {
                     if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
                         Log.e(TAG, "RESTART SERVICE");
@@ -546,67 +564,56 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setMessage(getString(R.string.log_out_confirmation));
         alertDialog.setPositiveButton(
-                getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Tools.perform_logout(getApplicationContext());
-                        stopService(customSensorsService);
-                        finish();
-                    }
+                getString(R.string.yes), (dialog, which) -> {
+                    Tools.perform_logout(getApplicationContext());
+                    stopService(customSensorsService);
+                    finish();
                 });
 
         alertDialog.setNegativeButton(
-                getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                getString(R.string.cancel), (dialog, which) -> dialog.cancel());
         alertDialog.show();
     }
 
     private void loadCampaign() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+        new Thread(() -> {
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
-                try {
-                    ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                    EtService.RetrieveCampaignRequestMessage retrieveCampaignRequestMessage = EtService.RetrieveCampaignRequestMessage.newBuilder()
-                            .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                            .build();
+            try {
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveCampaignRequestMessage retrieveCampaignRequestMessage = EtService.RetrieveCampaignRequestMessage.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .build();
 
-                    EtService.RetrieveCampaignResponseMessage retrieveCampaignResponseMessage = stub.retrieveCampaign(retrieveCampaignRequestMessage);
-                    if (retrieveCampaignResponseMessage.getDoneSuccessfully()) {
-                        setUpCampaignConfigurations(
-                                retrieveCampaignResponseMessage.getName(),
-                                retrieveCampaignResponseMessage.getNotes(),
-                                retrieveCampaignResponseMessage.getCreatorEmail(),
-                                retrieveCampaignResponseMessage.getConfigJson(),
-                                retrieveCampaignResponseMessage.getStartTimestamp(),
-                                retrieveCampaignResponseMessage.getEndTimestamp(),
-                                retrieveCampaignResponseMessage.getParticipantCount()
-                        );
-                        SharedPreferences.Editor editor = configPrefs.edit();
-                        editor.putString("name", retrieveCampaignResponseMessage.getName());
-                        editor.putString("notes", retrieveCampaignResponseMessage.getNotes());
-                        editor.putString("creatorEmail", retrieveCampaignResponseMessage.getCreatorEmail());
-                        editor.putString("configJson", retrieveCampaignResponseMessage.getConfigJson());
-                        editor.putLong("startTimestamp", retrieveCampaignResponseMessage.getStartTimestamp());
-                        editor.putLong("endTimestamp", retrieveCampaignResponseMessage.getEndTimestamp());
-                        editor.putInt("participantCount", retrieveCampaignResponseMessage.getParticipantCount());
-                        editor.putBoolean("campaignLoaded", true);
-                        editor.apply();
-                        restartServiceClick(null);
-                    }
-                } catch (StatusRuntimeException | JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    channel.shutdown();
+                EtService.RetrieveCampaignResponseMessage retrieveCampaignResponseMessage = stub.retrieveCampaign(retrieveCampaignRequestMessage);
+                if (retrieveCampaignResponseMessage.getDoneSuccessfully()) {
+                    setUpCampaignConfigurations(
+                            retrieveCampaignResponseMessage.getName(),
+                            retrieveCampaignResponseMessage.getNotes(),
+                            retrieveCampaignResponseMessage.getCreatorEmail(),
+                            retrieveCampaignResponseMessage.getConfigJson(),
+                            retrieveCampaignResponseMessage.getStartTimestamp(),
+                            retrieveCampaignResponseMessage.getEndTimestamp(),
+                            retrieveCampaignResponseMessage.getParticipantCount()
+                    );
+                    SharedPreferences.Editor editor = configPrefs.edit();
+                    editor.putString("name", retrieveCampaignResponseMessage.getName());
+                    editor.putString("notes", retrieveCampaignResponseMessage.getNotes());
+                    editor.putString("creatorEmail", retrieveCampaignResponseMessage.getCreatorEmail());
+                    editor.putString("configJson", retrieveCampaignResponseMessage.getConfigJson());
+                    editor.putLong("startTimestamp", retrieveCampaignResponseMessage.getStartTimestamp());
+                    editor.putLong("endTimestamp", retrieveCampaignResponseMessage.getEndTimestamp());
+                    editor.putInt("participantCount", retrieveCampaignResponseMessage.getParticipantCount());
+                    editor.putBoolean("campaignLoaded", true);
+                    editor.apply();
+                    restartServiceClick(null);
                 }
+            } catch (StatusRuntimeException | JSONException e) {
+                e.printStackTrace();
+            } finally {
+                channel.shutdown();
             }
         }).start();
     }
@@ -643,7 +650,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void createSharedPrefPoints(){
+    private void createSharedPrefPoints() {
         SharedPreferences points = getSharedPreferences("points", MODE_PRIVATE);
         SharedPreferences.Editor pointsEditor = points.edit();
         pointsEditor.putInt("todayPoints", 0);
@@ -652,12 +659,12 @@ public class MainActivity extends AppCompatActivity {
         pointsEditor.apply();
     }
 
-    private void changeNav(){
+    private void changeNav() {
 
         // TODO 추후에는 시작날로부터 2주후부터 stepChange 하도록 구현할것
         SharedPreferences stepChange = getSharedPreferences("stepChange", MODE_PRIVATE);
         int step = stepChange.getInt("stepCheck", 0);
-        if(step == 0){
+        if (step == 0) {
             SharedPreferences.Editor stepEditor = stepChange.edit();
             stepEditor.putInt("stepCheck", 1);
             stepEditor.apply();
@@ -668,7 +675,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = (BottomNavigationView) findViewById(R.id.nav_view);
 
         getSupportActionBar().hide();
-        if(stepChange.getInt("stepCheck", 0) == 2){
+        if (stepChange.getInt("stepCheck", 0) == 2) {
             // STEP 2
             navView.getMenu().clear();
             navView.inflateMenu(R.menu.bottom_navigation_menu_step2);
@@ -677,8 +684,7 @@ public class MainActivity extends AppCompatActivity {
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             navController.setGraph(R.navigation.mobile_navigation_stpe2);
             Log.i(TAG, "nav2");
-        }
-        else{
+        } else {
             // STEP 1
             navView.getMenu().clear();
             navView.inflateMenu(R.menu.bottom_navigation_menu);
@@ -692,15 +698,15 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-    private void updatePointAndShowDialog(Intent intent){
-        if(intent.getExtras() != null && intent.getExtras().getInt("tagcode") == TagActivity.DIALOG_ENALBE){
+    private void updatePointAndShowDialog(Intent intent) {
+        if (intent.getExtras() != null && intent.getExtras().getInt("tagcode") == TagActivity.DIALOG_ENALBE) {
             // TODO point 얻는거 / alert dialog
             Log.i(TAG, "point dialog test");
             Tools.updatePoint(getApplicationContext()); // poitn update
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
             pointCustomDialog.show();
             intent.removeExtra("tagcode");
-        }else if(intent.getExtras() != null) {
+        } else if (intent.getExtras() != null) {
             Tools.updatePoint(getApplicationContext());
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
             pointCustomDialog.show();
