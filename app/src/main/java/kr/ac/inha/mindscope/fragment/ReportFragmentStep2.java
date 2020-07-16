@@ -5,11 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
@@ -26,8 +28,16 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import inha.nsl.easytrack.ETServiceGrpc;
+import inha.nsl.easytrack.EtService;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
+import kr.ac.inha.mindscope.AuthenticationActivity;
+import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportDBHelper;
+import kr.ac.inha.mindscope.Tools;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,13 +80,35 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
+        long firstDayTimestamp = getJoinTime();
+        Log.e(TAG, "join timestamp " + firstDayTimestamp);
 
+        Calendar firstDayCal = Calendar.getInstance(Locale.KOREA);
+        firstDayCal.setTimeInMillis(firstDayTimestamp);
+        String date = DateFormat.format("yyyy-MM-dd", firstDayCal).toString();
+
+        Log.d(TAG, "firstdate calendar " + date);
         dataArray = dbHelper.getStressReportData();
         if(dataArray.isEmpty())
             Log.i(TAG, "dataArray is empty");
         for(StressReportDBHelper.StressReportData temp : dataArray){
             Log.i(TAG, temp.toString());
+            long timestamp = temp.getTimestamp();
+            int stress_level = temp.getStress_level();
+            int day_num = temp.getDay_num();
+            int report_order = temp.getReport_order();
+
+            Calendar tempCal = Calendar.getInstance();
+            tempCal.setTimeInMillis(timestamp);
+            String tempDate = DateFormat.format("yyyy-MM-dd", tempCal).toString();
+            Log.d(TAG, "temp date: " + tempDate);
+
+
         }
+
+
+
+
 
         sumPointsView = root.findViewById(R.id.summary_point_my);
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
@@ -193,6 +225,26 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         public void decorate(DayViewFacade view) {
             view.setBackgroundDrawable(highBackgroundDrawable);
         }
+    }
+
+    public long getJoinTime(){
+        long firstDayTimestamp = 0;
+        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+        EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                .build();
+        EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+        if (responseMessage.getDoneSuccessfully()) {
+            final long join_timestamp = responseMessage.getCampaignJoinTimestamp();
+            firstDayTimestamp = join_timestamp;
+        }
+        return  firstDayTimestamp;
     }
 }
 

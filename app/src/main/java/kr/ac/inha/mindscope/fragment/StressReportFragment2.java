@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -62,9 +61,10 @@ public class StressReportFragment2 extends Fragment {
         return fragment2;
     }
 
-    public static StressReportFragment2 newInstance(int stressLevel, int reportAnswer, int day_num, int order, int accuracy, String feature_ids){
+    public static StressReportFragment2 newInstance(long reportTimestamp, int stressLevel, int reportAnswer, int day_num, int order, int accuracy, String feature_ids){
         StressReportFragment2 fragment2 = new StressReportFragment2();
         Bundle bundle = new Bundle();
+        bundle.putLong("reportTimestamp", reportTimestamp);
         bundle.putInt("stressLevel", stressLevel);
         bundle.putInt("reportAnswer", reportAnswer);
         bundle.putInt("day_num", day_num);
@@ -80,7 +80,8 @@ public class StressReportFragment2 extends Fragment {
     public int day_num;
     public int order;
     public int accuracy;
-    public String featrue_ids;
+    public long reportTimestamp;
+    public String feature_ids;
 
 
     TextView correctnessView;
@@ -114,13 +115,14 @@ public class StressReportFragment2 extends Fragment {
         super.onCreate(savedInstanceState);
 
         if(getArguments() != null){
+            this.reportTimestamp = getArguments().getLong("reportTimestamp");
             this.stressLevel = getArguments().getInt("stressLevel");
             this.reportAnswer = getArguments().getInt("reportAnswer");
             this.day_num = getArguments().getInt("day_num");
             this.order = getArguments().getInt("order");
             this.accuracy = getArguments().getInt("accuracy");
-            this.featrue_ids = getArguments().getString("feature_ids");
-            Log.i(TAG, String.format("%d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, featrue_ids));
+            this.feature_ids = getArguments().getString("feature_ids");
+            Log.i(TAG, String.format("%d %d %d %d %d %d %s", reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
             saveStressReport();
         }else{
             Log.i(TAG, "getArguments null");
@@ -150,10 +152,144 @@ public class StressReportFragment2 extends Fragment {
 //        reason4 = view.findViewById(R.id.txt_location_reason1);
 //        reason5 = view.findViewById(R.id.txt_location_reason2);
 
-        String[] featureArray = featrue_ids.split(" ");
-        // TODO update reason Views after knowing the meaning of feature_ids
-//        String packageName = getActivity().getPackageName();
-//        int resId = getResources().getIdentifier("feature_" + featureArray[0], "string", packageName);
+        featureViewUpdate(feature_ids, view);
+
+//
+//        reason1.setText(featureArray[0]);
+//        reason2.setText(featureArray[1]);
+//        reason3.setText(featureArray[2]);
+//        reason4.setText(featureArray[3]);
+//        reason5.setText(featureArray[4]);
+
+        if(stressLevel == reportAnswer){
+            correctnessView.setText(getResources().getString(R.string.string_prediction_correct));
+        }
+        else{
+            correctnessView.setText(getResources().getString(R.string.string_prediction_incorrect));
+        }
+
+        final String accTxt1 = "사실 저는 ";
+        final String accTxt2 = accuracy + "%";
+        final String accTxt3 = "의 확신을 가지고 있었어요.";
+        String accTxtResult = accTxt1 + accTxt2 + accTxt3;
+        Spannable spannable = new SpannableString(accTxtResult);
+        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.textColor_blue)), accTxt1.length(), (accTxt1 + accTxt2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        accView.setText(spannable, TextView.BufferType.SPANNABLE);
+
+        // TODO STRESS_PREDICTION 원인으로 UI 업데이트 해주기
+        switch(reportAnswer){
+            case STRESS_LV1:
+                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, getActivity().getTheme()));
+                stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_low)));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, getActivity().getTheme()));
+                break;
+            case STRESS_LV2:
+                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, getActivity().getTheme()));
+                stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_littlehigh)));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, getActivity().getTheme()));
+                break;
+            case STRESS_LV3:
+                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, getActivity().getTheme()));
+                stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_high)));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, getActivity().getTheme()));
+                break;
+        }
+
+        yesBtn.setOnClickListener(yseClickListener);
+        noBtn.setOnClickListener(noClickListener);
+        reportBtn.setOnClickListener(reportClickListener);
+
+        return view;
+    }
+
+    View.OnClickListener reportClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(yesOrNo == 2){
+                Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Calendar cal = Calendar.getInstance();
+                int reportNum = Tools.getReportOrderAtExactTime(cal);
+
+                if(reportNum == REPORTNUM4){
+                    // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
+
+                    SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = stressReportPrefs.edit();
+                    editor.putLong("reportTimestamp", reportTimestamp);
+                    editor.putInt("reportAnswer", reportAnswer);
+                    editor.putInt("day_num", day_num);
+                    editor.putInt("order", order);
+                    editor.putInt("accuracy", accuracy);
+                    editor.putString("feature_ids", feature_ids);
+                    editor.apply();
+
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("reportTimestamp", reportTimestamp);
+                    intent.putExtra("reportAnswer", reportAnswer);
+                    intent.putExtra("day_num", day_num);
+                    intent.putExtra("order", order);
+                    intent.putExtra("accuracy", accuracy);
+                    intent.putExtra("feature_ids", feature_ids);
+                    startActivity(intent);
+
+
+                }else{
+                    // 그 외는 MainActivity로
+
+                    SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = stressReportPrefs.edit();
+                    editor.putLong("reportTimestamp", reportTimestamp);
+                    editor.putInt("reportAnswer", reportAnswer);
+                    editor.putInt("day_num", day_num);
+                    editor.putInt("order", order);
+                    editor.putInt("accuracy", accuracy);
+                    editor.putString("feature_ids", feature_ids);
+                    editor.apply();
+
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("reportTimestamp", reportTimestamp);
+                    intent.putExtra("reportAnswer", reportAnswer);
+                    intent.putExtra("day_num", day_num);
+                    intent.putExtra("order", order);
+                    intent.putExtra("accuracy", accuracy);
+                    intent.putExtra("feature_ids", feature_ids);
+                    startActivity(intent);
+                }
+            }
+        }
+    };
+
+    View.OnClickListener yseClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            yesOrNo = 1;
+            yesBtn.setSelected(true);
+            yesBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor_blue));
+            noBtn.setSelected(false);
+            noBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor_light));
+        }
+    };
+
+    View.OnClickListener noClickListener = new View.OnClickListener(){
+        @Override
+        public void onClick(View view) {
+            yesOrNo = 0;
+            yesBtn.setSelected(false);
+            yesBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor_light));
+            noBtn.setSelected(true);
+            noBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor_blue));
+        }
+    };
+
+    public void saveStressReport(){
+        dbHelper = new StressReportDBHelper(getContext());
+        dbHelper.insertStressReportData(reportTimestamp, reportAnswer, day_num, order, accuracy, feature_ids);
+    }
+
+    public void featureViewUpdate(String feature_ids, View view){
+        String[] featureArray = feature_ids.split(" ");
 
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();
@@ -223,10 +359,6 @@ public class StressReportFragment2 extends Fragment {
         sleepListView.setAdapter(sleepAdapter);
 
 
-
-
-
-
         if(phoneReason.isEmpty())
             phoneContainer.setVisibility(View.GONE);
         else{
@@ -262,137 +394,7 @@ public class StressReportFragment2 extends Fragment {
             sleepContainer.setVisibility(View.VISIBLE);
         }
 
-//
-//        reason1.setText(featureArray[0]);
-//        reason2.setText(featureArray[1]);
-//        reason3.setText(featureArray[2]);
-//        reason4.setText(featureArray[3]);
-//        reason5.setText(featureArray[4]);
-
-
-
-        if(stressLevel == reportAnswer){
-            correctnessView.setText(getResources().getString(R.string.string_prediction_correct));
-        }
-        else{
-            correctnessView.setText(getResources().getString(R.string.string_prediction_incorrect));
-        }
-
-        final String accTxt1 = "사실 저는 ";
-        final String accTxt2 = accuracy + "%";
-        final String accTxt3 = "의 확신을 가지고 있었어요.";
-        String accTxtResult = accTxt1 + accTxt2 + accTxt3;
-        Spannable spannable = new SpannableString(accTxtResult);
-        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.textColor_blue)), accTxt1.length(), (accTxt1 + accTxt2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        accView.setText(spannable, TextView.BufferType.SPANNABLE);
-
-        // TODO STRESS_PREDICTION 원인으로 UI 업데이트 해주기
-        switch(reportAnswer){
-            case STRESS_LV1:
-                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, getActivity().getTheme()));
-                stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_low)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, getActivity().getTheme()));
-                break;
-            case STRESS_LV2:
-                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, getActivity().getTheme()));
-                stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_littlehigh)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, getActivity().getTheme()));
-                break;
-            case STRESS_LV3:
-                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, getActivity().getTheme()));
-                stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_high)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, getActivity().getTheme()));
-                break;
-        }
-
-        yesBtn.setOnClickListener(yseClickListener);
-        noBtn.setOnClickListener(noClickListener);
-        reportBtn.setOnClickListener(reportClickListener);
-
-        return view;
     }
-
-    View.OnClickListener reportClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if(yesOrNo == 2){
-                Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
-            }
-            else{
-                Calendar cal = Calendar.getInstance();
-                int reportNum = Tools.getReportOrderAtExactTime(cal);
-
-                if(reportNum == REPORTNUM4){
-                    // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
-
-                    SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = stressReportPrefs.edit();
-                    editor.putInt("reportAnswer", reportAnswer);
-                    editor.putInt("day_num", day_num);
-                    editor.putInt("order", order);
-                    editor.putInt("accuracy", accuracy);
-                    editor.putString("feature_ids", featrue_ids);
-                    editor.apply();
-
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("reportAnswer", reportAnswer);
-                    intent.putExtra("day_num", day_num);
-                    intent.putExtra("order", order);
-                    intent.putExtra("accuracy", accuracy);
-                    intent.putExtra("feature_ids", featrue_ids);
-                    startActivity(intent);
-
-
-                }else{
-                    // 그 외는 MainActivity로
-
-                    SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = stressReportPrefs.edit();
-                    editor.putInt("reportAnswer", reportAnswer);
-                    editor.putInt("day_num", day_num);
-                    editor.putInt("order", order);
-                    editor.putInt("accuracy", accuracy);
-                    editor.putString("feature_ids", featrue_ids);
-                    editor.apply();
-
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("reportAnswer", reportAnswer);
-                    intent.putExtra("day_num", day_num);
-                    intent.putExtra("order", order);
-                    intent.putExtra("accuracy", accuracy);
-                    intent.putExtra("feature_ids", featrue_ids);
-                    startActivity(intent);
-                }
-            }
-        }
-    };
-
-
-
-    View.OnClickListener yseClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            yesOrNo = 1;
-            yesBtn.setSelected(true);
-            noBtn.setSelected(false);
-        }
-    };
-
-    View.OnClickListener noClickListener = new View.OnClickListener(){
-        @Override
-        public void onClick(View view) {
-            yesOrNo = 0;
-            yesBtn.setSelected(false);
-            noBtn.setSelected(true);
-        }
-    };
-
-    public void saveStressReport(){
-        dbHelper = new StressReportDBHelper(getContext());
-        dbHelper.insertStressReportData(reportAnswer, day_num, order, accuracy, featrue_ids);
-    }
-
-
 
     public static void setListViewHeightBasedOnChildren(@NonNull ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();

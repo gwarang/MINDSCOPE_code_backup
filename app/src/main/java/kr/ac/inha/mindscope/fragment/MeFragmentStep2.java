@@ -10,13 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -29,6 +33,7 @@ import kr.ac.inha.mindscope.StressReportActivity;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 public class MeFragmentStep2 extends Fragment {
 
@@ -58,7 +63,7 @@ public class MeFragmentStep2 extends Fragment {
     public int stressLevel;
     private String feature_ids;
 
-    LinearLayout reasonContainer;
+    ScrollView reasonContainer;
     ImageView stressImg;
 
     public MeFragmentStep2() {
@@ -82,7 +87,9 @@ public class MeFragmentStep2 extends Fragment {
 
 
         stressLvView = (TextView) view.findViewById(R.id.txt_stress_level);
-        // TODO 스트레스 리포트 결과에 따라서  string 변화되게 구현
+
+        featureViewUpdate(feature_ids, view);
+
 
         stressLevel = stressReportPrefs.getInt("reportAnswer", 0);
 
@@ -121,24 +128,6 @@ public class MeFragmentStep2 extends Fragment {
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, getActivity().getTheme()));
                 break;
         }
-
-        reason1 = view.findViewById(R.id.txt_phone_reason1);
-        reason2 = view.findViewById(R.id.txt_phone_reason2);
-        reason3 = view.findViewById(R.id.txt_phone_reason3);
-        reason4 = view.findViewById(R.id.txt_location_reason1);
-        reason5 = view.findViewById(R.id.txt_location_reason2);
-        if(!feature_ids.equals("")){
-            String[] featureArray = feature_ids.split(" ");
-
-            // TODO update reason Views after knowing the meaning of feature_ids
-            reason1.setText(featureArray[0]);
-            reason2.setText(featureArray[1]);
-            reason3.setText(featureArray[2]);
-            reason4.setText(featureArray[3]);
-            reason5.setText(featureArray[4]);
-        }
-
-
 
         btnMap = (ImageButton) view.findViewById(R.id.fragment_me_step2_btn_map);
         btnMap.setOnClickListener(new View.OnClickListener(){
@@ -219,5 +208,122 @@ public class MeFragmentStep2 extends Fragment {
     public void onResume() {
 
         super.onResume();
+    }
+
+
+    public void featureViewUpdate(String feature_ids, View view){
+        ArrayList<String> phoneReason = new ArrayList<>();
+        ArrayList<String> activityReason = new ArrayList<>();
+        ArrayList<String> socialReason = new ArrayList<>();
+        ArrayList<String> locationReason = new ArrayList<>();
+        ArrayList<String> sleepReason = new ArrayList<>();
+
+        if(feature_ids.equals("")){
+            Log.i(TAG, "feature_ids is empty");
+        }
+        else{
+            String[] featureArray = feature_ids.split(" ");
+
+
+
+            for(int i = 0; i < featureArray.length; i++ ){
+                String[] splitArray = featureArray[i].split("-");
+                int category = Integer.parseInt(splitArray[0]);
+                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String packName = getContext().getPackageName();
+                int resId = getResources().getIdentifier(strID, "string", packName);
+
+                if(category <= 5){
+                    activityReason.add(getResources().getString(resId));
+                }else if(category <= 11){
+                    socialReason.add(getResources().getString(resId));
+                }else if(category <= 16){
+                    locationReason.add(getResources().getString(resId));
+                }else if(category <= 28){
+                    phoneReason.add(getResources().getString(resId));
+                }else{
+                    sleepReason.add(getResources().getString(resId));
+                }
+
+                if(i == 4) // maximun number of showing feature is five
+                    break;
+            }
+        }
+
+
+
+        Log.d(TAG, "phoneReason" + phoneReason.toString());
+        Log.d(TAG, "activityReason" + activityReason.toString());
+
+        ListView phoneListView = view.findViewById(R.id.me_listview_phone);
+        ListView activityListView = view.findViewById(R.id.me_listview_activity);
+        ListView socialListView = view.findViewById(R.id.me_listview_social);
+        ListView locationListView = view.findViewById(R.id.me_listview_location);
+        ListView sleepListView = view.findViewById(R.id.me_listview_sleep);
+        LinearLayout phoneContainer = view.findViewById(R.id.me_listview_phone_container);
+        LinearLayout activityContainer = view.findViewById(R.id.me_listview_activity_container);
+        LinearLayout socialContainer = view.findViewById(R.id.me_listview_social_container);
+        LinearLayout locationContainer = view.findViewById(R.id.me_listview_location_container);
+        LinearLayout sleepContainer = view.findViewById(R.id.me_listview_sleep_container);
+
+
+        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, phoneReason
+        );
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, activityReason
+        );
+        ArrayAdapter<String> socialAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, socialReason
+        );
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, locationReason
+        );
+        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, sleepReason
+        );
+
+        phoneListView.setAdapter(phoneAdapter);
+        activityListView.setAdapter(activityAdapter);
+        socialListView.setAdapter(socialAdapter);
+        locationListView.setAdapter(locationAdapter);
+        sleepListView.setAdapter(sleepAdapter);
+
+
+        if(phoneReason.isEmpty())
+            phoneContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(phoneListView);
+            phoneContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(activityReason.isEmpty())
+            activityContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(activityListView);
+            activityContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(socialReason.isEmpty())
+            socialContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(socialListView);
+            socialContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(locationReason.isEmpty())
+            locationContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(locationListView);
+            locationContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(sleepReason.isEmpty())
+            sleepContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(sleepListView);
+            sleepContainer.setVisibility(View.VISIBLE);
+        }
+
     }
 }

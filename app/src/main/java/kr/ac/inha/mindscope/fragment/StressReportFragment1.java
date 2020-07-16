@@ -98,6 +98,7 @@ public class StressReportFragment1 extends Fragment {
 
     public int stressLevel;
 
+    long reportTimestamp;
 
     private static final int TIMESTAMP_END_INDEX = 12;
     private static final int RESULTS_START_INDEX = 14;
@@ -321,7 +322,7 @@ public class StressReportFragment1 extends Fragment {
 
 
                 Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
-                ((StressReportActivity)getActivity()).replaceFragment(StressReportFragment2.newInstance(stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+                ((StressReportActivity)getActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
 
             }
         }
@@ -376,11 +377,18 @@ public class StressReportFragment1 extends Fragment {
         final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
         if (responseMessage.getDoneSuccessfully()) {
             List<String> values = responseMessage.getValueList();
+            List<Long> valuesTimestamp = responseMessage.getTimestampList();
             if(!values.isEmpty()){
                 stresReportStr = values.get(0);
                 Log.d(TAG, "stressReportStr: " + stresReportStr);
             }else{
                 Log.d(TAG, "values empty");
+            }
+            if(!valuesTimestamp.isEmpty()){
+                reportTimestamp = valuesTimestamp.get(0);
+                Log.d(TAG, "report timestamp from gRPC is " + reportTimestamp);
+            }else{
+                Log.d(TAG, "report timestamp from gRPC is empty");
             }
         }
         //end getting data from gRPC
