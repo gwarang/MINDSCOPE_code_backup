@@ -40,7 +40,7 @@
 
 
                 <Button
-                    android:id="@+id/toolbar_report_btn"
+                    android:id="@+id/toolbar_report_btn2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="확인"
@@ -48,9 +48,8 @@
                     android:textSize="@dimen/my_text_size16"
                     android:fontFamily="@font/notosanscjkkrmedium"
                     android:includeFontPadding="false"
-                    android:textColor="@color/btn_txt_blue_inactive"
+                    android:textColor="@color/textColor_blue"
                     android:background="#00000000"
-                    android:clickable="false"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
 
@@ -114,123 +113,213 @@
             app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
             app:layout_constraintBottom_toTopOf="@id/stress_report_reason_container"/>
 
-        <LinearLayout
+        <ScrollView
             android:layout_marginHorizontal="14dp"
             android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/stress_report_reason_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="230dp"
+            android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/txt_reason"
             app:layout_constraintBottom_toTopOf="@id/question_analysis"
             android:background="@color/color_low_bg">
 
             <LinearLayout
-                android:paddingVertical="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/view_bottom_border">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_marginHorizontal="6dp"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/listview_phone_container"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_f_phoneusage"
-                    android:layout_gravity="center"/>
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:paddingVertical="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/view_bottom_border">
+
+                        <ImageView
+                            android:layout_marginHorizontal="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_f_phoneusage"
+                            android:layout_gravity="center" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="휴대폰 사용"
+                            android:textSize="@dimen/my_text_size16"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:layout_gravity="center"/>
+
+                    </LinearLayout>
+
+                    <ListView
+                        android:id="@+id/listview_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/listview_activity_container"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="휴대폰 사용"
-                    android:textSize="@dimen/my_text_size16"
-                    android:fontFamily="@font/notosanscjkkrregular"
-                    android:includeFontPadding="false"
-                    android:layout_gravity="center"/>
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/view_bottom_border">
+
+                        <ImageView
+                            android:layout_marginHorizontal="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_f_activity"
+                            android:layout_gravity="center"/>
+                        <TextView
+                            android:paddingVertical="3dp"
+                            android:textSize="@dimen/my_text_size16"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="신체 활동"/>
+
+                    </LinearLayout>
+
+
+                    <ListView
+                        android:id="@+id/listview_activity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/listview_location_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/view_bottom_border">
+
+                        <ImageView
+                            android:layout_marginHorizontal="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_f_location"
+                            android:layout_gravity="center"/>
+                        <TextView
+                            android:paddingVertical="3dp"
+                            android:textSize="@dimen/my_text_size16"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="활동 반경"/>
+
+                    </LinearLayout>
+
+
+                    <ListView
+                        android:id="@+id/listview_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/listview_social_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/view_bottom_border">
+
+                        <ImageView
+                            android:layout_marginHorizontal="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_f_social"
+                            android:layout_gravity="center"/>
+                        <TextView
+                            android:paddingVertical="3dp"
+                            android:textSize="@dimen/my_text_size16"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="소셜"/>
+
+                    </LinearLayout>
+
+
+                    <ListView
+                        android:id="@+id/listview_social"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/listview_sleep_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/view_bottom_border">
+
+                        <ImageView
+                            android:layout_marginHorizontal="6dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_f_sleep"
+                            android:layout_gravity="center"/>
+                        <TextView
+                            android:paddingVertical="3dp"
+                            android:textSize="@dimen/my_text_size16"
+                            android:fontFamily="@font/notosanscjkkrregular"
+                            android:includeFontPadding="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="수면"/>
+
+                    </LinearLayout>
+
+
+                    <ListView
+                        android:id="@+id/listview_sleep"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+
 
             </LinearLayout>
 
-            <TextView
-                android:paddingVertical="4dp"
-                android:id="@+id/txt_phone_reason1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="phone_reason1"
-                android:background="@drawable/view_bottom_border"/>
 
-            <TextView
-                android:paddingVertical="4dp"
-                android:id="@+id/txt_phone_reason2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="phone_reason1"
-                android:background="@drawable/view_bottom_border"/>
-
-            <TextView
-                android:paddingVertical="4dp"
-                android:id="@+id/txt_phone_reason3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="phone_reason1"
-                android:background="@drawable/view_bottom_border"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/view_bottom_border">
-
-                <ImageView
-                    android:layout_marginHorizontal="6dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_f_location"
-                    android:layout_gravity="center"/>
-                <TextView
-                    android:paddingVertical="3dp"
-                    android:textSize="@dimen/my_text_size16"
-                    android:fontFamily="@font/notosanscjkkrregular"
-                    android:includeFontPadding="false"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="활동반경"/>
-
-            </LinearLayout>
-
-            <TextView
-                android:paddingVertical="4dp"
-                android:id="@+id/txt_location_reason1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="location_reason2"
-                android:background="@drawable/view_bottom_border"/>
-
-            <TextView
-                android:paddingVertical="4dp"
-                android:id="@+id/txt_location_reason2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="location_reason2"/>
-
-        </LinearLayout>
+        </ScrollView>
 
         <TextView
             android:textAlignment="center"
@@ -263,7 +352,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btn_incorrect"
-                android:background="@drawable/btn_design"
+                android:background="@drawable/btn_check_selected"
                 android:layout_marginVertical="5dp"
                 android:text="@string/yes"/>
 
@@ -280,7 +369,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_correct"
                 android:text="@string/no"
-                android:background="@drawable/btn_design"/>
+                android:background="@drawable/btn_check_selected"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

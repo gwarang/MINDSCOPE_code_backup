@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -136,29 +137,29 @@ public class StressReportFragment1 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_stress_report1, null);
 
         String stressReportStr =  gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
-        parsingStressReport(STRESS_REPORT_EXAMPLE); // TODO gRPS로부터 받아온 Stress Prediction String (stressReportStr)으로 교체할 것
 
-        // TODO STRESS_PREDICTION parsing
-//          파싱 후 stressLevel 업데이트
-        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = reportPrefs.edit();
-        editor.putInt("result", stressLevel);
-        editor.apply();
+        parsingStressReport(stressReportStr); // TODO gRPS로부터 받아온 Stress Prediction String (stressReportStr)으로 교체할 것
+
 
         for(short i = 0; i < jsonObjects.length; i++){
             try {
                 if(jsonObjects[i].getBoolean("model_tag")){
                     stressLevel = i+1;
-//                    day_num = jsonObjects[i].getInt("day_num");
-//                    order = jsonObjects[i].getInt("ema_order");
-//                    accuracy = jsonObjects[i].getInt("accuracy");
-//                    feature_ids = jsonObjects[i].getString("feature_ids");
+                    day_num = jsonObjects[i].getInt("day_num");
+                    order = jsonObjects[i].getInt("ema_order");
+                    accuracy = jsonObjects[i].getInt("accuracy");
+                    feature_ids = jsonObjects[i].getString("feature_ids");
+                    SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = reportPrefs.edit();
+                    editor.putInt("result", stressLevel);
+                    editor.apply();
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+
 
         init(view);
 
@@ -188,8 +189,7 @@ public class StressReportFragment1 extends Fragment {
         }
 
         reportAnswer = 0;
-        reportOrder = Tools.getReportOrderAtExactTime(cal);
-        reportDay = getDayNum();
+
         Log.i(TAG, "Stress Report Order: " + reportOrder);
 
         // UI
@@ -215,14 +215,9 @@ public class StressReportFragment1 extends Fragment {
             timeView.setText(getResources().getString(R.string.time_step2_duration4));
         }
 
-//        stressLvView = (TextView) findViewById(R.id.report_step2_result);
-//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
-//            // TODO stress level에 따라서 다른 문장 오도록 변경할것
-//            stressLvView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_report_low)));
-//        }
-//        else{
-//            stressLvView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_report_low), Html.FROM_HTML_MODE_LEGACY));
-//        }
+
+        btnReport = view.findViewById(R.id.toolbar_report_btn);
+        btnReport.setOnClickListener(clickListener);
 
 
         lowBtn = view.findViewById(R.id.actual_stress_answer1);
@@ -235,6 +230,7 @@ public class StressReportFragment1 extends Fragment {
                 littleHighBtn.setSelected(false);
                 highBtn.setSelected(false);
                 reportAnswer = 1;
+                btnReport.setClickable(true);
             }
         });
         littleHighBtn.setOnClickListener(new View.OnClickListener() {
@@ -244,6 +240,7 @@ public class StressReportFragment1 extends Fragment {
                 littleHighBtn.setSelected(true);
                 highBtn.setSelected(false);
                 reportAnswer = 2;
+                btnReport.setClickable(true);
             }
         });
         highBtn.setOnClickListener(new View.OnClickListener() {
@@ -253,11 +250,11 @@ public class StressReportFragment1 extends Fragment {
                 littleHighBtn.setSelected(false);
                 highBtn.setSelected(true);
                 reportAnswer = 3;
+                btnReport.setClickable(true);
             }
         });
 
-        btnReport = view.findViewById(R.id.toolbar_report_btn);
-        btnReport.setOnClickListener(clickListener);
+
 
 
 
@@ -299,40 +296,36 @@ public class StressReportFragment1 extends Fragment {
 
             SharedPreferences prefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
-            int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
-            assert dataSourceId != -1;
-            Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
-            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, reportDay, reportOrder, reportAnswer);
-
-
-
-
-            //go to main activity
-//            Intent intent = new Intent(getActivity(), MainActivity.class);
-//            intent.putExtra("timestamp", timestamp);
-//            intent.putExtra("rerpotdaynum", reportDay);
-//            intent.putExtra("reportorder", reportOrder);
-//            startActivity(intent);
-
-
-            final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.cancel(EMA_NOTIFICATION_ID);
+            if(reportAnswer == 0){
+                Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
             }
+            else{
+                try {
+                    day_num = jsonObjects[reportAnswer - 1].getInt("day_num");
+                    order = jsonObjects[reportAnswer - 1].getInt("ema_order");
+                    accuracy = jsonObjects[stressLevel - 1].getInt("accuracy");
+                    feature_ids = jsonObjects[reportAnswer - 1].getString("feature_ids");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-            try {
-                day_num = jsonObjects[reportAnswer - 1].getInt("day_num");
-                order = jsonObjects[reportAnswer - 1].getInt("ema_order");
-                accuracy = jsonObjects[stressLevel - 1].getInt("accuracy");
-                feature_ids = jsonObjects[reportAnswer - 1].getString("feature_ids");
-            } catch (JSONException e) {
-                e.printStackTrace();
+                int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
+                assert dataSourceId != -1;
+                Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, reportAnswer);
+
+                final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                if (notificationManager != null) {
+                    notificationManager.cancel(EMA_NOTIFICATION_ID);
+                }
+
+
+                Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+                ((StressReportActivity)getActivity()).replaceFragment(StressReportFragment2.newInstance(stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+
             }
-            Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
-            ((StressReportActivity)getActivity()).replaceFragment(StressReportFragment2.newInstance(stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
-
-//            Toast.makeText(getApplicationContext(), "Response saved", Toast.LENGTH_SHORT).show();
         }
+
     };
 
     public String gettingStressReportFromGRPC(){
@@ -347,12 +340,15 @@ public class StressReportFragment1 extends Fragment {
 
         int reportOrder = getReportPreviousOrder(fromCalendar);
         // initialize calendar time
-        fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-        fromCalendar.set(Calendar.MINUTE, 0);
-        fromCalendar.set(Calendar.SECOND, 0);
-        tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-        tillCalendar.set(Calendar.MINUTE, 59);
-        tillCalendar.set(Calendar.SECOND, 59);
+        if (reportOrder != 0){
+            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+            fromCalendar.set(Calendar.MINUTE, 0);
+            fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+
+        }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
@@ -371,7 +367,7 @@ public class StressReportFragment1 extends Fragment {
                 .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1)) // TODO change STRESS_PREDICTION
+                .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
                 .setFromTimestamp(fillMillis) // fromCalendar.getTimeInMillis()
                 .setTillTimestamp(tillTime) // tillCalendar.getTimeInMillis()
                 .build();
@@ -382,6 +378,7 @@ public class StressReportFragment1 extends Fragment {
             List<String> values = responseMessage.getValueList();
             if(!values.isEmpty()){
                 stresReportStr = values.get(0);
+                Log.d(TAG, "stressReportStr: " + stresReportStr);
             }else{
                 Log.d(TAG, "values empty");
             }

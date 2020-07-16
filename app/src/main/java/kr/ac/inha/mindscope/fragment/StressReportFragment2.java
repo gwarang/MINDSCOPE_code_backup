@@ -12,13 +12,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import kr.ac.inha.mindscope.MainActivity;
@@ -41,6 +49,9 @@ public class StressReportFragment2 extends Fragment {
     private static final String TAG = "StressReportFragment2";
     private static final int YES_BTN = 1;
     private static final int NO_BTN = 2;
+
+    private int yesOrNo = 2;
+
 
     public static StressReportFragment2 newInstance(int stressLevel, int reportAnswer){
         StressReportFragment2 fragment2 = new StressReportFragment2();
@@ -83,12 +94,15 @@ public class StressReportFragment2 extends Fragment {
     TextView reason4;
     TextView reason5;
 
-    LinearLayout reasonContainer;
+    ScrollView reasonContainer;
 
     Button yesBtn;
     Button noBtn;
+    Button reportBtn;
 
     StressReportDBHelper dbHelper;
+
+
 
     public StressReportFragment2() {
         // Required empty public constructor
@@ -98,7 +112,6 @@ public class StressReportFragment2 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbHelper = new StressReportDBHelper(getContext());
 
         if(getArguments() != null){
             this.stressLevel = getArguments().getInt("stressLevel");
@@ -129,20 +142,132 @@ public class StressReportFragment2 extends Fragment {
         stressLevelView = view.findViewById(R.id.txt_stress_level);
         yesBtn = view.findViewById(R.id.btn_correct);
         noBtn = view.findViewById(R.id.btn_incorrect);
+        reportBtn = view.findViewById(R.id.toolbar_report_btn2);
         reasonContainer = view.findViewById(R.id.stress_report_reason_container);
-        reason1 = view.findViewById(R.id.txt_phone_reason1);
-        reason2 = view.findViewById(R.id.txt_phone_reason2);
-        reason3 = view.findViewById(R.id.txt_phone_reason3);
-        reason4 = view.findViewById(R.id.txt_location_reason1);
-        reason5 = view.findViewById(R.id.txt_location_reason2);
+//        reason1 = view.findViewById(R.id.txt_phone_reason1);
+//        reason2 = view.findViewById(R.id.txt_phone_reason2);
+//        reason3 = view.findViewById(R.id.txt_phone_reason3);
+//        reason4 = view.findViewById(R.id.txt_location_reason1);
+//        reason5 = view.findViewById(R.id.txt_location_reason2);
 
         String[] featureArray = featrue_ids.split(" ");
         // TODO update reason Views after knowing the meaning of feature_ids
-        reason1.setText(featureArray[0]);
-        reason2.setText(featureArray[1]);
-        reason3.setText(featureArray[2]);
-        reason4.setText(featureArray[3]);
-        reason5.setText(featureArray[4]);
+//        String packageName = getActivity().getPackageName();
+//        int resId = getResources().getIdentifier("feature_" + featureArray[0], "string", packageName);
+
+        ArrayList<String> phoneReason = new ArrayList<>();
+        ArrayList<String> activityReason = new ArrayList<>();
+        ArrayList<String> socialReason = new ArrayList<>();
+        ArrayList<String> locationReason = new ArrayList<>();
+        ArrayList<String> sleepReason = new ArrayList<>();
+
+
+        for(int i = 0; i < featureArray.length; i++ ){
+            String[] splitArray = featureArray[i].split("-");
+            int category = Integer.parseInt(splitArray[0]);
+            String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+            String packName = getContext().getPackageName();
+            int resId = getResources().getIdentifier(strID, "string", packName);
+
+            if(category <= 5){
+                activityReason.add(getResources().getString(resId));
+            }else if(category <= 11){
+                socialReason.add(getResources().getString(resId));
+            }else if(category <= 16){
+                locationReason.add(getResources().getString(resId));
+            }else if(category <= 28){
+                phoneReason.add(getResources().getString(resId));
+            }else{
+                sleepReason.add(getResources().getString(resId));
+            }
+
+            if(i == 4) // maximun number of showing feature is five
+                break;
+        }
+
+        Log.d(TAG, "phoneReason" + phoneReason.toString());
+        Log.d(TAG, "activityReason" + activityReason.toString());
+
+        ListView phoneListView = view.findViewById(R.id.listview_phone);
+        ListView activityListView = view.findViewById(R.id.listview_activity);
+        ListView socialListView = view.findViewById(R.id.listview_social);
+        ListView locationListView = view.findViewById(R.id.listview_location);
+        ListView sleepListView = view.findViewById(R.id.listview_sleep);
+        LinearLayout phoneContainer = view.findViewById(R.id.listview_phone_container);
+        LinearLayout activityContainer = view.findViewById(R.id.listview_activity_container);
+        LinearLayout socialContainer = view.findViewById(R.id.listview_social_container);
+        LinearLayout locationContainer = view.findViewById(R.id.listview_location_container);
+        LinearLayout sleepContainer = view.findViewById(R.id.listview_sleep_container);
+
+
+        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, phoneReason
+        );
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, activityReason
+        );
+        ArrayAdapter<String> socialAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, socialReason
+        );
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, locationReason
+        );
+        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, sleepReason
+        );
+
+        phoneListView.setAdapter(phoneAdapter);
+        activityListView.setAdapter(activityAdapter);
+        socialListView.setAdapter(socialAdapter);
+        locationListView.setAdapter(locationAdapter);
+        sleepListView.setAdapter(sleepAdapter);
+
+
+
+
+
+
+        if(phoneReason.isEmpty())
+            phoneContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(phoneListView);
+            phoneContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(activityReason.isEmpty())
+            activityContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(activityListView);
+            activityContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(socialReason.isEmpty())
+            socialContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(socialListView);
+            socialContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(locationReason.isEmpty())
+            locationContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(locationListView);
+            locationContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(sleepReason.isEmpty())
+            sleepContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(sleepListView);
+            sleepContainer.setVisibility(View.VISIBLE);
+        }
+
+//
+//        reason1.setText(featureArray[0]);
+//        reason2.setText(featureArray[1]);
+//        reason3.setText(featureArray[2]);
+//        reason4.setText(featureArray[3]);
+//        reason5.setText(featureArray[4]);
 
 
 
@@ -182,73 +307,109 @@ public class StressReportFragment2 extends Fragment {
 
         yesBtn.setOnClickListener(yseClickListener);
         noBtn.setOnClickListener(noClickListener);
+        reportBtn.setOnClickListener(reportClickListener);
 
         return view;
     }
 
-    public void clickBtn(int resultRight){
-        Calendar cal = Calendar.getInstance();
-        int reportNum = Tools.getReportOrderAtExactTime(cal);
+    View.OnClickListener reportClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(yesOrNo == 2){
+                Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Calendar cal = Calendar.getInstance();
+                int reportNum = Tools.getReportOrderAtExactTime(cal);
 
-        if(reportNum == REPORTNUM4){
-            // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
+                if(reportNum == REPORTNUM4){
+                    // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
 
-            SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = stressReportPrefs.edit();
-            editor.putInt("reportAnswer", reportAnswer);
-            editor.putInt("day_num", day_num);
-            editor.putInt("order", order);
-            editor.putInt("accuracy", accuracy);
-            editor.putString("feature_ids", featrue_ids);
-            editor.apply();
+                    SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = stressReportPrefs.edit();
+                    editor.putInt("reportAnswer", reportAnswer);
+                    editor.putInt("day_num", day_num);
+                    editor.putInt("order", order);
+                    editor.putInt("accuracy", accuracy);
+                    editor.putString("feature_ids", featrue_ids);
+                    editor.apply();
 
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            intent.putExtra("reportAnswer", reportAnswer);
-            intent.putExtra("day_num", day_num);
-            intent.putExtra("order", order);
-            intent.putExtra("accuracy", accuracy);
-            intent.putExtra("feature_ids", featrue_ids);
-            startActivity(intent);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("reportAnswer", reportAnswer);
+                    intent.putExtra("day_num", day_num);
+                    intent.putExtra("order", order);
+                    intent.putExtra("accuracy", accuracy);
+                    intent.putExtra("feature_ids", featrue_ids);
+                    startActivity(intent);
 
 
-        }else{
-            // 그 외는 MainActivity로
+                }else{
+                    // 그 외는 MainActivity로
 
-            SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = stressReportPrefs.edit();
-            editor.putInt("reportAnswer", reportAnswer);
-            editor.putInt("day_num", day_num);
-            editor.putInt("order", order);
-            editor.putInt("accuracy", accuracy);
-            editor.putString("feature_ids", featrue_ids);
-            editor.apply();
+                    SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = stressReportPrefs.edit();
+                    editor.putInt("reportAnswer", reportAnswer);
+                    editor.putInt("day_num", day_num);
+                    editor.putInt("order", order);
+                    editor.putInt("accuracy", accuracy);
+                    editor.putString("feature_ids", featrue_ids);
+                    editor.apply();
 
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            intent.putExtra("reportAnswer", reportAnswer);
-            intent.putExtra("day_num", day_num);
-            intent.putExtra("order", order);
-            intent.putExtra("accuracy", accuracy);
-            intent.putExtra("feature_ids", featrue_ids);
-            startActivity(intent);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("reportAnswer", reportAnswer);
+                    intent.putExtra("day_num", day_num);
+                    intent.putExtra("order", order);
+                    intent.putExtra("accuracy", accuracy);
+                    intent.putExtra("feature_ids", featrue_ids);
+                    startActivity(intent);
+                }
+            }
         }
-    }
+    };
+
+
 
     View.OnClickListener yseClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            clickBtn(YES_BTN);
+            yesOrNo = 1;
+            yesBtn.setSelected(true);
+            noBtn.setSelected(false);
         }
     };
 
     View.OnClickListener noClickListener = new View.OnClickListener(){
         @Override
         public void onClick(View view) {
-            clickBtn(NO_BTN);
+            yesOrNo = 0;
+            yesBtn.setSelected(false);
+            noBtn.setSelected(true);
         }
     };
 
     public void saveStressReport(){
+        dbHelper = new StressReportDBHelper(getContext());
         dbHelper.insertStressReportData(reportAnswer, day_num, order, accuracy, featrue_ids);
     }
+
+
+
+    public static void setListViewHeightBasedOnChildren(@NonNull ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
 
 }

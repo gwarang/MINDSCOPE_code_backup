@@ -52,6 +52,7 @@
                     android:includeFontPadding="false"
                     android:textColor="@color/textColor_blue"
                     android:background="#00000000"
+                    android:clickable="false"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
 
