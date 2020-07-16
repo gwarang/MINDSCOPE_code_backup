@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/first_start_step1_layout">
+
+    <TextView
+        android:id="@+id/first_start_step1_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/notosanscjkkrmedium"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size20"
+        android:textColor="@color/textColor_default"
+        android:text="test title"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:layout_above="@id/first_start_step1_txt"
+        android:layout_marginBottom="28dp"/>
+    
+    <TextView
+        android:id="@+id/first_start_step1_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="test"
+        android:textAlignment="center"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:textSize="@dimen/my_text_size14"
+        android:textColor="@color/textColor_default"/>
+
+    <Button
+        android:id="@+id/first_start_step1_btn"
+        android:layout_width="180dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="29dp"
+        android:background="@drawable/btn_start_enable"
+        android:textAlignment="center"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:text="시작하기"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/color_white"
+        android:textSize="@dimen/my_text_size16"
+        android:layout_below="@id/first_start_step1_txt"/>
+
+</RelativeLayout>

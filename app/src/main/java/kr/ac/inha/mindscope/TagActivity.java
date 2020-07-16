@@ -119,7 +119,7 @@ public class TagActivity extends AppCompatActivity {
 
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("tagcode", DIALOG_ENALBE);
+                intent.putExtra("get_point", true);
                 finish();
                 startActivity(intent);
             }

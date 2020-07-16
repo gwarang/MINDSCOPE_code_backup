@@ -232,6 +232,7 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("order", order);
                     intent.putExtra("accuracy", accuracy);
                     intent.putExtra("feature_ids", feature_ids);
+                    intent.putExtra("get_point", true);
                     startActivity(intent);
 
 
@@ -255,6 +256,7 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("order", order);
                     intent.putExtra("accuracy", accuracy);
                     intent.putExtra("feature_ids", feature_ids);
+                    intent.putExtra("get_point", true);
                     startActivity(intent);
                 }
             }

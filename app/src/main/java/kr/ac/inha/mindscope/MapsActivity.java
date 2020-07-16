@@ -154,6 +154,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        checkForFirstStartStep1 = false;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         //첫번째 실행의 경우, INTRO 및 장소설정
@@ -167,6 +168,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     // 다른 기능 필요하면 여기서 작업
+                    checkForFirstStartStep1 = true;
                 }
             });
             AlertDialog alertDialog = builder.create();
@@ -646,6 +648,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("lat", selectedLatLng.latitude);
                     intent.putExtra("lng", selectedLatLng.longitude);
                     startActivity(intent);
+
+
+
                 } else {
                     Toast.makeText(this, "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();
                 }
@@ -653,6 +658,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return true;
             case android.R.id.home:
                 Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+                intent.putExtra("first_start_step1", checkForFirstStartStep1);
+                Log.e(TAG, "first start stpe1 : " + checkForFirstStartStep1);
                 finish();
                 startActivity(intent);
                 return true;

@@ -3,6 +3,7 @@ package kr.ac.inha.mindscope;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,10 +14,14 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,7 +44,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -54,6 +59,7 @@ import static kr.ac.inha.mindscope.services.MainService.PERMISSION_REQUEST_NOTIF
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final long TWO_WEEK_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 14 * 1000;  // TODO for two week, when pilot test, change 60 * 60 *24 * 1000
 
     //region UI variables
 //    private Button btnEMA;
@@ -79,6 +85,12 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences configPrefs;
     SharedPreferences firstPref;
     SharedPreferences prefPermission;
+
+    Dialog firstStartStep1Dialog;
+    Button firstStartStep1DialogBtn;
+    TextView firstStartStep1DialogTitle;
+    TextView firstStartStep1DialogTxt;
+    RelativeLayout firstStartStep1Layout;
 
     AppBarConfiguration appBarConfiguration;
 
@@ -147,8 +159,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        if (intent.getExtras() != null)
+        if (intent.getExtras() != null){
+            if(getIntent().getBooleanExtra("first_start_step1", false)){
+                // step1 첫 시작시 dialog
+                Log.e(TAG, "first start step1:" + getIntent().getBooleanExtra("first_start_step1", false));
+                View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
+                firstStartStep1Dialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
+                firstStartStep1Dialog.setContentView(view);
+                firstStartStep1Layout = view.findViewById(R.id.first_start_step1_layout);
+                firstStartStep1DialogBtn = view.findViewById(R.id.first_start_step1_btn);
+                firstStartStep1DialogTitle = view.findViewById(R.id.first_start_step1_title);
+                firstStartStep1DialogTitle.setText(getResources().getString(R.string.string_first_start_step1_title));
+                firstStartStep1DialogTxt = view.findViewById(R.id.first_start_step1_txt);
+                firstStartStep1DialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step1_txt)));
+                getIntent().removeExtra("first_start_step1");
+                firstStartStep1DialogBtn.setOnClickListener(firstStartStep1DialogListener);
+                firstStartStep1Dialog.show();
+            }
             updatePointAndShowDialog(intent);
+
+        }
+
 
 
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
@@ -210,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
         //endregion
 
 
-        //test
         //첫번째 실행의 경우, INTRO 및 장소설정
         SharedPreferences firstPref = getSharedPreferences("firstStart", MODE_PRIVATE);
         int firstviewshow = firstPref.getInt("First", 0);
@@ -230,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intentFirst);
         }
 
+
+
         changeNav();
 
         heartBeatHandler.post(heartBeatSendRunnable);
@@ -240,6 +272,45 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // step2
+        SharedPreferences firstDate = getSharedPreferences("firstDate", MODE_PRIVATE);
+        String firstDateStr = firstDate.getString("firstDateMillis", "");
+        SimpleDateFormat stringToDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date firstStartDate = stringToDateFormat.parse(firstDateStr);
+            Log.i(TAG, "first, current : " + firstStartDate.getTime() + ", " + System.currentTimeMillis());
+            SharedPreferences stepChange = getSharedPreferences("stepChange", MODE_PRIVATE);
+            Log.e(TAG, "stepchange "+ stepChange.getInt("stepChange", 9));
+            if(!stepChange.getBoolean ("step2Done", false) && (System.currentTimeMillis() - firstStartDate.getTime() >= TWO_WEEK_EXPIRE_TIMESTAMP_VALUE)){
+
+
+                // step1 첫 시작시 dialog
+                View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
+                firstStartStep1Dialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
+                firstStartStep1Dialog.setContentView(view);
+                firstStartStep1Layout = view.findViewById(R.id.first_start_step1_layout);
+                firstStartStep1DialogBtn = view.findViewById(R.id.first_start_step1_btn);
+                firstStartStep1DialogTitle = view.findViewById(R.id.first_start_step1_title);
+                firstStartStep1DialogTitle.setText(getResources().getString(R.string.string_first_start_step2_title));
+                firstStartStep1DialogTxt = view.findViewById(R.id.first_start_step1_txt);
+                firstStartStep1DialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step2_txt)));
+                getIntent().removeExtra("first_start_step1");
+                firstStartStep1DialogBtn.setOnClickListener(firstStartStep1DialogListener);
+                firstStartStep1Dialog.show();
+
+                SharedPreferences.Editor editor = stepChange.edit();
+                editor.putInt("stepCheck", 2);
+                editor.putBoolean("step2Done", true);
+                editor.apply();
+
+                Log.i(TAG, "step2 test " + stepChange.getInt("stepchange", 9));
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         changeNav();
 
@@ -675,6 +746,13 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener firstStartStep1DialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            firstStartStep1Dialog.dismiss();
+        }
+    };
+
     private void createSharedPrefPoints() {
         SharedPreferences points = getSharedPreferences("points", MODE_PRIVATE);
         SharedPreferences.Editor pointsEditor = points.edit();
@@ -724,23 +802,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updatePointAndShowDialog(Intent intent) {
-        if (intent.getExtras() != null && intent.getExtras().getInt("tagcode") == TagActivity.DIALOG_ENALBE) {
+        if (intent.getExtras() != null && intent.getExtras().getBoolean("get_point", false)) {
             // TODO point 얻는거 / alert dialog
             Log.i(TAG, "point dialog test");
             Tools.updatePoint(getApplicationContext()); // poitn update
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
             pointCustomDialog.show();
-            intent.removeExtra("tagcode");
-        } else if (intent.getExtras() != null) {
-            Tools.updatePoint(getApplicationContext());
-            pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
-            pointCustomDialog.show();
-            int reportAnswer = intent.getExtras().getInt("reportAnswer");
-            Log.i(TAG, "reportAnswer in main: " + reportAnswer);
-            SharedPreferences prefs = getSharedPreferences("stressReport", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("result", reportAnswer);
-            editor.apply();
+            intent.putExtra("get_point", false);
         }
     }
 

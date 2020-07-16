@@ -415,6 +415,11 @@ public class EMAActivity extends AppCompatActivity {
 //                break;
 //        }
 
+        if(answer1 == 0 || answer2 == 0 || answer3 == 0 || answer4 == 0 || answer5 == 0){
+            Toast.makeText(getApplicationContext(), "모든 문항에 응답해주세요!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String answers = String.format(Locale.US, "%d %d %d %d %d",
                 answer1,
                 answer2,
@@ -428,7 +433,11 @@ public class EMAActivity extends AppCompatActivity {
         int dataSourceId = prefs.getInt("SURVEY_EMA", -1);
         assert dataSourceId != -1;
         Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId);
-        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
+        if(getIntent().getBooleanExtra("dont_save_ema", false)){
+            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
+            getIntent().removeExtra("dont_save_ema");
+        }
+
 
         SharedPreferences.Editor editor = loginPrefs.edit();
         editor.putBoolean("ema_btn_make_visible", false);
