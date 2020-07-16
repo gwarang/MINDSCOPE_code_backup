@@ -356,8 +356,14 @@ public class StressReportFragment1 extends Fragment {
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // test
-        long fillMillis = 1593554400000l;
-        long tillTime = 1593568801000l;
+//        long fillMillis = 1593554400000l;
+//        long tillTime = 1593568801000l;
+
+//        long fillMillis = 1593568801000l;
+//        long tillTime = 1593583201000l;
+
+        long fillMillis = 1593583201000l;
+        long tillTime = 1593597601000l;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -369,8 +375,8 @@ public class StressReportFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fillMillis) // fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tillTime) // tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fillMillis) // TODO change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillTime) // TODO change tillCalendar.getTimeInMillis()
                 .build();
 
 
