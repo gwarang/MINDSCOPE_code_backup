@@ -87,6 +87,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String ID_LIBRARY = "LIBRARY";
     public static final String ID_ADDITIONAL = "ADDITIONAL";
 
+    public boolean checkForFirstStartStep1;
+
     private String TITLE_HOME;
     private String TITLE_DORM;
     private String TITLE_UNIV;

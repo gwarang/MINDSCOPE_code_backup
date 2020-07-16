@@ -221,7 +221,8 @@ public class EMAActivity extends AppCompatActivity {
         Calendar curCal = Calendar.getInstance();
 
         //region Sending Notification and some statistics periodically
-        emaOrder = Tools.getEMAOrderAtExactTime(curCal);
+//        emaOrder = Tools.getEMAOrderAtExactTime(curCal);
+        emaOrder = getIntent().getIntExtra("ema_order", (short) -1);
         todayNum = getDayNum();
         Log.i(TAG, "DayNum, EMA order: " + todayNum + ", " + emaOrder);
 
