@@ -233,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
         changeNav();
 
         heartBeatHandler.post(heartBeatSendRunnable);
+
+        cancelPreviousAppUseNotification();
     }
 
     @Override
@@ -343,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+
         // loadingPanel.setVisibility(View.GONE);
         if (dialog != null) {
             dialog.dismiss();
@@ -351,10 +355,7 @@ public class MainActivity extends AppCompatActivity {
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
 
-        // cancelPreviousAppUseNotification();
         setUpNewAppUseNotification();
-
-        super.onDestroy();
     }
 
     public void initUserStats(boolean error, long joinedTimesamp, long hbPhone, String dataLoadedPhone) {
@@ -418,7 +419,8 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 109, intent, PendingIntent.FLAG_NO_CREATE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
+        if (pendingIntent != null)
+            alarmManager.cancel(pendingIntent);
     }
 
     private void setUpNewAppUseNotification() {
