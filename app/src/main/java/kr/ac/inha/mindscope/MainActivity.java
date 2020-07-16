@@ -351,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
 
-        cancelPreviousAppUseNotification();
+        // cancelPreviousAppUseNotification();
         setUpNewAppUseNotification();
 
         super.onDestroy();
