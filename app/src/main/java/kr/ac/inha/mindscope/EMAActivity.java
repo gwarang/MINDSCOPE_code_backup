@@ -455,7 +455,7 @@ public class EMAActivity extends AppCompatActivity {
         intent.putExtra("daynum", todayNum);
         intent.putExtra("emaorder", emaOrder);
         startActivity(intent);
-        finish();
+
 
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {

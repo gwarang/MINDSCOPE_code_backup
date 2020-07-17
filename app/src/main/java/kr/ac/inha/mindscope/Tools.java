@@ -31,6 +31,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -605,6 +608,21 @@ public class Tools {
     }
     /* Zaturi end */
 
+    public static JSONObject[] parsingStressReport(String originStressReportStr) {
+        // REPORT Parsing
+        String str = originStressReportStr;
+        JSONObject[] jsonObjects = new JSONObject[3];
+        try {
+            JSONObject jsonObject = new JSONObject(str);
+            jsonObjects[0] = jsonObject.getJSONObject("1"); // jsonObjects[key - 1] has a report for prediction stress level is key
+            jsonObjects[1] = jsonObject.getJSONObject("2");
+            jsonObjects[2] = jsonObject.getJSONObject("3");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObjects;
+    }
+
 }
 
 
@@ -699,6 +717,7 @@ class GeofenceHelper {
             geofencingClient = LocationServices.getGeofencingClient(context);
         geofencingClient.removeGeofences(getGeofencePendingIntent(context));
     }
+
 
 
 }

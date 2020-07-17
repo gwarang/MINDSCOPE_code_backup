@@ -33,10 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -56,7 +54,6 @@ import kr.ac.inha.mindscope.receivers.CallReceiver;
 import kr.ac.inha.mindscope.receivers.ScreenAndUnlockReceiver;
 
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
-import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.receivers.CallReceiver.AudioRunningForCall;
 
 public class MainService extends Service {
@@ -225,8 +222,8 @@ public class MainService extends Service {
                                         .setTimestamp(cursor.getLong(2))
                                         .setValues(cursor.getString(4))
                                         .build();
-                                //String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
-                                //Log.e("submitThread", "Submission: " + res);
+//                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
+//                                Log.e("submitThread", "Submission: " + res);
                                 EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
 
                                 if (responseMessage.getDoneSuccessfully()) {
@@ -258,20 +255,16 @@ public class MainService extends Service {
             final long app_usage_time_end = System.currentTimeMillis();
             final long app_usage_time_start = (app_usage_time_end - APP_USAGE_SUBMIT_PERIOD * 1000) + 1000; // add one second to start time
             new Thread(() -> {
-                Log.e(TAG, "here 1");
                 SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
                 assert dataSourceId != -1;
                 Cursor cursor = AppUseDb.getAppUsage();
                 if (cursor.moveToFirst()) {
-                    Log.e(TAG, "here 2");
                     do {
                         String package_name = cursor.getString(1);
                         long start_time = cursor.getLong(2);
                         long end_time = cursor.getLong(3);
-                        Log.e(TAG, "here 3");
                         if (Tools.inRange(start_time, app_usage_time_start, app_usage_time_end) && Tools.inRange(end_time, app_usage_time_start, app_usage_time_end)) {
-                            Log.e(TAG, "here 4");
                             if (start_time < end_time) {
                                 Log.e(TAG, "saveMixedData -> package: " + package_name + "; start: " + start_time + "; end: " + end_time);
                                 DbMgr.saveMixedData(dataSourceId, start_time, 1.0f, start_time, end_time, package_name);
