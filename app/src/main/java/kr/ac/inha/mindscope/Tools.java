@@ -448,7 +448,7 @@ public class Tools {
             pointsEditor.apply();
         }
 
-        int newTodayPoints = points.getInt("todayPoints", 0) + Tools.POINT_INCREASE_VALUE; // 날짜 바뀌었는지 확인하고 바뀌었으면 초기화 후 덧셈할것
+        int newTodayPoints = points.getInt("todayPoints", 0) + Tools.POINT_INCREASE_VALUE;
         int newSumPoints = points.getInt("sumPoints", 0) + Tools.POINT_INCREASE_VALUE;
         pointsEditor.putInt("todayPoints", newTodayPoints );
         pointsEditor.putInt("sumPoints", newSumPoints);

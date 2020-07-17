@@ -56,15 +56,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     CalendarDay tempCalendarDay;
 
-    public static ArrayList<CalendarDay> lowList;
-    public static ArrayList<CalendarDay> littlehighList;
-    public static ArrayList<CalendarDay> highList;
-
-    HashMap<Long, ReportDatabyDate> timestampAllDays;
-    HashMap<String, SummaryByDate> stressLvAvgByDays;
-
-    StressReportDBHelper dbHelper;
-    ArrayList<StressReportDBHelper.StressReportData> dataArray;
 
     private MaterialCalendarView materialCalendarView;
 
@@ -80,12 +71,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbHelper = new StressReportDBHelper(getContext());
-        lowList = new ArrayList<>();
-        littlehighList = new ArrayList<>();
-        highList = new ArrayList<>();
-        timestampAllDays = new HashMap<>();
-        stressLvAvgByDays = new HashMap<>();
+
     }
 
     @Override
@@ -101,34 +87,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         String date = DateFormat.format("yyyy-MM-dd", firstDayCal).toString();
 
         Log.d(TAG, "firstdate calendar " + date);
-        dataArray = dbHelper.getStressReportData();
-        if(dataArray.isEmpty())
-            Log.i(TAG, "dataArray is empty");
 
-
-
-        for(StressReportDBHelper.StressReportData temp : dataArray){
-            Log.i(TAG, temp.toString());
-            long timestamp = temp.getTimestamp();
-            int stress_level = temp.getStress_level();
-            int day_num = temp.getDay_num();
-            int report_order = temp.getReport_order();
-
-            Calendar tempCal = Calendar.getInstance();
-            tempCal.setTimeInMillis(timestamp);
-            String tempDate = DateFormat.format("yyyy-MM-dd", tempCal).toString();
-            Log.d(TAG, "temp date: " + tempDate);
-
-            timestampAllDays.put(timestamp, new ReportDatabyDate(timestamp, stress_level, day_num, report_order));
-
-            if(stressLvAvgByDays.containsKey(tempDate)){
-                stressLvAvgByDays.get(tempDate).addReportDataDate(new ReportDatabyDate(timestamp, stress_level, day_num, report_order));
-            }else{
-                stressLvAvgByDays.put(tempDate, new SummaryByDate(new ReportDatabyDate(timestamp, stress_level, day_num, report_order)));
-            }
-
-            tempCalendarDay = CalendarDay.from(tempCal.get(Calendar.YEAR), tempCal.get(Calendar.MONTH), tempCal.get(Calendar.DATE));
-        }
 
 
 
@@ -195,23 +154,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         public LowStressDecorator(){
             tempList = new ArrayList<>();
-            for(Map.Entry<String, SummaryByDate> temp : stressLvAvgByDays.entrySet()){
-                float avgStress = temp.getValue().getAvgStressLevel();
 
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                Calendar cal = Calendar.getInstance();
-                try {
-                    Date tempDate = formatter.parse(temp.getKey());
-                    Log.e(TAG, "tempDate: " + tempDate);
-                    cal.setTime(tempDate);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                if(avgStress < 1.5f){
-                    tempList.add(CalendarDay.from(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
-                }
-            }
             lowBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.low_circle_background);
         }
 
@@ -233,22 +176,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         public LittleHighStressDecorator(){
             tempList = new ArrayList<>();
-            for(Map.Entry<String, SummaryByDate> temp : stressLvAvgByDays.entrySet()){
-                float avgStress = temp.getValue().getAvgStressLevel();
 
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                Calendar cal = Calendar.getInstance();
-                try {
-                    Date tempDate = formatter.parse(temp.getKey());
-                    cal.setTime(tempDate);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                if(avgStress < 2.5f && avgStress >= 1.5f){
-                    tempList.add(CalendarDay.from(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
-                }
-            }
             littleHighBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.littlehigh_circle_background);
         }
 
@@ -270,22 +198,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         public HighStressDecorator(){
             tempList = new ArrayList<>();
-            for(Map.Entry<String, SummaryByDate> temp : stressLvAvgByDays.entrySet()){
-                float avgStress = temp.getValue().getAvgStressLevel();
 
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                Calendar cal = Calendar.getInstance();
-                try {
-                    Date tempDate = formatter.parse(temp.getKey());
-                    cal.setTime(tempDate);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                if(avgStress >= 2.5f){
-                    tempList.add(CalendarDay.from(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
-                }
-            }
 
             highBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.high_circle_background);
         }
@@ -322,66 +235,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         return  firstDayTimestamp;
     }
 
-    public class ReportDatabyDate{
-        long timestamp;
-        int stressLevel;
-        int day_num;
-        int reportOrder;
-        int reportCount;
 
-        public ReportDatabyDate(long timestamp, int stressLevel, int day_num, int reportOrder){
-            this.timestamp = timestamp;
-            this.stressLevel = stressLevel;
-            this.day_num = day_num;
-            this. reportOrder = reportOrder;
-            reportCount = 1;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public int getDay_num() {
-            return day_num;
-        }
-
-        public int getReportOrder() {
-            return reportOrder;
-        }
-
-        public int getStressLevel() {
-            return stressLevel;
-        }
-
-        public float getAvgStresslevel(){
-            return ((float) stressLevel / (float) reportCount);
-        }
-    }
-
-    public class SummaryByDate{
-        ArrayList<ReportDatabyDate> listBySameDate;
-
-        public SummaryByDate(ReportDatabyDate reportDatabyDate){
-            listBySameDate = new ArrayList<>();
-            listBySameDate.add(reportDatabyDate);
-        }
-
-        public ArrayList<ReportDatabyDate> getListBySameDate() {
-            return listBySameDate;
-        }
-
-        public void addReportDataDate(ReportDatabyDate newData){
-            listBySameDate.add(newData);
-        }
-
-        public float getAvgStressLevel(){
-            int sumStressLevel = 0;
-            for(ReportDatabyDate temp : listBySameDate){
-                sumStressLevel += temp.stressLevel;
-            }
-            return (float)sumStressLevel / (float)listBySameDate.size();
-        }
-    }
 
 }
 
