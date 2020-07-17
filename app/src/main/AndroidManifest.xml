@@ -124,7 +124,9 @@
         </receiver>
 
         <service android:name=".services.MainService" />
-        <service android:name=".services.LocationService" />
+        <service
+            android:name=".services.LocationService"
+            android:foregroundServiceType="location" />
         <service android:name=".services.SaveGPSStats" />
 
         <uses-library
