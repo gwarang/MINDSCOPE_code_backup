@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,21 @@ import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Random;
+
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
 
 public class CareChildFragment2 extends Fragment {
+
+    private static final String TAG = "CareChildFragment2";
 
     ConstraintLayout currentInterventionContainer;
 
@@ -87,6 +97,9 @@ public class CareChildFragment2 extends Fragment {
         }else{
             currentInterventionContainer.setVisibility(View.INVISIBLE);
         }
+
+        updateRecommendInterventions();
+
     }
 
     View.OnClickListener clickEditBtn = new View.OnClickListener() {
@@ -109,7 +122,45 @@ public class CareChildFragment2 extends Fragment {
     View.OnClickListener clickLoadBtn = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            // TODO 인터벤션 리스트 얻어오고 동적으로 view 뿌려주는 기능 구현
+            updateRecommendInterventions();
         }
     };
+
+    public void updateRecommendInterventions(){
+        InputStreamReader inputStreamReader = null;
+        try {
+            inputStreamReader = new InputStreamReader(getActivity().getAssets().open("zaturi_interventions.csv"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        String interventions;
+        String[] interventionSplit = null;
+        while(true) {
+            try {
+                if ((interventions = reader.readLine()) != null)
+                    interventionSplit = interventions.split(",");
+                break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+//            if (interventionSplit != null)
+//                for(String intervention : interventionSplit)
+//                    Log.e(TAG, intervention);
+
+
+        String packName = getContext().getPackageName();
+        Random random = new Random();
+        int[] randomNums = new int[3];
+        for(int i = 0; i<3; i++){
+            randomNums[i] = random.nextInt(interventionSplit.length);
+        }
+
+        recommandIntervention1.setText("#" + interventionSplit[randomNums[0]]);
+        recommandIntervention2.setText("#" + interventionSplit[randomNums[1]]);
+        recommandIntervention3.setText("#" + interventionSplit[randomNums[2]]);
+
+    }
 }
