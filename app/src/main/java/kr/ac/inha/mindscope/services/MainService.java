@@ -101,6 +101,7 @@ public class MainService extends Service {
     private PendingIntent activityTransPendingIntent;
 
     private boolean canSendNotif = true;
+    private boolean canSendNotifReport = true;
 
     private Handler mainHandler = new Handler();
     public static Boolean permissionNotificationPosted;
@@ -126,7 +127,7 @@ public class MainService extends Service {
             //region Sending Notification and some statistics periodically - EMA
             int ema_order = Tools.getEMAOrderAtExactTime(curCal);
 
-
+            // TODO step 조건 추가할것
             if (ema_order != 0 && canSendNotif) {
                 Log.e(TAG, "EMA order 1: " + ema_order);
                 sendNotification(ema_order, KINDS_NOTI_EMA);
@@ -154,7 +155,8 @@ public class MainService extends Service {
             //region Sending Notification and some statistics periodically - STRESS REPORT
             int report_order = Tools.getReportOrderAtExactTime(curCal);
 
-            if (report_order != 0 && canSendNotif) {
+            // TODO step 조건 추가할것
+            if (report_order != 0 && canSendNotifReport) {
                 Log.e(TAG, "REPORT order 1: " + report_order);
                 sendNotification(report_order, KINDS_NOTI_REPORT);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
@@ -162,16 +164,19 @@ public class MainService extends Service {
 //                editor.putBoolean("ema_btn_make_visible", true);
                 /* Zaturi start */
                 // Reset didIntervention to false every 11AM
+                SharedPreferences interventionPrefs = getSharedPreferences("intervention", MODE_PRIVATE);
+                SharedPreferences.Editor interventionEditor = interventionPrefs.edit();
                 if (report_order == 1) {
-                    editor.putBoolean("didIntervention", false);
+                    interventionEditor.putBoolean("didIntervention", false);
                 }
+                interventionEditor.apply();
                 /* Zaturi end */
                 editor.apply();
-                canSendNotif = false;
+                canSendNotifReport = false;
             }
 
             if (curCal.get(Calendar.MINUTE) > 0)
-                canSendNotif = true;
+                canSendNotifReport = true;
             //endregion
 
 
@@ -190,6 +195,32 @@ public class MainService extends Service {
                 }
             }
             //endregion
+
+
+            //region reset daily comment if date is changed
+            SharedPreferences commentPrefs = getSharedPreferences("comment", Context.MODE_PRIVATE);
+            String daily_comment = commentPrefs.getString("daily_comment", "");
+            int date_comment = commentPrefs.getInt("date_comment", -1);
+            Calendar cal = Calendar.getInstance();
+            int curDate = cal.get(Calendar.DATE);
+
+            if(!daily_comment.equals("") && date_comment != -1 && date_comment != curDate){
+//                Log.i(TAG, String.format("upload comment, date, curDate: %s %d %d", daily_comment, date_comment, curDate));
+                SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                SharedPreferences.Editor commentEditor = commentPrefs.edit();
+
+//                int dataSourceId = prefs.getInt("DAILY_COMMENT", -1);
+//                assert dataSourceId != -1;
+//                Log.i(TAG, "DAILY_COMMENT dataSourceId: " + dataSourceId);
+//                DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment);
+
+                commentEditor.putInt("date_comment", curDate);
+                commentEditor.putString("daily_comment", "");
+                commentEditor.apply();
+            }
+
+            //endregion
+
 
             mainHandler.postDelayed(this, 5 * 1000);
         }

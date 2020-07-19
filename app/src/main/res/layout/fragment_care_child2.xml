@@ -97,7 +97,7 @@
         android:textColor="@color/textColor_light"
         android:textSize="@dimen/my_text_size14"
         android:text="test"
-        android:visibility="visible"/>
+        android:visibility="invisible" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/child2_recommend_container"
