@@ -34,22 +34,24 @@
 
     <EditText
         android:id="@+id/child3_comment"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="270dp"
+        android:layout_marginHorizontal="25dp"
+        android:background="@drawable/comment_box_border"
+        android:cursorVisible="true"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:gravity="top|center_horizontal"
+        android:hint="@string/string_comment_hint"
+        android:includeFontPadding="false"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:padding="10dp"
+        android:textColor="@color/textColor_default"
+        android:textSize="@dimen/my_text_size14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_width="match_parent"
-        android:layout_marginHorizontal="25dp"
-        android:layout_height="250dp"
-        android:cursorVisible="true"
-        android:padding="20dp"
-        android:gravity="top"
-        android:inputType="textMultiLine|textNoSuggestions"
-        android:textSize="@dimen/my_text_size14"
-        android:textColor="@color/textColor_default"
-        android:fontFamily="@font/notosanscjkkrregular"
-        android:includeFontPadding="false"
-        android:background="@drawable/comment_box_border"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35" />
 
     <Button
         android:layout_marginTop="20dp"
@@ -61,7 +63,8 @@
         android:layout_height="35dp"
         android:text="저장"
         android:stateListAnimator="@null"
-        android:background="@drawable/btn_design"/>
+        android:background="@drawable/btn_design"
+        android:visibility="invisible"/>
 
     <LinearLayout
         android:id="@+id/child3_txt34_container"
@@ -72,7 +75,8 @@
         android:background="@drawable/view_top_border"
         android:paddingHorizontal="35dp"
         android:paddingVertical="20dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/child3_txt3"

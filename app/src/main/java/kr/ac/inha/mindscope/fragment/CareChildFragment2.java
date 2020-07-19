@@ -116,6 +116,8 @@ public class CareChildFragment2 extends Fragment {
         public void onClick(View view) {
             Intent intent = new Intent(getActivity(), InterventionSaveActivity.class);
             startActivity(intent);
+
+            // TODO 현재 해소방안이 있는 상태라면, 버스 이름 스트레스 해소하기로 변경하고, 누르면 zaturi에서 해소하기 한것처럼 행동하게 만들기
         }
     };
 

@@ -214,6 +214,8 @@ public class EMAActivity extends AppCompatActivity {
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
+        answer1 = answer2 = answer3 = answer4 = answer5 = 5; // initialize
+
         switch (emaOrder) {
             case EMANUM1:
                 emaNumView.setText(getResources().getString(R.string.ema_num_info1));
@@ -239,20 +241,22 @@ public class EMAActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.question1_1:
-                        answer1 = 1;
+                        answer1 = 0;
                         break;
                     case R.id.question1_2:
-                        answer1 = 2;
+                        answer1 = 1;
                         break;
                     case R.id.question1_3:
-                        answer1 = 3;
+                        answer1 = 2;
                         break;
                     case R.id.question1_4:
-                        answer1 = 4;
+                        answer1 = 3;
                         break;
                     case R.id.question1_5:
-                        answer1 = 5;
+                        answer1 = 4;
                         break;
+                    default:
+                        answer1 = 5;
                 }
             }
         });
@@ -261,20 +265,22 @@ public class EMAActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.question2_1:
-                        answer2 = 1;
+                        answer2 = 0;
                         break;
                     case R.id.question2_2:
-                        answer2 = 2;
+                        answer2 = 1;
                         break;
                     case R.id.question2_3:
-                        answer2 = 3;
+                        answer2 = 2;
                         break;
                     case R.id.question2_4:
-                        answer2 = 4;
+                        answer2 = 3;
                         break;
                     case R.id.question2_5:
-                        answer2 = 5;
+                        answer2 = 4;
                         break;
+                    default:
+                        answer2 = 5;
                 }
             }
         });
@@ -283,20 +289,22 @@ public class EMAActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.question3_1:
-                        answer3 = 1;
-                        break;
-                    case R.id.question3_2:
-                        answer3 = 2;
-                        break;
-                    case R.id.question3_3:
-                        answer3 = 3;
-                        break;
-                    case R.id.question3_4:
                         answer3 = 4;
                         break;
-                    case R.id.question3_5:
-                        answer3 = 5;
+                    case R.id.question3_2:
+                        answer3 = 3;
                         break;
+                    case R.id.question3_3:
+                        answer3 = 2;
+                        break;
+                    case R.id.question3_4:
+                        answer3 = 1;
+                        break;
+                    case R.id.question3_5:
+                        answer3 = 0;
+                        break;
+                    default:
+                        answer3 = 5;
                 }
             }
         });
@@ -305,20 +313,22 @@ public class EMAActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.question4_1:
-                        answer4 = 1;
-                        break;
-                    case R.id.question4_2:
-                        answer4 = 2;
-                        break;
-                    case R.id.question4_3:
-                        answer4 = 3;
-                        break;
-                    case R.id.question4_4:
                         answer4 = 4;
                         break;
-                    case R.id.question4_5:
-                        answer4 = 5;
+                    case R.id.question4_2:
+                        answer4 = 3;
                         break;
+                    case R.id.question4_3:
+                        answer4 = 2;
+                        break;
+                    case R.id.question4_4:
+                        answer4 = 1;
+                        break;
+                    case R.id.question4_5:
+                        answer4 = 0;
+                        break;
+                    default:
+                        answer4 = 5;
                 }
             }
         });
@@ -394,7 +404,7 @@ public class EMAActivity extends AppCompatActivity {
 //                break;
 //        }
 
-        if (answer1 == 0 || answer2 == 0 || answer3 == 0 || answer4 == 0 || answer5 == 0) {
+        if (answer1 == 5 || answer2 == 5 || answer3 == 5 || answer4 == 5 || answer5 == 5) {
             Toast.makeText(getApplicationContext(), "모든 문항에 응답해주세요!", Toast.LENGTH_LONG).show();
             return;
         }
