@@ -21,6 +21,8 @@ public class StressReportDBHelper extends SQLiteOpenHelper {
     private static final String STRESS_REPORT_COL_4 = "ACCURACY";
     private static final String STRESS_REPORT_COL_5 = "FEATURE_IDS";
 
+
+
     public StressReportDBHelper(Context context){
         super(context, DB_NAME, null, 1);
     }

@@ -164,4 +164,8 @@ public class AppUseDb {
     public static Cursor getAppUsage() {
         return db.rawQuery("select * from AppUse order by end_timestamp desc;", new String[0]);
     }
+
+    public static SQLiteDatabase getDB(){
+        return db;
+    }
 }

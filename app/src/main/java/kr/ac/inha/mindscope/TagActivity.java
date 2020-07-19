@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -81,48 +82,43 @@ public class TagActivity extends AppCompatActivity {
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if(tagBtn.getText().toString().equals(SAVE)){
-                hiddenLayout.setVisibility(View.VISIBLE);
-                tagBtn.setText(DONE);
 
-                String hashTagStr = String.valueOf(inputTag.getText());
-                String patternst = "#[A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{1,30}";
-                Pattern pattern = Pattern.compile(patternst);
-                Matcher matcher = pattern.matcher(hashTagStr);
-                List<String> tags = new ArrayList<String>();
-                String forMyTags = "";
-                int i = 0;
-                while(matcher.find()){
-                    tags.add(matcher.group());
-                    forMyTags = forMyTags + matcher.group() + " ";
-                }
-                Log.i(TAG, forMyTags);
-                tagNowView.setText(forMyTags);
+            hiddenLayout.setVisibility(View.VISIBLE);
+            tagBtn.setText(DONE);
 
-                SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-                int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
-                assert dataSourceId != -1;
-                Log.i(TAG, "REPORT_TAGS dataSourceId: " + dataSourceId);
-                for(String tag : tags){
-                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
-                }
-
+            String hashTagStr = String.valueOf(inputTag.getText());
+            String patternst = "#[A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{1,30}";
+            Pattern pattern = Pattern.compile(patternst);
+            Matcher matcher = pattern.matcher(hashTagStr);
+            List<String> tags = new ArrayList<String>();
+            String forMyTags = "";
+            int i = 0;
+            while(matcher.find()){
+                tags.add(matcher.group());
+                forMyTags = forMyTags + matcher.group() + " ";
             }
-            else{
-                // 완료 버튼 누르면 액티비티 종료 후 메인으로 이동
-                Log.i(TAG, tagBtn.getText().toString());
+            Log.i(TAG, forMyTags);
+            tagNowView.setText(forMyTags);
 
-                SharedPreferences prefs = getSharedPreferences("hashtags", MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("lasthashtags", tagNowView.getText().toString());
-                editor.apply();
-
-
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("tagcode", DIALOG_ENALBE);
-                finish();
-                startActivity(intent);
+            SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+            int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
+            assert dataSourceId != -1;
+            Log.i(TAG, "REPORT_TAGS dataSourceId: " + dataSourceId);
+            for(String tag : tags){
+                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
             }
+
+            SharedPreferences hashtagsPrefs = getSharedPreferences("hashtags", MODE_PRIVATE);
+            SharedPreferences.Editor editor = hashtagsPrefs.edit();
+            editor.putString("lasthashtags", tagNowView.getText().toString());
+            editor.apply();
+
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.putExtra("get_point", true);
+            finish();
+            startActivity(intent);
+
         }
     };
 
@@ -136,6 +132,11 @@ public class TagActivity extends AppCompatActivity {
                 finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

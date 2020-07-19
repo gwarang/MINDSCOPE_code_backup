@@ -28,10 +28,10 @@ import java.util.Calendar;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import kr.ac.inha.mindscope.DbMgr;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportDBHelper;
-import kr.ac.inha.mindscope.Tools;
 
 import static kr.ac.inha.mindscope.StressReportActivity.REPORTNUM4;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
@@ -176,7 +176,6 @@ public class StressReportFragment2 extends Fragment {
         spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.textColor_blue)), accTxt1.length(), (accTxt1 + accTxt2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         accView.setText(spannable, TextView.BufferType.SPANNABLE);
 
-        // TODO STRESS_PREDICTION 원인으로 UI 업데이트 해주기
         switch(reportAnswer){
             case STRESS_LV1:
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, getActivity().getTheme()));
@@ -195,7 +194,7 @@ public class StressReportFragment2 extends Fragment {
                 break;
         }
 
-        yesBtn.setOnClickListener(yseClickListener);
+        yesBtn.setOnClickListener(yesClickListener);
         noBtn.setOnClickListener(noClickListener);
         reportBtn.setOnClickListener(reportClickListener);
 
@@ -210,9 +209,8 @@ public class StressReportFragment2 extends Fragment {
             }
             else{
                 Calendar cal = Calendar.getInstance();
-                int reportNum = Tools.getReportOrderAtExactTime(cal);
 
-                if(reportNum == REPORTNUM4){
+                if(order == REPORTNUM4){
                     // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
 
                     SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
@@ -225,6 +223,15 @@ public class StressReportFragment2 extends Fragment {
                     editor.putString("feature_ids", feature_ids);
                     editor.apply();
 
+                    long timestamp = System.currentTimeMillis();
+
+                    SharedPreferences prefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                    int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
+                    assert dataSourceId != -1;
+                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+
+
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.putExtra("reportTimestamp", reportTimestamp);
                     intent.putExtra("reportAnswer", reportAnswer);
@@ -232,7 +239,9 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("order", order);
                     intent.putExtra("accuracy", accuracy);
                     intent.putExtra("feature_ids", feature_ids);
+                    intent.putExtra("get_point", true);
                     startActivity(intent);
+
 
 
                 }else{
@@ -248,6 +257,13 @@ public class StressReportFragment2 extends Fragment {
                     editor.putString("feature_ids", feature_ids);
                     editor.apply();
 
+                    long timestamp = System.currentTimeMillis();
+                    SharedPreferences prefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                    int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
+                    assert dataSourceId != -1;
+                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.putExtra("reportTimestamp", reportTimestamp);
                     intent.putExtra("reportAnswer", reportAnswer);
@@ -255,13 +271,16 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("order", order);
                     intent.putExtra("accuracy", accuracy);
                     intent.putExtra("feature_ids", feature_ids);
+                    intent.putExtra("get_point", true);
                     startActivity(intent);
+
+
                 }
             }
         }
     };
 
-    View.OnClickListener yseClickListener = new View.OnClickListener() {
+    View.OnClickListener yesClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             yesOrNo = 1;

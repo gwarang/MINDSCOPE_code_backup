@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
@@ -56,7 +55,6 @@ import kr.ac.inha.mindscope.receivers.CallReceiver;
 import kr.ac.inha.mindscope.receivers.ScreenAndUnlockReceiver;
 
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
-import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.receivers.CallReceiver.AudioRunningForCall;
 
 public class MainService extends Service {
@@ -103,6 +101,7 @@ public class MainService extends Service {
     private PendingIntent activityTransPendingIntent;
 
     private boolean canSendNotif = true;
+    private boolean canSendNotifReport = true;
 
     private Handler mainHandler = new Handler();
     public static Boolean permissionNotificationPosted;
@@ -128,20 +127,24 @@ public class MainService extends Service {
             //region Sending Notification and some statistics periodically - EMA
             int ema_order = Tools.getEMAOrderAtExactTime(curCal);
 
-
+            // TODO step 조건 추가할것
             if (ema_order != 0 && canSendNotif) {
                 Log.e(TAG, "EMA order 1: " + ema_order);
                 sendNotification(ema_order, KINDS_NOTI_EMA);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                 SharedPreferences.Editor editor = loginPrefs.edit();
                 editor.putBoolean("ema_btn_make_visible", true);
+                editor.apply();
                 /* Zaturi start */
                 // Reset didIntervention to false every 11AM
+                SharedPreferences interventionPrefs = getSharedPreferences("intervention", MODE_PRIVATE);
+                SharedPreferences.Editor interventionEditor = interventionPrefs.edit();
                 if (ema_order == 1) {
-                    editor.putBoolean("didIntervention", false);
+                    interventionEditor.putBoolean("didIntervention", false);
                 }
+                interventionEditor.apply();
                 /* Zaturi end */
-                editor.apply();
+
                 canSendNotif = false;
             }
 
@@ -152,7 +155,8 @@ public class MainService extends Service {
             //region Sending Notification and some statistics periodically - STRESS REPORT
             int report_order = Tools.getReportOrderAtExactTime(curCal);
 
-            if (report_order != 0 && canSendNotif) {
+            // TODO step 조건 추가할것
+            if (report_order != 0 && canSendNotifReport) {
                 Log.e(TAG, "REPORT order 1: " + report_order);
                 sendNotification(report_order, KINDS_NOTI_REPORT);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
@@ -160,16 +164,19 @@ public class MainService extends Service {
 //                editor.putBoolean("ema_btn_make_visible", true);
                 /* Zaturi start */
                 // Reset didIntervention to false every 11AM
+                SharedPreferences interventionPrefs = getSharedPreferences("intervention", MODE_PRIVATE);
+                SharedPreferences.Editor interventionEditor = interventionPrefs.edit();
                 if (report_order == 1) {
-                    editor.putBoolean("didIntervention", false);
+                    interventionEditor.putBoolean("didIntervention", false);
                 }
+                interventionEditor.apply();
                 /* Zaturi end */
                 editor.apply();
-                canSendNotif = false;
+                canSendNotifReport = false;
             }
 
             if (curCal.get(Calendar.MINUTE) > 0)
-                canSendNotif = true;
+                canSendNotifReport = true;
             //endregion
 
 
@@ -188,6 +195,32 @@ public class MainService extends Service {
                 }
             }
             //endregion
+
+
+            //region reset daily comment if date is changed
+            SharedPreferences commentPrefs = getSharedPreferences("comment", Context.MODE_PRIVATE);
+            String daily_comment = commentPrefs.getString("daily_comment", "");
+            int date_comment = commentPrefs.getInt("date_comment", -1);
+            Calendar cal = Calendar.getInstance();
+            int curDate = cal.get(Calendar.DATE);
+
+            if(!daily_comment.equals("") && date_comment != -1 && date_comment != curDate){
+//                Log.i(TAG, String.format("upload comment, date, curDate: %s %d %d", daily_comment, date_comment, curDate));
+                SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                SharedPreferences.Editor commentEditor = commentPrefs.edit();
+
+//                int dataSourceId = prefs.getInt("DAILY_COMMENT", -1);
+//                assert dataSourceId != -1;
+//                Log.i(TAG, "DAILY_COMMENT dataSourceId: " + dataSourceId);
+//                DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment);
+
+                commentEditor.putInt("date_comment", curDate);
+                commentEditor.putString("daily_comment", "");
+                commentEditor.apply();
+            }
+
+            //endregion
+
 
             mainHandler.postDelayed(this, 5 * 1000);
         }
@@ -221,8 +254,8 @@ public class MainService extends Service {
                                         .setTimestamp(cursor.getLong(2))
                                         .setValues(cursor.getString(4))
                                         .build();
-                                //String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
-                                //Log.e("submitThread", "Submission: " + res);
+//                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
+//                                Log.e("submitThread", "Submission: " + res);
                                 EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
 
                                 if (responseMessage.getDoneSuccessfully()) {
@@ -247,27 +280,22 @@ public class MainService extends Service {
 
     private Handler appUsageSubmitHandler = new Handler();
     private Runnable appUsageSubmitRunnable = new Runnable() {
-        //TODO: test how it works
         @Override
         public void run() {
             Log.e(TAG, "APP usage submit");
             final long app_usage_time_end = System.currentTimeMillis();
             final long app_usage_time_start = (app_usage_time_end - APP_USAGE_SUBMIT_PERIOD * 1000) + 1000; // add one second to start time
             new Thread(() -> {
-                Log.e(TAG, "here 1");
                 SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
                 assert dataSourceId != -1;
                 Cursor cursor = AppUseDb.getAppUsage();
                 if (cursor.moveToFirst()) {
-                    Log.e(TAG, "here 2");
                     do {
                         String package_name = cursor.getString(1);
                         long start_time = cursor.getLong(2);
                         long end_time = cursor.getLong(3);
-                        Log.e(TAG, "here 3");
                         if (Tools.inRange(start_time, app_usage_time_start, app_usage_time_end) && Tools.inRange(end_time, app_usage_time_start, app_usage_time_end)) {
-                            Log.e(TAG, "here 4");
                             if (start_time < end_time) {
                                 Log.e(TAG, "saveMixedData -> package: " + package_name + "; start: " + start_time + "; end: " + end_time);
                                 DbMgr.saveMixedData(dataSourceId, start_time, 1.0f, start_time, end_time, package_name);
@@ -291,6 +319,7 @@ public class MainService extends Service {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             appUsageSaveHandler.postDelayed(this, APP_USAGE_SAVE_PERIOD * 1000);
         }
     };
@@ -300,6 +329,8 @@ public class MainService extends Service {
         super.onCreate();
 
         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
+        if (DbMgr.getDB() == null)
+            DbMgr.init(getApplicationContext());
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorNameToTypeMap = new HashMap<>();

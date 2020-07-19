@@ -28,4 +28,9 @@
         <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="full_screen_dialog">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
 </resources>

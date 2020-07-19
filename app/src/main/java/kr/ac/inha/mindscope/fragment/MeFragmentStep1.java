@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -43,6 +44,9 @@ public class MeFragmentStep1 extends Fragment {
     private Button time4Btn;
     private TextView todayPointsView;
     private TextView sumPointsView;
+    private TextView before11Hours;
+    private TextView attdView;
+    private RelativeLayout timeContainer;
 
     public static MeFragmentStep1 newInstance() {
         return new MeFragmentStep1();
@@ -63,6 +67,23 @@ public class MeFragmentStep1 extends Fragment {
         TextView time4 = root.findViewById(R.id.time4_state);
         todayPointsView = root.findViewById(R.id.point_today);
         sumPointsView = root.findViewById(R.id.point_my);
+        before11Hours = root.findViewById(R.id.frg_me_before_11hours);
+        attdView = root.findViewById(R.id.today_survey_attd);
+        timeContainer = root.findViewById(R.id.time_container);
+
+        Calendar cal = Calendar.getInstance();
+
+        if(cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3){
+            before11Hours.setVisibility(View.VISIBLE);
+            date.setVisibility(View.INVISIBLE);
+            attdView.setVisibility(View.INVISIBLE);
+            timeContainer.setVisibility(View.INVISIBLE);
+        }else{
+            before11Hours.setVisibility(View.INVISIBLE);
+            date.setVisibility(View.VISIBLE);
+            attdView.setVisibility(View.VISIBLE);
+            timeContainer.setVisibility(View.VISIBLE);
+        }
 
 
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
@@ -135,6 +156,9 @@ public class MeFragmentStep1 extends Fragment {
                 startActivity(intent);
             }
         });
+
+
+
 
         return root;
     }

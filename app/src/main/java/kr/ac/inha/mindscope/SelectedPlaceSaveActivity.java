@@ -1,5 +1,6 @@
 package kr.ac.inha.mindscope;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -112,12 +113,20 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
         SharedPreferences.Editor editor = locationPrefs.edit();
 
+        SharedPreferences confPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+        int dataSourceId = confPrefs.getInt("LOCATIONS_MANUAL", -1);
+        assert dataSourceId != -1;
+        long nowTime = System.currentTimeMillis();
+
+
         if(placeUserName.equals("집")){
             editor.putFloat(ID_HOME + "_LAT", lat.floatValue());
             editor.putFloat(ID_HOME + "_LNG", lng.floatValue());
+            DbMgr.saveMixedData(dataSourceId, nowTime, 1.0f, nowTime, ID_HOME, selectedLat.floatValue(), selectedLng.floatValue());
         }else{
             editor.putFloat(placeUserName + "_LAT", lat.floatValue());
             editor.putFloat(placeUserName + "_LNG", lng.floatValue());
+            DbMgr.saveMixedData(dataSourceId, nowTime, 1.0f, nowTime, ID_HOME, selectedLat.floatValue(), selectedLng.floatValue());
         }
         editor.apply();
 
@@ -126,6 +135,9 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         int radius = GEOFENCE_RADIUS_DEFAULT;
 
         GeofenceHelper.startGeofence(getApplicationContext(), location_id, position, radius);
+
+
+
 
         Toast.makeText(getApplicationContext(), placeUserName + getString(R.string.location_set), Toast.LENGTH_SHORT).show();
 

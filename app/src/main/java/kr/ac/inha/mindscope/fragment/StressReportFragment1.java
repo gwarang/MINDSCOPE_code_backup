@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,7 +31,6 @@ import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
-import kr.ac.inha.mindscope.DbMgr;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportActivity;
 import kr.ac.inha.mindscope.Tools;
@@ -139,7 +137,7 @@ public class StressReportFragment1 extends Fragment {
 
         String stressReportStr =  gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
 
-        parsingStressReport(stressReportStr); // TODO gRPS로부터 받아온 Stress Prediction String (stressReportStr)으로 교체할 것
+        jsonObjects = Tools.parsingStressReport(stressReportStr);
 
 
         for(short i = 0; i < jsonObjects.length; i++){
@@ -292,10 +290,6 @@ public class StressReportFragment1 extends Fragment {
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            long timestamp = System.currentTimeMillis();
-            Calendar curCal = Calendar.getInstance();
-
-            SharedPreferences prefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
             if(reportAnswer == 0){
                 Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
@@ -310,10 +304,6 @@ public class StressReportFragment1 extends Fragment {
                     e.printStackTrace();
                 }
 
-                int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
-                assert dataSourceId != -1;
-                Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
-                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, reportAnswer);
 
                 final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 if (notificationManager != null) {
@@ -356,8 +346,14 @@ public class StressReportFragment1 extends Fragment {
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // test
-        long fillMillis = 1593554400000l;
-        long tillTime = 1593568801000l;
+//        long fillMillis = 1593554400000l;
+//        long tillTime = 1593568801000l;
+
+//        long fillMillis = 1593568801000l;
+//        long tillTime = 1593583201000l;
+
+        long fillMillis = 1593583201000l;
+        long tillTime = 1593597601000l;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -369,8 +365,8 @@ public class StressReportFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fillMillis) // fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tillTime) // tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fillMillis) // TODO change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillTime) // TODO change tillCalendar.getTimeInMillis()
                 .build();
 
 
@@ -418,18 +414,5 @@ public class StressReportFragment1 extends Fragment {
         }
     }
 
-    public void parsingStressReport(String originStressReportStr) {
-        // REPORT Parsing
-        String str = originStressReportStr;
-        jsonObjects = new JSONObject[3];
-        try {
-            JSONObject jsonObject = new JSONObject(str);
-            jsonObjects[0] = jsonObject.getJSONObject("1");
-            jsonObjects[1] = jsonObject.getJSONObject("2");
-            jsonObjects[2] = jsonObject.getJSONObject("3");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
 }
