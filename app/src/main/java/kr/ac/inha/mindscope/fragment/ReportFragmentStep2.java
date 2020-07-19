@@ -11,9 +11,10 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.math.Stats;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -29,14 +30,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.OptionalDouble;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
@@ -63,15 +65,28 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     TextView txtStressLevel;
     TextView sumPointsView;
     TextView dailyPointsView;
+    CheckBox checkBoxEmaOrder1;
+    CheckBox checkBoxEmaOrder2;
+    CheckBox checkBoxEmaOrder3;
+    CheckBox checkBoxEmaOrder4;
+    ImageView imageViewSlot1;
+    ImageView imageViewSlot2;
+    ImageView imageViewSlot3;
+    ImageView imageViewSlot4;
+    TextView textViewSlot1;
+    TextView textViewSlot2;
+    TextView textViewSlot3;
+    TextView textViewSlot4;
+    ImageView ImageViewDailyAverageStressLevel;
+
 
     StressReportDBHelper dbHelper;
     ArrayList<StressReportDBHelper.StressReportData> dataArray;
-    private MaterialCalendarView materialCalendarView;
+    private static MaterialCalendarView materialCalendarView;
 
-    static HashMap<Long, Integer> stressLevels = new HashMap<>();
-    static HashSet<Long> correctlyPredictedStressLevels = new HashSet<>();
-    static HashMap<CalendarDay, Integer> dailyStressLevels = new HashMap<>();
-    static HashMap<CalendarDay, ArrayList<Pair<Long, Integer>>> dailyStressLevelClusters = new HashMap<>();
+    static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
+    static HashMap<CalendarDay, Integer> dailyAverageStressLevels = new HashMap<>();
+    static HashMap<CalendarDay, ArrayList<Triple<Long, Integer, Integer>>> dailyStressLevelClusters = new HashMap<>();
     // endregion
 
     public ReportFragmentStep2() {
@@ -117,6 +132,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         sumPointsView = root.findViewById(R.id.summary_point_my);
         dailyPointsView = root.findViewById(R.id.point_day);
+        checkBoxEmaOrder1 = root.findViewById(R.id.ch_report1);
+        checkBoxEmaOrder2 = root.findViewById(R.id.ch_report2);
+        checkBoxEmaOrder3 = root.findViewById(R.id.ch_report3);
+        checkBoxEmaOrder4 = root.findViewById(R.id.ch_report4);
+        imageViewSlot1 = root.findViewById(R.id.img_report_result1);
+        imageViewSlot2 = root.findViewById(R.id.img_report_result2);
+        imageViewSlot3 = root.findViewById(R.id.img_report_result3);
+        imageViewSlot4 = root.findViewById(R.id.img_report_result4);
+        textViewSlot1 = root.findViewById(R.id.txt_report_result1);
+        textViewSlot2 = root.findViewById(R.id.txt_report_result2);
+        textViewSlot3 = root.findViewById(R.id.txt_report_result3);
+        textViewSlot4 = root.findViewById(R.id.txt_report_result4);
+        ImageViewDailyAverageStressLevel = root.findViewById(R.id.frg_report_step2_img1);
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
         sumPointsView.setText(String.valueOf(prefs.getInt("sumPoints", 0)));
 
@@ -144,6 +172,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         loadAllStressLevelsFromServer();
         loadAllPoints();
         materialCalendarView.setSelectedDate(CalendarDay.today());
+        loadDailyPoints(CalendarDay.today());
+        onDateSelected(materialCalendarView, CalendarDay.today(), true);
         return root;
     }
 
@@ -152,19 +182,89 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // [Kevin] 선택된 날짜의 stress 보고서 보여주기
         Log.i(TAG, "Seleted Date: " + day);
 
-        // (1) daily points
+        // region (1) daily points
         loadDailyPoints(day);
+        // endregion
 
-        // (2) daily stress levels
+        // region (2) average daily stress level
+        int[] stressLvlImageResources = new int[]{
+                R.drawable.icon_low,
+                R.drawable.icon_littlehigh,
+                R.drawable.icon_high
+        };
+        if (dailyAverageStressLevels.containsKey(day)) {
+            ImageViewDailyAverageStressLevel.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day) - 1]);
+            ImageViewDailyAverageStressLevel.setVisibility(View.VISIBLE);
+        } else
+            ImageViewDailyAverageStressLevel.setVisibility(View.GONE);
+        // endregion
+
+        // region (3) detailed view
+        CheckBox[] checkBoxes = new CheckBox[]{checkBoxEmaOrder1, checkBoxEmaOrder2, checkBoxEmaOrder3, checkBoxEmaOrder4};
+        ImageView[] imageViews = new ImageView[]{imageViewSlot1, imageViewSlot2, imageViewSlot3, imageViewSlot4};
+        TextView[] textViews = new TextView[]{textViewSlot1, textViewSlot2, textViewSlot3, textViewSlot4};
+        int[] stressLevelTexts = new int[]{R.string.string_low, R.string.string_littlehigh, R.string.string_high};
+        int[] stressLevelImageResources = new int[]{R.drawable.icon_low, R.drawable.icon_littlehigh, R.drawable.icon_high};
+        Pair<Integer, Integer>[] ranges = new Pair[]{new Pair<>(700, 1100), new Pair<>(1100, 1500), new Pair<>(1500, 1900), new Pair<>(1900, 2300)};
+        for (CheckBox checkBox : checkBoxes)
+            checkBox.setChecked(false);
+        for (ImageView imageView : imageViews)
+            imageView.setVisibility(View.INVISIBLE);
+        for (TextView textView : textViews)
+            textView.setVisibility(View.INVISIBLE);
         if (dailyStressLevelClusters.containsKey(day)) {
-            ArrayList<Pair<Long, Integer>> stressLevels = dailyStressLevelClusters.get(day);
+            ArrayList<Triple<Long, Integer, Integer>> stressLevels = dailyStressLevelClusters.get(day);
             assert stressLevels != null;
-            for (Pair<Long, Integer> timestampStressLevelPair : stressLevels) {
-                long timestamp = timestampStressLevelPair.first;
-                int stressLevel = timestampStressLevelPair.second;
-                boolean confirmed = correctlyPredictedStressLevels.contains(timestamp);
+
+            for (Triple<Long, Integer, Integer> tsEmaOrderStressLvlTriple : stressLevels) {
+                long timestamp = tsEmaOrderStressLvlTriple.getLeft();
+                int emaOrder = tsEmaOrderStressLvlTriple.getMiddle();
+                int stressLevel = tsEmaOrderStressLvlTriple.getRight();
+
+                if (emaOrder > 0 && emaOrder <= checkBoxes.length) {
+                    // self-report
+                    checkBoxes[emaOrder - 1].setChecked(true);
+
+                    textViews[emaOrder - 1].setVisibility(View.VISIBLE);
+                    textViews[emaOrder - 1].setText(stressLevelTexts[stressLevel - 1]);
+
+                    imageViews[emaOrder - 1].setVisibility(View.VISIBLE);
+                    imageViews[emaOrder - 1].setImageResource(stressLevelImageResources[stressLevel - 1]);
+                } else {
+                    // detection
+                    int index = findTimestampIndex(timestamp, ranges);
+                    if (index > -1 && index < imageViews.length) {
+                        textViews[index].setVisibility(View.VISIBLE);
+                        textViews[index].setText(stressLevelTexts[stressLevel - 1]);
+
+                        imageViews[index].setVisibility(View.VISIBLE);
+                        imageViews[index].setImageResource(stressLevelImageResources[stressLevel - 1]);
+                    }
+                }
+                // endregion
             }
+        } else
+            for (CheckBox checkBox : checkBoxes)
+                checkBox.setChecked(false);
+        // endregion
+
+        // region (4) daily comment
+        
+        // endregion
+
+        materialCalendarView.invalidateDecorators();
+    }
+
+    private int findTimestampIndex(long timestamp, Pair<Integer, Integer>[] range) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(timestamp);
+        long cell = c.get(Calendar.HOUR_OF_DAY) * 100 + c.get(Calendar.MINUTE);
+        for (int n = 0; n < range.length; n++) {
+            Pair<Integer, Integer> pair = range[n];
+            if (pair.first < cell && cell <= pair.second)
+                return n;
         }
+        return -1;
     }
     // endregion
 
@@ -204,7 +304,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
-            return lowStressCalendarDays.contains(day);
+            return !materialCalendarView.getSelectedDate().equals(day) && lowStressCalendarDays.contains(day);
         }
 
         @Override
@@ -235,7 +335,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
-            return littleHighStressCalendarDays.contains(day);
+            return !materialCalendarView.getSelectedDate().equals(day) && littleHighStressCalendarDays.contains(day);
         }
 
         @Override
@@ -267,7 +367,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
-            return highStressCalendarDays.contains(day);
+            return !materialCalendarView.getSelectedDate().equals(day) && highStressCalendarDays.contains(day);
         }
 
         @Override
@@ -408,7 +508,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
             final int SUBMITTED = 55, PREDICTION = 56;
             stressLevels.clear();
-            correctlyPredictedStressLevels.clear();
             for (int dataSourceId : new int[]{SUBMITTED, PREDICTION}) {
                 EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
                         .setUserId(userId)
@@ -426,6 +525,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     for (int n = 0; n < values.size(); n++) {
                         String value = values.get(n);
                         long timestamp = 0;
+                        int emaOrder = -1;
                         int stressLevel = 0;
                         if (dataSourceId == SUBMITTED) {
                             // self-report
@@ -433,6 +533,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             if (cells.length != 5)
                                 continue;
                             timestamp = Long.parseLong(cells[0]);
+                            emaOrder = Integer.parseInt(cells[2]);
                             stressLevel = Integer.parseInt(cells[4]);
                         } else {
                             // prediction
@@ -458,11 +559,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             c.set(Calendar.MILLISECOND, 0);
                             timestamp = c.getTimeInMillis();
 
-                            if (stressLevels.containsKey(timestamp)) {
-                                if (stressLevels.get(timestamp) == stressLevel)
-                                    correctlyPredictedStressLevels.add(timestamp);
-                            } else
-                                stressLevels.put(timestamp, stressLevel);
+                            if (!stressLevels.containsKey(timestamp))
+                                stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
                         }
                     }
                 }
@@ -477,35 +575,35 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // (1) distribute stress levels to days (day => cluster of stress levels)
         dailyStressLevelClusters.clear();
         for (long timestamp : stressLevels.keySet()) {
-            int stressLevel = stressLevels.get(timestamp);
+            Pair<Integer, Integer> emaOrderStressLevelPair = stressLevels.get(timestamp);
 
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(timestamp);
             CalendarDay day = CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
             if (dailyStressLevelClusters.containsKey(day))
-                dailyStressLevelClusters.get(day).add(new Pair<>(timestamp, stressLevel));
+                dailyStressLevelClusters.get(day).add(Triple.of(timestamp, emaOrderStressLevelPair.first, emaOrderStressLevelPair.second));
             else {
-                ArrayList<Pair<Long, Integer>> stressLevels = new ArrayList<>();
-                stressLevels.add(new Pair<>(timestamp, stressLevel));
+                ArrayList<Triple<Long, Integer, Integer>> stressLevels = new ArrayList<>();
+                stressLevels.add(Triple.of(timestamp, emaOrderStressLevelPair.first, emaOrderStressLevelPair.second));
                 dailyStressLevelClusters.put(day, stressLevels);
             }
         }
         // (2) calculate average stress level per day
-        dailyStressLevels.clear();
+        dailyAverageStressLevels.clear();
         for (CalendarDay day : dailyStressLevelClusters.keySet()) {
-            ArrayList<Pair<Long, Integer>> cluster = dailyStressLevelClusters.get(day);
+            ArrayList<Triple<Long, Integer, Integer>> cluster = dailyStressLevelClusters.get(day);
             double sum = 0;
-            for (Pair<Long, Integer> timestampStressLevelPair : cluster)
-                sum += timestampStressLevelPair.second;
-            dailyStressLevels.put(day, (int) Math.round(sum / cluster.size()));
+            for (Triple<Long, Integer, Integer> tsEmaOrderStressLvlTriple : cluster)
+                sum += tsEmaOrderStressLvlTriple.getRight();
+            dailyAverageStressLevels.put(day, (int) Math.round(sum / cluster.size()));
         }
 
         // (3) decorate days with calculated average stress levels
         LowStressDecorator.clearLowStressCalendarDays();
         LittleHighStressDecorator.clearLittleHighStressCalendarDays();
         HighStressDecorator.clearHighStressCalendarDays();
-        for (CalendarDay day : dailyStressLevels.keySet()) {
-            int stressLevel = dailyStressLevels.get(day);
+        for (CalendarDay day : dailyAverageStressLevels.keySet()) {
+            int stressLevel = dailyAverageStressLevels.get(day);
             if (stressLevel == 1)
                 LowStressDecorator.addLowStressCalendarDay(day);
             else if (stressLevel == 2)
