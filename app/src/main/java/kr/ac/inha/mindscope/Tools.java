@@ -66,7 +66,7 @@ import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_T
 public class Tools {
 
     private static final String TAG = "Tools";
-    static final String DATA_SOURCE_SEPARATOR = " ";
+    public static final String DATA_SOURCE_SEPARATOR = " ";
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
     public static String[] PERMISSIONS = {

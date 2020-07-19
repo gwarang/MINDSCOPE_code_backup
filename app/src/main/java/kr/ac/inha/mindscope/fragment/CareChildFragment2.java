@@ -1,20 +1,17 @@
 package kr.ac.inha.mindscope.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
@@ -23,6 +20,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class CareChildFragment2 extends Fragment {
 
@@ -60,16 +59,29 @@ public class CareChildFragment2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_care_child2, container, false);
 
         init(view);
+        SharedPreferences interventionPrefs = getActivity().getSharedPreferences("intervention", MODE_PRIVATE);
 
         editInterventionBtn.setOnClickListener(clickEditBtn);
         makeInterventionBtn.setOnClickListener(clickMakeBtn);
         loadInterventionBtn.setOnClickListener(clickLoadBtn);
 
-        // TODO 1) 인터벤션 리스트 얻어와서 recommand에 뿌려주기
-        //  2) 현재 스트레스 방안 있으면 업데이트하기
-        //  3) 현재 수행한 방안 있으면 업데이트하기
+        interventionSwitch.setChecked(!interventionPrefs.getBoolean("muteToday", true));
 
 
+        interventionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+
+                SharedPreferences.Editor editor = interventionPrefs.edit();
+                if(isChecked){
+                    editor.putBoolean("muteToday", false);
+                }
+                else{
+                    editor.putBoolean("muteToday", true);
+                }
+                editor.apply();
+            }
+        });
 
         return view;
     }
@@ -89,7 +101,7 @@ public class CareChildFragment2 extends Fragment {
 
         interventionSwitch = view.findViewById(R.id.child2_switch);
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("intervention", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
         if(!curIntervention.equals("")){
             currentIntervention.setText(curIntervention);

@@ -2,8 +2,8 @@
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="7dp"></corners>
-            <solid android:color="@color/color_fsv_title"></solid>
-            <stroke android:width="2dp" android:color="@color/color_fsv_title"/>
+            <solid android:color="#659ddd"></solid>
+            <stroke android:width="2dp" android:color="#659ddd"/>
         </shape>
     </item>
 </selector>

@@ -46,28 +46,7 @@ public class StressReportFragment1 extends Fragment {
 
 
     private static final String TAG = "StressReportFragment1";
-    private static final String STRESS_REPORT_EXAMPLE =
-            "1594735308830,\"1\":{" +
-            "\"day_num\": 15," +
-            "\"ema_order\": 3," +
-            "\"accuracy\": 60," +
-            "\"feature_ids\": \"1-high 2-low 3-high 4-low 5-low\"," +
-            "\"model_tag\": False" +
-            "}," +
-            "\"2\":{" +
-            "\"day_num\": 15," +
-            "\"ema_order\": 3," +
-            "\"accuracy\": 40," +
-            "\"feature_ids\": \"5-high 7-low 3-high 4-low 5-low\"," +
-            "\"model_tag\": False" +
-            "}," +
-            "\"3\":{" +
-            "\"day_num\": 15," +
-            "\"ema_order\": 3," +
-            "\"accuracy\": 20," +
-            "\"feature_ids\": \"1-high 2-low 3-high 4-low 5-low\"," +
-            "\"model_tag\": True" +
-            "}";
+
     public static JSONObject[] jsonObjects;
     public static final int REPORT_DURATION = 4;
 
@@ -320,8 +299,6 @@ public class StressReportFragment1 extends Fragment {
     };
 
     public String gettingStressReportFromGRPC(){
-        // TODO stress report 받아와서 값 parsing
-        // TODO get report from gRPC
         String stresReportStr = "";
         SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);

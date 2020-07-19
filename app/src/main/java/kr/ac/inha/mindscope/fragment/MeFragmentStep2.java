@@ -20,21 +20,33 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import inha.nsl.easytrack.ETServiceGrpc;
+import inha.nsl.easytrack.EtService;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportActivity;
+import kr.ac.inha.mindscope.Tools;
 
+import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 public class MeFragmentStep2 extends Fragment {
@@ -42,8 +54,8 @@ public class MeFragmentStep2 extends Fragment {
     private static final String TAG = "MeFragmentStep2";
 
 
-    static int currentHours;
-
+    static int lastReportHours;
+    public static JSONObject[] jsonObjects;
 
     private ImageButton btnMap;
     private Button stepTestBtn;
@@ -64,6 +76,9 @@ public class MeFragmentStep2 extends Fragment {
 
     public int stressLevel;
     private String feature_ids;
+    int day_num;
+    int order;
+    int accuracy;
 
     ScrollView reasonContainer;
     ImageView stressImg;
@@ -71,6 +86,13 @@ public class MeFragmentStep2 extends Fragment {
     ConstraintLayout allContainer;
     ConstraintLayout timeContainer;
     TextView beforeTextView;
+    TextView waitText;
+
+    long reportTimestamp;
+
+    List<String> selfStressReports;
+
+    boolean notSubmit = false;
 
     public MeFragmentStep2() {
         // Required empty public constructor
@@ -89,19 +111,59 @@ public class MeFragmentStep2 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_me_step2, container, false);
 
+        String stressReportStr =  gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
+        getSelfStressReportDataFromGRPC();
+
+        if(stressReportStr != null){
+            jsonObjects = Tools.parsingStressReport(stressReportStr);
+            for(short i = 0; i < jsonObjects.length; i++){
+                try {
+                    if(jsonObjects[i].getBoolean("model_tag")){
+                        stressLevel = i+1;
+                        day_num = jsonObjects[i].getInt("day_num");
+                        order = jsonObjects[i].getInt("ema_order");
+                        accuracy = jsonObjects[i].getInt("accuracy");
+                        feature_ids = jsonObjects[i].getString("feature_ids");
+                        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = reportPrefs.edit();
+                        editor.putInt("result", stressLevel);
+                        editor.apply();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if(selfStressReports != null){
+            for(String selfResults : selfStressReports){
+                String[] result = selfResults.split(" ");
+                if(day_num == Integer.parseInt(result[1]) && order == Integer.parseInt(result[2])){
+                    stressLevel = Integer.parseInt(result[4]);
+                    try {
+                        feature_ids = jsonObjects[stressLevel - 1].getString("feature_ids");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    notSubmit = false;
+                }else{
+                    notSubmit = true;
+                }
+            }
+        }
+
+
         SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-        feature_ids = stressReportPrefs.getString("feature_ids", "");
+//        feature_ids = stressReportPrefs.getString("feature_ids", "");
+//        stressLevel = stressReportPrefs.getInt("reportAnswer", 0);
 
         allContainer = view.findViewById(R.id.frg_me_step2_container);
         beforeTextView = view.findViewById(R.id.frg_me_step2_before_time);
         timeContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
+        stressLvView = view.findViewById(R.id.txt_stress_level);
 
-        stressLvView = (TextView) view.findViewById(R.id.txt_stress_level);
+
 
         featureViewUpdate(feature_ids, view);
-
-
-        stressLevel = stressReportPrefs.getInt("reportAnswer", 0);
 
         reasonContainer = view.findViewById(R.id.stress_reason_container);
         stressImg = view.findViewById(R.id.frg_me_step2_img1);
@@ -148,27 +210,32 @@ public class MeFragmentStep2 extends Fragment {
             }
         });
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(reportTimestamp);
+
         dateView = (TextView) view.findViewById(R.id.frg_me_step2_date1);
-        Date currentTime = Calendar.getInstance().getTime();
+        Date currentTime = cal.getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
 
-        Calendar cal = Calendar.getInstance();
-        currentHours = cal.get(Calendar.HOUR_OF_DAY);
-        Log.i(TAG, "current hours: " + currentHours);
+
+        lastReportHours = cal.get(Calendar.HOUR_OF_DAY);
+        Log.i(TAG, "current hours: " + lastReportHours);
         timeView = (TextView) view.findViewById(R.id.frg_me_step2_time1);
-        if(currentHours < 11){
-            timeView.setText(getResources().getString(R.string.time_step2_duration1));
+        if(lastReportHours >= 22){
+            timeView.setText(getResources().getString(R.string.time_report_duration4));
         }
-        else if(currentHours < 15){
-            timeView.setText(getResources().getString(R.string.time_step2_duration2));
+        else if(lastReportHours >= 18){
+            timeView.setText(getResources().getString(R.string.time_report_duration3));
         }
-        else if(currentHours < 19){
-            timeView.setText(getResources().getString(R.string.time_step2_duration3));
+        else if(lastReportHours >= 14){
+            timeView.setText(getResources().getString(R.string.time_report_duration2));
         }
-        else if(currentHours < 23){
-            timeView.setText(getResources().getString(R.string.time_step2_duration4));
+        else if(lastReportHours >= 10){
+            timeView.setText(getResources().getString(R.string.time_report_duration1));
+        }else{
+            timeView.setText(getResources().getString(R.string.time_report_duration4));
         }
 
 
@@ -212,13 +279,14 @@ public class MeFragmentStep2 extends Fragment {
         });
 
 
-        if(cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3){
-            timeContainer.setVisibility(View.VISIBLE);
-            allContainer.setVisibility(View.INVISIBLE);
-            beforeTextView.setText(date_text + " " + getResources().getString(R.string.string_frg_me_stpe2_before_txt2));
-        }else{
-            timeContainer.setVisibility(View.INVISIBLE);
-            allContainer.setVisibility(View.VISIBLE);
+        Calendar curCal = Calendar.getInstance();
+        int curHour = curCal.get(Calendar.HOUR_OF_DAY);
+        int curMin = curCal.get(Calendar.MINUTE);
+        if(notSubmit && ((curHour == 11) || (curHour == 15) || (curHour == 19) || (curHour == 23))){
+//            Intent intent = new Intent(getContext(), StressReportActivity.class);
+//            intent.putExtra("report_order", order);
+//            startActivity(intent);
+//            notSubmit = false;
         }
 
 
@@ -245,8 +313,6 @@ public class MeFragmentStep2 extends Fragment {
         else{
             String[] featureArray = feature_ids.split(" ");
 
-
-
             for(int i = 0; i < featureArray.length; i++ ){
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
@@ -270,8 +336,6 @@ public class MeFragmentStep2 extends Fragment {
                     break;
             }
         }
-
-
 
         Log.d(TAG, "phoneReason" + phoneReason.toString());
         Log.d(TAG, "activityReason" + activityReason.toString());
@@ -347,4 +411,150 @@ public class MeFragmentStep2 extends Fragment {
         }
 
     }
+
+    public String gettingStressReportFromGRPC(){
+        String stresReportStr = "";
+        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+
+        Calendar fromCalendar = Calendar.getInstance();
+        Calendar tillCalendar = Calendar.getInstance();
+
+        int reportOrder = getReportPreviousOrder(fromCalendar);
+        // initialize calendar time
+        if (reportOrder != 0){
+            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+            fromCalendar.set(Calendar.MINUTE, 0);
+            fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
+        Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
+
+        // test
+//        long fillMillis = 1593554400000l;
+//        long tillTime = 1593568801000l;
+
+//        long fillMillis = 1593568801000l;
+//        long tillTime = 1593583201000l;
+
+        long fillMillis = 1593583201000l;
+        long tillTime = 1593597601000l;
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+
+        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+        EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
+                .setFromTimestamp(fillMillis) // TODO change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillTime) // TODO change tillCalendar.getTimeInMillis()
+                .build();
+
+
+        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+        if (responseMessage.getDoneSuccessfully()) {
+            List<String> values = responseMessage.getValueList();
+            List<Long> valuesTimestamp = responseMessage.getTimestampList();
+            if(!values.isEmpty()){
+                stresReportStr = values.get(0);
+                Log.d(TAG, "stressReportStr: " + stresReportStr);
+            }else{
+                Log.d(TAG, "values empty");
+            }
+            if(!valuesTimestamp.isEmpty()){
+                reportTimestamp = valuesTimestamp.get(0);
+                Log.d(TAG, "report timestamp from gRPC is " + reportTimestamp);
+            }else{
+                Log.d(TAG, "report timestamp from gRPC is empty");
+            }
+        }
+        channel.shutdown();
+        //end getting data from gRPC
+
+        return stresReportStr;
+    }
+
+    public int getReportPreviousOrder(Calendar cal){
+        if((REPORT_NOTIF_HOURS[0] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]){
+            return 0;
+        }
+        else if((REPORT_NOTIF_HOURS[1] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[1]){
+            return 1;
+        }
+        else if((REPORT_NOTIF_HOURS[2] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[2]){
+            return 2;
+        }
+        else if((REPORT_NOTIF_HOURS[3] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[3]){
+            return 3;
+        }
+        else{
+            return 4;
+        }
+    }
+
+    public void getSelfStressReportDataFromGRPC(){
+        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+
+        // initialize timestamp from today 00:00:00 to 23:59:59
+        Calendar fromCalendar = Calendar.getInstance();
+        Calendar tillCalendar = Calendar.getInstance();
+        fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        fromCalendar.set(Calendar.MINUTE, 0);
+        fromCalendar.set(Calendar.SECOND, 0);
+        tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+        tillCalendar.set(Calendar.MINUTE, 59);
+        tillCalendar.set(Calendar.SECOND, 59);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
+        Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
+
+        // for test 2020/07/018 04:19:00 ~ 04:28:00
+        long fromtimestamp = 1595013540000l;
+        long tilltimestamp = 1595014080000l;
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+
+        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+        EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                .setTargetDataSourceId(configPrefs.getInt("SELF_STRESS_REPORT", -1))
+                .setFromTimestamp(fromtimestamp) // TODO change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tilltimestamp) // TODO change tillCalendar.getTimeInMillis()
+                .build();
+
+
+        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+        if (responseMessage.getDoneSuccessfully()) {
+            List<String> values = responseMessage.getValueList();
+            if(!values.isEmpty()){
+                for(String report : values){
+                    selfStressReports = values;
+                    Log.i(TAG, "selfreport " + report);
+                }
+            }else{
+                Log.d(TAG, "values empty");
+            }
+
+        }
+    }
+
 }
