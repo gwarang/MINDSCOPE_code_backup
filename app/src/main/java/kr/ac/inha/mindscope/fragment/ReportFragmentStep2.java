@@ -38,7 +38,6 @@ import androidx.fragment.app.Fragment;
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
@@ -65,6 +64,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     TextView txtStressLevel;
     TextView sumPointsView;
     TextView dailyPointsView;
+    ImageView dailyAverageStressLevelView;
     CheckBox checkBoxEmaOrder1;
     CheckBox checkBoxEmaOrder2;
     CheckBox checkBoxEmaOrder3;
@@ -77,7 +77,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     TextView textViewSlot2;
     TextView textViewSlot3;
     TextView textViewSlot4;
-    ImageView ImageViewDailyAverageStressLevel;
+    TextView selectedDayComment;
 
 
     StressReportDBHelper dbHelper;
@@ -144,7 +144,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         textViewSlot2 = root.findViewById(R.id.txt_report_result2);
         textViewSlot3 = root.findViewById(R.id.txt_report_result3);
         textViewSlot4 = root.findViewById(R.id.txt_report_result4);
-        ImageViewDailyAverageStressLevel = root.findViewById(R.id.frg_report_step2_img1);
+        selectedDayComment = root.findViewById(R.id.selected_day_comment);
+        dailyAverageStressLevelView = root.findViewById(R.id.frg_report_step2_img1);
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
         sumPointsView.setText(String.valueOf(prefs.getInt("sumPoints", 0)));
 
@@ -193,10 +194,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 R.drawable.icon_high
         };
         if (dailyAverageStressLevels.containsKey(day)) {
-            ImageViewDailyAverageStressLevel.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day) - 1]);
-            ImageViewDailyAverageStressLevel.setVisibility(View.VISIBLE);
+            dailyAverageStressLevelView.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day) - 1]);
+            dailyAverageStressLevelView.setVisibility(View.VISIBLE);
         } else
-            ImageViewDailyAverageStressLevel.setVisibility(View.GONE);
+            dailyAverageStressLevelView.setVisibility(View.GONE);
         // endregion
 
         // region (3) detailed view
@@ -249,7 +250,50 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // endregion
 
         // region (4) daily comment
-        
+        new Thread(() -> {
+            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+            final int DAILY_COMMENT = 84;
+
+            Calendar c = Calendar.getInstance();
+            c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            long fromTimestamp = c.getTimeInMillis();
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            long tillTimestamp = c.getTimeInMillis();
+
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                    .setUserId(userId)
+                    .setEmail(email)
+                    .setTargetEmail(email)
+                    .setTargetCampaignId(campaignId)
+                    .setTargetDataSourceId(DAILY_COMMENT)
+                    .setFromTimestamp(fromTimestamp)
+                    .setTillTimestamp(tillTimestamp)
+                    .build();
+            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+            long lastTimestamp = Long.MIN_VALUE;
+            String lastComment = "";
+            if (responseMessage.getDoneSuccessfully())
+                for (String value : responseMessage.getValueList()) {
+                    String[] cells = value.split(" ");
+                    long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
+                    String comment = value.substring(value.indexOf(' ') + 1);
+
+                    if (timestamp > lastTimestamp) {
+                        lastTimestamp = timestamp;
+                        lastComment = comment;
+                    }
+                }
+            channel.shutdown();
+
+            final String finalComment = lastComment;
+            requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
+        }).start();
         // endregion
 
         materialCalendarView.invalidateDecorators();
