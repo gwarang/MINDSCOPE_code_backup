@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -88,6 +89,7 @@ public class CareChildFragment2 extends Fragment {
         currentIntervention = view.findViewById(R.id.child2_intervention);
 
         interventionSwitch = view.findViewById(R.id.child2_switch);
+        interventionSwitch.setOnCheckedChangeListener(switchListener);
 
         SharedPreferences prefs = getActivity().getSharedPreferences("intervention", Context.MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
@@ -125,6 +127,24 @@ public class CareChildFragment2 extends Fragment {
         @Override
         public void onClick(View view) {
             updateRecommendInterventions();
+        }
+    };
+
+    CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+            SharedPreferences prefs = getActivity().getSharedPreferences("intervention", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            if(isChecked){
+                Log.i(TAG, "오늘의 알림 받기 설정");
+                editor.putBoolean("muteToday", true);
+            }else{
+                Log.i(TAG, "오늘의 알림 받기 설정 해제");
+                editor.putBoolean("muteToday", false);
+            }
+            editor.apply();
+
         }
     };
 
