@@ -32,6 +32,9 @@ public class ScreenAndUnlockReceiver extends BroadcastReceiver {
                 long phoneUnlockedDurationEnd = System.currentTimeMillis();
                 long phoneUnlockedDuration = (phoneUnlockedDurationEnd - phoneUnlockedDurationStart) / 1000; // in seconds
                 SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                if (DbMgr.getDB() == null)
+                    DbMgr.init(context);
+
                 int dataSourceId = prefs.getInt("UNLOCK_DURATION", -1);
                 assert dataSourceId != -1;
                 DbMgr.saveMixedData(dataSourceId, phoneUnlockedDurationStart, 1.0f, phoneUnlockedDurationStart, phoneUnlockedDurationEnd, phoneUnlockedDuration);

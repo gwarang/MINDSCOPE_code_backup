@@ -42,6 +42,8 @@ class AudioFeatureRecorder {
             public boolean process(AudioEvent audioEvent) {
                 if (silenceDetector.currentSPL() >= -110.0D) {
                     SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                    if (DbMgr.getDB() == null)
+                        DbMgr.init(con);
                     int dataSourceId = prefs.getInt("AUDIO_LOUDNESS", -1);
                     assert dataSourceId != -1;
                     DbMgr.saveMixedData(dataSourceId, System.currentTimeMillis(), 1.0f, System.currentTimeMillis(), silenceDetector.currentSPL());

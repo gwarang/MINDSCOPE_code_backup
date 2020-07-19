@@ -35,6 +35,7 @@ import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -248,7 +249,6 @@ public class MainService extends Service {
 
     private Handler appUsageSubmitHandler = new Handler();
     private Runnable appUsageSubmitRunnable = new Runnable() {
-        //TODO: test how it works
         @Override
         public void run() {
             Log.e(TAG, "APP usage submit");
@@ -288,6 +288,7 @@ public class MainService extends Service {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             appUsageSaveHandler.postDelayed(this, APP_USAGE_SAVE_PERIOD * 1000);
         }
     };
@@ -297,6 +298,8 @@ public class MainService extends Service {
         super.onCreate();
 
         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
+        if (DbMgr.getDB() == null)
+            DbMgr.init(getApplicationContext());
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorNameToTypeMap = new HashMap<>();

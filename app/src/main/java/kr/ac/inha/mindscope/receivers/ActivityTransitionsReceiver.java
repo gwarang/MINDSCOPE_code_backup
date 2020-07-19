@@ -25,6 +25,8 @@ public class ActivityTransitionsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {
+            if (DbMgr.getDB() == null)
+                DbMgr.init(context);
             if (ActivityTransitionResult.hasResult(intent)) {
                 ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
                 if (result != null)

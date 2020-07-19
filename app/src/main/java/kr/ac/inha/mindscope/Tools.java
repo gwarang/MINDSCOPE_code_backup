@@ -174,6 +174,10 @@ public class Tools {
     }
 
     public static void checkAndSendUsageAccessStats(Context con) throws IOException {
+        // Init AppUseDb if it's null
+        if (AppUseDb.getDB() == null)
+            AppUseDb.init(con);
+
         SharedPreferences loginPrefs = con.getSharedPreferences("UserLogin", MODE_PRIVATE);
         long lastSavedTimestamp = loginPrefs.getLong("lastUsageSubmissionTime", -1);
 

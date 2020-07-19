@@ -14,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -86,6 +87,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String ID_UNIV = "UNIV";
     public static final String ID_LIBRARY = "LIBRARY";
     public static final String ID_ADDITIONAL = "ADDITIONAL";
+    //endregion
 
     public boolean checkForFirstStartStep1;
 
@@ -154,6 +156,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        if (DbMgr.getDB() == null)
+            DbMgr.init(getApplicationContext());
+
         checkForFirstStartStep1 = false;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
@@ -648,7 +653,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("lat", selectedLatLng.latitude);
                     intent.putExtra("lng", selectedLatLng.longitude);
                     startActivity(intent);
-
 
 
                 } else {

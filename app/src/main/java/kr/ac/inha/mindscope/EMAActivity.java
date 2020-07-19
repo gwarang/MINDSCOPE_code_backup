@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,18 +44,8 @@ public class EMAActivity extends AppCompatActivity {
     //endregion
 
     //region UI  variables
-    TextView question1;
-    TextView question2;
-    TextView question3;
-    TextView question4;
-    TextView question5;
     TextView dateView;
     TextView emaNumView;
-
-    SeekBar seekBar1;
-    SeekBar seekBar2;
-    SeekBar seekBar3;
-    SeekBar seekBar4;
 
     RadioGroup question1_group;
     RadioGroup question2_group;
@@ -117,24 +106,22 @@ public class EMAActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_ema2);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_ema);
+        toolbar = findViewById(R.id.toolbar_ema);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
 
-
-
         init();
     }
 
-    public long getDayNum(){
-        long dayNum=0;
+    public long getDayNum() {
+        long dayNum = 0;
         SharedPreferences a = getSharedPreferences("firstDate", MODE_PRIVATE);
-        String  firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
+        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date firstDate = format.parse(firstTimeStr);
@@ -143,7 +130,7 @@ public class EMAActivity extends AppCompatActivity {
 
             long caldate = firstDate.getTime() - currentDate.getTime();
 
-            dayNum = caldate / (24*60*60*1000);
+            dayNum = caldate / (24 * 60 * 60 * 1000);
 
             dayNum = Math.abs(dayNum);
 
@@ -160,7 +147,7 @@ public class EMAActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.toolbar_save:
 
                 emaSubmit();
@@ -182,60 +169,52 @@ public class EMAActivity extends AppCompatActivity {
     public void init() {
 
 //        Question button start
-        question1_group = (RadioGroup) findViewById(R.id.question1_group);
-        question2_group = (RadioGroup) findViewById(R.id.question2_group);
-        question3_group = (RadioGroup) findViewById(R.id.question3_group);
-        question4_group = (RadioGroup) findViewById(R.id.question4_group);
-        question1_1 = (RadioButton) findViewById(R.id.question1_1);
-        question1_2 = (RadioButton) findViewById(R.id.question1_2);
-        question1_3 = (RadioButton) findViewById(R.id.question1_3);
-        question1_4 = (RadioButton) findViewById(R.id.question1_4);
-        question1_5 = (RadioButton) findViewById(R.id.question1_5);
-        question2_1 = (RadioButton) findViewById(R.id.question2_1);
-        question2_2 = (RadioButton) findViewById(R.id.question2_2);
-        question2_3 = (RadioButton) findViewById(R.id.question2_3);
-        question2_4 = (RadioButton) findViewById(R.id.question2_4);
-        question2_5 = (RadioButton) findViewById(R.id.question2_5);
-        question3_1 = (RadioButton) findViewById(R.id.question3_1);
-        question3_2 = (RadioButton) findViewById(R.id.question3_2);
-        question3_3 = (RadioButton) findViewById(R.id.question3_3);
-        question3_4 = (RadioButton) findViewById(R.id.question3_4);
-        question3_5 = (RadioButton) findViewById(R.id.question3_5);
-        question4_1 = (RadioButton) findViewById(R.id.question4_1);
-        question4_2 = (RadioButton) findViewById(R.id.question4_2);
-        question4_3 = (RadioButton) findViewById(R.id.question4_3);
-        question4_4 = (RadioButton) findViewById(R.id.question4_4);
-        question4_5 = (RadioButton) findViewById(R.id.question4_5);
-        question5_1 = (RelativeLayout) findViewById(R.id.question5_1);
-        question5_2 = (RelativeLayout) findViewById(R.id.question5_2);
-        question5_3 = (RelativeLayout) findViewById(R.id.question5_3);
-        question5_1_btn = (ImageButton) findViewById(R.id.icon_low_empty);
-        question5_2_btn = (ImageButton) findViewById(R.id.icon_littlehigh_empty);
-        question5_3_btn = (ImageButton) findViewById(R.id.icon_high_empty);
+        question1_group = findViewById(R.id.question1_group);
+        question2_group = findViewById(R.id.question2_group);
+        question3_group = findViewById(R.id.question3_group);
+        question4_group = findViewById(R.id.question4_group);
+        question1_1 = findViewById(R.id.question1_1);
+        question1_2 = findViewById(R.id.question1_2);
+        question1_3 = findViewById(R.id.question1_3);
+        question1_4 = findViewById(R.id.question1_4);
+        question1_5 = findViewById(R.id.question1_5);
+        question2_1 = findViewById(R.id.question2_1);
+        question2_2 = findViewById(R.id.question2_2);
+        question2_3 = findViewById(R.id.question2_3);
+        question2_4 = findViewById(R.id.question2_4);
+        question2_5 = findViewById(R.id.question2_5);
+        question3_1 = findViewById(R.id.question3_1);
+        question3_2 = findViewById(R.id.question3_2);
+        question3_3 = findViewById(R.id.question3_3);
+        question3_4 = findViewById(R.id.question3_4);
+        question3_5 = findViewById(R.id.question3_5);
+        question4_1 = findViewById(R.id.question4_1);
+        question4_2 = findViewById(R.id.question4_2);
+        question4_3 = findViewById(R.id.question4_3);
+        question4_4 = findViewById(R.id.question4_4);
+        question4_5 = findViewById(R.id.question4_5);
+        question5_1 = findViewById(R.id.question5_1);
+        question5_2 = findViewById(R.id.question5_2);
+        question5_3 = findViewById(R.id.question5_3);
+        question5_1_btn = findViewById(R.id.icon_low_empty);
+        question5_2_btn = findViewById(R.id.icon_littlehigh_empty);
+        question5_3_btn = findViewById(R.id.icon_high_empty);
 //         endregion
 
-        dateView = (TextView) findViewById(R.id.ema_date_info);
-        emaNumView = (TextView) findViewById(R.id.ema_number_info);
+        dateView = findViewById(R.id.ema_date_info);
+        emaNumView = findViewById(R.id.ema_number_info);
 
-        long curTimestamp = System.currentTimeMillis();
-        Calendar curCal = Calendar.getInstance();
-
-        //region Sending Notification and some statistics periodically
-//        emaOrder = Tools.getEMAOrderAtExactTime(curCal);
         emaOrder = getIntent().getIntExtra("ema_order", (short) -1);
-        todayNum = getDayNum();
-        Log.i(TAG, "DayNum, EMA order: " + todayNum + ", " + emaOrder);
+        if (DbMgr.getDB() == null)
+            DbMgr.init(getApplicationContext());
 
-//        seekBar1 = findViewById(R.id.scale_q1);
-//        seekBar2 = findViewById(R.id.scale_q2);
-//        seekBar3 = findViewById(R.id.scale_q3);
-//        seekBar4 = findViewById(R.id.scale_q4);
+        todayNum = getDayNum();
 
         Date currentTime = Calendar.getInstance().getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
-        switch (emaOrder){
+        switch (emaOrder) {
             case EMANUM1:
                 emaNumView.setText(getResources().getString(R.string.ema_num_info1));
                 break;
@@ -258,7 +237,7 @@ public class EMAActivity extends AppCompatActivity {
         question1_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch(i){
+                switch (i) {
                     case R.id.question1_1:
                         answer1 = 1;
                         break;
@@ -280,7 +259,7 @@ public class EMAActivity extends AppCompatActivity {
         question2_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch(i){
+                switch (i) {
                     case R.id.question2_1:
                         answer2 = 1;
                         break;
@@ -302,7 +281,7 @@ public class EMAActivity extends AppCompatActivity {
         question3_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch(i){
+                switch (i) {
                     case R.id.question3_1:
                         answer3 = 1;
                         break;
@@ -324,7 +303,7 @@ public class EMAActivity extends AppCompatActivity {
         question4_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch(i){
+                switch (i) {
                     case R.id.question4_1:
                         answer4 = 1;
                         break;
@@ -372,7 +351,7 @@ public class EMAActivity extends AppCompatActivity {
         });
     }
 
-    public void emaSubmit(){
+    public void emaSubmit() {
         long timestamp = System.currentTimeMillis();
 
 //        int answer1 = seekBar1.getProgress();
@@ -415,7 +394,7 @@ public class EMAActivity extends AppCompatActivity {
 //                break;
 //        }
 
-        if(answer1 == 0 || answer2 == 0 || answer3 == 0 || answer4 == 0 || answer5 == 0){
+        if (answer1 == 0 || answer2 == 0 || answer3 == 0 || answer4 == 0 || answer5 == 0) {
             Toast.makeText(getApplicationContext(), "모든 문항에 응답해주세요!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -433,20 +412,14 @@ public class EMAActivity extends AppCompatActivity {
         int dataSourceId = prefs.getInt("SURVEY_EMA", -1);
         assert dataSourceId != -1;
         Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId);
-        if(getIntent().getBooleanExtra("dont_save_ema", false)){
+        if (getIntent().getIntExtra("ema_order", (short) -1) != -1) {
             DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
-            getIntent().removeExtra("dont_save_ema");
         }
 
 
         SharedPreferences.Editor editor = loginPrefs.edit();
         editor.putBoolean("ema_btn_make_visible", false);
         editor.apply();
-
-//        int dataSourceId2 = prefs.getInt("SELF_STRESS_REPORT", -1);
-//        assert dataSourceId2 != -1;
-//        Log.i(TAG, "SURVEY_EMA dataSourceId2: " + dataSourceId2);
-//        DbMgr.saveMixedData(dataSourceId2, timestamp, 1.0f, timestamp, todayNum, emaOrder, answer5);
 
 
         //go to tag activity

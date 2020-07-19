@@ -153,7 +153,6 @@ public class MeFragmentStep1 extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), EMAActivity.class);
-                intent.putExtra("dont_save_ema", true);
                 startActivity(intent);
             }
         });
