@@ -159,6 +159,7 @@ public class AuthenticationActivity extends Activity {
                                 });
                                 Log.e(TAG, "onCreate: gRPC server unavailable");
                             }
+                            channel.shutdown();
                         }
                     }).start();
                 }

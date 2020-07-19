@@ -11,11 +11,13 @@ import java.util.Locale;
 
 public class AppUseDb {
     static private SQLiteDatabase db;
+    static boolean initialized = false;
     private static final String TAG = "AppUseDb";
 
     static void init(Context context) {
         db = context.openOrCreateDatabase(context.getPackageName(), Context.MODE_PRIVATE, null);
         db.execSQL("create table if not exists AppUse(id integer primary key autoincrement, package_name varchar(256), start_timestamp bigint, end_timestamp bigint, total_time_in_foreground bigint);");
+        initialized = true;
     }
 
     static private List<AppUsageRecord> getOverlappingRecords(String packageName, long startTimestamp, long endTimestamp) {

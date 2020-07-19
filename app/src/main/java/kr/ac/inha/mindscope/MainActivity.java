@@ -351,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
 
-        // cancelPreviousAppUseNotification();
+        cancelPreviousAppUseNotification();
         setUpNewAppUseNotification();
 
         super.onDestroy();
@@ -418,7 +418,8 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 109, intent, PendingIntent.FLAG_NO_CREATE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
+        if (pendingIntent != null)
+            alarmManager.cancel(pendingIntent);
     }
 
     private void setUpNewAppUseNotification() {
