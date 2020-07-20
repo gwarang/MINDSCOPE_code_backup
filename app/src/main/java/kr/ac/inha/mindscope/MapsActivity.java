@@ -14,7 +14,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -49,6 +48,7 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +62,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, OnItemClick {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick {
 
     private static final String TAG = "MapsActivity";
 
@@ -76,7 +76,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ImageButton currentLocationBtn;
 
     private Marker currentGeofenceMarker;
-    private MapsActivity.StoreLocation currentStoringLocation;
     private Circle geoLimits;
 
     private static final Float ZOOM_LEVLE = 16f;
@@ -104,31 +103,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     String selectedName;
     String selectedAddress;
 
-    List<String[]> placeList;
-
     private FusedLocationProviderClient fusedLocationProviderClient;
+
+    ArrayList<StoreLocation> array;
 
 
     public static final int GEOFENCE_RADIUS_DEFAULT = 100;
-    static final MapsActivity.StoreLocation[] ALL_LOCATIONS = new MapsActivity.StoreLocation[]
-            {
-                    new MapsActivity.StoreLocation(ID_HOME, null),
-                    new MapsActivity.StoreLocation(ID_DORM, null),
-                    new MapsActivity.StoreLocation(ID_UNIV, null),
-                    new MapsActivity.StoreLocation(ID_LIBRARY, null),
-                    new MapsActivity.StoreLocation(ID_ADDITIONAL, null)
-            };
 
     //region Internal classes
     static class StoreLocation {
         LatLng mLatLng;
         String mId;
-        int rad;
+        String mName;
+        String mAddress;
 
-        StoreLocation(String id, LatLng latlng/*, int radius*/) {
+        StoreLocation(String id, LatLng latlng, String name, String address) {
             mLatLng = latlng;
             mId = id;
-            //rad = radius;
+            mName = name;
+            mAddress = address;
         }
 
         LatLng getmLatLng() {
@@ -139,13 +132,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return mId;
         }
 
-        int getRadius() {
-            return rad;
+        String getmName() {
+            return mName;
         }
 
-        void setRadius(int radius) {
-            rad = radius;
+        String getmAddress() {
+            return mAddress;
         }
+
+
     }
     //endregion
 
@@ -158,6 +153,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         if (DbMgr.getDB() == null)
             DbMgr.init(getApplicationContext());
+
 
         checkForFirstStartStep1 = false;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -324,13 +320,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         mMap.clear();
 
-        mMap.setOnMapClickListener(this);
-        mMap.setOnMarkerClickListener(this);
+        // TODO: come here
 
-        for (MapsActivity.StoreLocation location : ALL_LOCATIONS) {
-            if (getLocationData(getApplicationContext(), location) != null) {
+        SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
+        String[] locations = locationPrefs.getString("locationList", "").split(" ");
+        for (String location : locations) {
+            if (getLocationData(getApplicationContext(), location) != null)
                 addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
-            }
         }
 
         try {
@@ -340,24 +336,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         } catch (SecurityException e) {
             e.printStackTrace();
+
+//            prfs.get("locationList").split(" ");
+//            []
         }
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        markerForGeofence(latLng);
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        removeLocation(marker.getTitle());
-        drawGeofence(marker, Integer.parseInt(marker.getSnippet()));
-        return false;
     }
 
     @Override
@@ -497,147 +480,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    static StoreLocation getLocationData(Context con, StoreLocation location) {
+    static StoreLocation getLocationData(Context con, String locationId) {
         SharedPreferences locationPrefs = con.getSharedPreferences("UserLocations", MODE_PRIVATE);
-        float lat = locationPrefs.getFloat(location.getmId() + "_LAT", 0);
-        float lng = locationPrefs.getFloat(location.getmId() + "_LNG", 0);
+        float lat = locationPrefs.getFloat(locationId + "_LAT", 0);
+        float lng = locationPrefs.getFloat(locationId + "_LNG", 0);
+        String name = locationPrefs.getString(locationId + "_NAME", "");
+        String address = locationPrefs.getString(locationId + "_ADDRESS", "");
         if (lat != 0 && lng != 0) {
-            return new StoreLocation(location.getmId(), new LatLng(lat, lng));
+            return new StoreLocation(locationId, new LatLng(lat, lng), name, address);
         }
         return null;
-
     }
 
-    private void setLocation(String locationText, StoreLocation location) {
-        final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
-        SharedPreferences.Editor editor = locationPrefs.edit();
-        editor.putFloat(location.getmId() + "_LAT", (float) location.getmLatLng().latitude);
-        editor.putFloat(location.getmId() + "_LNG", (float) location.getmLatLng().longitude);
-        editor.apply();
-        Toast.makeText(getApplicationContext(), locationText + getString(R.string.location_set), Toast.LENGTH_SHORT).show();
-        currentStoringLocation.setRadius(GEOFENCE_RADIUS_DEFAULT);
-
-        String location_id = currentStoringLocation.getmId();
-        LatLng position = currentStoringLocation.getmLatLng();
-        int radius = currentStoringLocation.getRadius();
-
-        GeofenceHelper.startGeofence(getApplicationContext(), location_id, position, radius);
-
-        SharedPreferences confPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-        int dataSourceId = confPrefs.getInt("LOCATIONS_MANUAL", -1);
-        assert dataSourceId != -1;
-        long nowTime = System.currentTimeMillis();
-        DbMgr.saveMixedData(dataSourceId, nowTime, 1.0f, nowTime, location.getmId(), (float) location.getmLatLng().latitude, (float) location.getmLatLng().longitude);
-
-        onMapReady(mMap);
-        drawGeofence(currentGeofenceMarker, currentStoringLocation.getRadius());
-    }
-
-    private void removeLocation(String markerTitle) {
-        if (markerTitle.equals(TITLE_HOME))
-            displayRemoveDialog(ID_HOME);
-        else if (markerTitle.equals(TITLE_DORM))
-            displayRemoveDialog(ID_DORM);
-        else if (markerTitle.equals(TITLE_UNIV))
-            displayRemoveDialog(ID_UNIV);
-        else if (markerTitle.equals(TITLE_LIBRARY))
-            displayRemoveDialog(ID_LIBRARY);
-        else if (markerTitle.equals(TITLE_ADDITIONAL))
-            displayRemoveDialog(ID_ADDITIONAL);
-    }
-
-    public void displayRemoveDialog(final String locationId) {
-        final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.location_remove_confirmation));
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                GeofenceHelper.removeGeofence(getApplicationContext(), locationId);
-                SharedPreferences.Editor editor = locationPrefs.edit();
-                editor.remove(locationId + "_LAT");
-                editor.remove(locationId + "_LNG");
-                editor.remove(locationId + "_ENTERED_TIME");
-                editor.apply();
-                Toast.makeText(MapsActivity.this, getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
-                onMapReady(mMap);
-                drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
-        builder.show();
-    }
-
-//    //region Buttons click listeners
-//    public void setHomeClick(View view) {
-//        currentStoringLocation = new LocationsSettingActivity.StoreLocation(ID_HOME, new LatLng(currentGeofenceMarker.getPosition().latitude, currentGeofenceMarker.getPosition().longitude));
-//        displayDialog(TITLE_HOME, currentStoringLocation);
-//        //setLocation(TITLE_HOME, currentStoringLocation);
-//    }
-//
-//    public void setDormClick(View view) {
-//        currentStoringLocation = new LocationsSettingActivity.StoreLocation(ID_DORM, new LatLng(currentGeofenceMarker.getPosition().latitude, currentGeofenceMarker.getPosition().longitude));
-//        displayDialog(TITLE_DORM, currentStoringLocation);
-//        //setLocation(TITLE_DORM, currentStoringLocation);
-//    }
-//
-//    public void setUnivClick(View view) {
-//        currentStoringLocation = new LocationsSettingActivity.StoreLocation(ID_UNIV, new LatLng(currentGeofenceMarker.getPosition().latitude, currentGeofenceMarker.getPosition().longitude));
-//        displayDialog(TITLE_UNIV, currentStoringLocation);
-//        //setLocation(TITLE_UNIV, currentStoringLocation);
-//    }
-//
-//    public void setLibraryClick(View view) {
-//        currentStoringLocation = new LocationsSettingActivity.StoreLocation(ID_LIBRARY, new LatLng(currentGeofenceMarker.getPosition().latitude, currentGeofenceMarker.getPosition().longitude));
-//        displayDialog(TITLE_LIBRARY, currentStoringLocation);
-//        //setLocation(TITLE_LIBRARY, currentStoringLocation);
-//    }
-//
-//    public void setAdditionalPlaceClick(View view) {
-//        currentStoringLocation = new LocationsSettingActivity.StoreLocation(ID_ADDITIONAL, new LatLng(currentGeofenceMarker.getPosition().latitude, currentGeofenceMarker.getPosition().longitude));
-//        displayDialog(TITLE_ADDITIONAL, currentStoringLocation);
-//        //setLocation(TITLE_LIBRARY, currentStoringLocation);
-//    }
-//    //endregion
-
-
-    public void displayDialog(final String locationText, final StoreLocation location) {
-        final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.location_set_confirmation, locationText));
-        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                setLocation(locationText, location);
-            }
-        });
-
-        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    }
 
     @Override
     public void onBackPressed() {
         //
     }
-
-    //    @Override
-//    public void onBackPressed() {
-//        Intent intent = new Intent(MapsActivity.this, MainActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        startActivity(intent);
-//    }
 
 
     @Override

@@ -1,6 +1,9 @@
 package kr.ac.inha.mindscope;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import static android.content.Context.MODE_PRIVATE;
+import static kr.ac.inha.mindscope.MapsActivity.ID_HOME;
 
 public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
 
@@ -32,11 +39,13 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
     PlaceDbHelper dbHelper;
 
     private OnItemClick mCallback;
+    private Context context;
 
     public PlaceDBAdapter(@NonNull Context context, int resource, @NonNull List<PlaceInfo> objects, OnItemClick onItemClick) {
         super(context, resource, objects);
 
         this.mCallback = onItemClick;
+        this.context = context;
     }
 
 
@@ -61,8 +70,8 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
         placeAddressView.setText(placeInfo.placeAddress);
         placeUserNameView.setText(placeInfo.placeUserName);
 
-        Button editButton = (Button) convertView.findViewById(R.id.btn_place_info_edit);
-        Button deleteButton = (Button) convertView.findViewById(R.id.btn_place_info_delete);
+        Button editButton = convertView.findViewById(R.id.btn_place_info_edit);
+        Button deleteButton = convertView.findViewById(R.id.btn_place_info_delete);
 
 
 //        container.setOnClickListener(new View.OnClickListener(){
@@ -96,12 +105,25 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
             public void onClick(View view) {
 //                Toast.makeText(getContext(), "삭제", Toast.LENGTH_SHORT).show();
                 int pos = position;
+
+                String locationId;
+
+                if(placeUserNameView.getText().toString().equals("집")){
+                    locationId = ID_HOME;
+                }else{
+                    locationId = placeUserNameView.getText().toString();
+                }
+                displayRemoveDialog(locationId);
+
                 PlaceInfo deletePlaceInfo = getItem(pos);
                 Log.i(TAG, deletePlaceInfo.placeName + " by delete btn");
-                if(mCallback == null)
+                if(mCallback == null) {
                     Log.e(TAG, "mcallback is null");
-                else
+                }
+                else {
                     mCallback.onClick(deletePlaceInfo, DELETE_CODE);
+                }
+
 
 //                dbHelper = new PlaceDbHelper(getContext());
 //                dbHelper.deletePlaceData(deletePlaceInfo.placeName);
@@ -110,5 +132,31 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
 
 
         return convertView;
+    }
+
+    public void displayRemoveDialog(final String locationId) {
+        final SharedPreferences locationPrefs = context.getSharedPreferences("UserLocations", MODE_PRIVATE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(context.getString(R.string.location_remove_confirmation));
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                GeofenceHelper.removeGeofence(context, locationId);
+                SharedPreferences.Editor editor = locationPrefs.edit();
+                editor.remove(locationId + "_LAT");
+                editor.remove(locationId + "_LNG");
+                editor.remove(locationId + "_ENTERED_TIME");
+                editor.apply();
+                Toast.makeText(context, context.getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 }
