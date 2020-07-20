@@ -30,7 +30,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import static kr.ac.inha.mindscope.services.MainService.EMA_NOTIFICATION_ID;
+import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class EMAActivity extends AppCompatActivity {
 
@@ -442,7 +442,7 @@ public class EMAActivity extends AppCompatActivity {
 
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
-            notificationManager.cancel(EMA_NOTIFICATION_ID);
+            notificationManager.cancel(EMA_NOTI_ID);
         }
 
         Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();
@@ -482,7 +482,7 @@ public class EMAActivity extends AppCompatActivity {
 
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
-            notificationManager.cancel(EMA_NOTIFICATION_ID);
+            notificationManager.cancel(EMA_NOTI_ID);
         }
 
         Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();

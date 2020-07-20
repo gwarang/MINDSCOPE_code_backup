@@ -39,7 +39,7 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
-import static kr.ac.inha.mindscope.services.MainService.EMA_NOTIFICATION_ID;
+import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class StressReportFragment1 extends Fragment {
 
@@ -286,7 +286,7 @@ public class StressReportFragment1 extends Fragment {
 
                 final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 if (notificationManager != null) {
-                    notificationManager.cancel(EMA_NOTIFICATION_ID);
+                    notificationManager.cancel(EMA_NOTI_ID);
                 }
 
 
