@@ -555,6 +555,7 @@ public class MeFragmentStep2 extends Fragment {
             }
 
         }
+        channel.shutdown();
     }
 
 }

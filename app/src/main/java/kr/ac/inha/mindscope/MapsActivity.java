@@ -62,6 +62,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import static kr.ac.inha.mindscope.LocationAdapter.EDIT_CODE;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick {
 
     private static final String TAG = "MapsActivity";
@@ -96,8 +98,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String TITLE_LIBRARY;
     private String TITLE_ADDITIONAL;
 
-    PlaceDbHelper placeDbHelper;
-
     // autocomplte place selected
     LatLng selectedLatLng;
     String selectedName;
@@ -105,7 +105,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    ArrayList<StoreLocation> array;
+    ArrayList<StoreLocation> locationArrayList;
 
 
     public static final int GEOFENCE_RADIUS_DEFAULT = 100;
@@ -185,16 +185,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         TITLE_HOME = getString(R.string.set_home_location);
 
 
-        placeDbHelper = new PlaceDbHelper(getApplicationContext());
         updateListView();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                PlaceInfo placeInfo = (PlaceInfo) listView.getItemAtPosition(i);
-//                Toast.makeText(MapsActivity.this, "work okay", Toast.LENGTH_SHORT).show();
-                Log.i(TAG, placeInfo.placeName + " by click");
-                changeMarkerPlaceInfo(placeInfo);
+                StoreLocation storeLocation = (StoreLocation) listView.getItemAtPosition(i);
+                changeMarkerPlaceInfo(storeLocation);
             }
         });
 
@@ -275,11 +272,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void updateListView() {
-        PlaceDBAdapter adapter = new PlaceDBAdapter(this, R.layout.item_place_list, placeDbHelper.getPlaceData(), this);
+        locationArrayList = new ArrayList<>();
+        SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
+        String[] locations = locationPrefs.getString("locationList", "").split(" ");
+        Log.e(TAG, "locationList " + locations);
+        for (String location : locations) {
+            if (getLocationData(getApplicationContext(), location) != null){
+//                addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
+                locationArrayList.add(getLocationData(getApplicationContext(), location));
+            }
+        }
+        LocationAdapter adapter = new LocationAdapter(this, R.layout.item_place_list, locationArrayList, this);
         listView = findViewById(R.id.place_list);
         listView.setEmptyView(findViewById(android.R.id.empty));
         listView.setAdapter(adapter);
-
     }
 
     @Override
@@ -293,13 +299,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (requestCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(TAG, "이거 Place: " + place.getName() + ", " + place.getId());
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, "이거2 " + status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, "이거3 " + status);
             }
             return;
         }
@@ -322,11 +325,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // TODO: come here
 
+        locationArrayList = new ArrayList<>();
+
         SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
         String[] locations = locationPrefs.getString("locationList", "").split(" ");
         for (String location : locations) {
-            if (getLocationData(getApplicationContext(), location) != null)
+            if (getLocationData(getApplicationContext(), location) != null){
                 addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
+                locationArrayList.add(getLocationData(getApplicationContext(), location));
+            }
         }
 
         try {
@@ -428,8 +435,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 location_title = TITLE_ADDITIONAL;
                 break;
             default:
-                iconDrawable = ContextCompat.getDrawable(this, R.mipmap.ic_launcher_no_bg);
-                location_title = "My location";
+                iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
+                location_title = location.getmId();
                 break;
         }
 
@@ -443,39 +450,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     // place info marker
-    private void changeMarkerPlaceInfo(PlaceInfo placeInfo) {
+    private void changeMarkerPlaceInfo(StoreLocation storeLocation) {
         // 누른 listview 에 따라서 마커 그리기
-        LatLng latLng = new LatLng(placeInfo.placeLat, placeInfo.placeLng);
+        LatLng latLng = new LatLng(storeLocation.getmLatLng().latitude, storeLocation.getmLatLng().longitude);
         mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
-                .title(placeInfo.placeUserName));
+                .title(storeLocation.getmId()));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
     }
 
     @Override
-    public void onClick(PlaceInfo placeInfo, int code) {
-        if (placeInfo != null) {
-            if (code == 1) {
-                PlaceDbHelper dbHelper = new PlaceDbHelper(getApplicationContext());
-                dbHelper.deletePlaceData(placeInfo.placeName);
-                Log.i(TAG, placeInfo.placeName + " is deleted.");
-                updateListView();
-            } else {
-                PlaceDbHelper dbHelper = new PlaceDbHelper(getApplicationContext());
-
-                Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
-                intent.putExtra("name", placeInfo.placeName);
-                intent.putExtra("address", placeInfo.placeAddress);
-                intent.putExtra("lat", placeInfo.placeLat);
-                intent.putExtra("lng", placeInfo.placeLng);
-                intent.putExtra("placeusername", placeInfo.placeUserName);
-                intent.putExtra("editcode", PlaceDBAdapter.EDIT_CODE);
-                startActivity(intent);
-
-
-            }
+    public void onClick(MapsActivity.StoreLocation storeLocation, int code) {
+        if (storeLocation != null && code == EDIT_CODE) {
+            Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
+            intent.putExtra("name", storeLocation.getmName());
+            intent.putExtra("address", storeLocation.getmAddress());
+            intent.putExtra("lat", storeLocation.getmLatLng().latitude);
+            intent.putExtra("lng", storeLocation.getmLatLng().longitude);
+            intent.putExtra("placeusername", storeLocation.getmId());
+            intent.putExtra("editcode", EDIT_CODE);
+            startActivity(intent);
+        }else{
+            Log.e(TAG, String.format("code %d", code));
         }
+        updateListView();
 
     }
 
