@@ -2,7 +2,6 @@ package kr.ac.inha.mindscope;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,7 +54,7 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
         pos = position;
         placeInfo = getItem(position);
 
-        if(convertView == null){
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.item_place_list, null);
         }
@@ -86,48 +85,41 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
 //            }
 //        });
 
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        editButton.setOnClickListener(view -> {
 //                Toast.makeText(getContext(), "수정", Toast.LENGTH_SHORT).show();
-                int pos = position;
-                PlaceInfo deletePlaceInfo = getItem(pos);
-                Log.i(TAG, deletePlaceInfo.placeName);
-                if(mCallback == null)
-                    Log.e(TAG, "mcallback is null");
-                else
-                    mCallback.onClick(deletePlaceInfo, EDIT_CODE);
-            }
+            int pos = position;
+            PlaceInfo deletePlaceInfo = getItem(pos);
+            Log.i(TAG, deletePlaceInfo.placeName);
+            if (mCallback == null)
+                Log.e(TAG, "mcallback is null");
+            else
+                mCallback.onClick(deletePlaceInfo, EDIT_CODE);
         });
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        deleteButton.setOnClickListener(view -> {
 //                Toast.makeText(getContext(), "삭제", Toast.LENGTH_SHORT).show();
-                int pos = position;
+            int pos = position;
 
-                String locationId;
+            String locationId;
 
-                if(placeUserNameView.getText().toString().equals("집")){
-                    locationId = ID_HOME;
-                }else{
-                    locationId = placeUserNameView.getText().toString();
-                }
-                displayRemoveDialog(locationId);
+            if (placeUserNameView.getText().toString().equals("집")) {
+                locationId = ID_HOME;
+            } else {
+                locationId = placeUserNameView.getText().toString();
+            }
+            displayRemoveDialog(locationId);
 
-                PlaceInfo deletePlaceInfo = getItem(pos);
-                Log.i(TAG, deletePlaceInfo.placeName + " by delete btn");
-                if(mCallback == null) {
-                    Log.e(TAG, "mcallback is null");
-                }
-                else {
-                    mCallback.onClick(deletePlaceInfo, DELETE_CODE);
-                }
+            PlaceInfo deletePlaceInfo = getItem(pos);
+            Log.i(TAG, deletePlaceInfo.placeName + " by delete btn");
+            if (mCallback == null) {
+                Log.e(TAG, "mcallback is null");
+            } else {
+                mCallback.onClick(deletePlaceInfo, DELETE_CODE);
+            }
 
 
 //                dbHelper = new PlaceDbHelper(getContext());
 //                dbHelper.deletePlaceData(deletePlaceInfo.placeName);
-            }
         });
 
 
@@ -138,25 +130,22 @@ public class PlaceDBAdapter extends ArrayAdapter<PlaceInfo> {
         final SharedPreferences locationPrefs = context.getSharedPreferences("UserLocations", MODE_PRIVATE);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(context.getString(R.string.location_remove_confirmation));
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                GeofenceHelper.removeGeofence(context, locationId);
-                SharedPreferences.Editor editor = locationPrefs.edit();
-                editor.remove(locationId + "_LAT");
-                editor.remove(locationId + "_LNG");
-                editor.remove(locationId + "_ENTERED_TIME");
-                editor.apply();
-                Toast.makeText(context, context.getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
-            }
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            GeofenceHelper.removeGeofence(context, locationId);
+            SharedPreferences.Editor editor = locationPrefs.edit();
+            editor.remove(locationId + "_LAT");
+            editor.remove(locationId + "_LNG");
+            editor.remove(locationId + "_ENTERED_TIME");
+            editor.remove(locationId + "_ADDRESS");
+            editor.remove(locationId + "_NAME");
+            String newLocationList = locationPrefs.getString("locationList", "").replace(" " + locationId, "");
+            editor.putString("locationList", newLocationList);
+
+            editor.apply();
+            Toast.makeText(context, context.getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 }
