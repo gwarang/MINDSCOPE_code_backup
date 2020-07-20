@@ -98,6 +98,7 @@ public class CareChildFragment1 extends Fragment {
     LinearLayout socialContainer;
     LinearLayout locationContainer;
     LinearLayout sleepContainer;
+    ScrollView reasonContainer;
 
     static String feature_ids1 = "";
     static String feature_ids2 = "";
@@ -108,7 +109,6 @@ public class CareChildFragment1 extends Fragment {
     int order3StressLevel;
     int order4StressLevel;
 
-    ScrollView reasonContainer;
 
 
     ArrayList<JSONObject[]> stressReportsJsonArray;

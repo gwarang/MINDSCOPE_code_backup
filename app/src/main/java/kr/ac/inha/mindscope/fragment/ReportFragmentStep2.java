@@ -13,9 +13,13 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -39,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import inha.nsl.easytrack.ETServiceGrpc;
@@ -48,6 +53,11 @@ import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportDBHelper;
+
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,6 +72,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private static final int tileHeight = 45;
     private long joinTimestamp;
     private CalendarDay selectedDay;
+    private CalendarDay chooseDay;
 
     ImageView fragmentMeStep2BtnHelp;
     TextView dateView;
@@ -86,6 +97,27 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ImageButton arrowResult3;
     ImageButton arrowResult4;
     TextView selectedDayComment;
+
+    ScrollView defaultContainer;
+    ConstraintLayout hiddenContainer;
+
+    ImageView hiddenStressImg;
+    TextView hiddenDateView;
+    TextView hiddenTimeView;
+    TextView hiddenStressLevelView;
+
+    ListView phoneListView;
+    ListView activityListView;
+    ListView socialListView;
+    ListView locationListView;
+    ListView sleepListView;
+    LinearLayout phoneContainer;
+    LinearLayout activityContainer;
+    LinearLayout socialContainer;
+    LinearLayout locationContainer;
+    LinearLayout sleepContainer;
+    ScrollView reasonContainer;
+    ImageButton backArrow;
 
 
     StressReportDBHelper dbHelper;
@@ -115,6 +147,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
         joinTimestamp = getJoinTime();
         Log.e(TAG, "join timestamp " + joinTimestamp);
+
+        defaultContainer = root.findViewById(R.id.frg_report_step2_container1);
 
         Calendar firstDayCal = Calendar.getInstance(Locale.KOREA);
         firstDayCal.setTimeInMillis(joinTimestamp);
@@ -162,6 +196,26 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
         sumPointsView.setText(String.valueOf(prefs.getInt("sumPoints", 0)));
 
+        // hidden view
+        hiddenContainer = root.findViewById(R.id.frg_report_step2_container2);
+        hiddenStressImg = root.findViewById(R.id.frg_report_step2_hidden_img1);
+        hiddenDateView = root.findViewById(R.id.frg_report_step2_date1);
+        hiddenTimeView = root.findViewById(R.id.frg_report_step2_time1);
+        hiddenStressLevelView = root.findViewById(R.id.frg_report_step2_txt_stress_level);
+        backArrow = root.findViewById(R.id.frg_report_step2_back_arrow);
+        phoneListView = root.findViewById(R.id.frg_report_step2_listview_phone);
+        activityListView = root.findViewById(R.id.frg_report_step2_listview_activity);
+        socialListView = root.findViewById(R.id.frg_report_step2_listview_social);
+        locationListView = root.findViewById(R.id.frg_report_step2_listview_location);
+        sleepListView = root.findViewById(R.id.frg_report_step2_listview_sleep);
+        phoneContainer = root.findViewById(R.id.frg_report_step2_listview_phone_container);
+        activityContainer = root.findViewById(R.id.frg_report_step2_listview_activity_container);
+        socialContainer = root.findViewById(R.id.frg_report_step2_listview_social_container);
+        locationContainer = root.findViewById(R.id.frg_report_step2_listview_location_container);
+        sleepContainer = root.findViewById(R.id.frg_report_step2_listview_sleep_container);
+
+        reasonContainer = root.findViewById(R.id.frg_report_step2_stress_reason_container);
+
         txtStressLevel = root.findViewById(R.id.txt_stress_level);
         // TODO 달력에서 날짜 선택하면 해당 날짜 평균 스트레스 레벨로 바꿔줘야함, 캘린더 클릭 이벤트에서 처리할것
         txtStressLevel.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
@@ -193,47 +247,117 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         arrowResult1.setOnClickListener((v) -> {
             // 07:00 ~ 11:00
             Calendar c = Calendar.getInstance();
-            c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 11, 0, 0);
+            c.set(chooseDay.getYear(), chooseDay.getMonth() - 1, chooseDay.getDay(), 11, 0, 0);
+            c.set(Calendar.MILLISECOND, 0);
             long timestamp = c.getTimeInMillis();
+
+            String hiddenDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(timestamp);
+            hiddenDateView.setText(hiddenDateStr + "의");
+            hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration1));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
+            String feature_ids = null;
             try {
-                String feature_ids = object.getJSONObject(String.valueOf(stressLv-1)).getString("feature_ids");
+                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
                 Log.e(TAG, feature_ids);
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+            if(feature_ids != null){
+                defaultContainer.setVisibility(View.INVISIBLE);
+                hiddenContainer.setVisibility(View.VISIBLE);
+                hiddenViewUpdate(feature_ids, stressLv);
             }
         });
         arrowResult2.setOnClickListener((v) -> {
             // 11:00 ~ 15:00
             Calendar c = Calendar.getInstance();
             c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 15, 0, 0);
+            c.set(Calendar.MILLISECOND, 0);
             long timestamp = c.getTimeInMillis();
+
+            String hiddenDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(timestamp);
+            hiddenDateView.setText(hiddenDateStr + "의");
+            hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration2));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
             // TODO HR
-
             int stressLv = stressLevels.get(timestamp).second;
+            String feature_ids = null;
+            try {
+                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                Log.e(TAG, feature_ids);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(feature_ids != null){
+                defaultContainer.setVisibility(View.INVISIBLE);
+                hiddenContainer.setVisibility(View.VISIBLE);
+                hiddenViewUpdate(feature_ids, stressLv);
+            }
         });
         arrowResult3.setOnClickListener((v) -> {
             // 15:00 ~ 19:00
             Calendar c = Calendar.getInstance();
             c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 19, 0, 0);
+            c.set(Calendar.MILLISECOND, 0);
             long timestamp = c.getTimeInMillis();
+
+            String hiddenDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(timestamp);
+            hiddenDateView.setText(hiddenDateStr + "의");
+            hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration3));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
             // TODO HR
+            int stressLv = stressLevels.get(timestamp).second;
+            String feature_ids = null;
+            try {
+                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                Log.e(TAG, feature_ids);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(feature_ids != null){
+                defaultContainer.setVisibility(View.INVISIBLE);
+                hiddenContainer.setVisibility(View.VISIBLE);
+                hiddenViewUpdate(feature_ids, stressLv);
+            }
         });
         arrowResult4.setOnClickListener((v) -> {
             // 19:00 ~ 23:00
             Calendar c = Calendar.getInstance();
             c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 23, 0, 0);
+            c.set(Calendar.MILLISECOND, 0);
             long timestamp = c.getTimeInMillis();
+
+            String hiddenDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(timestamp);
+            hiddenDateView.setText(hiddenDateStr + "의");
+            hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration4));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
             // TODO HR
+            int stressLv = stressLevels.get(timestamp).second;
+            String feature_ids = null;
+            try {
+                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                Log.e(TAG, feature_ids);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(feature_ids != null){
+                defaultContainer.setVisibility(View.INVISIBLE);
+                hiddenContainer.setVisibility(View.VISIBLE);
+                hiddenViewUpdate(feature_ids, stressLv);
+            }
+        });
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                defaultContainer.setVisibility(View.VISIBLE);
+                hiddenContainer.setVisibility(View.INVISIBLE);
+            }
         });
 
         loadAllStressLevelsFromServer();
@@ -248,6 +372,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay day, boolean selected) {
         // [Kevin] 선택된 날짜의 stress 보고서 보여주기
+        chooseDay = day;
         Log.i(TAG, "Seleted Date: " + day);
         Calendar c = Calendar.getInstance();
         c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
@@ -692,7 +817,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         }
                         if (stressLevel != 0) {
                             c.setTimeInMillis(timestamp);
-                            c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), 0);
+                            c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
                             c.set(Calendar.MILLISECOND, 0);
                             timestamp = c.getTimeInMillis();
 
@@ -780,6 +905,124 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     private boolean isSubmission(long timestamp) {
         return stressLevels.get(timestamp).first != -1;
+    }
+
+    public void hiddenViewUpdate(String feature_ids, int stressLevl){
+        ArrayList<String> phoneReason = new ArrayList<>();
+        ArrayList<String> activityReason = new ArrayList<>();
+        ArrayList<String> socialReason = new ArrayList<>();
+        ArrayList<String> locationReason = new ArrayList<>();
+        ArrayList<String> sleepReason = new ArrayList<>();
+
+        if(feature_ids.equals("")){
+            Log.i(TAG, "feature_ids is empty");
+        }
+        else{
+            String[] featureArray = feature_ids.split(" ");
+
+            for(int i = 0; i < featureArray.length; i++ ){
+                String[] splitArray = featureArray[i].split("-");
+                int category = Integer.parseInt(splitArray[0]);
+                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String packName = getContext().getPackageName();
+                int resId = getResources().getIdentifier(strID, "string", packName);
+
+                if(category <= 5){
+                    activityReason.add(getResources().getString(resId));
+                }else if(category <= 11){
+                    socialReason.add(getResources().getString(resId));
+                }else if(category <= 16){
+                    locationReason.add(getResources().getString(resId));
+                }else if(category <= 28){
+                    phoneReason.add(getResources().getString(resId));
+                }else{
+                    sleepReason.add(getResources().getString(resId));
+                }
+
+                if(i == 4) // maximun number of showing feature is five
+                    break;
+            }
+        }
+
+        Log.d(TAG, "phoneReason" + phoneReason.toString());
+        Log.d(TAG, "activityReason" + activityReason.toString());
+
+        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, phoneReason
+        );
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, activityReason
+        );
+        ArrayAdapter<String> socialAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, socialReason
+        );
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, locationReason
+        );
+        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<String>(
+                getContext(), R.layout.item_feature_ids, sleepReason
+        );
+
+        phoneListView.setAdapter(phoneAdapter);
+        activityListView.setAdapter(activityAdapter);
+        socialListView.setAdapter(socialAdapter);
+        locationListView.setAdapter(locationAdapter);
+        sleepListView.setAdapter(sleepAdapter);
+
+
+        if(phoneReason.isEmpty())
+            phoneContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(phoneListView);
+            phoneContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(activityReason.isEmpty())
+            activityContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(activityListView);
+            activityContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(socialReason.isEmpty())
+            socialContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(socialListView);
+            socialContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(locationReason.isEmpty())
+            locationContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(locationListView);
+            locationContainer.setVisibility(View.VISIBLE);
+        }
+
+        if(sleepReason.isEmpty())
+            sleepContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(sleepListView);
+            sleepContainer.setVisibility(View.VISIBLE);
+        }
+
+        switch (stressLevl){
+            case STRESS_LV1:
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.icon_low));
+                hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, getActivity().getTheme()));
+                break;
+            case STRESS_LV2:
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.icon_littlehigh));
+                hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, getActivity().getTheme()));
+                break;
+            case STRESS_LV3:
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.icon_high));
+                hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, getActivity().getTheme()));
+                break;
+        }
+
     }
     // endregion
 }
