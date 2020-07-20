@@ -24,6 +24,10 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
+import org.apache.commons.lang3.tuple.Triple;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,11 +41,6 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import org.apache.commons.lang3.tuple.Triple;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -199,8 +198,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
             // TODO HR
-
-            boolean submission = isSubmission(timestamp);
+            int stressLv = stressLevels.get(timestamp).second;
+            try {
+                String feature_ids = object.getJSONObject(String.valueOf(stressLv-1)).getString("feature_ids");
+                Log.e(TAG, feature_ids);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
         arrowResult2.setOnClickListener((v) -> {
             // 11:00 ~ 15:00
@@ -272,6 +276,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         CheckBox[] checkBoxes = new CheckBox[]{checkBoxEmaOrder1, checkBoxEmaOrder2, checkBoxEmaOrder3, checkBoxEmaOrder4};
         ImageView[] imageViews = new ImageView[]{imageViewSlot1, imageViewSlot2, imageViewSlot3, imageViewSlot4};
         TextView[] textViews = new TextView[]{textViewSlot1, textViewSlot2, textViewSlot3, textViewSlot4};
+        ImageButton[] imageButtons = new ImageButton[]{arrowResult1, arrowResult2, arrowResult3, arrowResult4};
         int[] stressLevelTexts = new int[]{R.string.string_low, R.string.string_littlehigh, R.string.string_high};
         int[] stressLevelImageResources = new int[]{R.drawable.icon_low, R.drawable.icon_littlehigh, R.drawable.icon_high};
         Pair<Integer, Integer>[] ranges = new Pair[]{new Pair<>(700, 1100), new Pair<>(1100, 1500), new Pair<>(1500, 1900), new Pair<>(1900, 2300)};
@@ -281,6 +286,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             imageView.setVisibility(View.INVISIBLE);
         for (TextView textView : textViews)
             textView.setVisibility(View.INVISIBLE);
+        for (ImageButton imageButton : imageButtons)
+            imageButton.setVisibility(View.INVISIBLE);
         if (dailyStressLevelClusters.containsKey(day)) {
             ArrayList<Triple<Long, Integer, Integer>> stressLevels = dailyStressLevelClusters.get(day);
             assert stressLevels != null;
@@ -299,6 +306,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                     imageViews[emaOrder - 1].setVisibility(View.VISIBLE);
                     imageViews[emaOrder - 1].setImageResource(stressLevelImageResources[stressLevel - 1]);
+
+                    imageButtons[emaOrder - 1].setVisibility(View.VISIBLE);
                 } else {
                     // detection
                     int index = findTimestampIndex(timestamp, ranges);
@@ -308,6 +317,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                         imageViews[index].setVisibility(View.VISIBLE);
                         imageViews[index].setImageResource(stressLevelImageResources[stressLevel - 1]);
+
+                        imageButtons[index].setVisibility(View.VISIBLE);
                     }
                 }
                 // endregion
