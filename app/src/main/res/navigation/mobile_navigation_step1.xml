@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/navigation_report"
-        android:name="kr.ac.inha.mindscope.fragment.ReportFragmentStep1"
+        android:name="kr.ac.inha.mindscope.fragment.ReportFragmentStep2"
         tools:layout="@layout/fragment_report" />
 
 </navigation>

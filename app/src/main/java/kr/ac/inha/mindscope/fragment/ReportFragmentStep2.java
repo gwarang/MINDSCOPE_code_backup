@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -61,6 +62,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private static final int tileWidth = 45;
     private static final int tileHeight = 45;
     private long joinTimestamp;
+    private CalendarDay selectedDay;
 
     ImageView fragmentMeStep2BtnHelp;
     TextView dateView;
@@ -80,6 +82,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     TextView textViewSlot2;
     TextView textViewSlot3;
     TextView textViewSlot4;
+    ImageButton arrowResult1;
+    ImageButton arrowResult2;
+    ImageButton arrowResult3;
+    ImageButton arrowResult4;
     TextView selectedDayComment;
 
 
@@ -90,6 +96,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
     static HashMap<CalendarDay, Integer> dailyAverageStressLevels = new HashMap<>();
     static HashMap<CalendarDay, ArrayList<Triple<Long, Integer, Integer>>> dailyStressLevelClusters = new HashMap<>();
+    static HashMap<Long, JSONObject> timestampStressFeaturesMap = new HashMap<>();
     // endregion
 
     public ReportFragmentStep2() {
@@ -147,6 +154,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         textViewSlot2 = root.findViewById(R.id.txt_report_result2);
         textViewSlot3 = root.findViewById(R.id.txt_report_result3);
         textViewSlot4 = root.findViewById(R.id.txt_report_result4);
+        arrowResult1 = root.findViewById(R.id.arrow_result1);
+        arrowResult2 = root.findViewById(R.id.arrow_result2);
+        arrowResult3 = root.findViewById(R.id.arrow_result3);
+        arrowResult4 = root.findViewById(R.id.arrow_result4);
         selectedDayComment = root.findViewById(R.id.selected_day_comment);
         dailyAverageStressLevelView = root.findViewById(R.id.frg_report_step2_img1);
         SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
@@ -179,11 +190,54 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             startActivity(intent);
         });
 
+        // set up per time-slot stress level button clicks
+        arrowResult1.setOnClickListener((v) -> {
+            // 07:00 ~ 11:00
+            Calendar c = Calendar.getInstance();
+            c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 11, 0, 0);
+            long timestamp = c.getTimeInMillis();
+
+            JSONObject object = timestampStressFeaturesMap.get(timestamp);
+            // TODO HR
+
+            boolean submission = isSubmission(timestamp);
+        });
+        arrowResult2.setOnClickListener((v) -> {
+            // 11:00 ~ 15:00
+            Calendar c = Calendar.getInstance();
+            c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 15, 0, 0);
+            long timestamp = c.getTimeInMillis();
+
+            JSONObject object = timestampStressFeaturesMap.get(timestamp);
+            // TODO HR
+
+            int stressLv = stressLevels.get(timestamp).second;
+        });
+        arrowResult3.setOnClickListener((v) -> {
+            // 15:00 ~ 19:00
+            Calendar c = Calendar.getInstance();
+            c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 19, 0, 0);
+            long timestamp = c.getTimeInMillis();
+
+            JSONObject object = timestampStressFeaturesMap.get(timestamp);
+            // TODO HR
+        });
+        arrowResult4.setOnClickListener((v) -> {
+            // 19:00 ~ 23:00
+            Calendar c = Calendar.getInstance();
+            c.set(selectedDay.getYear(), selectedDay.getMonth() - 1, selectedDay.getDay(), 23, 0, 0);
+            long timestamp = c.getTimeInMillis();
+
+            JSONObject object = timestampStressFeaturesMap.get(timestamp);
+            // TODO HR
+        });
+
         loadAllStressLevelsFromServer();
         loadAllPoints();
-        materialCalendarView.setSelectedDate(CalendarDay.today());
-        loadDailyPoints(CalendarDay.today());
-        onDateSelected(materialCalendarView, CalendarDay.today(), true);
+        selectedDay = CalendarDay.today();
+        materialCalendarView.setSelectedDate(selectedDay);
+        loadDailyPoints(selectedDay);
+        onDateSelected(materialCalendarView, selectedDay, true);
         return root;
     }
 
@@ -191,6 +245,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay day, boolean selected) {
         // [Kevin] 선택된 날짜의 stress 보고서 보여주기
         Log.i(TAG, "Seleted Date: " + day);
+        Calendar c = Calendar.getInstance();
+        c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+        Date currentTime = c.getTime();
+        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
+        dateView.setText(date_text);
 
         // region (1) daily points
         loadDailyPoints(day);
@@ -266,12 +325,24 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
             final int DAILY_COMMENT = 84;
 
-            Calendar c = Calendar.getInstance();
-            c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            long fromTimestamp = c.getTimeInMillis();
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            long tillTimestamp = c.getTimeInMillis();
+            Calendar cal = Calendar.getInstance();
+            cal.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            long fromTimestamp = cal.getTimeInMillis();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            long tillTimestamp = cal.getTimeInMillis();
+
+            if (dailyAverageStressLevels.containsKey(day)) {
+                int[] stressLevelStrings = new int[]{
+                        R.string.string_stress_level_low,
+                        R.string.string_stress_level_littlehigh,
+                        R.string.string_stress_level_high
+                };
+                int stressLevel = dailyAverageStressLevels.get(day);
+                txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel - 1])));
+                txtStressLevel.setVisibility(View.VISIBLE);
+            } else
+                txtStressLevel.setVisibility(View.GONE); // should never happen
 
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
@@ -306,6 +377,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // endregion
 
         materialCalendarView.invalidateDecorators();
+        selectedDay = day;
     }
 
     private int findTimestampIndex(long timestamp, Pair<Integer, Integer>[] range) {
@@ -585,28 +657,29 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             String[] cells = value.split(" ");
                             if (cells.length != 5)
                                 continue;
-                            timestamp = Long.parseLong(cells[0]);
                             emaOrder = Integer.parseInt(cells[2]);
+                            timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
                             stressLevel = Integer.parseInt(cells[4]);
                         } else {
                             // prediction
                             try {
                                 JSONObject cells = new JSONObject(value);
+                                timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
+                                c.setTimeInMillis(timestamp);
+                                timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+
                                 Iterator<String> keys = cells.keys();
                                 do {
                                     String key = keys.next();
-                                    if (cells.getJSONObject(key).getBoolean("model_tag")) {
-                                        timestamp = timestamps.get(n);
+                                    if (cells.getJSONObject(key).getBoolean("model_tag"))
                                         stressLevel = Integer.parseInt(key);
-                                        break;
-                                    }
                                 }
                                 while (keys.hasNext());
                             } catch (JSONException e) {
                                 continue;
                             }
                         }
-                        if (timestamp + stressLevel > 0) {
+                        if (stressLevel != 0) {
                             c.setTimeInMillis(timestamp);
                             c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), 0);
                             c.set(Calendar.MILLISECOND, 0);
@@ -621,6 +694,28 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             channel.shutdown();
             applyStressLevelUI();
         }).start();
+    }
+
+    private int getEmaOrderHour(int emaOrder) {
+        switch (emaOrder) {
+            case 1:
+                return 11;
+            case 2:
+                return 15;
+            case 3:
+                return 19;
+            case 4:
+                return 23;
+            default:
+                return -1;
+        }
+    }
+
+    private long fixTimestamp(long timestamp, int emaOrder) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(timestamp);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), getEmaOrderHour(emaOrder), 0, 0);
+        return c.getTimeInMillis();
     }
 
     private void applyStressLevelUI() {
@@ -670,6 +765,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             materialCalendarView.invalidateDecorators();
             materialCalendarView.setSelectedDate(CalendarDay.today());
         });
+    }
+
+    private boolean isSubmission(long timestamp) {
+        return stressLevels.get(timestamp).first != -1;
     }
     // endregion
 }
