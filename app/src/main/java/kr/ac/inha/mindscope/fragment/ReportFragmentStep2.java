@@ -1,8 +1,10 @@
 package kr.ac.inha.mindscope.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.format.DateFormat;
@@ -60,6 +62,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private static final int tileHeight = 45;
     private long joinTimestamp;
 
+    ImageView fragmentMeStep2BtnHelp;
     TextView dateView;
     TextView txtStressLevel;
     TextView sumPointsView;
@@ -165,10 +168,16 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         );
         materialCalendarView.setOnDateChangedListener(this);
 
+        fragmentMeStep2BtnHelp = root.findViewById(R.id.fragment_me_step2_btn_help);
         dateView = (TextView) root.findViewById(R.id.report_step2_date);
         Date currentTime = Calendar.getInstance().getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
+        fragmentMeStep2BtnHelp.setOnClickListener((v) -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://haesookim.info/MindScope/"));
+            startActivity(intent);
+        });
 
         loadAllStressLevelsFromServer();
         loadAllPoints();
