@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -44,7 +45,6 @@ public class AuthenticationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-
         if (authAppIsNotInstalled()) {
             Toast.makeText(this, "Please install the EasyTrack Authenticator and reopen the application!", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -59,12 +59,9 @@ public class AuthenticationActivity extends Activity {
                 startMainActivity();
             }
         }
-
-
     }
 
     public void authenticateClick(View view) {
-
         if (authAppIsNotInstalled())
             Toast.makeText(this, "Please install the EasyTrack Authenticator and reopen the application!", Toast.LENGTH_SHORT).show();
         else {
@@ -104,63 +101,49 @@ public class AuthenticationActivity extends Activity {
                     final String email = data.getStringExtra("email");
                     final int userId = data.getIntExtra("userId", -1);
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ManagedChannel channel = ManagedChannelBuilder.forAddress(
-                                    getString(R.string.grpc_host),
-                                    Integer.parseInt(getString(R.string.grpc_port))
-                            ).usePlaintext().build();
+                    new Thread(() -> {
+                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
+                                getString(R.string.grpc_host),
+                                Integer.parseInt(getString(R.string.grpc_port))
+                        ).usePlaintext().build();
 
-                            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                            EtService.BindUserToCampaignRequestMessage requestMessage = EtService.BindUserToCampaignRequestMessage.newBuilder()
-                                    .setUserId(userId)
-                                    .setEmail(email)
-                                    .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                                    .build();
+                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                        EtService.BindUserToCampaignRequestMessage requestMessage = EtService.BindUserToCampaignRequestMessage.newBuilder()
+                                .setUserId(userId)
+                                .setEmail(email)
+                                .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                                .build();
 
-                            try {
-                                final EtService.BindUserToCampaignResponseMessage responseMessage = stub.bindUserToCampaign(requestMessage);
-                                if (responseMessage.getDoneSuccessfully())
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(AuthenticationActivity.this, "Successfully authorized and connected to the EasyTrack campaign!", Toast.LENGTH_SHORT).show();
-                                            loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);
-                                            SharedPreferences.Editor editor = loginPrefs.edit();
-                                            editor.putString(name, fullName);
-                                            editor.putString(usrEmail, email);
-                                            editor.putInt(user_id, userId);
-                                            if (!loginPrefs.getBoolean("logged_in", false)) {
-                                                resetGeofences();
-                                            }
-                                            editor.putBoolean("logged_in", true);
-                                            editor.apply();
-                                            startMainActivity();
-                                        }
-                                    });
-                                else
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Calendar cal = Calendar.getInstance();
-                                            cal.setTimeInMillis(responseMessage.getCampaignStartTimestamp());
-                                            String txt = String.format(Locale.getDefault(), "EasyTrack campaign hasn't started. Campaign start time is: %s",
-                                                    SimpleDateFormat.getDateTimeInstance().format(cal.getTime()));
-                                            Toast.makeText(AuthenticationActivity.this, txt, Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                            } catch (StatusRuntimeException e) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(AuthenticationActivity.this, "An error occurred when connecting to the EasyTrack campaign. Please try again later!", Toast.LENGTH_SHORT).show();
+                        try {
+                            final EtService.BindUserToCampaignResponseMessage responseMessage = stub.bindUserToCampaign(requestMessage);
+                            if (responseMessage.getDoneSuccessfully())
+                                runOnUiThread(() -> {
+                                    Toast.makeText(AuthenticationActivity.this, "Successfully authorized and connected to the EasyTrack campaign!", Toast.LENGTH_SHORT).show();
+                                    loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = loginPrefs.edit();
+                                    editor.putString(name, fullName);
+                                    editor.putString(usrEmail, email);
+                                    editor.putInt(user_id, userId);
+                                    if (!loginPrefs.getBoolean("logged_in", false)) {
+                                        resetGeofences();
                                     }
+                                    editor.putBoolean("logged_in", true);
+                                    editor.apply();
+                                    startMainActivity();
                                 });
-                                Log.e(TAG, "onCreate: gRPC server unavailable");
-                            }
-                            channel.shutdown();
+                            else
+                                runOnUiThread(() -> {
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTimeInMillis(responseMessage.getCampaignStartTimestamp());
+                                    String txt = String.format(Locale.getDefault(), "EasyTrack campaign hasn't started. Campaign start time is: %s",
+                                            SimpleDateFormat.getDateTimeInstance().format(cal.getTime()));
+                                    Toast.makeText(AuthenticationActivity.this, txt, Toast.LENGTH_SHORT).show();
+                                });
+                        } catch (StatusRuntimeException e) {
+                            runOnUiThread(() -> Toast.makeText(AuthenticationActivity.this, "An error occurred when connecting to the EasyTrack campaign. Please try again later!", Toast.LENGTH_SHORT).show());
+                            Log.e(TAG, "onCreate: gRPC server unavailable");
                         }
+                        channel.shutdown();
                     }).start();
                 }
             } else if (resultCode == Activity.RESULT_FIRST_USER)

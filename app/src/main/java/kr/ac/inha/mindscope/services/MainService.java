@@ -62,11 +62,12 @@ public class MainService extends Service {
 
     //region Constants
     private static final int ID_SERVICE = 101;
-    public static final int EMA_NOTIFICATION_ID = 1234; //in sec
+    public static final int EMA_NOTI_ID = 1234; //in sec
+    public static final int STRESS_REPORT_NOTIFI_ID = 12345; //in sec
     public static final int PERMISSION_REQUEST_NOTIFICATION_ID = 1111; //in sec
     public static final long EMA_RESPONSE_EXPIRE_TIME = 3600;  //in sec
     public static final long REPORT_RESPONSE_EXPIRE_TIME = 3600;  //in sec
-    public static final int SERVICE_START_X_MIN_BEFORE_EMA = (int) (EMA_NOTIF_HOURS[1] - EMA_NOTIF_HOURS[0]) * 60 * 60; //in sec
+    public static final int SERVICE_START_X_MIN_BEFORE_EMA = (EMA_NOTIF_HOURS[1] - EMA_NOTIF_HOURS[0]) * 60 * 60; //in sec
     public static final short HEARTBEAT_PERIOD = 30;  //in sec
     public static final short DATA_SUBMIT_PERIOD = 60;  //in sec
     private static final short AUDIO_RECORDING_PERIOD = 20 * 60;  //in sec
@@ -204,7 +205,7 @@ public class MainService extends Service {
             Calendar cal = Calendar.getInstance();
             int curDate = cal.get(Calendar.DATE);
 
-            if(!daily_comment.equals("") && date_comment != -1 && date_comment != curDate){
+            if (!daily_comment.equals("") && date_comment != -1 && date_comment != curDate) {
 //                Log.i(TAG, String.format("upload comment, date, curDate: %s %d %d", daily_comment, date_comment, curDate));
                 SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 SharedPreferences.Editor commentEditor = commentPrefs.edit();
@@ -566,7 +567,10 @@ public class MainService extends Service {
 
         final Notification notification = builder.build();
         if (notificationManager != null) {
-            notificationManager.notify(EMA_NOTIFICATION_ID, notification);
+            if (kinds_ema_or_report == KINDS_NOTI_EMA)
+                notificationManager.notify(EMA_NOTI_ID, notification);
+            else
+                notificationManager.notify(STRESS_REPORT_NOTIFI_ID, notification);
         }
     }
 

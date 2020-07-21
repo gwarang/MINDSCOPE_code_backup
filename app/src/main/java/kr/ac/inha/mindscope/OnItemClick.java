@@ -1,5 +1,5 @@
 package kr.ac.inha.mindscope;
 
 public interface OnItemClick {
-    void onClick (PlaceInfo placeInfo, int code);
+    void onClick (MapsActivity.StoreLocation storeLocation, int code);
 }

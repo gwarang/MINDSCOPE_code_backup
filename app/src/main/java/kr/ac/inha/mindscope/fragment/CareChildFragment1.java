@@ -98,6 +98,7 @@ public class CareChildFragment1 extends Fragment {
     LinearLayout socialContainer;
     LinearLayout locationContainer;
     LinearLayout sleepContainer;
+    ScrollView reasonContainer;
 
     static String feature_ids1 = "";
     static String feature_ids2 = "";
@@ -108,7 +109,6 @@ public class CareChildFragment1 extends Fragment {
     int order3StressLevel;
     int order4StressLevel;
 
-    ScrollView reasonContainer;
 
 
     ArrayList<JSONObject[]> stressReportsJsonArray;
@@ -146,11 +146,14 @@ public class CareChildFragment1 extends Fragment {
         }
 
         selfStressReportWithOrderIndex = new int[4];
-        for(String selfReportStr : selfStressReports){
-            String[] result = selfReportStr.split(" ");
-            // result[0] : timestamp, result[1] : day num, result[2] : report order(ema_order), result[3] : Analysis correct, result[4] self stress report answer
-            selfStressReportWithOrderIndex[Integer.parseInt(result[2]) - 1] = Integer.parseInt(result[4]);
+        if(selfStressReports != null){
+            for(String selfReportStr : selfStressReports){
+                String[] result = selfReportStr.split(" ");
+                // result[0] : timestamp, result[1] : day num, result[2] : report order(ema_order), result[3] : Analysis correct, result[4] self stress report answer
+                selfStressReportWithOrderIndex[Integer.parseInt(result[2]) - 1] = Integer.parseInt(result[4]);
+            }
         }
+
 
         float avgStress = getAvgStress();
         Log.e(TAG, "avg stress: " + avgStress);
@@ -395,8 +398,8 @@ public class CareChildFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("SELF_STRESS_REPORT", -1))
-                .setFromTimestamp(fromtimestamp) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tilltimestamp) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis()) //  fromtimestamp
+                .setTillTimestamp(tillCalendar.getTimeInMillis()) // tilltimestamp
                 .build();
 
 

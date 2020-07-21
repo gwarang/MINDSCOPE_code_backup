@@ -3,7 +3,6 @@ package kr.ac.inha.mindscope;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -38,7 +37,8 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
     private Double selectedLng;
     PlaceDbHelper dbHelper;
     EditText editText;
-    SQLiteDatabase db;
+
+    String oldPlaceUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         dbHelper = new PlaceDbHelper(getApplicationContext());
 
 
-        placeNameTextView= (TextView) findViewById(R.id.current_place_name);
+        placeNameTextView = (TextView) findViewById(R.id.current_place_name);
 
         placeAddressTextView = (TextView) findViewById(R.id.current_place_address);
         editText = (EditText) findViewById(R.id.current_place_user_name);
@@ -62,8 +62,8 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         selectedLat = intent.getExtras().getDouble("lat");
         selectedLng = intent.getExtras().getDouble("lng");
 
-        if(intent.getExtras().getInt("editcode") == 2){
-            selectedPlaceUserName = intent.getExtras().getString("placeusername");
+        if (intent.getExtras().getInt("editcode") == 2) {
+            oldPlaceUserName = selectedPlaceUserName = intent.getExtras().getString("placeusername");
             editText.setText(selectedPlaceUserName);
         }
 
@@ -73,22 +73,19 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar_map_current_save);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null)
+        if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.toolbar_save:
-                if(editText.getText().toString().equals("")){
+                if (editText.getText().toString().equals("")) {
                     Toast.makeText(this, "장소를 입력해주세요!", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(this, "장소 저장", Toast.LENGTH_SHORT).show();
-                    dbHelper.deletePlaceData(selectedPlaceName);
-                    dbHelper.insertPlaceData(selectedPlaceName, selectedPlaceAddress, editText.getText().toString(), selectedLat, selectedLng);
-
                     // setLocation
                     setLocation(editText.getText().toString(), selectedLat, selectedLng);
                     Log.i(TAG, "placeUserName, double lat lng, float lat lng: " + editText.getText().toString() + ", " + selectedLat + ", " + selectedLng + ", " + selectedLat.floatValue() + ", " + selectedLng.floatValue());
@@ -109,7 +106,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setLocation(String placeUserName, Double lat, Double lng){
+    private void setLocation(String placeUserName, Double lat, Double lng) {
         final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
         SharedPreferences.Editor editor = locationPrefs.edit();
 
@@ -118,26 +115,40 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         assert dataSourceId != -1;
         long nowTime = System.currentTimeMillis();
 
+        if(oldPlaceUserName != placeUserName){
+            editor.remove(oldPlaceUserName+"_LAT");
+            editor.remove(oldPlaceUserName+"_LNG");
+            editor.remove(oldPlaceUserName+"_ADDRESS");
+            editor.remove(oldPlaceUserName+"_NAME");
+            editor.remove(oldPlaceUserName+"_ENTERED_TIME");
+            String newLocationList = locationPrefs.getString("locationList", "").replace(" " + oldPlaceUserName, "");
+            editor.putString("locationList", newLocationList);
+            editor.apply();
+        }
 
-        if(placeUserName.equals("집")){
+        String location_id;
+        if (placeUserName.equals("집")) {
             editor.putFloat(ID_HOME + "_LAT", lat.floatValue());
             editor.putFloat(ID_HOME + "_LNG", lng.floatValue());
+            editor.putString(ID_HOME + "_ADDRESS", selectedPlaceAddress);
+            editor.putString(ID_HOME + "_NAME", selectedPlaceName);
+            editor.putString("locationList", String.format("%s %s", locationPrefs.getString("locationList", ""), ID_HOME));
+            location_id = ID_HOME;
             DbMgr.saveMixedData(dataSourceId, nowTime, 1.0f, nowTime, ID_HOME, selectedLat.floatValue(), selectedLng.floatValue());
-        }else{
+        } else {
             editor.putFloat(placeUserName + "_LAT", lat.floatValue());
             editor.putFloat(placeUserName + "_LNG", lng.floatValue());
-            DbMgr.saveMixedData(dataSourceId, nowTime, 1.0f, nowTime, ID_HOME, selectedLat.floatValue(), selectedLng.floatValue());
+            editor.putString(placeUserName + "_ADDRESS", selectedPlaceAddress);
+            editor.putString(placeUserName + "_NAME", selectedPlaceName);
+            editor.putString("locationList", String.format("%s %s", locationPrefs.getString("locationList", ""), placeUserName));
+            location_id = placeUserName;
+            DbMgr.saveMixedData(dataSourceId, nowTime, 1.0f, nowTime, placeUserName, selectedLat.floatValue(), selectedLng.floatValue());
         }
         editor.apply();
 
-        String location_id = placeUserName;
         LatLng position = new LatLng(lat, lng);
-        int radius = GEOFENCE_RADIUS_DEFAULT;
 
-        GeofenceHelper.startGeofence(getApplicationContext(), location_id, position, radius);
-
-
-
+        GeofenceHelper.startGeofence(getApplicationContext(), location_id, position, GEOFENCE_RADIUS_DEFAULT);
 
         Toast.makeText(getApplicationContext(), placeUserName + getString(R.string.location_set), Toast.LENGTH_SHORT).show();
 
