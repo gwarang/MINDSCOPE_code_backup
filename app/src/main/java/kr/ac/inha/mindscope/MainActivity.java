@@ -182,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             // only for gingerbread and newer versions
             Tools.PERMISSIONS = new String[]{
@@ -198,6 +200,9 @@ public class MainActivity extends AppCompatActivity {
         DbMgr.init(getApplicationContext());
         AppUseDb.init(getApplicationContext());
 //        setActionBar((Toolbar) findViewById(R.id.my_toolbar));
+
+        // test for zaturi
+//        Tools.sendStressInterventionNoti(getApplicationContext());
 
         //region Init UI variables
 //        btnEMA = findViewById(R.id.btn_late_ema);
@@ -284,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences stepChange = getSharedPreferences("stepChange", MODE_PRIVATE);
             Log.e(TAG, "stepchange "+ stepChange.getInt("stepChange", 9));
             if(!stepChange.getBoolean ("step2Done", false) && (System.currentTimeMillis() - firstStartDate.getTime() >= TWO_WEEK_EXPIRE_TIMESTAMP_VALUE)){
-
 
                 // step1 첫 시작시 dialog
                 View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);

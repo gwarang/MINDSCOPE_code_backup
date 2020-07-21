@@ -365,6 +365,7 @@ public class CareChildFragment1 extends Fragment {
             }
 
         }
+        channel.shutdown();
     }
 
     public void getSelfStressReportDataFromGRPC(){
@@ -416,6 +417,7 @@ public class CareChildFragment1 extends Fragment {
             }
 
         }
+        channel.shutdown();
     }
 
     public float getAvgStress(){

@@ -285,4 +285,7 @@
 
     <string name="string_survey_incomplete">설문미완료</string>
     <string name="string_survey_complete"><![CDATA[<font color="#3b83d6">설문완료</font>]]></string>
+
+    <string name="string_child2_make_intervention">스트레스 해소방안 만들기</string>
+    <string name="string_child2_do_intervention">스트레스 해소하기</string>
 </resources>

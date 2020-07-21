@@ -15,6 +15,7 @@
             android:name=".InterventionSaveActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppThemeNoActionBar" />
+
         <activity
             android:name=".StressReportActivity"
             android:theme="@style/AppThemeNoActionBar" />
@@ -24,6 +25,11 @@
         <activity
             android:name=".SelectedPlaceSaveActivity"
             android:theme="@style/AppThemeNoActionBar" />
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppThemeNoActionBar"
+            tools:replace="android:theme" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -32,11 +38,6 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:theme="@style/AppThemeNoActionBar"
-            tools:replace="android:theme" />
         <activity
             android:name=".FirstStartActivity"
             android:theme="@style/AppThemeNoActionBar" />
@@ -64,14 +65,13 @@
         <activity
             android:name=".LocationsSettingActivity"
             android:theme="@style/AppTheme" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <receiver
             android:name=".receivers.AppUseNotifierReceiver"
             android:enabled="true">
@@ -79,6 +79,7 @@
                 <action android:name="kr.ac.inha.nsl.ET_Notification" />
             </intent-filter>
         </receiver>
+
         <receiver android:name=".receivers.GeofenceReceiver" />
         <receiver android:name=".receivers.ActivityRecognitionReceiver" />
         <receiver android:name=".receivers.ActivityTransitionsReceiver" />
@@ -122,6 +123,10 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <service
+            android:name=".services.InterventionService"
+            android:enabled="true"
+            android:exported="true"></service>
 
         <service android:name=".services.MainService" />
         <service
@@ -133,14 +138,12 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
     </application>
-
     <uses-feature android:name="android.hardware.sensor.stepdetector" />
     <uses-feature android:name="android.hardware.sensor.stepcounter" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />

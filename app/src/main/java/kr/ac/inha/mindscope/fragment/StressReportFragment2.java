@@ -1,5 +1,6 @@
 package kr.ac.inha.mindscope.fragment;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,6 +38,8 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORTNUM4;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
+import static kr.ac.inha.mindscope.services.MainService.STRESS_REPORT_NOTIFI_ID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -242,7 +245,10 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("get_point", true);
                     startActivity(intent);
 
-
+                    final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (notificationManager != null) {
+                        notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
+                    }
 
                 }else{
                     // 그 외는 MainActivity로
@@ -274,7 +280,10 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("get_point", true);
                     startActivity(intent);
 
-
+                    final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (notificationManager != null) {
+                        notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
+                    }
                 }
             }
         }

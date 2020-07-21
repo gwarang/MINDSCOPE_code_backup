@@ -53,6 +53,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.receivers.GeofenceReceiver;
+import kr.ac.inha.mindscope.services.InterventionService;
 import kr.ac.inha.mindscope.services.LocationService;
 import kr.ac.inha.mindscope.services.MainService;
 
@@ -511,7 +512,7 @@ public class Tools {
                 && System.currentTimeMillis() <= endHourMilli;
     }
 
-    private static void sendStressInterventionNoti(Context con) {
+    public static void sendStressInterventionNoti(Context con) {
         // Get current intervention
         SharedPreferences prefs = con.getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
@@ -522,12 +523,16 @@ public class Tools {
                 con.getSystemService(Context.NOTIFICATION_SERVICE);
 
 //        Intent notificationIntent = new Intent(MainService.this, EMAActivity.class);
-        Intent nextTimeIntent = new Intent();
+        Intent nextTimeIntent = new Intent(con, InterventionService.class);
         // TODO: Save to server : 다음에 하기 (STRESS_NEXT_TIME)
+        nextTimeIntent.putExtra("stress_next_time", true); // STRESS_NEXT_TIME 다음에 하기 1
+        nextTimeIntent.putExtra("path", 1); // path is 1 (notification)
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_NEXT_TIME, PATH_NOTIFICATION);
 
-        Intent muteTodayIntent = new Intent();
+        Intent muteTodayIntent = new Intent(con, InterventionService.class);
+        muteTodayIntent.putExtra("stress_mute_today", true); // STRESS_MUTE_TODAY 오늘의 알림 끄기 2
+        muteTodayIntent.putExtra("path", 1); // path is 1 (notification)
         // TODO: Save to server : 오늘의 알림 끄기 (STRESS_MUTE_TODAY)
         //  Change muteToday to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
@@ -536,7 +541,9 @@ public class Tools {
 //        editor.putBoolean("muteToday", true);
 //        editor.apply();
 
-        Intent stressRelIntent = new Intent();
+        Intent stressRelIntent = new Intent(con, InterventionService.class);
+        stressRelIntent.putExtra("stress_do_intervention", true); // STRESS_DO_INTERVENTION 스트레스 해소하기 4
+        stressRelIntent.putExtra("path", 1); // path is 1 (notification)
         // TODO: Save to server : 스트레스 해소하기 (STRESS_DO_INTERVENTION)
         //  Go to 스트레스 해소하기 화면 (to be determined)
         //  Change didIntervention to true
@@ -546,14 +553,14 @@ public class Tools {
 //        editor.putBoolean("didIntervention", true);
 //        editor.apply();
 
-        PendingIntent nextTimePI = PendingIntent.getActivity(con,
+        PendingIntent nextTimePI = PendingIntent.getService(con,
                 1, nextTimeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent muteTodayPI = PendingIntent.getActivity(con,
-                1, muteTodayIntent,
+        PendingIntent muteTodayPI = PendingIntent.getService(con,
+                2, muteTodayIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent stressRelPI = PendingIntent.getActivity(con,
-                1, stressRelIntent,
+        PendingIntent stressRelPI = PendingIntent.getService(con,
+                3, stressRelIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Action nextTimeAction =
@@ -580,7 +587,6 @@ public class Tools {
                 .setContentText(curIntervention)
                 .setTicker("New Message Alert!")
                 .setAutoCancel(true)
-                .setContentIntent(stressRelPI)
                 .setCategory(CATEGORY_ALARM)
                 .addAction(nextTimeAction)
                 .addAction(muteTodayAction)
@@ -604,12 +610,14 @@ public class Tools {
         }
     }
 
-    private static void saveStressIntervention(Context con, long timestamp, String curIntervention,
+    public static void saveStressIntervention(Context con, long timestamp, String curIntervention,
                                                int action, int path) {
         SharedPreferences prefs = con.getSharedPreferences("Configurations", MODE_PRIVATE);
 
         int dataSourceId = prefs.getInt("STRESS_INTERVENTION", -1);
         assert dataSourceId != -1;
+        if(curIntervention.equals(""))
+            curIntervention = "NOT_SELECT_INTERVENTION";
         DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f,
                 timestamp, curIntervention, action, path);
     }

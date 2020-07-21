@@ -364,6 +364,8 @@ public class StressReportFragment1 extends Fragment {
                 Log.d(TAG, "report timestamp from gRPC is empty");
             }
         }
+
+        channel.shutdown();
         //end getting data from gRPC
 
         return stresReportStr;
