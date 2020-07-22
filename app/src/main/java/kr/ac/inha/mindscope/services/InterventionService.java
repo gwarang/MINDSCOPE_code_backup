@@ -8,13 +8,14 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Calendar;
+
 import static kr.ac.inha.mindscope.Tools.PATH_NOTIFICATION;
 import static kr.ac.inha.mindscope.Tools.STRESS_DO_INTERVENTION;
 import static kr.ac.inha.mindscope.Tools.STRESS_MUTE_TODAY;
 import static kr.ac.inha.mindscope.Tools.STRESS_NEXT_TIME;
 import static kr.ac.inha.mindscope.Tools.ZATURI_NOTIFICATION_ID;
 import static kr.ac.inha.mindscope.Tools.saveStressIntervention;
-import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class InterventionService extends Service {
 
@@ -25,6 +26,8 @@ public class InterventionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Calendar cal = Calendar.getInstance();
 
         boolean action_next_time = intent.getBooleanExtra("stress_next_time", false);
         boolean action_mute_today = intent.getBooleanExtra("stress_mute_today", false);
@@ -47,6 +50,7 @@ public class InterventionService extends Service {
             saveStressIntervention(this, System.currentTimeMillis(), curIntervention, STRESS_MUTE_TODAY, PATH_NOTIFICATION);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("muteToday", true);
+            editor.putInt("muteDate", cal.get(Calendar.DATE));
             editor.apply();
         }
         else if(action_do_intervention){

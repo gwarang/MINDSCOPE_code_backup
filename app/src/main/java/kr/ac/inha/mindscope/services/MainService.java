@@ -35,7 +35,6 @@ import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -136,15 +135,6 @@ public class MainService extends Service {
                 SharedPreferences.Editor editor = loginPrefs.edit();
                 editor.putBoolean("ema_btn_make_visible", true);
                 editor.apply();
-                /* Zaturi start */
-                // Reset didIntervention to false every 11AM
-                SharedPreferences interventionPrefs = getSharedPreferences("intervention", MODE_PRIVATE);
-                SharedPreferences.Editor interventionEditor = interventionPrefs.edit();
-                if (ema_order == 1) {
-                    interventionEditor.putBoolean("didIntervention", false);
-                }
-                interventionEditor.apply();
-                /* Zaturi end */
 
                 canSendNotif = false;
             }
@@ -206,20 +196,24 @@ public class MainService extends Service {
             int curDate = cal.get(Calendar.DATE);
 
             if (!daily_comment.equals("") && date_comment != -1 && date_comment != curDate) {
-//                Log.i(TAG, String.format("upload comment, date, curDate: %s %d %d", daily_comment, date_comment, curDate));
                 SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 SharedPreferences.Editor commentEditor = commentPrefs.edit();
-
-//                int dataSourceId = prefs.getInt("DAILY_COMMENT", -1);
-//                assert dataSourceId != -1;
-//                Log.i(TAG, "DAILY_COMMENT dataSourceId: " + dataSourceId);
-//                DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment);
 
                 commentEditor.putInt("date_comment", curDate);
                 commentEditor.putString("daily_comment", "");
                 commentEditor.apply();
             }
 
+            //endregion
+
+            //region reset muteToday
+            SharedPreferences interventionPrefs = getSharedPreferences("intervention", MODE_PRIVATE);
+            if(interventionPrefs.getInt("muteDate", -1) != cal.get(Calendar.DATE)){
+                SharedPreferences.Editor editor = interventionPrefs.edit();
+                editor.putInt("muteDate", cal.get(Calendar.DATE));
+                editor.putBoolean("muteToday", false);
+                editor.apply();
+            }
             //endregion
 
 

@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -32,6 +31,7 @@ import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
+import kr.ac.inha.mindscope.Tools;
 import kr.ac.inha.mindscope.services.InterventionService;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -74,29 +74,47 @@ public class CareChildFragment2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_care_child2, container, false);
 
         init(view);
-        SharedPreferences interventionPrefs = getActivity().getSharedPreferences("intervention", MODE_PRIVATE);
+        SharedPreferences interventionPrefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
 
 
         editInterventionBtn.setOnClickListener(clickEditBtn);
         makeInterventionBtn.setOnClickListener(clickMakeBtn);
         loadInterventionBtn.setOnClickListener(clickLoadBtn);
 
-        interventionSwitch.setChecked(!interventionPrefs.getBoolean("muteToday", true));
+        interventionSwitch.setChecked(!interventionPrefs.getBoolean("muteToday", false));
 
+        SharedPreferences.Editor editor = interventionPrefs.edit();
+        //region clickListener
+        interventionSwitch.setOnCheckedChangeListener(switchListener);
 
-        interventionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-
-                SharedPreferences.Editor editor = interventionPrefs.edit();
-                if (isChecked) {
-                    editor.putBoolean("muteToday", false);
-                } else {
-                    editor.putBoolean("muteToday", true);
-                }
-                editor.apply();
-            }
+        recommandIntervention1.setOnClickListener(view1 -> {
+            editor.putString("curIntervention", recommandIntervention1.getText().toString());
+            editor.apply();
+            Calendar cal = Calendar.getInstance();
+            String curIntervention = interventionPrefs.getString("curIntervention", "");
+            currentIntervention.setText(curIntervention);
+            currentInterventionContainer.setVisibility(View.VISIBLE);
+            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
         });
+        recommandIntervention2.setOnClickListener(view12 -> {
+            editor.putString("curIntervention", recommandIntervention2.getText().toString());
+            editor.apply();
+            Calendar cal = Calendar.getInstance();
+            String curIntervention = interventionPrefs.getString("curIntervention", "");
+            currentIntervention.setText(curIntervention);
+            currentInterventionContainer.setVisibility(View.VISIBLE);
+            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
+        });
+        recommandIntervention3.setOnClickListener(view13 -> {
+            editor.putString("curIntervention", recommandIntervention3.getText().toString());
+            editor.apply();
+            Calendar cal = Calendar.getInstance();
+            String curIntervention = interventionPrefs.getString("curIntervention", "");
+            currentIntervention.setText(curIntervention);
+            currentInterventionContainer.setVisibility(View.VISIBLE);
+            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
+        });
+        //endregion
 
         return view;
     }
@@ -123,7 +141,7 @@ public class CareChildFragment2 extends Fragment {
         interventionSwitch = view.findViewById(R.id.child2_switch);
         interventionSwitch.setOnCheckedChangeListener(switchListener);
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("intervention", MODE_PRIVATE);
+        SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
         if (!curIntervention.equals("")) {
             currentIntervention.setText(curIntervention);
@@ -136,6 +154,8 @@ public class CareChildFragment2 extends Fragment {
 
         updateRecommendInterventions();
         loadTodayPerformedIntervention();
+
+
 
 
     }
@@ -165,40 +185,43 @@ public class CareChildFragment2 extends Fragment {
                 String newPerformed = doneInterventionText.getText() + String.format("%s에 %s을/를 수행하였습니다.\n",dateFormat.format(System.currentTimeMillis()), currentIntervention.getText());
 
                 doneInterventionText.setText(newPerformed);
+
+                Calendar cal = Calendar.getInstance();
+                SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
+                String curIntervention = prefs.getString("curIntervention", "");
+                Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_DO_INTERVENTION,0);
             }
 
         }
     };
 
-    View.OnClickListener clickLoadBtn = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            updateRecommendInterventions();
+    View.OnClickListener clickLoadBtn = view -> updateRecommendInterventions();
+
+    CompoundButton.OnCheckedChangeListener switchListener = (compoundButton, isChecked) -> {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        if (isChecked) {
+            Log.i(TAG, "오늘의 알림 받기 설정");
+            editor.putBoolean("muteToday", true);
+            Calendar cal = Calendar.getInstance();
+            String curIntervention = prefs.getString("curIntervention", "");
+            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_UNMUTE_TODAY,0);
+        } else {
+            Log.i(TAG, "오늘의 알림 받기 설정 해제");
+            editor.putBoolean("muteToday", false);
+            Calendar cal = Calendar.getInstance();
+            String curIntervention = prefs.getString("curIntervention", "");
+            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_MUTE_TODAY,0);
         }
-    };
+        editor.apply();
 
-    CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-            SharedPreferences prefs = getActivity().getSharedPreferences("intervention", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-
-            if (isChecked) {
-                Log.i(TAG, "오늘의 알림 받기 설정");
-                editor.putBoolean("muteToday", true);
-            } else {
-                Log.i(TAG, "오늘의 알림 받기 설정 해제");
-                editor.putBoolean("muteToday", false);
-            }
-            editor.apply();
-
-        }
     };
 
     public void updateRecommendInterventions() {
         InputStreamReader inputStreamReader = null;
         try {
-            inputStreamReader = new InputStreamReader(getActivity().getAssets().open("zaturi_interventions.csv"));
+            inputStreamReader = new InputStreamReader(requireActivity().getAssets().open("zaturi_interventions.csv"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -220,24 +243,29 @@ public class CareChildFragment2 extends Fragment {
 //                    Log.e(TAG, intervention);
 
 
-        String packName = getContext().getPackageName();
+        String packName = requireContext().getPackageName();
         Random random = new Random();
         int[] randomNums = new int[3];
         for (int i = 0; i < 3; i++) {
             randomNums[i] = random.nextInt(interventionSplit.length);
         }
 
-        recommandIntervention1.setText("#" + interventionSplit[randomNums[0]]);
-        recommandIntervention2.setText("#" + interventionSplit[randomNums[1]]);
-        recommandIntervention3.setText("#" + interventionSplit[randomNums[2]]);
+        recommandIntervention1.setText(String.format("#%s", interventionSplit[randomNums[0]]));
+        recommandIntervention2.setText(String.format("#%s", interventionSplit[randomNums[1]]));
+        recommandIntervention3.setText(String.format("#%s", interventionSplit[randomNums[2]]));
+
+        Calendar cal = Calendar.getInstance();
+        SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
+        String curIntervention = prefs.getString("curIntervention", "");
+        Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_OTHER_RECOMMENDATION,0);
 
     }
 
     public void loadTodayPerformedIntervention() {
         new Thread(() -> {
             todayPerformedInterventions = new ArrayList<>();
-            SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
             Calendar fromCalendar = Calendar.getInstance();
             fromCalendar.set(Calendar.MILLISECOND, 0);
@@ -286,15 +314,15 @@ public class CareChildFragment2 extends Fragment {
                 }
             }
 
-            getActivity().runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-                String didInterventionStr = "";
+                StringBuilder didInterventionStr = new StringBuilder();
                 for (String[] s : todayPerformedInterventions) {
                     String timeText = dateFormat.format(Long.parseLong(s[0]));
-                    didInterventionStr += String.format("%s에 \'%s\'을/를 수행하였습니다.\n", timeText, s[1].substring(1));
+                    didInterventionStr.append(String.format("%s에 \'%s\'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));
                 }
-                if (!didInterventionStr.equals("")) {
-                    doneInterventionText.setText(didInterventionStr);
+                if (!didInterventionStr.toString().equals("")) {
+                    doneInterventionText.setText(didInterventionStr.toString());
                     doneInterventionText.setVisibility(View.VISIBLE);
                 } else {
                     doneInterventionText.setVisibility(View.INVISIBLE);

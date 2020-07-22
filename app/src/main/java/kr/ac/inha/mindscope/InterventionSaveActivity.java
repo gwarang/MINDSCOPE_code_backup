@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,6 +62,9 @@ public class InterventionSaveActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("curIntervention", interventionEdit.getText().toString());
                     editor.apply();
+                    Calendar cal = Calendar.getInstance();
+                    String curIntervention = prefs.getString("curIntervention", "");
+                    Tools.saveStressIntervention(getApplicationContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
                     finish();
                 }
         }
