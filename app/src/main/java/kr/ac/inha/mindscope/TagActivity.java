@@ -79,6 +79,12 @@ public class TagActivity extends AppCompatActivity {
         tagBtn.setOnClickListener(clickListener);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Tools.saveApplicationLog(getApplicationContext(), TAG, Tools.ACTION_OPEN_PAGE);
+    }
+
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -113,6 +119,7 @@ public class TagActivity extends AppCompatActivity {
             editor.putString("lasthashtags", tagNowView.getText().toString());
             editor.apply();
 
+            Tools.saveApplicationLog(getApplicationContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, tags);
 
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.putExtra("get_point", true);

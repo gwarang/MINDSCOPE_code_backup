@@ -66,7 +66,10 @@ import static kr.ac.inha.mindscope.LocationAdapter.EDIT_CODE;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick {
 
-    private static final String TAG = "MapsActivity";
+    public static final String TAG = "MapsActivity";
+
+    private static final String ACTION_SELECT_PLACE = "SELECT_PLACE";
+    private static final String ACTION_CLICK_SAVE_SELECT_PLACE = "CLICK_SAVE_SELECT_PLACE";
 
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     private GoogleMap mMap;
@@ -254,6 +257,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 selectedName = place.getName();
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(selectedLatLng));
 
+                Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_SELECT_PLACE);
             }
 
             @Override
@@ -291,6 +295,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         updateListView();
+        Tools.saveApplicationLog(getApplicationContext(), TAG, Tools.ACTION_OPEN_PAGE);
         super.onResume();
     }
 
@@ -512,6 +517,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("lng", selectedLatLng.longitude);
                     startActivity(intent);
 
+                    Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_SELECT_PLACE);
 
                 } else {
                     Toast.makeText(this, "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();

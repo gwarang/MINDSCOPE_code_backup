@@ -60,17 +60,9 @@ public class MeFragmentStep2 extends Fragment {
     private ImageButton btnMap;
     private Button stepTestBtn;
 
-    private TextView todayPointsView;
-    private TextView sumPointsView;
-
     private TextView dateView;
     private TextView timeView;
     private TextView stressLvView;
-    TextView reason1;
-    TextView reason2;
-    TextView reason3;
-    TextView reason4;
-    TextView reason5;
 
     private Button reportBtn;
 
@@ -78,7 +70,7 @@ public class MeFragmentStep2 extends Fragment {
     private String feature_ids;
     int day_num;
     int order;
-    int accuracy;
+    Double accuracy;
 
     ScrollView reasonContainer;
     ImageView stressImg;
@@ -86,7 +78,6 @@ public class MeFragmentStep2 extends Fragment {
     ConstraintLayout allContainer;
     ConstraintLayout timeContainer;
     TextView beforeTextView;
-    TextView waitText;
 
     long reportTimestamp;
 
@@ -116,26 +107,28 @@ public class MeFragmentStep2 extends Fragment {
 
         if(stressReportStr != null){
             jsonObjects = Tools.parsingStressReport(stressReportStr);
-            for(short i = 0; i < jsonObjects.length; i++){
-                try {
-                    if(jsonObjects[0] != null){
-                        if(jsonObjects[i].getBoolean("model_tag")){
-                            stressLevel = i+1;
-                            day_num = jsonObjects[i].getInt("day_num");
-                            order = jsonObjects[i].getInt("ema_order");
-                            accuracy = jsonObjects[i].getInt("accuracy");
-                            feature_ids = jsonObjects[i].getString("feature_ids");
-                            SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = reportPrefs.edit();
-                            editor.putInt("result", stressLevel);
-                            editor.apply();
+            if (jsonObjects != null) {
+                for(short i = 0; i < jsonObjects.length; i++){
+                    try {
+                        if(jsonObjects[0] != null){
+                            if(jsonObjects[i].getBoolean("model_tag")){
+                                stressLevel = i;
+                                day_num = jsonObjects[i].getInt("day_num");
+                                order = jsonObjects[i].getInt("ema_order");
+                                accuracy = jsonObjects[i].getDouble("accuracy");
+                                feature_ids = jsonObjects[i].getString("feature_ids");
+                                SharedPreferences reportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = reportPrefs.edit();
+                                editor.putInt("result", stressLevel);
+                                editor.apply();
+                            }
                         }
+                        else{
+                            Log.e(TAG, "report is not in jsonObjects");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    else{
-                        Log.e(TAG, "report is not in jsonObjects");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -145,7 +138,7 @@ public class MeFragmentStep2 extends Fragment {
                 if(day_num == Integer.parseInt(result[1]) && order == Integer.parseInt(result[2])){
                     stressLevel = Integer.parseInt(result[4]);
                     try {
-                        feature_ids = jsonObjects[stressLevel - 1].getString("feature_ids");
+                        feature_ids = jsonObjects[stressLevel].getString("feature_ids");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -157,9 +150,7 @@ public class MeFragmentStep2 extends Fragment {
         }
 
 
-        SharedPreferences stressReportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-//        feature_ids = stressReportPrefs.getString("feature_ids", "");
-//        stressLevel = stressReportPrefs.getInt("reportAnswer", 0);
+        SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
 
         allContainer = view.findViewById(R.id.frg_me_step2_container);
         beforeTextView = view.findViewById(R.id.frg_me_step2_before_time);
@@ -183,8 +174,8 @@ public class MeFragmentStep2 extends Fragment {
                 else{
                     stressLvView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
                 }
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, getActivity().getTheme()));
-                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, getActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
+                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
                 break;
             case STRESS_LV2:
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
@@ -193,8 +184,8 @@ public class MeFragmentStep2 extends Fragment {
                 else{
                     stressLvView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
                 }
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, getActivity().getTheme()));
-                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, getActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
+                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, requireActivity().getTheme()));
                 break;
             case STRESS_LV3:
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
@@ -203,8 +194,8 @@ public class MeFragmentStep2 extends Fragment {
                 else{
                     stressLvView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
                 }
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, getActivity().getTheme()));
-                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, getActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
+                stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, requireActivity().getTheme()));
                 break;
         }
 
@@ -255,34 +246,28 @@ public class MeFragmentStep2 extends Fragment {
 
         // TODO 추후 step 시간으로 확인할때는 삭제할 부분
         stepTestBtn = (Button) view.findViewById(R.id.step_test_btn_step2);
-        stepTestBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", getContext().MODE_PRIVATE);
-                SharedPreferences.Editor editor = stepChange.edit();
+        stepTestBtn.setOnClickListener(view1 -> {
+            SharedPreferences stepChange = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = stepChange.edit();
 
-                if(stepChange.getInt("stepCheck", 0) == 1){
-                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                    stepTestBtn.setText("STEP 2");
-                    editor.putInt("stepCheck", 2);
-                    editor.apply();
-                }
-                else{
-                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                    stepTestBtn.setText("STEP 1");
-                    editor.putInt("stepCheck", 1);
-                    editor.apply();
-                }
+            if(stepChange.getInt("stepCheck", 0) == 1){
+                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+                stepTestBtn.setText("STEP 2");
+                editor.putInt("stepCheck", 2);
+                editor.apply();
+            }
+            else{
+                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+                stepTestBtn.setText("STEP 1");
+                editor.putInt("stepCheck", 1);
+                editor.apply();
             }
         });
 
         reportBtn = (Button) view.findViewById(R.id.report_test_btn);
-        reportBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), StressReportActivity.class);
-                startActivity(intent);
-            }
+        reportBtn.setOnClickListener(view12 -> {
+            Intent intent = new Intent(getActivity(), StressReportActivity.class);
+            startActivity(intent);
         });
 
 
@@ -304,6 +289,7 @@ public class MeFragmentStep2 extends Fragment {
     public void onResume() {
 
         super.onResume();
+        Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
 
 
@@ -420,9 +406,9 @@ public class MeFragmentStep2 extends Fragment {
     }
 
     public String gettingStressReportFromGRPC(){
-        String stresReportStr = "";
-        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-        SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+        String stresReportStr = null;
+        SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
@@ -514,8 +500,8 @@ public class MeFragmentStep2 extends Fragment {
     }
 
     public void getSelfStressReportDataFromGRPC(){
-        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-        SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+        SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
         // initialize timestamp from today 00:00:00 to 23:59:59
         Calendar fromCalendar = Calendar.getInstance();

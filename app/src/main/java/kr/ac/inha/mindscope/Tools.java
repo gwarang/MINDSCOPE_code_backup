@@ -47,7 +47,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -62,13 +61,15 @@ import static android.app.Notification.CATEGORY_ALARM;
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
-import static kr.ac.inha.mindscope.Tools.FIRST_START_ACTIVITY;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
 
 public class Tools {
 
     private static final String TAG = "Tools";
+    public static final String ACTION_OPEN_PAGE = "OPEN_PAGE";
+    public static final String ACTION_CLICK_SAVE_BUTTON = "CLICK_SAVE_BUTTON";
+    public static final String ACTION_CLICK_COMPLETE_BUTTON = "CLICK_COMPLETE_BUTTON";
     public static final String DATA_SOURCE_SEPARATOR = " ";
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
@@ -648,8 +649,13 @@ public class Tools {
         return null;
     }
 
-    public static void saveApplicationLog(Context con, String uniqueTagForEachActivityOrEvent, String action) {
+    public static void saveApplicationLog(Context con, String uniqueTagForEachActivityOrEvent, String action, Object... params) {
         // Save MindScope working log
+        StringBuilder sb = new StringBuilder();
+        for (Object value : params)
+            sb.append(value).append(Tools.DATA_SOURCE_SEPARATOR);
+        if (sb.length() > 0)
+            sb.replace(sb.length() - 1, sb.length(), "");
         new Thread(() -> {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.MILLISECOND, 0);
@@ -659,7 +665,7 @@ public class Tools {
             SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("APPLICATION_LOG", -1);
             assert dataSourceId != -1;
-            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action);
+            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action, sb.toString());
         }).start();
     }
 

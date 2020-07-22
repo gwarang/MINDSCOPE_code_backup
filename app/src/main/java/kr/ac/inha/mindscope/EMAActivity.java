@@ -166,6 +166,12 @@ public class EMAActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Tools.saveApplicationLog(getApplicationContext(), TAG, Tools.ACTION_OPEN_PAGE);
+    }
+
     public void init() {
 
 //        Question button start
@@ -236,128 +242,107 @@ public class EMAActivity extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btn_submit);
 
         // Answer check
-        question1_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.question1_1:
-                        answer1 = 0;
-                        break;
-                    case R.id.question1_2:
-                        answer1 = 1;
-                        break;
-                    case R.id.question1_3:
-                        answer1 = 2;
-                        break;
-                    case R.id.question1_4:
-                        answer1 = 3;
-                        break;
-                    case R.id.question1_5:
-                        answer1 = 4;
-                        break;
-                    default:
-                        answer1 = 5;
-                }
+        question1_group.setOnCheckedChangeListener((radioGroup, i) -> {
+            switch (i) {
+                case R.id.question1_1:
+                    answer1 = 0;
+                    break;
+                case R.id.question1_2:
+                    answer1 = 1;
+                    break;
+                case R.id.question1_3:
+                    answer1 = 2;
+                    break;
+                case R.id.question1_4:
+                    answer1 = 3;
+                    break;
+                case R.id.question1_5:
+                    answer1 = 4;
+                    break;
+                default:
+                    answer1 = 5;
             }
         });
-        question2_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.question2_1:
-                        answer2 = 0;
-                        break;
-                    case R.id.question2_2:
-                        answer2 = 1;
-                        break;
-                    case R.id.question2_3:
-                        answer2 = 2;
-                        break;
-                    case R.id.question2_4:
-                        answer2 = 3;
-                        break;
-                    case R.id.question2_5:
-                        answer2 = 4;
-                        break;
-                    default:
-                        answer2 = 5;
-                }
+        question2_group.setOnCheckedChangeListener((radioGroup, i) -> {
+            switch (i) {
+                case R.id.question2_1:
+                    answer2 = 0;
+                    break;
+                case R.id.question2_2:
+                    answer2 = 1;
+                    break;
+                case R.id.question2_3:
+                    answer2 = 2;
+                    break;
+                case R.id.question2_4:
+                    answer2 = 3;
+                    break;
+                case R.id.question2_5:
+                    answer2 = 4;
+                    break;
+                default:
+                    answer2 = 5;
             }
         });
-        question3_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.question3_1:
-                        answer3 = 4;
-                        break;
-                    case R.id.question3_2:
-                        answer3 = 3;
-                        break;
-                    case R.id.question3_3:
-                        answer3 = 2;
-                        break;
-                    case R.id.question3_4:
-                        answer3 = 1;
-                        break;
-                    case R.id.question3_5:
-                        answer3 = 0;
-                        break;
-                    default:
-                        answer3 = 5;
-                }
+        question3_group.setOnCheckedChangeListener((radioGroup, i) -> {
+            switch (i) {
+                case R.id.question3_1:
+                    answer3 = 4;
+                    break;
+                case R.id.question3_2:
+                    answer3 = 3;
+                    break;
+                case R.id.question3_3:
+                    answer3 = 2;
+                    break;
+                case R.id.question3_4:
+                    answer3 = 1;
+                    break;
+                case R.id.question3_5:
+                    answer3 = 0;
+                    break;
+                default:
+                    answer3 = 5;
             }
         });
-        question4_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.question4_1:
-                        answer4 = 4;
-                        break;
-                    case R.id.question4_2:
-                        answer4 = 3;
-                        break;
-                    case R.id.question4_3:
-                        answer4 = 2;
-                        break;
-                    case R.id.question4_4:
-                        answer4 = 1;
-                        break;
-                    case R.id.question4_5:
-                        answer4 = 0;
-                        break;
-                    default:
-                        answer4 = 5;
-                }
+        question4_group.setOnCheckedChangeListener((radioGroup, i) -> {
+            switch (i) {
+                case R.id.question4_1:
+                    answer4 = 4;
+                    break;
+                case R.id.question4_2:
+                    answer4 = 3;
+                    break;
+                case R.id.question4_3:
+                    answer4 = 2;
+                    break;
+                case R.id.question4_4:
+                    answer4 = 1;
+                    break;
+                case R.id.question4_5:
+                    answer4 = 0;
+                    break;
+                default:
+                    answer4 = 5;
             }
         });
-        question5_1_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                answer5 = 1;
-                question5_1_btn.setSelected(true);
-                question5_2_btn.setSelected(false);
-                question5_3_btn.setSelected(false);
-            }
+        question5_1_btn.setOnClickListener(view -> {
+            answer5 = 0;
+            question5_1_btn.setSelected(true);
+            question5_2_btn.setSelected(false);
+            question5_3_btn.setSelected(false);
         });
-        question5_2_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                answer5 = 2;
-                question5_1_btn.setSelected(false);
-                question5_2_btn.setSelected(true);
-                question5_3_btn.setSelected(false);
-            }
+        question5_2_btn.setOnClickListener(view -> {
+            answer5 = 1;
+            question5_1_btn.setSelected(false);
+            question5_2_btn.setSelected(true);
+            question5_3_btn.setSelected(false);
         });
-        question5_3_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                answer5 = 3;
-                question5_1_btn.setSelected(false);
-                question5_2_btn.setSelected(false);
-                question5_3_btn.setSelected(true);
-            }
+        question5_3_btn.setOnClickListener(view -> {
+            answer5 = 2;
+            question5_1_btn.setSelected(false);
+            question5_2_btn.setSelected(false);
+            question5_3_btn.setSelected(true);
         });
     }
 

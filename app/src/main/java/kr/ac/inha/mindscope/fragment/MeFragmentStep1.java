@@ -41,7 +41,6 @@ import kr.ac.inha.mindscope.Tools;
 public class MeFragmentStep1 extends Fragment {
 
     private static final String TAG = "MeFragment";
-
     private ImageButton btnMap;
     private AppBarLayout appBarLayout;
     private Button stepTestBtn;
@@ -166,6 +165,8 @@ public class MeFragmentStep1 extends Fragment {
 
         loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+
+        Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
 
         updateStats();
     }
@@ -308,18 +309,18 @@ public class MeFragmentStep1 extends Fragment {
         }
 
         // if not submit during EMA submit duration, start EMAActivity
-//        new Thread(() -> {
-//            for(TextView time : times){
-//                if(time.getText().equals(getResources().getString(R.string.string_survey_incomplete))){
-//                    int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
-//                    if(ema_order != 0){
-//                        Intent intent = new Intent(getActivity(), EMAActivity.class);
-//                        intent.putExtra("ema_order", ema_order);
-//                        startActivity(intent);
-//                    }
-//                }
-//            }
-//        }).start();
+        new Thread(() -> {
+            for(TextView time : times){
+                if(time.getText().equals(getResources().getString(R.string.string_survey_incomplete))){
+                    int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
+                    if(ema_order != 0){
+                        Intent intent = new Intent(getActivity(), EMAActivity.class);
+                        intent.putExtra("ema_order", ema_order);
+                        startActivity(intent);
+                    }
+                }
+            }
+        }).start();
     }
 
     public void loadAllPoints() {

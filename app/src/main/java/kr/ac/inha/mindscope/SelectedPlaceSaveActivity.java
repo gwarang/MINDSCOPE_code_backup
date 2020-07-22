@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import static kr.ac.inha.mindscope.MapsActivity.GEOFENCE_RADIUS_DEFAULT;
 import static kr.ac.inha.mindscope.MapsActivity.ID_HOME;
+import static kr.ac.inha.mindscope.Tools.ACTION_CLICK_SAVE_BUTTON;
 
 public class SelectedPlaceSaveActivity extends AppCompatActivity {
 
@@ -79,6 +80,12 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Tools.saveApplicationLog(getApplicationContext(), TAG, Tools.ACTION_OPEN_PAGE);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.toolbar_save:
@@ -90,7 +97,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
                     setLocation(editText.getText().toString(), selectedLat, selectedLng);
                     Log.i(TAG, "placeUserName, double lat lng, float lat lng: " + editText.getText().toString() + ", " + selectedLat + ", " + selectedLng + ", " + selectedLat.floatValue() + ", " + selectedLng.floatValue());
                     finish();
-                    // TODO EasyTrack server에 upload
+                    Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_BUTTON);
                 }
             case android.R.id.home:
                 finish();

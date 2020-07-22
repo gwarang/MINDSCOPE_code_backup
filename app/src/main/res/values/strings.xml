@@ -296,4 +296,5 @@
     <string name="string_child2_make_intervention">스트레스 해소방안 만들기</string>
     <string name="string_child2_do_intervention">스트레스 해소하기</string>
 
+    <string name="string_no_detail_report">There is no detail report.</string>
 </resources>

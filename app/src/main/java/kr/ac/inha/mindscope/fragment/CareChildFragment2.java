@@ -39,6 +39,10 @@ import static android.content.Context.MODE_PRIVATE;
 public class CareChildFragment2 extends Fragment {
 
     private static final String TAG = "CareChildFragment2";
+    private static final String ACTION_CLICK_MAKE_INTERVENTION = "CLICK_MAKE_INTERVENTION";
+    private static final String ACTION_CLICK_LOAD_OTHER_INTERVENTION = "CLICK_LOAD_OTHER_INTERVENTION";
+    private static final String ACTION_CLICK_MUTE_TODAY_INTERVENTION = "CLICK_MUTE_TODAY_INTERVENTION";
+    private static final String ACTION_CLICK_OTHER_INTERVENTION = "CLICK_OTHER_INTERVENTION";
 
     ConstraintLayout currentInterventionContainer;
 
@@ -95,6 +99,7 @@ public class CareChildFragment2 extends Fragment {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
         recommandIntervention2.setOnClickListener(view12 -> {
             editor.putString("curIntervention", recommandIntervention2.getText().toString());
@@ -104,6 +109,7 @@ public class CareChildFragment2 extends Fragment {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
         recommandIntervention3.setOnClickListener(view13 -> {
             editor.putString("curIntervention", recommandIntervention3.getText().toString());
@@ -113,6 +119,7 @@ public class CareChildFragment2 extends Fragment {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
         //endregion
 
@@ -123,6 +130,7 @@ public class CareChildFragment2 extends Fragment {
     public void onResume() {
         super.onResume();
         loadTodayPerformedIntervention();
+        Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
 
     public void init(View view) {
@@ -175,6 +183,7 @@ public class CareChildFragment2 extends Fragment {
             if (makeInterventionBtn.getText().toString().equals(getString(R.string.string_child2_make_intervention))) {
                 Intent intent = new Intent(getActivity(), InterventionSaveActivity.class);
                 startActivity(intent);
+                Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_MAKE_INTERVENTION);
             } else {
                 Intent intent = new Intent(getContext(), InterventionService.class);
                 intent.putExtra("stress_do_intervention", true);
@@ -200,7 +209,7 @@ public class CareChildFragment2 extends Fragment {
     CompoundButton.OnCheckedChangeListener switchListener = (compoundButton, isChecked) -> {
         SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-
+        Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_MUTE_TODAY_INTERVENTION);
         if (isChecked) {
             Log.i(TAG, "오늘의 알림 받기 설정");
             editor.putBoolean("muteToday", true);
@@ -258,6 +267,7 @@ public class CareChildFragment2 extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
         Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_OTHER_RECOMMENDATION,0);
+        Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_LOAD_OTHER_INTERVENTION);
 
     }
 

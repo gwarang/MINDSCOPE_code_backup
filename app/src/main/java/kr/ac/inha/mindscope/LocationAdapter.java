@@ -24,6 +24,8 @@ import static kr.ac.inha.mindscope.MapsActivity.ID_HOME;
 public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
 
     private static final String TAG = "LocationAdapter";
+    private static final String ACTION_CLICK_EDIT_PLACE = "CLICK_EDIT_PLACE";
+    private static final String ACTION_CLICK_DELETE_PLACE = "CLICK_DELETE_PLACE";
     public static final int DELETE_CODE = 1;
     public static final int EDIT_CODE = 2;
 
@@ -80,6 +82,7 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
                 Log.e(TAG, "mcallback is null");
             else
                 mCallback.onClick(editStoreLocation, EDIT_CODE);
+            Tools.saveApplicationLog(getContext(), MapsActivity.TAG, ACTION_CLICK_EDIT_PLACE);
         });
 
         deleteButton.setOnClickListener(view -> {
@@ -115,6 +118,8 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
 
             editor.apply();
             Toast.makeText(context, context.getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
+
+            Tools.saveApplicationLog(getContext(), MapsActivity.TAG, ACTION_CLICK_DELETE_PLACE);
 
             if (mCallback == null) {
                 Log.e(TAG, "mcallback is null");

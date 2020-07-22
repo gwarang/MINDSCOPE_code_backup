@@ -18,6 +18,7 @@ import kr.ac.inha.mindscope.R;
 
 public class CareFragmentStep2 extends Fragment {
 
+    private static final String TAG = "CareFragmentStep2";
 
     ViewPager2 viewPager;
     TabLayout tabLayout;
@@ -37,6 +38,7 @@ public class CareFragmentStep2 extends Fragment {
 
 
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

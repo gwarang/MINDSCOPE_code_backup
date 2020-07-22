@@ -7,10 +7,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import kr.ac.inha.mindscope.R;
 
 public class CareFragmentStep1 extends Fragment {
+
+    private static final String TAG = "CareFragmentStep1";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

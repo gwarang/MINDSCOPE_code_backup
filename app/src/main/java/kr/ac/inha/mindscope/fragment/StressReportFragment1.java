@@ -43,8 +43,6 @@ import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class StressReportFragment1 extends Fragment {
 
-
-
     private static final String TAG = "StressReportFragment1";
 
     public static JSONObject[] jsonObjects;
@@ -70,7 +68,7 @@ public class StressReportFragment1 extends Fragment {
 
     int day_num;
     int order;
-    int accuracy;
+    Double accuracy;
     String feature_ids;
 
     public int stressLevel;
@@ -86,6 +84,11 @@ public class StressReportFragment1 extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+    }
 
     public static StressReportFragment1 newInstance(int stressLevel){
         StressReportFragment1 fragment = new StressReportFragment1();
@@ -99,7 +102,6 @@ public class StressReportFragment1 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            this.stressLevel = getArguments().getInt("stressLevel");
             Log.i(TAG, "stress level from StressReportActivity: " + stressLevel); // TODO test용 추후 삭제
         }
 
@@ -119,27 +121,29 @@ public class StressReportFragment1 extends Fragment {
         jsonObjects = Tools.parsingStressReport(stressReportStr);
 
 
-        for(short i = 0; i < jsonObjects.length; i++){
-            try {
-                if(jsonObjects[0] != null){
-                    if(jsonObjects[i].getBoolean("model_tag")){
-                        stressLevel = i+1;
-                        day_num = jsonObjects[i].getInt("day_num");
-                        order = jsonObjects[i].getInt("ema_order");
-                        accuracy = jsonObjects[i].getInt("accuracy");
-                        feature_ids = jsonObjects[i].getString("feature_ids");
-                        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = reportPrefs.edit();
-                        editor.putInt("result", stressLevel);
-                        editor.apply();
+        if (jsonObjects != null) {
+            for(short i = 0; i < jsonObjects.length; i++){
+                try {
+                    if(jsonObjects[0] != null){
+                        if(jsonObjects[i].getBoolean("model_tag")){
+                            stressLevel = i+1;
+                            day_num = jsonObjects[i].getInt("day_num");
+                            order = jsonObjects[i].getInt("ema_order");
+                            accuracy = jsonObjects[i].getDouble("accuracy");
+                            feature_ids = jsonObjects[i].getString("feature_ids");
+                            SharedPreferences reportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = reportPrefs.edit();
+                            editor.putInt("result", stressLevel);
+                            editor.apply();
+                        }
                     }
-                }
-                else{
-                    Log.e(TAG, "report is not in jsonObjects");
-                }
+                    else{
+                        Log.e(TAG, "report is not in jsonObjects");
+                    }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -154,29 +158,29 @@ public class StressReportFragment1 extends Fragment {
 
         Calendar cal = Calendar.getInstance();
 
-        stressLevelImg = (ImageView) view.findViewById(R.id.report_step2_img);
-        stressLevelTxt = (TextView) view.findViewById(R.id.report_step2_result);
+        stressLevelImg = view.findViewById(R.id.report_step2_img);
+        stressLevelTxt = view.findViewById(R.id.report_step2_result);
 
         switch (stressLevel){
             case STRESS_LV1:
-                stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, getActivity().getTheme()));
+                stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
                 stressLevelTxt.setText(Html.fromHtml(getResources().getString(R.string.string_stress_report_low)));
                 break;
             case STRESS_LV2:
-                stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, getActivity().getTheme()));
+                stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, requireActivity().getTheme()));
                 stressLevelTxt.setText(Html.fromHtml(getResources().getString(R.string.string_stress_report_littlehigh)));
                 break;
             case STRESS_LV3:
-                stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, getActivity().getTheme()));
+                stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, requireActivity().getTheme()));
                 stressLevelTxt.setText(Html.fromHtml(getResources().getString(R.string.string_stress_report_high)));
         }
 
-        reportAnswer = 0;
+        reportAnswer = 5; // not selected
 
         Log.i(TAG, "Stress Report Order: " + reportOrder);
 
         // UI
-        dateView = (TextView) view.findViewById(R.id.report_step2_date);
+        dateView = view.findViewById(R.id.report_step2_date);
         Date currentTime = Calendar.getInstance().getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
@@ -184,7 +188,7 @@ public class StressReportFragment1 extends Fragment {
 
         currentHours = cal.get(Calendar.HOUR_OF_DAY);
         Log.i(TAG, "current hours: " + currentHours);
-        timeView = (TextView) view.findViewById(R.id.report_step2_time);
+        timeView = view.findViewById(R.id.report_step2_time);
         if(currentHours < 11){
             timeView.setText(getResources().getString(R.string.time_step2_duration1));
         }
@@ -206,35 +210,26 @@ public class StressReportFragment1 extends Fragment {
         lowBtn = view.findViewById(R.id.actual_stress_answer1);
         littleHighBtn = view.findViewById(R.id.actual_stress_answer2);
         highBtn = view.findViewById(R.id.actual_stress_answer3);
-        lowBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lowBtn.setSelected(true);
-                littleHighBtn.setSelected(false);
-                highBtn.setSelected(false);
-                reportAnswer = 1;
-                btnReport.setClickable(true);
-            }
+        lowBtn.setOnClickListener(view13 -> {
+            lowBtn.setSelected(true);
+            littleHighBtn.setSelected(false);
+            highBtn.setSelected(false);
+            reportAnswer = 0;
+            btnReport.setClickable(true);
         });
-        littleHighBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lowBtn.setSelected(false);
-                littleHighBtn.setSelected(true);
-                highBtn.setSelected(false);
-                reportAnswer = 2;
-                btnReport.setClickable(true);
-            }
+        littleHighBtn.setOnClickListener(view1 -> {
+            lowBtn.setSelected(false);
+            littleHighBtn.setSelected(true);
+            highBtn.setSelected(false);
+            reportAnswer = 1;
+            btnReport.setClickable(true);
         });
-        highBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lowBtn.setSelected(false);
-                littleHighBtn.setSelected(false);
-                highBtn.setSelected(true);
-                reportAnswer = 3;
-                btnReport.setClickable(true);
-            }
+        highBtn.setOnClickListener(view12 -> {
+            lowBtn.setSelected(false);
+            littleHighBtn.setSelected(false);
+            highBtn.setSelected(true);
+            reportAnswer = 2;
+            btnReport.setClickable(true);
         });
 
 
@@ -271,33 +266,34 @@ public class StressReportFragment1 extends Fragment {
         return dayNum;
     }
 
-    View.OnClickListener clickListener = new View.OnClickListener() {
+    final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
-            if(reportAnswer == 0){
+            if (reportAnswer == 5) {
                 Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
-            }
-            else{
-                try {
-                    day_num = jsonObjects[reportAnswer - 1].getInt("day_num");
-                    order = jsonObjects[reportAnswer - 1].getInt("ema_order");
-                    accuracy = jsonObjects[stressLevel - 1].getInt("accuracy");
-                    feature_ids = jsonObjects[reportAnswer - 1].getString("feature_ids");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            } else {
+                if (jsonObjects != null) {
+                    try {
+                        day_num = jsonObjects[reportAnswer].getInt("day_num");
+                        order = jsonObjects[reportAnswer].getInt("ema_order");
+                        accuracy = jsonObjects[stressLevel].getDouble("accuracy");
+                        feature_ids = jsonObjects[reportAnswer].getString("feature_ids");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
-
-                final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 if (notificationManager != null) {
                     notificationManager.cancel(EMA_NOTI_ID);
                 }
 
 
-                Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %d %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
-                ((StressReportActivity)getActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+                Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+                ((StressReportActivity) requireActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
 
+                Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, reportAnswer);
             }
         }
 
@@ -305,8 +301,8 @@ public class StressReportFragment1 extends Fragment {
 
     public String gettingStressReportFromGRPC(){
         String stresReportStr = "";
-        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-        SharedPreferences configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+        SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
@@ -317,10 +313,6 @@ public class StressReportFragment1 extends Fragment {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
             fromCalendar.set(Calendar.MINUTE, 0);
             fromCalendar.set(Calendar.SECOND, 0);
-//            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-//            tillCalendar.set(Calendar.MINUTE, 59);
-//            tillCalendar.set(Calendar.SECOND, 59);
-
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

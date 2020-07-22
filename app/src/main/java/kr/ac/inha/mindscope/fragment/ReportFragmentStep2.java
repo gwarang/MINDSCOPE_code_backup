@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
@@ -53,6 +54,7 @@ import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportDBHelper;
+import kr.ac.inha.mindscope.Tools;
 
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
@@ -67,6 +69,10 @@ import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHei
 public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListener {
     // region variables
     private static final String TAG = "ReportFragmentStep2";
+    private static final String ACTION_CLICK_HELP = "CLICK_HELP";
+    private static final String ACTION_CLICK_DAY = "CLICK_DAY";
+    private static final String ACTION_CLICK_DETAIL_REPORT = "CLICK_DETAIL_REPORT";
+
 
     private static final int tileWidth = 45;
     private static final int tileHeight = 45;
@@ -121,7 +127,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
 
     StressReportDBHelper dbHelper;
-    ArrayList<StressReportDBHelper.StressReportData> dataArray;
     private static MaterialCalendarView materialCalendarView;
 
     static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
@@ -133,6 +138,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public ReportFragmentStep2() {
         // Required empty public constructor
     }
+
+
 
     // region override
     @Override
@@ -155,23 +162,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         String date = DateFormat.format("yyyy-MM-dd", firstDayCal).toString();
 
         Log.d(TAG, "firstdate calendar " + date);
-        dataArray = dbHelper.getStressReportData();
-        if (dataArray.isEmpty())
-            Log.i(TAG, "dataArray is empty");
-        for (StressReportDBHelper.StressReportData temp : dataArray) {
-            Log.i(TAG, temp.toString());
-            long timestamp = temp.getTimestamp();
-            int stress_level = temp.getStress_level();
-            int day_num = temp.getDay_num();
-            int report_order = temp.getReport_order();
-
-            Calendar tempCal = Calendar.getInstance();
-            tempCal.setTimeInMillis(timestamp);
-            String tempDate = DateFormat.format("yyyy-MM-dd", tempCal).toString();
-            Log.d(TAG, "temp date: " + tempDate);
-
-
-        }
 
         sumPointsView = root.findViewById(R.id.summary_point_my);
         dailyPointsView = root.findViewById(R.id.point_day);
@@ -193,7 +183,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         arrowResult4 = root.findViewById(R.id.arrow_result4);
         selectedDayComment = root.findViewById(R.id.selected_day_comment);
         dailyAverageStressLevelView = root.findViewById(R.id.frg_report_step2_img1);
-        SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("points", Context.MODE_PRIVATE);
         sumPointsView.setText(String.valueOf(prefs.getInt("sumPoints", 0)));
 
         // hidden view
@@ -217,27 +207,27 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         reasonContainer = root.findViewById(R.id.frg_report_step2_stress_reason_container);
 
         txtStressLevel = root.findViewById(R.id.txt_stress_level);
-        // TODO 달력에서 날짜 선택하면 해당 날짜 평균 스트레스 레벨로 바꿔줘야함, 캘린더 클릭 이벤트에서 처리할것
         txtStressLevel.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
 
-        materialCalendarView = (MaterialCalendarView) root.findViewById(R.id.calendarView);
+        materialCalendarView = root.findViewById(R.id.calendarView);
         materialCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE);
         materialCalendarView.setTileHeightDp(tileHeight);
         materialCalendarView.setTileWidthDp(tileWidth);
         materialCalendarView.addDecorators(
                 new DayDecorator(),
-                new LowStressDecorator(ContextCompat.getDrawable(getContext(), R.drawable.low_circle_background)),
-                new LittleHighStressDecorator(ContextCompat.getDrawable(getContext(), R.drawable.littlehigh_circle_background)),
-                new HighStressDecorator(ContextCompat.getDrawable(getContext(), R.drawable.high_circle_background))
+                new LowStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.low_circle_background)),
+                new LittleHighStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.littlehigh_circle_background)),
+                new HighStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.high_circle_background))
         );
         materialCalendarView.setOnDateChangedListener(this);
 
         fragmentMeStep2BtnHelp = root.findViewById(R.id.fragment_me_step2_btn_help);
-        dateView = (TextView) root.findViewById(R.id.report_step2_date);
+        dateView = root.findViewById(R.id.report_step2_date);
         Date currentTime = Calendar.getInstance().getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
         fragmentMeStep2BtnHelp.setOnClickListener((v) -> {
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_HELP);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("https://haesookim.info/MindScope/"));
             startActivity(intent);
@@ -259,17 +249,23 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            try {
-                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                Log.e(TAG, feature_ids);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(object != null){
+                try {
+                    feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                    Log.e(TAG, feature_ids);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             if(feature_ids != null){
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
             }
+            else{
+                Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
+            }
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 1);
         });
         arrowResult2.setOnClickListener((v) -> {
             // 11:00 ~ 15:00
@@ -286,17 +282,23 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            try {
-                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                Log.e(TAG, feature_ids);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(object != null){
+                try {
+                    feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                    Log.e(TAG, feature_ids);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             if(feature_ids != null){
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
             }
+            else{
+                Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
+            }
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 2);
         });
         arrowResult3.setOnClickListener((v) -> {
             // 15:00 ~ 19:00
@@ -313,17 +315,23 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            try {
-                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                Log.e(TAG, feature_ids);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(object != null){
+                try {
+                    feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                    Log.e(TAG, feature_ids);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             if(feature_ids != null){
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
             }
+            else{
+                Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
+            }
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 3);
         });
         arrowResult4.setOnClickListener((v) -> {
             // 19:00 ~ 23:00
@@ -340,24 +348,27 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            try {
-                feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                Log.e(TAG, feature_ids);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(object != null){
+                try {
+                    feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                    Log.e(TAG, feature_ids);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             if(feature_ids != null){
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
             }
-        });
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                defaultContainer.setVisibility(View.VISIBLE);
-                hiddenContainer.setVisibility(View.INVISIBLE);
+            else{
+                Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 4);
+        });
+        backArrow.setOnClickListener(view -> {
+            defaultContainer.setVisibility(View.VISIBLE);
+            hiddenContainer.setVisibility(View.INVISIBLE);
         });
 
         loadAllStressLevelsFromServer();
@@ -455,7 +466,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         // region (4) daily comment
         new Thread(() -> {
-            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
             int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
             String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
             int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
@@ -475,10 +486,15 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         R.string.string_stress_level_high
                 };
                 int stressLevel = dailyAverageStressLevels.get(day);
-                txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel - 1])));
-                txtStressLevel.setVisibility(View.VISIBLE);
+                requireActivity().runOnUiThread(() -> {
+                    txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel - 1])));
+                    txtStressLevel.setVisibility(View.VISIBLE);
+                });
             } else
-                txtStressLevel.setVisibility(View.GONE); // should never happen
+                requireActivity().runOnUiThread(() -> {
+                    txtStressLevel.setVisibility(View.GONE); // should never happen
+                });
+
 
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
@@ -514,6 +530,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         materialCalendarView.invalidateDecorators();
         selectedDay = day;
+        Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DAY, date_text.replace(" ", "_"));
     }
 
     private int findTimestampIndex(long timestamp, Pair<Integer, Integer>[] range) {
@@ -527,6 +544,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         }
         return -1;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+    }
+
     // endregion
 
     // region decorators
@@ -536,7 +560,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         public DayDecorator() {
             today = CalendarDay.today();
-            todayBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.today_circle_background);
+            todayBackgroundDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.today_circle_background);
         }
 
 
@@ -552,12 +576,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     public static class LowStressDecorator implements DayViewDecorator {
-        private final CalendarDay today;
         private final Drawable lowBackgroundDrawable;
         private static HashSet<CalendarDay> lowStressCalendarDays;
 
         public LowStressDecorator(Drawable stressLevelDrawable) {
-            this.today = CalendarDay.today();
             this.lowBackgroundDrawable = stressLevelDrawable;
             if (lowStressCalendarDays == null)
                 lowStressCalendarDays = new HashSet<>();
@@ -583,12 +605,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     public static class LittleHighStressDecorator implements DayViewDecorator {
-        private final CalendarDay today;
         private final Drawable littleHighBackgroundDrawable;
         private static HashSet<CalendarDay> littleHighStressCalendarDays;
 
         public LittleHighStressDecorator(Drawable stressLevelDrawable) {
-            this.today = CalendarDay.today();
             this.littleHighBackgroundDrawable = stressLevelDrawable;
             if (littleHighStressCalendarDays == null)
                 littleHighStressCalendarDays = new HashSet<>();
@@ -614,12 +634,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     public static class HighStressDecorator implements DayViewDecorator {
-        private final CalendarDay today;
         private final Drawable highBackgroundDrawable;
         private static HashSet<CalendarDay> highStressCalendarDays;
 
         public HighStressDecorator(Drawable stressLevelDrawable) {
-            this.today = CalendarDay.today();
             this.highBackgroundDrawable = stressLevelDrawable;
             if (highStressCalendarDays == null)
                 highStressCalendarDays = new HashSet<>();
@@ -654,7 +672,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     public long getJoinTime() {
         long firstDayTimestamp = 0;
-        SharedPreferences loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
         ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
@@ -675,10 +693,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     public void loadAllPoints() {
         new Thread(() -> {
-            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
             int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
             String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+            int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
             final int REWARD_POINTS = 58;
 
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
@@ -710,10 +728,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     public void loadDailyPoints(CalendarDay day) {
         new Thread(() -> {
-            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
             int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
             String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+            int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
             final int REWARD_POINTS = 58;
 
             Calendar c = Calendar.getInstance();
@@ -752,10 +770,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public void loadAllStressLevelsFromServer() {
         // [Kevin] load stress levels (submissions & predictions) from gRPC server
         new Thread(() -> {
-            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
             int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
             String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+            int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
 
             Calendar c = Calendar.getInstance();
             c.add(Calendar.DAY_OF_MONTH, 1);
@@ -878,7 +896,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             ArrayList<Triple<Long, Integer, Integer>> cluster = dailyStressLevelClusters.get(day);
             double sum = 0;
             for (Triple<Long, Integer, Integer> tsEmaOrderStressLvlTriple : cluster)
-                sum += tsEmaOrderStressLvlTriple.getRight();
+                sum += tsEmaOrderStressLvlTriple.getRight() + 1;
             dailyAverageStressLevels.put(day, (int) Math.round(sum / cluster.size()));
         }
 
@@ -924,7 +942,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
-                String packName = getContext().getPackageName();
+                String packName = requireContext().getPackageName();
                 int resId = getResources().getIdentifier(strID, "string", packName);
 
                 if(category <= 5){
@@ -948,19 +966,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         Log.d(TAG, "activityReason" + activityReason.toString());
 
         ArrayAdapter<String> phoneAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, phoneReason
+                requireContext(), R.layout.item_feature_ids, phoneReason
         );
         ArrayAdapter<String> activityAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, activityReason
+                requireContext(), R.layout.item_feature_ids, activityReason
         );
         ArrayAdapter<String> socialAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, socialReason
+                requireContext(), R.layout.item_feature_ids, socialReason
         );
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, locationReason
+                requireContext(), R.layout.item_feature_ids, locationReason
         );
         ArrayAdapter<String> sleepAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, sleepReason
+                requireContext(), R.layout.item_feature_ids, sleepReason
         );
 
         phoneListView.setAdapter(phoneAdapter);
@@ -1007,19 +1025,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         switch (stressLevl){
             case STRESS_LV1:
-                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.icon_low));
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, getActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
                 break;
             case STRESS_LV2:
-                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.icon_littlehigh));
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, getActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
                 break;
             case STRESS_LV3:
-                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.icon_high));
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, getActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
                 break;
         }
 

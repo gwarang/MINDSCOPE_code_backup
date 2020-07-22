@@ -1,7 +1,6 @@
 package kr.ac.inha.mindscope;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -13,13 +12,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
-import static kr.ac.inha.mindscope.Tools.FIRST_START_ACTIVITY;
+import static kr.ac.inha.mindscope.Tools.ACTION_OPEN_PAGE;
 
 public class FirstStartActivity extends AppCompatActivity {
 
@@ -130,7 +126,7 @@ public class FirstStartActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = a.edit();
             editor.putInt("First", infoFirst);
             editor.apply();
-            Tools.saveApplicationLog(getApplicationContext(), String.format("%s-%s", TAG, START_BUTTON_CLCIK), "INTRO_PAGE_START_BUTTON_CLICK");
+            Tools.saveApplicationLog(getApplicationContext(), TAG, START_BUTTON_CLCIK);
             Intent intent = new Intent(FirstStartActivity.this, MapsActivity.class);
             startActivity(intent);
         });
@@ -145,6 +141,6 @@ public class FirstStartActivity extends AppCompatActivity {
             dialog = Tools.requestPermissions(FirstStartActivity.this);
         }
         super.onResume();
-        Tools.saveApplicationLog(getApplicationContext(), TAG, "INTRO_PAGE_START");
+        Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_OPEN_PAGE);
     }
 }
