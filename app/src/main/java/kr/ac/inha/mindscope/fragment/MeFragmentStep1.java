@@ -308,18 +308,18 @@ public class MeFragmentStep1 extends Fragment {
         }
 
         // if not submit during EMA submit duration, start EMAActivity
-        new Thread(() -> {
-            for(TextView time : times){
-                if(time.getText().equals(getResources().getString(R.string.string_survey_incomplete))){
-                    int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
-                    if(ema_order != 0){
-                        Intent intent = new Intent(getActivity(), EMAActivity.class);
-                        intent.putExtra("ema_order", ema_order);
-                        startActivity(intent);
-                    }
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            for(TextView time : times){
+//                if(time.getText().equals(getResources().getString(R.string.string_survey_incomplete))){
+//                    int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
+//                    if(ema_order != 0){
+//                        Intent intent = new Intent(getActivity(), EMAActivity.class);
+//                        intent.putExtra("ema_order", ema_order);
+//                        startActivity(intent);
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     public void loadAllPoints() {

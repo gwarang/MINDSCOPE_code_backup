@@ -317,9 +317,9 @@ public class StressReportFragment1 extends Fragment {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
             fromCalendar.set(Calendar.MINUTE, 0);
             fromCalendar.set(Calendar.SECOND, 0);
-            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-            tillCalendar.set(Calendar.MINUTE, 59);
-            tillCalendar.set(Calendar.SECOND, 59);
+//            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+//            tillCalendar.set(Calendar.MINUTE, 59);
+//            tillCalendar.set(Calendar.SECOND, 59);
 
         }
 
@@ -347,8 +347,8 @@ public class StressReportFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fillMillis) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tillTime) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis()) // TODO change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillCalendar.getTimeInMillis()) // TODO change tillCalendar.getTimeInMillis()
                 .build();
 
 

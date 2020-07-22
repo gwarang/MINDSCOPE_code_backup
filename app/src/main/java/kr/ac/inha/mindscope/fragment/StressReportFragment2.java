@@ -124,7 +124,7 @@ public class StressReportFragment2 extends Fragment {
             this.day_num = getArguments().getInt("day_num");
             this.order = getArguments().getInt("order");
             this.accuracy = getArguments().getInt("accuracy");
-            this.feature_ids = getArguments().getString("feature_ids");
+            this.feature_ids = getArguments().getString("feature_ids"); //
             Log.i(TAG, String.format("%d %d %d %d %d %d %s", reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
             saveStressReport();
         }else{

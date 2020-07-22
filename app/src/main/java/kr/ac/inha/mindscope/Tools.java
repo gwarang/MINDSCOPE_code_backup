@@ -47,6 +47,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -157,7 +158,6 @@ public class Tools {
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null);
-
 
 
         return alertDialog.show();
@@ -283,7 +283,7 @@ public class Tools {
         List<UsageStats> stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, fromCal.getTimeInMillis(), System.currentTimeMillis());
         for (UsageStats usageStats : stats) {
             //do not include launcher's package name
-            if (!AppUseDb.initialized){
+            if (!AppUseDb.initialized) {
                 AppUseDb.init(con);
             }
             if (usageStats.getTotalTimeInForeground() > 0 && !usageStats.getPackageName().contains(launcher_packageName)) {
@@ -397,9 +397,9 @@ public class Tools {
         return 0;
     }
 
-    public static int getReportOrderAtExactTime(Calendar cal){
-        for(short i = 0; i < REPORT_NOTIF_HOURS.length; i++){
-            if(cal.get(Calendar.HOUR_OF_DAY) == REPORT_NOTIF_HOURS[i] && cal.get(Calendar.MINUTE) == 0){
+    public static int getReportOrderAtExactTime(Calendar cal) {
+        for (short i = 0; i < REPORT_NOTIF_HOURS.length; i++) {
+            if (cal.get(Calendar.HOUR_OF_DAY) == REPORT_NOTIF_HOURS[i] && cal.get(Calendar.MINUTE) == 0) {
                 return i + 1;
             }
         }
@@ -417,11 +417,11 @@ public class Tools {
         return 0;
     }
 
-    public static int getReportOrderFromRangeAfterReport(Calendar cal){
-        long t =(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) * 1000;
-        for (int i=0; i < REPORT_NOTIF_HOURS.length; i++){
-            if((REPORT_NOTIF_HOURS[i] * 3600 * 1000) <= t && t <= (REPORT_NOTIF_HOURS[i] * 3600 * 1000) + REPORT_RESPONSE_EXPIRE_TIME * 1000)
-                return  i + 1;
+    public static int getReportOrderFromRangeAfterReport(Calendar cal) {
+        long t = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) * 1000;
+        for (int i = 0; i < REPORT_NOTIF_HOURS.length; i++) {
+            if ((REPORT_NOTIF_HOURS[i] * 3600 * 1000) <= t && t <= (REPORT_NOTIF_HOURS[i] * 3600 * 1000) + REPORT_RESPONSE_EXPIRE_TIME * 1000)
+                return i + 1;
         }
         return 0;
     }
@@ -450,17 +450,17 @@ public class Tools {
         return start < value && value < end;
     }
 
-    public static void updatePoint(Context context){
-        long calDateDays=0;
+    public static void updatePoint(Context context) {
+        long calDateDays = 0;
         SharedPreferences a = context.getSharedPreferences("firstDate", MODE_PRIVATE);
-        String  firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
+        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date firstDate = format.parse(firstTimeStr);
             Date currentDate = Calendar.getInstance().getTime();
             Log.i(TAG, "first, current: " + firstDate + ", " + currentDate);
             long caldate = firstDate.getTime() - currentDate.getTime();
-            calDateDays = caldate / (24*60*60*1000);
+            calDateDays = caldate / (24 * 60 * 60 * 1000);
             calDateDays = Math.abs(calDateDays);
             Log.i(TAG, "Day num: " + calDateDays);
         } catch (ParseException e) {
@@ -471,7 +471,7 @@ public class Tools {
         SharedPreferences.Editor pointsEditor = points.edit();
         long lastDayNum = points.getLong("daynum", 0);
 
-        if(lastDayNum < calDateDays){
+        if (lastDayNum < calDateDays) {
             // 날짜가 바뀌었으면 today points 초기화 및 day num 업데이트
             pointsEditor.putInt("todayPoints", 0);
             pointsEditor.putLong("daynum", calDateDays);
@@ -480,7 +480,7 @@ public class Tools {
 
         int newTodayPoints = points.getInt("todayPoints", 0) + Tools.POINT_INCREASE_VALUE;
         int newSumPoints = points.getInt("sumPoints", 0) + Tools.POINT_INCREASE_VALUE;
-        pointsEditor.putInt("todayPoints", newTodayPoints );
+        pointsEditor.putInt("todayPoints", newTodayPoints);
         pointsEditor.putInt("sumPoints", newSumPoints);
         pointsEditor.apply();
 
@@ -493,7 +493,7 @@ public class Tools {
         int dataSourceId = prefs.getInt("REWARD_POINTS", -1);
         assert dataSourceId != -1;
         Log.i(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
-        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, (int)calDateDays, Tools.POINT_INCREASE_VALUE);
+        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, (int) calDateDays, Tools.POINT_INCREASE_VALUE);
 
     }
 
@@ -616,12 +616,12 @@ public class Tools {
     }
 
     public static void saveStressIntervention(Context con, long timestamp, String curIntervention,
-                                               int action, int path) {
+                                              int action, int path) {
         SharedPreferences prefs = con.getSharedPreferences("Configurations", MODE_PRIVATE);
 
         int dataSourceId = prefs.getInt("STRESS_INTERVENTION", -1);
         assert dataSourceId != -1;
-        if(curIntervention.equals(""))
+        if (curIntervention.equals(""))
             curIntervention = "NOT_SELECT_INTERVENTION";
         DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f,
                 timestamp, curIntervention, action, path);
@@ -630,20 +630,25 @@ public class Tools {
 
     public static JSONObject[] parsingStressReport(String originStressReportStr) {
         // REPORT Parsing
-        String str = originStressReportStr;
-        JSONObject[] jsonObjects = new JSONObject[3];
         try {
+            String str = originStressReportStr;
             JSONObject jsonObject = new JSONObject(str);
-            jsonObjects[0] = jsonObject.getJSONObject("1"); // jsonObjects[key - 1] has a report for prediction stress level is key
-            jsonObjects[1] = jsonObject.getJSONObject("2");
-            jsonObjects[2] = jsonObject.getJSONObject("3");
+            JSONObject[] jsonObjects = new JSONObject[jsonObject.length()];
+
+            for (short i = 0; i < jsonObject.length(); i++) {
+                jsonObjects[i] = jsonObject.getJSONObject(String.valueOf(i));
+            }
+//            jsonObjects[0] = jsonObject.getJSONObject("1"); // jsonObjects[key - 1] has a report for prediction stress level is key
+//            jsonObjects[1] = jsonObject.getJSONObject("2");
+//            jsonObjects[2] = jsonObject.getJSONObject("3");
+            return jsonObjects;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return jsonObjects;
+        return null;
     }
 
-    public static void saveApplicationLog(Context con, String uniqueTagForEachActivityOrEvent, String action){
+    public static void saveApplicationLog(Context con, String uniqueTagForEachActivityOrEvent, String action) {
         // Save MindScope working log
         new Thread(() -> {
             Calendar cal = Calendar.getInstance();
@@ -659,7 +664,6 @@ public class Tools {
     }
 
 }
-
 
 
 class GeofenceHelper {
