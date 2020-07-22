@@ -1,6 +1,7 @@
 package kr.ac.inha.mindscope;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -16,7 +17,9 @@ import android.widget.Toast;
 
 import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +27,12 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import static kr.ac.inha.mindscope.Tools.FIRST_START_ACTIVITY;
+
 public class FirstStartActivity extends AppCompatActivity {
 
     private  static final String TAG = "FirstStartActivity";
+    private  static final String START_BUTTON_CLCIK = "START_BUTTON_CLICK";
     ViewPager2 viewPager2;
     SpringDotsIndicator springDotsIndicator;
     LinearLayout containerBtn;
@@ -67,12 +73,12 @@ public class FirstStartActivity extends AppCompatActivity {
             list.add(new DataPage("", getString(R.string.fsv_contents_six),
                     ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title2)));
         }else {
-            list.add(new DataPage(getString(R.string.app_name), getString(R.string.fsv_contents_one), getResources().getColor(R.color.color_fsv_title)));
-            list.add(new DataPage(getString(R.string.fsv_step) + " 1", getString(R.string.fsv_contents_two), getResources().getColor(R.color.color_fsv_title2)));
-            list.add(new DataPage(getString(R.string.fsv_step) + " 2", getString(R.string.fsv_contents_three), getResources().getColor(R.color.color_fsv_title2)));
-            list.add(new DataPage(getString(R.string.fsv_point), getString(R.string.fsv_contents_four), getResources().getColor(R.color.color_fsv_title2)));
-            list.add(new DataPage(getString(R.string.fsv_point), getString(R.string.fsv_contents_five), getResources().getColor(R.color.color_fsv_title2)));
-            list.add(new DataPage("", getString(R.string.fsv_contents_six), getResources().getColor(R.color.color_fsv_title2)));
+            list.add(new DataPage(getString(R.string.app_name), getString(R.string.fsv_contents_one), ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title)));
+            list.add(new DataPage(getString(R.string.fsv_step) + " 1", getString(R.string.fsv_contents_two), ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title2)));
+            list.add(new DataPage(getString(R.string.fsv_step) + " 2", getString(R.string.fsv_contents_three), ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title2)));
+            list.add(new DataPage(getString(R.string.fsv_point), getString(R.string.fsv_contents_four), ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title2)));
+            list.add(new DataPage(getString(R.string.fsv_point), getString(R.string.fsv_contents_five), ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title2)));
+            list.add(new DataPage("", getString(R.string.fsv_contents_six), ContextCompat.getColor(getApplicationContext(), R.color.color_fsv_title2)));
         }
 
 
@@ -118,18 +124,15 @@ public class FirstStartActivity extends AppCompatActivity {
         });
 
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int infoFirst = 1;
-                SharedPreferences a = getSharedPreferences("firstStart", MODE_PRIVATE);
-                SharedPreferences.Editor editor = a.edit();
-                editor.putInt("First", infoFirst);
-                editor.apply();
-                (Toast.makeText(getApplicationContext(), "저장완료 : ", Toast.LENGTH_LONG)).show();
-                Intent intent = new Intent(FirstStartActivity.this, MapsActivity.class);
-                startActivity(intent);
-            }
+        btnStart.setOnClickListener(view -> {
+            int infoFirst = 1;
+            SharedPreferences a = getSharedPreferences("firstStart", MODE_PRIVATE);
+            SharedPreferences.Editor editor = a.edit();
+            editor.putInt("First", infoFirst);
+            editor.apply();
+            Tools.saveApplicationLog(getApplicationContext(), String.format("%s-%s", TAG, START_BUTTON_CLCIK), "INTRO_PAGE_START_BUTTON_CLICK");
+            Intent intent = new Intent(FirstStartActivity.this, MapsActivity.class);
+            startActivity(intent);
         });
 
 
@@ -142,5 +145,6 @@ public class FirstStartActivity extends AppCompatActivity {
             dialog = Tools.requestPermissions(FirstStartActivity.this);
         }
         super.onResume();
+        Tools.saveApplicationLog(getApplicationContext(), TAG, "INTRO_PAGE_START");
     }
 }

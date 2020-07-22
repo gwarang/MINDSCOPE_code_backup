@@ -61,6 +61,7 @@ import static android.app.Notification.CATEGORY_ALARM;
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
+import static kr.ac.inha.mindscope.Tools.FIRST_START_ACTIVITY;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
 
@@ -104,6 +105,10 @@ public class Tools {
     public static final int PATH_APP = 0;
     public static final int PATH_NOTIFICATION = 1;
     /* Zaturi end */
+
+    //region Unique ID of each screen or button event
+    public static final int FIRST_START_ACTIVITY = 1;
+    //endregion
 
     public static boolean hasPermissions(Context con, String... permissions) {
         Context context = con.getApplicationContext();
@@ -402,7 +407,7 @@ public class Tools {
     }
 
 
-    static int getEMAOrderFromRangeAfterEMA(Calendar cal) {
+    public static int getEMAOrderFromRangeAfterEMA(Calendar cal) {
         long t = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) * 1000;
         for (int i = 0; i < EMA_NOTIF_HOURS.length; i++) {
             if ((EMA_NOTIF_HOURS[i] * 3600 * 1000) <= t && t <= (EMA_NOTIF_HOURS[i] * 3600 * 1000) + EMA_RESPONSE_EXPIRE_TIME * 1000)
@@ -412,7 +417,7 @@ public class Tools {
         return 0;
     }
 
-    static int getReportOrderFromRangeAfterReport(Calendar cal){
+    public static int getReportOrderFromRangeAfterReport(Calendar cal){
         long t =(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) * 1000;
         for (int i=0; i < REPORT_NOTIF_HOURS.length; i++){
             if((REPORT_NOTIF_HOURS[i] * 3600 * 1000) <= t && t <= (REPORT_NOTIF_HOURS[i] * 3600 * 1000) + REPORT_RESPONSE_EXPIRE_TIME * 1000)
@@ -638,6 +643,21 @@ public class Tools {
         return jsonObjects;
     }
 
+    public static void saveApplicationLog(Context con, String uniqueTagForEachActivityOrEvent, String action){
+        // Save MindScope working log
+        new Thread(() -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.MILLISECOND, 0);
+            long timestamp = cal.getTimeInMillis();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String logDate = simpleDateFormat.format(cal.getTimeInMillis());
+            SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+            int dataSourceId = prefs.getInt("APPLICATION_LOG", -1);
+            assert dataSourceId != -1;
+            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action);
+        }).start();
+    }
+
 }
 
 
@@ -732,7 +752,5 @@ class GeofenceHelper {
             geofencingClient = LocationServices.getGeofencingClient(context);
         geofencingClient.removeGeofences(getGeofencePendingIntent(context));
     }
-
-
 
 }

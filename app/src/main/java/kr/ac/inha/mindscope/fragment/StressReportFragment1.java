@@ -121,16 +121,21 @@ public class StressReportFragment1 extends Fragment {
 
         for(short i = 0; i < jsonObjects.length; i++){
             try {
-                if(jsonObjects[i].getBoolean("model_tag")){
-                    stressLevel = i+1;
-                    day_num = jsonObjects[i].getInt("day_num");
-                    order = jsonObjects[i].getInt("ema_order");
-                    accuracy = jsonObjects[i].getInt("accuracy");
-                    feature_ids = jsonObjects[i].getString("feature_ids");
-                    SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = reportPrefs.edit();
-                    editor.putInt("result", stressLevel);
-                    editor.apply();
+                if(jsonObjects[0] != null){
+                    if(jsonObjects[i].getBoolean("model_tag")){
+                        stressLevel = i+1;
+                        day_num = jsonObjects[i].getInt("day_num");
+                        order = jsonObjects[i].getInt("ema_order");
+                        accuracy = jsonObjects[i].getInt("accuracy");
+                        feature_ids = jsonObjects[i].getString("feature_ids");
+                        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = reportPrefs.edit();
+                        editor.putInt("result", stressLevel);
+                        editor.apply();
+                    }
+                }
+                else{
+                    Log.e(TAG, "report is not in jsonObjects");
                 }
 
             } catch (JSONException e) {

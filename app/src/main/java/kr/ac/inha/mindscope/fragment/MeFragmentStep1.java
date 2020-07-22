@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -43,7 +42,6 @@ public class MeFragmentStep1 extends Fragment {
 
     private static final String TAG = "MeFragment";
 
-    private MeViewModel meViewModel;
     private ImageButton btnMap;
     private AppBarLayout appBarLayout;
     private Button stepTestBtn;
@@ -72,7 +70,6 @@ public class MeFragmentStep1 extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        meViewModel = ViewModelProviders.of(this).get(MeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_me, container, false);
 //        final TextView textView = root.findViewById(R.id.text_me);
         TextView date = root.findViewById(R.id.frg_me_date);
@@ -114,13 +111,6 @@ public class MeFragmentStep1 extends Fragment {
         time3Btn = root.findViewById(R.id.time3_btn);
         time4Btn = root.findViewById(R.id.time4_btn);
 
-//        meViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(String s) {
-////                textView.setText(s);
-//            }
-//        });
-
         Date currentTime = Calendar.getInstance().getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         date.setText(date_text);
@@ -131,45 +121,36 @@ public class MeFragmentStep1 extends Fragment {
 
 
 
-        btnMap.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                startActivity(intent);
-            }
+        btnMap.setOnClickListener(view -> {
+            Intent intent = new Intent(getActivity(), MapsActivity.class);
+            startActivity(intent);
         });
 
 
         // TODO 추후 step 시간으로 확인할때는 삭제할 부분
         stepTestBtn = (Button) root.findViewById(R.id.step_test_btn);
-        stepTestBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", getContext().MODE_PRIVATE);
-                SharedPreferences.Editor editor = stepChange.edit();
+        stepTestBtn.setOnClickListener(view -> {
+            SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", getContext().MODE_PRIVATE);
+            SharedPreferences.Editor editor = stepChange.edit();
 
-                if(stepChange.getInt("stepCheck", 0) == 1){
-                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                    stepTestBtn.setText("STEP 2");
-                    editor.putInt("stepCheck", 2);
-                    editor.apply();
-                }
-                else{
-                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                    stepTestBtn.setText("STEP 1");
-                    editor.putInt("stepCheck", 1);
-                    editor.apply();
-                }
+            if(stepChange.getInt("stepCheck", 0) == 1){
+                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+                stepTestBtn.setText("STEP 2");
+                editor.putInt("stepCheck", 2);
+                editor.apply();
+            }
+            else{
+                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+                stepTestBtn.setText("STEP 1");
+                editor.putInt("stepCheck", 1);
+                editor.apply();
             }
         });
 
         emaTestBtn = (Button) root.findViewById(R.id.ema_test_btn);
-        emaTestBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), EMAActivity.class);
-                startActivity(intent);
-            }
+        emaTestBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(getActivity(), EMAActivity.class);
+            startActivity(intent);
         });
 
 
@@ -267,6 +248,12 @@ public class MeFragmentStep1 extends Fragment {
     private void updateEmaResponseView(List<String> values){
 
         // initialize
+        TextView[] times = {
+                time1,
+                time2,
+                time3,
+                time4
+        };
         time1.setText("");
         time2.setText("");
         time3.setText("");
@@ -319,6 +306,20 @@ public class MeFragmentStep1 extends Fragment {
                 }
             }
         }
+
+        // if not submit during EMA submit duration, start EMAActivity
+        new Thread(() -> {
+            for(TextView time : times){
+                if(time.getText().equals(getResources().getString(R.string.string_survey_incomplete))){
+                    int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
+                    if(ema_order != 0){
+                        Intent intent = new Intent(getActivity(), EMAActivity.class);
+                        intent.putExtra("ema_order", ema_order);
+                        startActivity(intent);
+                    }
+                }
+            }
+        }).start();
     }
 
     public void loadAllPoints() {
@@ -399,4 +400,6 @@ public class MeFragmentStep1 extends Fragment {
             requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
         }).start();
     }
+
+
 }

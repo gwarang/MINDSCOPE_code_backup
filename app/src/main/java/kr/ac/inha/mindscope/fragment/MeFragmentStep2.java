@@ -118,16 +118,21 @@ public class MeFragmentStep2 extends Fragment {
             jsonObjects = Tools.parsingStressReport(stressReportStr);
             for(short i = 0; i < jsonObjects.length; i++){
                 try {
-                    if(jsonObjects[i].getBoolean("model_tag")){
-                        stressLevel = i+1;
-                        day_num = jsonObjects[i].getInt("day_num");
-                        order = jsonObjects[i].getInt("ema_order");
-                        accuracy = jsonObjects[i].getInt("accuracy");
-                        feature_ids = jsonObjects[i].getString("feature_ids");
-                        SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = reportPrefs.edit();
-                        editor.putInt("result", stressLevel);
-                        editor.apply();
+                    if(jsonObjects[0] != null){
+                        if(jsonObjects[i].getBoolean("model_tag")){
+                            stressLevel = i+1;
+                            day_num = jsonObjects[i].getInt("day_num");
+                            order = jsonObjects[i].getInt("ema_order");
+                            accuracy = jsonObjects[i].getInt("accuracy");
+                            feature_ids = jsonObjects[i].getString("feature_ids");
+                            SharedPreferences reportPrefs = getActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = reportPrefs.edit();
+                            editor.putInt("result", stressLevel);
+                            editor.apply();
+                        }
+                    }
+                    else{
+                        Log.e(TAG, "report is not in jsonObjects");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -162,8 +167,10 @@ public class MeFragmentStep2 extends Fragment {
         stressLvView = view.findViewById(R.id.txt_stress_level);
 
 
-
-        featureViewUpdate(feature_ids, view);
+        if(feature_ids != null)
+            featureViewUpdate(feature_ids, view);
+        else
+            Log.e(TAG, "feature_ids string is null");
 
         reasonContainer = view.findViewById(R.id.stress_reason_container);
         stressImg = view.findViewById(R.id.frg_me_step2_img1);
