@@ -372,6 +372,7 @@ public class Tools {
                     EtService.SubmitHeartbeatRequestMessage submitHeartbeatRequestMessage = EtService.SubmitHeartbeatRequestMessage.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                             .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                            .setCampaignId(Integer.parseInt(con.getString(R.string.stress_campaign_id)))
                             .build();
                     try {
                         @SuppressWarnings("unused")

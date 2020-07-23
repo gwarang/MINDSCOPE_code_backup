@@ -248,6 +248,7 @@ public class MainService extends Service {
                                         .setDataSource(cursor.getInt(1))
                                         .setTimestamp(cursor.getLong(2))
                                         .setValues(cursor.getString(4))
+                                        .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                                         .build();
 //                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
 //                                Log.e("submitThread", "Submission: " + res);
