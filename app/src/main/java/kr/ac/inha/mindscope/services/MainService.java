@@ -195,7 +195,7 @@ public class MainService extends Service {
             Calendar cal = Calendar.getInstance();
             int curDate = cal.get(Calendar.DATE);
 
-            if (!daily_comment.equals("") && date_comment != -1 && date_comment != curDate) {
+            if (!daily_comment.equals("") && date_comment != curDate) {
                 SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 SharedPreferences.Editor commentEditor = commentPrefs.edit();
 

@@ -20,7 +20,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
@@ -41,6 +40,13 @@ import kr.ac.inha.mindscope.Tools;
 public class MeFragmentStep1 extends Fragment {
 
     private static final String TAG = "MeFragment";
+    private static final int[] SUBMIT_HOUR = {11, 15, 19, 23};
+    TextView time1;
+    TextView time2;
+    TextView time3;
+    TextView time4;
+    SharedPreferences loginPrefs;
+    SharedPreferences configPrefs;
     private ImageButton btnMap;
     private AppBarLayout appBarLayout;
     private Button stepTestBtn;
@@ -49,18 +55,11 @@ public class MeFragmentStep1 extends Fragment {
     private Button time2Btn;
     private Button time3Btn;
     private Button time4Btn;
-    TextView time1;
-    TextView time2;
-    TextView time3;
-    TextView time4;
     private TextView todayPointsView;
     private TextView sumPointsView;
     private TextView before11Hours;
     private TextView attdView;
     private RelativeLayout timeContainer;
-
-    SharedPreferences loginPrefs;
-    SharedPreferences configPrefs;
 
     public static MeFragmentStep1 newInstance() {
         return new MeFragmentStep1();
@@ -72,7 +71,6 @@ public class MeFragmentStep1 extends Fragment {
         View root = inflater.inflate(R.layout.fragment_me, container, false);
 //        final TextView textView = root.findViewById(R.id.text_me);
         TextView date = root.findViewById(R.id.frg_me_date);
-        // TODO timeX_state 텍스트 및 timeX_btn background EMA order 상태(설문완료, 미완료, 미도착)에 따라서 변경할 것
 
         todayPointsView = root.findViewById(R.id.point_today);
         sumPointsView = root.findViewById(R.id.point_my);
@@ -82,12 +80,12 @@ public class MeFragmentStep1 extends Fragment {
 
         Calendar cal = Calendar.getInstance();
 
-        if(cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3){
+        if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3) {
             before11Hours.setVisibility(View.VISIBLE);
             date.setVisibility(View.INVISIBLE);
             attdView.setVisibility(View.INVISIBLE);
             timeContainer.setVisibility(View.INVISIBLE);
-        }else{
+        } else {
             before11Hours.setVisibility(View.INVISIBLE);
             date.setVisibility(View.VISIBLE);
             attdView.setVisibility(View.VISIBLE);
@@ -95,7 +93,7 @@ public class MeFragmentStep1 extends Fragment {
         }
 
 
-        SharedPreferences prefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
+        SharedPreferences prefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
 
 //        todayPointsView.setText(String.valueOf(prefs.getInt("todayPoints", 0)));
 //        sumPointsView.setText(String.valueOf(prefs.getInt("sumPoints", 0)));
@@ -119,7 +117,6 @@ public class MeFragmentStep1 extends Fragment {
         btnMap = (ImageButton) root.findViewById(R.id.fragment_me_btn_map);
 
 
-
         btnMap.setOnClickListener(view -> {
             Intent intent = new Intent(getActivity(), MapsActivity.class);
             startActivity(intent);
@@ -132,13 +129,12 @@ public class MeFragmentStep1 extends Fragment {
             SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", getContext().MODE_PRIVATE);
             SharedPreferences.Editor editor = stepChange.edit();
 
-            if(stepChange.getInt("stepCheck", 0) == 1){
+            if (stepChange.getInt("stepCheck", 0) == 1) {
                 Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
                 stepTestBtn.setText("STEP 2");
                 editor.putInt("stepCheck", 2);
                 editor.apply();
-            }
-            else{
+            } else {
                 Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
                 stepTestBtn.setText("STEP 1");
                 editor.putInt("stepCheck", 1);
@@ -163,82 +159,59 @@ public class MeFragmentStep1 extends Fragment {
     public void onResume() {
         super.onResume();
 
-        loginPrefs = getActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-        configPrefs = getActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+        loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
-
+        SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
+        int firstviewshow = firstPref.getInt("First", 0);
+        boolean isFirstStartStep1DialogShowing = firstPref.getBoolean("firstStartStep1", false);
+        if (firstviewshow == 1 && isFirstStartStep1DialogShowing)
+            startEmaActivityWhenNotSubmitted();
         updateStats();
+        updateEmaResponseView();
     }
 
     public void updateStats() {
         if (Tools.isNetworkAvailable())
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-                    ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                    Calendar fromCal = Calendar.getInstance();
-                    fromCal.set(Calendar.HOUR_OF_DAY, 0);
-                    fromCal.set(Calendar.MINUTE, 0);
-                    fromCal.set(Calendar.SECOND, 0);
-                    fromCal.set(Calendar.MILLISECOND, 0);
-                    Calendar tillCal = (Calendar) fromCal.clone();
-                    tillCal.set(Calendar.HOUR_OF_DAY, 23);
-                    tillCal.set(Calendar.MINUTE, 59);
-                    tillCal.set(Calendar.SECOND, 59);
+            new Thread(() -> {
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                Calendar fromCal = Calendar.getInstance();
+                fromCal.set(Calendar.HOUR_OF_DAY, 0);
+                fromCal.set(Calendar.MINUTE, 0);
+                fromCal.set(Calendar.SECOND, 0);
+                fromCal.set(Calendar.MILLISECOND, 0);
+                Calendar tillCal = (Calendar) fromCal.clone();
+                tillCal.set(Calendar.HOUR_OF_DAY, 23);
+                tillCal.set(Calendar.MINUTE, 59);
+                tillCal.set(Calendar.SECOND, 59);
 
-                    // for test hrgoh 7/16 or 17 - 00:00:00~23:59:50
-//                    Calendar fromtest = Calendar.getInstance();
-//                    fromtest.set(Calendar.DATE, 17);
-//                    fromtest.set(Calendar.HOUR_OF_DAY, 0);
-//                    fromtest.set(Calendar.MINUTE, 0);
-//                    fromtest.set(Calendar.SECOND, 0);
-//                    fromtest.set(Calendar.MILLISECOND, 0);
-//                    Calendar tilltest = (Calendar) fromtest.clone();
-//                    tilltest.set(Calendar.HOUR_OF_DAY, 23);
-//                    tilltest.set(Calendar.MINUTE, 59);
-//                    tilltest.set(Calendar.SECOND, 59);
-
-                    EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                            .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                            .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                            .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
-                            .setFromTimestamp(fromCal.getTimeInMillis()) //fromtest.getTimeInMillis())
-                            .setTillTimestamp(tillCal.getTimeInMillis()) //tilltest.getTimeInMillis())
-                            .build();
-                    try {
-                        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
-                        if (responseMessage.getDoneSuccessfully()) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateEmaResponseView(responseMessage.getValueList());
-                                }
-                            });
-                        } else {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
+                        .setFromTimestamp(fromCal.getTimeInMillis())
+                        .setTillTimestamp(tillCal.getTimeInMillis())
+                        .build();
+                try {
+                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+//                        requireActivity().runOnUiThread(() -> updateEmaResponseView(responseMessage.getValueList()));
+                    } else {
+                        requireActivity().runOnUiThread(() -> {
 //                                    initUserStats(true, 0, 0, null);
-                                }
-                            });
-                        }
-                    } catch (StatusRuntimeException e) {
-                        Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
-                        e.printStackTrace();
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateEmaResponseView(null);
-                            }
                         });
-
-                    } finally {
-                        channel.shutdown();
                     }
+                } catch (StatusRuntimeException e) {
+                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                    e.printStackTrace();
+//                    requireActivity().runOnUiThread(() -> updateEmaResponseView(null));
+
+                } finally {
+                    channel.shutdown();
                 }
             }).start();
         else {
@@ -246,7 +219,7 @@ public class MeFragmentStep1 extends Fragment {
         }
     }
 
-    private void updateEmaResponseView(List<String> values){
+    private void updateEmaResponseView(/*List<String> values*/) {
 
         // initialize
         TextView[] times = {
@@ -255,72 +228,74 @@ public class MeFragmentStep1 extends Fragment {
                 time3,
                 time4
         };
-        time1.setText("");
-        time2.setText("");
-        time3.setText("");
-        time4.setText("");
-        time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_inarrived));
-        time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_inarrived));
-        time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_inarrived));
-        time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_inarrived));
+        Button[] timeBtns = {
+                time1Btn,
+                time2Btn,
+                time3Btn,
+                time4Btn,
+        };
+        for (TextView time : times) {
+            time.setText("");
+        }
+        for (Button timeBtn : timeBtns) {
+            timeBtn.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_inarrived));
+        }
 
         // time check
+        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("EmaSubmitCheck", Context.MODE_PRIVATE);
         Calendar cal = Calendar.getInstance();
         int curHours = cal.get(Calendar.HOUR_OF_DAY);
-        if(curHours >= 11){
-            time1.setText(getResources().getString(R.string.string_survey_incomplete));
-            time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-        }
-        if(curHours >= 15){
-            time2.setText(getResources().getString(R.string.string_survey_incomplete));
-            time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-        }
-        if(curHours >= 19){
-            time3.setText(getResources().getString(R.string.string_survey_incomplete));
-            time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-        }
-        if(curHours >= 23){
-            time4.setText(getResources().getString(R.string.string_survey_incomplete));
-            time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-        }
-
-        // submit check
-        if(values != null){
-            for(String val : values){
-                switch (Integer.parseInt(val.split(Tools.DATA_SOURCE_SEPARATOR)[1])){
-                    case 1:
-                        time1.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-                        time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-                        break;
-                    case 2:
-                        time2.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-                        time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-                        break;
-                    case 3:
-                        time3.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-                        time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-                        break;
-                    case 4:
-                        time4.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-                        time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-                        break;
+        for (short i = 0; i < 4; i++) {
+            if(curHours >= SUBMIT_HOUR[i] || curHours < 3){
+                if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
+                    times[i].setText(getResources().getString(R.string.string_survey_incomplete));
+                    timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_incomplete));
+                } else {
+                    times[i].setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
+                    timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_complete));
                 }
             }
         }
-
-        // if not submit during EMA submit duration, start EMAActivity
-        new Thread(() -> {
-            for(TextView time : times){
-                if(time.getText().equals(getResources().getString(R.string.string_survey_incomplete))){
-                    int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
-                    if(ema_order != 0){
-                        Intent intent = new Intent(getActivity(), EMAActivity.class);
-                        intent.putExtra("ema_order", ema_order);
-                        startActivity(intent);
-                    }
-                }
-            }
-        }).start();
+//        if(curHours >= 11 && emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false)){
+//            time1.setText(getResources().getString(R.string.string_survey_incomplete));
+//            time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
+//        }
+//        if(curHours >= 15){
+//            time2.setText(getResources().getString(R.string.string_survey_incomplete));
+//            time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
+//        }
+//        if(curHours >= 19){
+//            time3.setText(getResources().getString(R.string.string_survey_incomplete));
+//            time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
+//        }
+//        if(curHours >= 23){
+//            time4.setText(getResources().getString(R.string.string_survey_incomplete));
+//            time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
+//        }
+//
+//        // submit check
+//        if(values != null){
+//            for(String val : values){
+//                switch (Integer.parseInt(val.split(Tools.DATA_SOURCE_SEPARATOR)[1])){
+//                    case 1:
+//                        time1.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
+//                        time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
+//                        break;
+//                    case 2:
+//                        time2.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
+//                        time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
+//                        break;
+//                    case 3:
+//                        time3.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
+//                        time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
+//                        break;
+//                    case 4:
+//                        time4.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
+//                        time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
+//                        break;
+//                }
+//            }
+//        }
     }
 
     public void loadAllPoints() {
@@ -402,5 +377,34 @@ public class MeFragmentStep1 extends Fragment {
         }).start();
     }
 
-
+    public void startEmaActivityWhenNotSubmitted() {
+        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("EmaSubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
+        boolean[] submits = {
+                emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false),
+                emaSubmitCheckPrefs.getBoolean("ema_submit_check_2", false),
+                emaSubmitCheckPrefs.getBoolean("ema_submit_check_3", false),
+                emaSubmitCheckPrefs.getBoolean("ema_submit_check_4", false),
+        };
+        Calendar cal = Calendar.getInstance();
+        int curHour = cal.get(Calendar.HOUR_OF_DAY);
+        int todayDate = cal.get(Calendar.DATE);
+        if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1)) {
+            for (short i = 0; i < 4; i++) {
+                emaSubmitEditor.putBoolean("ema_submit_check_" + (i + 1), false);
+                emaSubmitEditor.apply();
+            }
+        }
+        for (short i = 0; i < 4; i++) {
+            if (curHour == SUBMIT_HOUR[i] && !submits[i]) {
+                int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
+                if (ema_order != 0) {
+                    Intent intent = new Intent(getActivity(), EMAActivity.class);
+                    intent.putExtra("ema_order", ema_order);
+                    startActivity(intent);
+                }
+            }
+        }
+        updateEmaResponseView();
+    }
 }

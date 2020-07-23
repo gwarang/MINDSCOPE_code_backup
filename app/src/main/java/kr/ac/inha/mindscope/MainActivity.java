@@ -753,6 +753,10 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener firstStartStep1DialogListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstStartStep1", true);
+            editor.apply();
             firstStartStep1Dialog.dismiss();
         }
     };

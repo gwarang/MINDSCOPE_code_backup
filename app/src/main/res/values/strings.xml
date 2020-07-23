@@ -279,6 +279,17 @@
     <string name="feature_28low">평소에 비해 Food 앱 사용(배달, 요리)이 적었어요</string>
     <string name="feature_29low">평소에 비해 수면 시간이 적었어요</string>
 
+    <string name="feature_0general_0">일반적으로 활동량이 많을 때, 스트레스가 낮아요</string>
+    <string name="feature_0general_1">일반적으로 활동량이 적을 때, 스트레스가 높아요</string>
+    <string name="feature_7general_0">일반적으로 다른 사람들과의 교류가 많을 때, 스트레스가 낮아요</string>
+    <string name="feature_7general_1">일반적으로  다른 사람들과의 교류가 적을 때, 스트레스가 높아요</string>
+    <string name="feature_12general_0">일반적으로  활동 반경이 클 때, 스트레스가 낮아요</string>
+    <string name="feature_12general_1">일반적으로  활동 반경이 작을 때, 스트레스가 높아요</string>
+    <string name="feature_18general_0">일반적으로  핸드폰 사용이 적으면, 스트레스가 낮아요</string>
+    <string name="feature_18general_1">일반적으로  핸드폰 사용이 많으면, 스트레스가 높아요</string>
+    <string name="feature_29general_0">일반적으로  수면량이 많으면, 스트레스가 낮아요</string>
+    <string name="feature_29general_1">일반적으로  수면량이 적으면, 스트레스가 높아요</string>
+
     <string name="string_first_start_step1_title">지금부터 STEP 1을 시작합니다!</string>
     <string name="string_first_start_step2_title">STEP 1을 모두 완료하였습니다.\n이제 STEP2가 시작됩니다!</string>
     <string name="string_first_start_step1_txt"><![CDATA[STEP 1에서는 <font color="#3e89e0">하루 4번</font> 설문을 하게 됩니다.<\br>설문은 총 <font color="#3e89e0">4문항</font>으로 구성되어 있으며<\br>설문 하나를 완료하면 <font color="#3e89e0">250포인트</font>가 적립<\br>됩니다. <font color="#3e89e0">기록 태그</font>를 입력해주신다면 마인드<\br>스코프의 발전에 더 큰 도움이 될거에요!]]></string>

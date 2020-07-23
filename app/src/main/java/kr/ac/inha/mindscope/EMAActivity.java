@@ -430,6 +430,14 @@ public class EMAActivity extends AppCompatActivity {
             notificationManager.cancel(EMA_NOTI_ID);
         }
 
+        SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("EmaSubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
+        String emaSubmit = "ema_submit_check_" + emaOrder;
+        Calendar cal = Calendar.getInstance();
+        emaSubmitEditor.putBoolean(emaSubmit, true);
+        emaSubmitEditor.putInt("emaSubmitDate", cal.get(Calendar.DATE));
+        emaSubmitEditor.apply();
+
         Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();
     }
 
