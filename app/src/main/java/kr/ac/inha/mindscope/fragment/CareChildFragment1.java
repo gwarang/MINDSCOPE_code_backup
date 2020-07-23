@@ -141,9 +141,12 @@ public class CareChildFragment1 extends Fragment {
 
 
         stressReportsJsonArray = new ArrayList<>();
-        for(String reportStr : stressReports){
-            JSONObject[] jsonObjects = Tools.parsingStressReport(reportStr);
-            stressReportsJsonArray.add(jsonObjects);
+
+        if(stressReports != null){
+            for(String reportStr : stressReports){
+                JSONObject[] jsonObjects = Tools.parsingStressReport(reportStr);
+                stressReportsJsonArray.add(jsonObjects);
+            }
         }
 
         selfStressReportWithOrderIndex = new int[4];
