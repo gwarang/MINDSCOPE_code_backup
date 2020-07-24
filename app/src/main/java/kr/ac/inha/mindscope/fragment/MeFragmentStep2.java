@@ -200,12 +200,9 @@ public class MeFragmentStep2 extends Fragment {
         }
 
         btnMap = (ImageButton) view.findViewById(R.id.fragment_me_step2_btn_map);
-        btnMap.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                startActivity(intent);
-            }
+        btnMap.setOnClickListener(view13 -> {
+            Intent intent = new Intent(getActivity(), MapsActivity.class);
+            startActivity(intent);
         });
 
         Calendar cal = Calendar.getInstance();
@@ -274,6 +271,7 @@ public class MeFragmentStep2 extends Fragment {
         Calendar curCal = Calendar.getInstance();
         int curHour = curCal.get(Calendar.HOUR_OF_DAY);
         int curMin = curCal.get(Calendar.MINUTE);
+        // TODO Start StressReportActivity when not submitted during the 1 hour
         if(notSubmit && ((curHour == 11) || (curHour == 15) || (curHour == 19) || (curHour == 23))){
 //            Intent intent = new Intent(getContext(), StressReportActivity.class);
 //            intent.putExtra("report_order", order);
@@ -310,7 +308,7 @@ public class MeFragmentStep2 extends Fragment {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
-                String packName = getContext().getPackageName();
+                String packName = requireContext().getPackageName();
                 int resId = getResources().getIdentifier(strID, "string", packName);
 
                 if(category <= 5){
@@ -345,20 +343,20 @@ public class MeFragmentStep2 extends Fragment {
         LinearLayout sleepContainer = view.findViewById(R.id.me_listview_sleep_container);
 
 
-        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, phoneReason
+        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
+                requireContext(), R.layout.item_feature_ids, phoneReason
         );
-        ArrayAdapter<String> activityAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, activityReason
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
+                requireContext(), R.layout.item_feature_ids, activityReason
         );
-        ArrayAdapter<String> socialAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, socialReason
+        ArrayAdapter<String> socialAdapter = new ArrayAdapter<>(
+                requireContext(), R.layout.item_feature_ids, socialReason
         );
-        ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, locationReason
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
+                requireContext(), R.layout.item_feature_ids, locationReason
         );
-        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.item_feature_ids, sleepReason
+        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<>(
+                requireContext(), R.layout.item_feature_ids, sleepReason
         );
 
         phoneListView.setAdapter(phoneAdapter);
@@ -436,8 +434,8 @@ public class MeFragmentStep2 extends Fragment {
 //        long fillMillis = 1593568801000l;
 //        long tillTime = 1593583201000l;
 
-        long fillMillis = 1593583201000l;
-        long tillTime = 1593597601000l;
+//        long fillMillis = 1593583201000l;
+//        long tillTime = 1593597601000l;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -449,8 +447,8 @@ public class MeFragmentStep2 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fillMillis) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tillTime) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis()) //  change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillCalendar.getTimeInMillis()) //  change tillCalendar.getTimeInMillis()
                 .build();
 
 
@@ -517,8 +515,8 @@ public class MeFragmentStep2 extends Fragment {
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // for test 2020/07/018 04:19:00 ~ 04:28:00
-        long fromtimestamp = 1595013540000l;
-        long tilltimestamp = 1595014080000l;
+//        long fromtimestamp = 1595013540000l;
+//        long tilltimestamp = 1595014080000l;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -530,8 +528,8 @@ public class MeFragmentStep2 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("SELF_STRESS_REPORT", -1))
-                .setFromTimestamp(fromtimestamp) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tilltimestamp) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis()) // change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillCalendar.getTimeInMillis()) // change tillCalendar.getTimeInMillis()
                 .build();
 
 
