@@ -486,9 +486,6 @@ public class Tools {
         pointsEditor.putInt("sumPoints", newSumPoints);
         pointsEditor.apply();
 
-        PointCustomDialog.todayPoints = newTodayPoints;
-        PointCustomDialog.sumPoints = newSumPoints;
-
 
         long timestamp = System.currentTimeMillis();
         SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);

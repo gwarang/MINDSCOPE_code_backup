@@ -137,12 +137,14 @@ public class MeFragmentStep2 extends Fragment {
                 String[] result = selfResults.split(" ");
                 if(day_num == Integer.parseInt(result[1]) && order == Integer.parseInt(result[2])){
                     stressLevel = Integer.parseInt(result[4]);
-                    try {
-                        feature_ids = jsonObjects[stressLevel].getString("feature_ids");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if(jsonObjects[stressLevel] != null){
+                        try {
+                            feature_ids = jsonObjects[stressLevel].getString("feature_ids");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        notSubmit = false;
                     }
-                    notSubmit = false;
                 }else{
                     notSubmit = true;
                 }

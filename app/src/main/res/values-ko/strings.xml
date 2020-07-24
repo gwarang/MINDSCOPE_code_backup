@@ -292,7 +292,7 @@
     <string name="string_frg_me_stpe2_before_txt1">마인드스코프가\n스트레스 리포트를 작성중입니다.</string>
     <string name="string_frg_me_stpe2_before_txt2"> 오전 11:00에\n첫 리포트가 도착할 예정입니다!</string>
 
-    <string name="string_comment_hint">오늘 스트레스에 영향을 준 특별한 사건이 있었나요?\n마인드스코프가 어떤 영향을 주었나요?\n마인드스코프의 예측은 정확했나요?</string>
+    <string name="string_comment_hint">오늘 스트레스에 영향을 준\n특별한 사건이 있었나요?\n마인드스코프가 어떤 영향을 주었나요?\n마인드스코프의 예측은 정확했나요?</string>
 
     <string name="string_survey_incomplete">설문미완료</string>
     <string name="string_survey_complete"><![CDATA[<font color="#3b83d6">설문완료</font>]]></string>
