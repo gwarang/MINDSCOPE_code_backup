@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,29 +33,37 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
     private TextView placeNameTextView;
     private TextView placeAddressTextView;
 
+    LinearLayout containerPlcaeName;
+    LinearLayout containerPlcaeAddress;
+    LinearLayout containerPlcaeUserName;
+
+
     private String selectedPlaceName;
     private String selectedPlaceAddress;
     private String selectedPlaceUserName;
     private Double selectedLat;
     private Double selectedLng;
+    private Boolean home_setting;
     PlaceDbHelper dbHelper;
     EditText editText;
+    TextView firstHomeSettingHelpText;
 
     String oldPlaceUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_current_palce_save);
+        setContentView(R.layout.activity_select_palce_save);
 
         dbHelper = new PlaceDbHelper(getApplicationContext());
 
-
-        placeNameTextView = (TextView) findViewById(R.id.current_place_name);
-
-        placeAddressTextView = (TextView) findViewById(R.id.current_place_address);
-        editText = (EditText) findViewById(R.id.current_place_user_name);
-
+        containerPlcaeName = findViewById(R.id.container_current_place_name);
+        containerPlcaeAddress = findViewById(R.id.container_current_place_address);
+        containerPlcaeUserName = findViewById(R.id.container_current_place_user_name);
+        placeNameTextView = findViewById(R.id.current_place_name);
+        placeAddressTextView = findViewById(R.id.current_place_address);
+        editText = findViewById(R.id.current_place_user_name);
+        firstHomeSettingHelpText = findViewById(R.id.when_home_setting_help_text);
         Intent intent = getIntent();
 
         selectedPlaceName = intent.getExtras().getString("name");
@@ -62,6 +72,16 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         placeAddressTextView.setText(selectedPlaceAddress);
         selectedLat = intent.getExtras().getDouble("lat");
         selectedLng = intent.getExtras().getDouble("lng");
+        home_setting = intent.getBooleanExtra("home_setting", false);
+
+        if(home_setting){
+            editText.setText("집");
+            editText.setEnabled(false);
+            firstHomeSettingHelpText.setVisibility(View.VISIBLE);
+        }else{
+            editText.setEnabled(true);
+            firstHomeSettingHelpText.setVisibility(View.INVISIBLE);
+        }
 
         if (intent.getExtras().getInt("editcode") == 2) {
             oldPlaceUserName = selectedPlaceUserName = intent.getExtras().getString("placeusername");
@@ -69,14 +89,13 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         }
 
 
-        LatLng currentLatLng = new LatLng(selectedLat, selectedLng);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar_map_current_save);
+        toolbar = findViewById(R.id.toolbar_map_current_save);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
     }
 
     @Override

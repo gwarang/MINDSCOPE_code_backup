@@ -6,33 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".SelectedPlaceSaveActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_map_current_save"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolbar_map_container"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
         android:elevation="10dp"
-        android:theme="@style/Toolbar"
-        app:layout_constraintTop_toTopOf="parent">
+        >
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_map_current_save"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorPrimary"
+            android:elevation="10dp"
+            android:theme="@style/Toolbar"
+            app:layout_constraintTop_toTopOf="@id/toolbar_map_container">
 
-        <TextView
-            android:id="@+id/toolbar_map_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="장소 저장"
-            android:textSize="20sp" />
+            <TextView
+                android:id="@+id/toolbar_map_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#00000000"
+                android:text="장소 저장"
+                android:textSize="20sp" />
 
-    </androidx.appcompat.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
 
     <LinearLayout
         android:id="@+id/container_current_place_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_map_current_save"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_map_container"
         android:padding="30dp"
         android:orientation="vertical"
-        >
+        android:background="@drawable/view_bottom_border">
 
         <TextView
             android:layout_width="match_parent"
@@ -51,21 +61,15 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/border_place_name"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/border_color"
-        app:layout_constraintTop_toBottomOf="@id/container_current_place_name"/>
 
     <LinearLayout
         android:id="@+id/container_current_place_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/border_place_name"
+        app:layout_constraintTop_toBottomOf="@id/container_current_place_name"
         android:padding="30dp"
         android:orientation="vertical"
-        >
+        android:background="@drawable/view_bottom_border">
 
         <TextView
             android:layout_width="match_parent"
@@ -84,20 +88,15 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/border_place_address"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/border_color"
-        app:layout_constraintTop_toBottomOf="@id/container_current_place_address"/>
 
     <LinearLayout
         android:id="@+id/container_current_place_user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/border_place_address"
+        app:layout_constraintTop_toBottomOf="@id/container_current_place_address"
         android:padding="30dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/view_bottom_border">
 
         <TextView
             android:layout_width="match_parent"
@@ -118,12 +117,19 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/border_place_user_name"
+    <TextView
+        android:id="@+id/when_home_setting_help_text"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/border_color"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/notosanscjkkrlight"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size14"
+        android:text="@string/string_first_home_setting"
+        android:paddingHorizontal="20dp"
+        android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/container_current_place_user_name"/>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

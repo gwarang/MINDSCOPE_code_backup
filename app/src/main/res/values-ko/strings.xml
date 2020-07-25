@@ -117,7 +117,7 @@
     <string name="navigation_second">마음 케어</string>
     <string name="navigation_third">마음 기록</string>
 
-    <string name="map_help_contents">마인드스코프에서 정확하게 스트레스를 측정할 수 있도록 위치를 설정해주세요</string>
+    <string name="map_help_contents">마인드스코프에서 정확하게 스트레스를 측정할 수 있도록 위치를 설정해주세요\n\n첫 장소 설정은 집을 선택해주세요!</string>
 
     <string name="time_duration1">07:00 - 11:00</string>
     <string name="time_duration2">11:00 - 03:00</string>
@@ -301,4 +301,6 @@
     <string name="string_child2_do_intervention">스트레스 해소하기</string>
 
     <string name="string_no_detail_report">자세한 예측 결과가 없습니다.</string>
+
+    <string name="string_first_home_setting">* 첫 장소 설정은 집을 선택해주세요!\n만약 다른 장소를 선택하셨다면\n뒤로 돌아가서 집 위치를 설정해주세요!</string>
 </resources>

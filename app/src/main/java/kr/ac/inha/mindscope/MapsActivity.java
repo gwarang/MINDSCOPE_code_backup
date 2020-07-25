@@ -2,7 +2,6 @@ package kr.ac.inha.mindscope;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -48,6 +49,7 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,15 +58,15 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import kr.ac.inha.mindscope.dialog.FirstMapStartDialog;
 
 import static kr.ac.inha.mindscope.LocationAdapter.EDIT_CODE;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick, GoogleMap.OnMapClickListener {
 
     public static final String TAG = "MapsActivity";
 
@@ -94,6 +96,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     //endregion
 
     public boolean checkForFirstStartStep1;
+    private boolean checkForFirstHomeSetting = false;
 
     private String TITLE_HOME;
     private String TITLE_DORM;
@@ -112,6 +115,44 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public static final int GEOFENCE_RADIUS_DEFAULT = 100;
+
+    FirstMapStartDialog firstMapStartDialog;
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        selectedLatLng = latLng;
+
+        // reverse geocoding
+        final Geocoder geocoder = new Geocoder(this);
+        List<Address> addressesList = null;
+        try {
+            addressesList = geocoder.getFromLocation(selectedLatLng.latitude, selectedLatLng.longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(addressesList != null){
+            if(addressesList.size() == 0){
+                Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
+            }else {
+                selectedAddress = addressesList.get(0).getAddressLine(0);
+                selectedName = addressesList.get(0).getFeatureName();
+            }
+        }
+
+        MarkerOptions optionsMarker = new MarkerOptions()
+                .position(latLng);
+
+        if(mMap != null){
+            if(currentGeofenceMarker != null){
+                currentGeofenceMarker.remove();
+            }
+            currentGeofenceMarker = mMap.addMarker(optionsMarker);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
+        }
+
+        Log.e(TAG, "onMapClick" + selectedLatLng.toString());
+
+    }
 
     //region Internal classes
     static class StoreLocation {
@@ -166,17 +207,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int firstMap = firstStartMap.getInt("FirstMap", 0);
 
         if (firstMap != 1) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getResources().getString(R.string.map_help_contents));
-            builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    // 다른 기능 필요하면 여기서 작업
-                    checkForFirstStartStep1 = true;
-                }
-            });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+
+            firstMapStartDialog = new FirstMapStartDialog(this, clickListener);
+            firstMapStartDialog.show();
+
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setTitle(getResources().getString(R.string.map_help_contents1));
+//            builder.setMessage(getResources().getString(R.string.map_help_contents2));
+//            builder.setPositiveButton("확인", (dialogInterface, i) -> {
+//                // 다른 기능 필요하면 여기서 작업
+//                checkForFirstStartStep1 = true;
+//                checkForFirstHomeSetting = true;
+//            });
+//            AlertDialog alertDialog = builder.create();
+//            alertDialog.show();
 
             int infoFirst = 1;
             SharedPreferences a = getSharedPreferences("firstStartMap", MODE_PRIVATE);
@@ -256,7 +300,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 selectedAddress = place.getAddress();
                 selectedName = place.getName();
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(selectedLatLng));
-
+                Toast.makeText(getApplicationContext(), String.format("Lat, Lng: %.2f, %.2f", selectedLatLng.latitude, selectedLatLng.longitude), Toast.LENGTH_LONG).show();
                 Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_SELECT_PLACE);
             }
 
@@ -327,6 +371,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.clear();
+        mMap.setOnMapClickListener(this);
 
         // TODO: come here
 
@@ -354,6 +399,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
+
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -400,20 +447,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         geoLimits = mMap.addCircle(circleOptions);
     }
 
-    private void markerForGeofence(LatLng latLng) {
-        MarkerOptions optionsMarker = new MarkerOptions()
-                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
-                .position(latLng)
-                .title("Current Location test");
-        if (mMap != null) {
-            if (currentGeofenceMarker != null) {
-                currentGeofenceMarker.remove();
-            }
-            currentGeofenceMarker = mMap.addMarker(optionsMarker);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
-            drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
-        }
-    }
+//    private void markerForGeofence(LatLng latLng) {
+//        MarkerOptions optionsMarker = new MarkerOptions()
+//                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
+//                .position(latLng)
+//                .title("Current Location test");
+//        if (mMap != null) {
+//            if (currentGeofenceMarker != null) {
+//                currentGeofenceMarker.remove();
+//            }
+//            currentGeofenceMarker = mMap.addMarker(optionsMarker);
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+//            drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
+//        }
+//    }
 
     private void addLocationMarker(StoreLocation location) {
         Drawable iconDrawable;
@@ -460,7 +507,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng latLng = new LatLng(storeLocation.getmLatLng().latitude, storeLocation.getmLatLng().longitude);
         mMap.addMarker(new MarkerOptions()
                 .position(latLng)
-                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
                 .title(storeLocation.getmId()));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
     }
@@ -511,14 +557,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // Call 장소 저장 액티비티
                 if (selectedLatLng != null) {
                     Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
-                    intent.putExtra("name", selectedName);
-                    intent.putExtra("address", selectedAddress);
-                    intent.putExtra("lat", selectedLatLng.latitude);
-                    intent.putExtra("lng", selectedLatLng.longitude);
+                    if(checkForFirstHomeSetting){
+                        intent.putExtra("name", selectedName);
+                        intent.putExtra("address", selectedAddress);
+                        intent.putExtra("lat", selectedLatLng.latitude);
+                        intent.putExtra("lng", selectedLatLng.longitude);
+                        intent.putExtra("home_setting", true);
+                    }else{
+                        intent.putExtra("name", selectedName);
+                        intent.putExtra("address", selectedAddress);
+                        intent.putExtra("lat", selectedLatLng.latitude);
+                        intent.putExtra("lng", selectedLatLng.longitude);
+                        intent.putExtra("home_setting", false);
+                    }
                     startActivity(intent);
-
                     Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_SELECT_PLACE);
-
                 } else {
                     Toast.makeText(this, "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();
                 }
@@ -563,5 +616,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            firstMapStartDialog.dismiss();
+            checkForFirstHomeSetting = true;
+            checkForFirstStartStep1 = true;
+        }
+    };
 }
 

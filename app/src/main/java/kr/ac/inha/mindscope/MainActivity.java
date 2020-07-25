@@ -49,6 +49,7 @@ import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import kr.ac.inha.mindscope.dialog.PointCustomDialog;
 import kr.ac.inha.mindscope.receivers.AppUseNotifierReceiver;
 import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
 import kr.ac.inha.mindscope.services.MainService;
