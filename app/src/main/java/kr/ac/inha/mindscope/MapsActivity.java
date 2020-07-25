@@ -408,6 +408,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Tools.enable_touch(this);
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
 
     }
@@ -612,6 +613,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onSuccess(Location location) {
                         onLocationChanged(location);
+
+                        LatLng latLng = selectedLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        // reverse geocoding
+                        final Geocoder geocoder = new Geocoder(getApplicationContext());
+                        List<Address> addressesList = null;
+                        try {
+                            addressesList = geocoder.getFromLocation(selectedLatLng.latitude, selectedLatLng.longitude, 1);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        if(addressesList != null){
+                            if(addressesList.size() == 0){
+                                Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
+                            }else {
+                                selectedAddress = addressesList.get(0).getAddressLine(0);
+                                selectedName = addressesList.get(0).getFeatureName();
+                            }
+                        }
+
+                        MarkerOptions optionsMarker = new MarkerOptions()
+                                .position(latLng);
+
+                        if(mMap != null){
+                            if(currentGeofenceMarker != null){
+                                currentGeofenceMarker.remove();
+                            }
+                            currentGeofenceMarker = mMap.addMarker(optionsMarker);
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
+                        }
+
                     }
                 });
     }

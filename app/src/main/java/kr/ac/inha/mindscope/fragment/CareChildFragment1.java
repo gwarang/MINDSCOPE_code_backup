@@ -344,8 +344,8 @@ public class CareChildFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fromtimestamp) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tilltimestamp) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis()) // TODO change fromCalendar.getTimeInMillis()
+                .setTillTimestamp(tillCalendar.getTimeInMillis()) // TODO change tillCalendar.getTimeInMillis()
                 .build();
 
 
@@ -428,7 +428,7 @@ public class CareChildFragment1 extends Fragment {
                     if(resultSet != null){
                         try {
                             if(resultSet[0].getInt("ema_order") == order){
-                                for(short stressLevel = 0; stressLevel <= resultSet.length; stressLevel++){
+                                for(short stressLevel = 0; stressLevel < resultSet.length; stressLevel++){
                                     if(resultSet[stressLevel].getBoolean("model_tag")){
                                         sumStress += stressLevel + 1;
                                     }
@@ -451,7 +451,7 @@ public class CareChildFragment1 extends Fragment {
             if(resultSet != null){
                 try {
                     int order = resultSet[0].getInt("ema_order");
-                    for(short stressLevel = 0; stressLevel <= resultSet.length; stressLevel++){
+                    for(short stressLevel = 0; stressLevel < resultSet.length; stressLevel++){
                         if(resultSet[stressLevel].getBoolean("model_tag") && selfStressReportWithOrderIndex[order - 1] == 0){
                             switch (stressLevel){
                                 case STRESS_LV1:

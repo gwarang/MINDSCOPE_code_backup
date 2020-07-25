@@ -115,7 +115,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/time1_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,33 +126,31 @@
                 android:id="@+id/time1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/time1_btn"
+                android:layout_marginStart="30dp"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
-                android:text="@string/time_duration1"
+                android:text="@string/time_step2_duration1"
                 android:textSize="@dimen/my_text_size16"/>
             <Button
                 android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="2dp"
                 android:id="@+id/time1_btn"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:enabled="false"
-                android:text=" "
-                android:layout_centerHorizontal="true"
                 android:background="@drawable/btn_time_inarrived"/>
             <TextView
                 android:id="@+id/time1_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/time1_btn"
                 android:text="test"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size16"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_below="@id/time1_container"
             android:id="@+id/time2_container"
             android:layout_width="match_parent"
@@ -164,34 +162,33 @@
                 android:id="@+id/time2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/time2_btn"
-                android:text="@string/time_duration2"
+                android:layout_marginStart="30dp"
+                android:text="@string/time_step2_duration2"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size16"/>
             <Button
                 android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="2dp"
                 android:id="@+id/time2_btn"
                 android:enabled="false"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:text=" "
-                android:layout_centerHorizontal="true"
                 android:background="@drawable/btn_time_inarrived"/>
             <TextView
                 android:id="@+id/time2_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/time2_btn"
                 android:text="test"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size16"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_below="@id/time2_container"
             android:id="@+id/time3_container"
             android:layout_width="match_parent"
@@ -203,33 +200,32 @@
                 android:id="@+id/time3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/time3_btn"
-                android:text="@string/time_duration3"
+                android:layout_marginStart="30dp"
+                android:text="@string/time_step2_duration3"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size16"/>
             <Button
                 android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="2dp"
                 android:id="@+id/time3_btn"
                 android:layout_width="25dp"
                 android:enabled="false"
                 android:layout_height="25dp"
                 android:text=" "
-                android:layout_centerHorizontal="true"
                 android:background="@drawable/btn_time_inarrived"/>
             <TextView
                 android:id="@+id/time3_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/time3_btn"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:text="설문미완료"
                 android:textSize="@dimen/my_text_size16"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_below="@id/time3_container"
             android:id="@+id/time4_container"
             android:layout_width="match_parent"
@@ -240,34 +236,30 @@
                 android:id="@+id/time4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/time4_btn"
-                android:text="@string/time_duration4"
+                android:layout_marginStart="30dp"
+                android:text="@string/time_step2_duration4"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
-                android:layout_centerVertical="true"
                 android:textSize="@dimen/my_text_size16"/>
             <Button
                 android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="2dp"
                 android:id="@+id/time4_btn"
                 android:enabled="false"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:text=" "
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
                 android:background="@drawable/btn_time_inarrived"/>
             <TextView
                 android:id="@+id/time4_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/time4_btn"
                 android:text="test"
-                android:layout_centerVertical="true"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size16"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
     </RelativeLayout>

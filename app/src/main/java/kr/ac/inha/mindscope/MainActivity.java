@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final long TWO_WEEK_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 14 * 1000;  // TODO for two week, when pilot test, change 60 * 60 *24 * 1000
+    private static Context mContext;
 
     //region UI variables
 //    private Button btnEMA;
@@ -94,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout firstStartStep1Layout;
 
     AppBarConfiguration appBarConfiguration;
-
 
     private Intent checkIntent;
 
@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
@@ -177,7 +178,9 @@ public class MainActivity extends AppCompatActivity {
                 firstStartStep1DialogBtn.setOnClickListener(firstStartStep1DialogListener);
                 firstStartStep1Dialog.show();
             }
-            updatePointAndShowDialog(intent);
+            if(intent.getBooleanExtra("get_point", false)){
+                updatePointAndShowDialog(intent);
+            }
 
         }
 
@@ -814,11 +817,14 @@ public class MainActivity extends AppCompatActivity {
         if (intent.getExtras() != null && intent.getExtras().getBoolean("get_point", false)) {
             // TODO point 얻는거 / alert dialog
             Log.i(TAG, "point dialog test");
-            Tools.updatePoint(getApplicationContext()); // poitn update
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
             pointCustomDialog.show();
             intent.putExtra("get_point", false);
         }
+    }
+
+    public static synchronized Context getInstance(){
+        return mContext;
     }
 
 }

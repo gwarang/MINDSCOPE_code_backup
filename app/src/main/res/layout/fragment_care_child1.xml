@@ -489,6 +489,7 @@
 
                     <ListView
                         android:id="@+id/child1_listview_phone"
+                        android:divider="#00000000"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -526,6 +527,7 @@
 
                     <ListView
                         android:id="@+id/child1_listview_activity"
+                        android:divider="#00000000"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -562,6 +564,7 @@
 
                     <ListView
                         android:id="@+id/child1_listview_location"
+                        android:divider="#00000000"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -598,6 +601,7 @@
 
                     <ListView
                         android:id="@+id/child1_listview_social"
+                        android:divider="#00000000"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -635,6 +639,7 @@
 
                     <ListView
                         android:id="@+id/child1_listview_sleep"
+                        android:divider="#00000000"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 

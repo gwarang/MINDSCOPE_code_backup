@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -469,31 +470,85 @@ public class Tools {
             e.printStackTrace();
         }
 
-        SharedPreferences points = context.getSharedPreferences("points", MODE_PRIVATE);
-        SharedPreferences.Editor pointsEditor = points.edit();
-        long lastDayNum = points.getLong("daynum", 0);
-
-        if (lastDayNum < calDateDays) {
-            // 날짜가 바뀌었으면 today points 초기화 및 day num 업데이트
-            pointsEditor.putInt("todayPoints", 0);
-            pointsEditor.putLong("daynum", calDateDays);
-            pointsEditor.apply();
-        }
-
-        int newTodayPoints = points.getInt("todayPoints", 0) + Tools.POINT_INCREASE_VALUE;
-        int newSumPoints = points.getInt("sumPoints", 0) + Tools.POINT_INCREASE_VALUE;
-        pointsEditor.putInt("todayPoints", newTodayPoints);
-        pointsEditor.putInt("sumPoints", newSumPoints);
-        pointsEditor.apply();
+//        SharedPreferences points = context.getSharedPreferences("points", MODE_PRIVATE);
+//        SharedPreferences.Editor pointsEditor = points.edit();
+//        long lastDayNum = points.getLong("daynum", 0);
+//
+//        if (lastDayNum < calDateDays) {
+//            // 날짜가 바뀌었으면 today points 초기화 및 day num 업데이트
+//            pointsEditor.putInt("todayPoints", 0);
+//            pointsEditor.putLong("daynum", calDateDays);
+//            pointsEditor.apply();
+//        }
+//
+//        int newTodayPoints = points.getInt("todayPoints", 0) + Tools.POINT_INCREASE_VALUE;
+//        int newSumPoints = points.getInt("sumPoints", 0) + Tools.POINT_INCREASE_VALUE;
+//        pointsEditor.putInt("todayPoints", newTodayPoints);
+//        pointsEditor.putInt("sumPoints", newSumPoints);
+//        pointsEditor.apply();
 
 
         long timestamp = System.currentTimeMillis();
         SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+        SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", MODE_PRIVATE);
         int dataSourceId = prefs.getInt("REWARD_POINTS", -1);
         assert dataSourceId != -1;
         Log.i(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
         DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, (int) calDateDays, Tools.POINT_INCREASE_VALUE);
 
+        // force upload to server
+        Thread forceUploadThread = new Thread(){
+            @Override
+            public void run() {
+                if (Tools.isNetworkAvailable()) {
+                    Cursor cursor = DbMgr.getSensorData();
+                    if (cursor.moveToFirst()) {
+                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
+                                context.getString(R.string.grpc_host),
+                                Integer.parseInt(context.getString(R.string.grpc_port))
+                        ).usePlaintext().build();
+                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+
+                        try {
+                            do {
+                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
+                                        .setUserId(userId)
+                                        .setEmail(email)
+                                        .setDataSource(cursor.getInt(1))
+                                        .setTimestamp(cursor.getLong(2))
+                                        .setValues(cursor.getString(4))
+                                        .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
+                                        .build();
+//                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
+//                                Log.e("submitThread", "Submission: " + res);
+                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
+
+                                if (responseMessage.getDoneSuccessfully()) {
+                                    DbMgr.deleteRecord(cursor.getInt(0));
+                                }
+
+                            } while (cursor.moveToNext());
+                        } catch (StatusRuntimeException e) {
+                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
+                            e.printStackTrace();
+                        } finally {
+                            channel.shutdown();
+                        }
+                    }
+                    cursor.close();
+                }
+            }
+        };
+        forceUploadThread.start();
+
+        try {
+            forceUploadThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /* Zaturi start */
@@ -630,8 +685,7 @@ public class Tools {
     public static JSONObject[] parsingStressReport(String originStressReportStr) {
         // REPORT Parsing
         try {
-            String str = originStressReportStr;
-            JSONObject jsonObject = new JSONObject(str);
+            JSONObject jsonObject = new JSONObject(originStressReportStr);
             JSONObject[] jsonObjects = new JSONObject[jsonObject.length()];
 
             for (short i = 0; i < jsonObject.length(); i++) {

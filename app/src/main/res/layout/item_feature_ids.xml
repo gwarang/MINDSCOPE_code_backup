@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TextView android:paddingVertical="4dp"
+    android:paddingHorizontal="20dp"
     android:id="@+id/txt_phone_reason1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAlignment="center"
     android:textSize="@dimen/my_text_size14"
+    android:textAlignment="center"
+    android:text="@string/feature_26low"
     android:fontFamily="@font/notosanscjkkrlight"
     android:includeFontPadding="false"
+    android:background="@drawable/view_bottom_border"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
 </TextView>

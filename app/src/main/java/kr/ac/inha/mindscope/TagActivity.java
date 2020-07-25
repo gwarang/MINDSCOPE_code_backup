@@ -35,6 +35,7 @@ public class TagActivity extends AppCompatActivity {
     TextView tagNowView;
     Button tagBtn;
     EditText inputTag;
+    LinearLayout loadingLayout;
 
     long timestamp;
     int dayNum;
@@ -54,18 +55,20 @@ public class TagActivity extends AppCompatActivity {
         dayNum = intent.getIntExtra("daynum", 0);
         emaOrder = intent.getIntExtra("emaorder", 0);
 
-        tag3hoursView = (TextView) findViewById(R.id.tag_3hours_list);
-        tagNowView = (TextView) findViewById(R.id.tag_now_my);
-        tagBtn = (Button) findViewById(R.id.toolbar_tag_btn);
-        inputTag = (EditText) findViewById(R.id.tag_edit);
-        hiddenLayout = (LinearLayout) findViewById(R.id.tag_container_my);
+        loadingLayout = findViewById(R.id.loading_frame_tag);
+        loadingLayout.setVisibility(View.GONE);
+        tag3hoursView = findViewById(R.id.tag_3hours_list);
+        tagNowView = findViewById(R.id.tag_now_my);
+        tagBtn = findViewById(R.id.toolbar_tag_btn);
+        inputTag = findViewById(R.id.tag_edit);
+        hiddenLayout = findViewById(R.id.tag_container_my);
 
         SharedPreferences prefs = getSharedPreferences("hashtags", MODE_PRIVATE);
         String str3hoursago = prefs.getString("lasthashtags", "");
         tag3hoursView.setText(str3hoursago);
 
 
-        inputTag.setHint("#태그힌트테스트");
+        inputTag.setHint("#내상태를 #기록해주세요 #을붙이셔야 #적용됩니다.");
 
         // Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_tag);
@@ -89,6 +92,7 @@ public class TagActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+            loadingLayout.setVisibility(View.VISIBLE);
             hiddenLayout.setVisibility(View.VISIBLE);
             tagBtn.setText(DONE);
 
@@ -119,9 +123,11 @@ public class TagActivity extends AppCompatActivity {
             editor.putString("lasthashtags", tagNowView.getText().toString());
             editor.apply();
 
-            Tools.saveApplicationLog(getApplicationContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, tags);
+            Context context = getApplicationContext();
+            Tools.updatePoint(context);
+            Tools.saveApplicationLog(context, TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, tags);
 
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("get_point", true);
             finish();
             startActivity(intent);

@@ -69,111 +69,10 @@ public class StressReportFragment2 extends Fragment {
     Button yesBtn;
     Button noBtn;
     Button reportBtn;
+    LinearLayout loadingLayout;
     private int yesOrNo = 2;
-    View.OnClickListener reportClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (yesOrNo == 2) {
-                Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
-            } else {
-                if (order == REPORTNUM4) {
-                    // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
-
-                    SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = stressReportPrefs.edit();
-                    editor.putLong("reportTimestamp", reportTimestamp);
-                    editor.putInt("reportAnswer", reportAnswer);
-                    editor.putInt("day_num", day_num);
-                    editor.putInt("order", order);
-                    editor.putFloat("accuracy", accuracy.floatValue());
-                    editor.putString("feature_ids", feature_ids);
-                    editor.apply();
-
-                    long timestamp = System.currentTimeMillis();
-
-                    SharedPreferences prefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-                    int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
-                    assert dataSourceId != -1;
-                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
-                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
 
 
-                    Intent intent = new Intent(requireContext(), MainActivity.class);
-                    intent.putExtra("reportTimestamp", reportTimestamp);
-                    intent.putExtra("reportAnswer", reportAnswer);
-                    intent.putExtra("day_num", day_num);
-                    intent.putExtra("order", order);
-                    intent.putExtra("accuracy", accuracy);
-                    intent.putExtra("feature_ids", feature_ids);
-                    intent.putExtra("get_point", true);
-                    startActivity(intent);
-
-                    final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                    if (notificationManager != null) {
-                        notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
-                    }
-
-                    Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, yesOrNo);
-                } else {
-                    // 그 외는 MainActivity로
-
-                    SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = stressReportPrefs.edit();
-                    editor.putLong("reportTimestamp", reportTimestamp);
-                    editor.putInt("reportAnswer", reportAnswer);
-                    editor.putInt("day_num", day_num);
-                    editor.putInt("order", order);
-                    editor.putFloat("accuracy", accuracy.floatValue());
-                    editor.putString("feature_ids", feature_ids);
-                    editor.apply();
-
-                    long timestamp = System.currentTimeMillis();
-                    SharedPreferences prefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-                    int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
-                    assert dataSourceId != -1;
-                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
-                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
-
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("reportTimestamp", reportTimestamp);
-                    intent.putExtra("reportAnswer", reportAnswer);
-                    intent.putExtra("day_num", day_num);
-                    intent.putExtra("order", order);
-                    intent.putExtra("accuracy", accuracy);
-                    intent.putExtra("feature_ids", feature_ids);
-                    intent.putExtra("get_point", true);
-                    startActivity(intent);
-
-                    final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                    if (notificationManager != null) {
-                        notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
-                    }
-
-                    Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, yesOrNo);
-                }
-            }
-        }
-    };
-    View.OnClickListener yesClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            yesOrNo = 1;
-            yesBtn.setSelected(true);
-            yesBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_blue));
-            noBtn.setSelected(false);
-            noBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_light));
-        }
-    };
-    View.OnClickListener noClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            yesOrNo = 0;
-            yesBtn.setSelected(false);
-            yesBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_light));
-            noBtn.setSelected(true);
-            noBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_blue));
-        }
-    };
 
     public StressReportFragment2() {
         // Required empty public constructor
@@ -198,22 +97,7 @@ public class StressReportFragment2 extends Fragment {
         return fragment2;
     }
 
-    public static void setListViewHeightBasedOnChildren(@NonNull ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
 
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -245,6 +129,8 @@ public class StressReportFragment2 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stress_report2, container, false);
 
+        loadingLayout = view.findViewById(R.id.loading_frame_stress_report);
+        loadingLayout.setVisibility(View.GONE);
         correctnessView = view.findViewById(R.id.txt_yes_no);
         accView = view.findViewById(R.id.prediction_acc);
         stressImg = view.findViewById(R.id.frg_report_step2_img);
@@ -404,5 +290,132 @@ public class StressReportFragment2 extends Fragment {
 
     }
 
+    public static void setListViewHeightBasedOnChildren(@NonNull ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
+    View.OnClickListener reportClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (yesOrNo == 2) {
+                Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
+            } else {
+                Context context = requireContext();
+                new Thread(() -> getActivity().runOnUiThread(() -> loadingLayout.setVisibility(View.VISIBLE))).start();
+
+                Tools.updatePoint(context);
+                if (order == REPORTNUM4) {
+                    // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
+
+                    SharedPreferences stressReportPrefs = context.getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = stressReportPrefs.edit();
+                    editor.putLong("reportTimestamp", reportTimestamp);
+                    editor.putInt("reportAnswer", reportAnswer);
+                    editor.putInt("day_num", day_num);
+                    editor.putInt("order", order);
+                    editor.putFloat("accuracy", accuracy.floatValue());
+                    editor.putString("feature_ids", feature_ids);
+                    editor.apply();
+
+                    long timestamp = System.currentTimeMillis();
+
+                    SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                    int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
+                    assert dataSourceId != -1;
+                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+
+
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra("reportTimestamp", reportTimestamp);
+                    intent.putExtra("reportAnswer", reportAnswer);
+                    intent.putExtra("day_num", day_num);
+                    intent.putExtra("order", order);
+                    intent.putExtra("accuracy", accuracy);
+                    intent.putExtra("feature_ids", feature_ids);
+                    intent.putExtra("get_point", true);
+                    startActivity(intent);
+
+                    final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (notificationManager != null) {
+                        notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
+                    }
+
+                    Tools.saveApplicationLog(context, TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, yesOrNo);
+                } else {
+                    // 그 외는 MainActivity로
+
+                    SharedPreferences stressReportPrefs = context.getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = stressReportPrefs.edit();
+                    editor.putLong("reportTimestamp", reportTimestamp);
+                    editor.putInt("reportAnswer", reportAnswer);
+                    editor.putInt("day_num", day_num);
+                    editor.putInt("order", order);
+                    editor.putFloat("accuracy", accuracy.floatValue());
+                    editor.putString("feature_ids", feature_ids);
+                    editor.apply();
+
+                    long timestamp = System.currentTimeMillis();
+                    SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                    int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
+                    assert dataSourceId != -1;
+                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra("reportTimestamp", reportTimestamp);
+                    intent.putExtra("reportAnswer", reportAnswer);
+                    intent.putExtra("day_num", day_num);
+                    intent.putExtra("order", order);
+                    intent.putExtra("accuracy", accuracy);
+                    intent.putExtra("feature_ids", feature_ids);
+                    intent.putExtra("get_point", true);
+                    startActivity(intent);
+
+                    final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (notificationManager != null) {
+                        notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
+                    }
+
+                    Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, yesOrNo);
+                }
+            }
+        }
+    };
+
+    View.OnClickListener yesClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            yesOrNo = 1;
+            yesBtn.setSelected(true);
+            yesBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_blue));
+            noBtn.setSelected(false);
+            noBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_light));
+        }
+    };
+
+    View.OnClickListener noClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            yesOrNo = 0;
+            yesBtn.setSelected(false);
+            yesBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_light));
+            noBtn.setSelected(true);
+            noBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_blue));
+        }
+    };
 
 }

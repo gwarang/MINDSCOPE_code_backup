@@ -149,8 +149,6 @@ public class MeFragmentStep1 extends Fragment {
         });
 
 
-        loadAllPoints();
-        loadDailyPoints();
 
         return root;
     }
@@ -169,6 +167,8 @@ public class MeFragmentStep1 extends Fragment {
         if (firstviewshow == 1 && isFirstStartStep1DialogShowing)
             startEmaActivityWhenNotSubmitted();
         updateStats();
+        loadAllPoints();
+        loadDailyPoints();
         updateEmaResponseView();
     }
 
@@ -329,7 +329,7 @@ public class MeFragmentStep1 extends Fragment {
                 }
             channel.shutdown();
             final int finalPoints = points;
-            requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
+            requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
         }).start();
     }
 
@@ -373,7 +373,7 @@ public class MeFragmentStep1 extends Fragment {
                 }
             channel.shutdown();
             final int finalDailyPoints = dailyPoints;
-            requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
+            requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
         }).start();
     }
 

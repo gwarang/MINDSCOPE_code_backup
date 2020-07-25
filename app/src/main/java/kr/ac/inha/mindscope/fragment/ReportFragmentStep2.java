@@ -402,7 +402,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 R.drawable.icon_high
         };
         if (dailyAverageStressLevels.containsKey(day)) {
-            dailyAverageStressLevelView.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day) - 1]);
+            dailyAverageStressLevelView.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day)]);
             dailyAverageStressLevelView.setVisibility(View.VISIBLE);
         } else
             dailyAverageStressLevelView.setVisibility(View.GONE);
@@ -438,10 +438,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     checkBoxes[emaOrder - 1].setChecked(true);
 
                     textViews[emaOrder - 1].setVisibility(View.VISIBLE);
-                    textViews[emaOrder - 1].setText(stressLevelTexts[stressLevel - 1]);
+                    textViews[emaOrder - 1].setText(stressLevelTexts[stressLevel]);
 
                     imageViews[emaOrder - 1].setVisibility(View.VISIBLE);
-                    imageViews[emaOrder - 1].setImageResource(stressLevelImageResources[stressLevel - 1]);
+                    imageViews[emaOrder - 1].setImageResource(stressLevelImageResources[stressLevel]);
 
                     imageButtons[emaOrder - 1].setVisibility(View.VISIBLE);
                 } else {
@@ -449,10 +449,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     int index = findTimestampIndex(timestamp, ranges);
                     if (index > -1 && index < imageViews.length) {
                         textViews[index].setVisibility(View.VISIBLE);
-                        textViews[index].setText(stressLevelTexts[stressLevel - 1]);
+                        textViews[index].setText(stressLevelTexts[stressLevel]);
 
                         imageViews[index].setVisibility(View.VISIBLE);
-                        imageViews[index].setImageResource(stressLevelImageResources[stressLevel - 1]);
+                        imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
 
                         imageButtons[index].setVisibility(View.VISIBLE);
                     }
@@ -487,7 +487,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 };
                 int stressLevel = dailyAverageStressLevels.get(day);
                 requireActivity().runOnUiThread(() -> {
-                    txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel - 1])));
+                    txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel])));
                     txtStressLevel.setVisibility(View.VISIBLE);
                 });
             } else
@@ -833,7 +833,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                 continue;
                             }
                         }
-                        if (stressLevel != 0) {
+                        if (stressLevel < 3) {
                             c.setTimeInMillis(timestamp);
                             c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
                             c.set(Calendar.MILLISECOND, 0);
@@ -897,7 +897,14 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             double sum = 0;
             for (Triple<Long, Integer, Integer> tsEmaOrderStressLvlTriple : cluster)
                 sum += tsEmaOrderStressLvlTriple.getRight() + 1;
-            dailyAverageStressLevels.put(day, (int) Math.round(sum / cluster.size()));
+            float avgStress = (float) (sum / cluster.size());
+            if(avgStress < 1.5){
+                dailyAverageStressLevels.put(day, STRESS_LV1);
+            }else if(avgStress < 2.5){
+                dailyAverageStressLevels.put(day, STRESS_LV2);
+            }else{
+                dailyAverageStressLevels.put(day, STRESS_LV3);
+            }
         }
 
         // (3) decorate days with calculated average stress levels
@@ -965,19 +972,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         Log.d(TAG, "phoneReason" + phoneReason.toString());
         Log.d(TAG, "activityReason" + activityReason.toString());
 
-        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, phoneReason
         );
-        ArrayAdapter<String> activityAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, activityReason
         );
-        ArrayAdapter<String> socialAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> socialAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, socialReason
         );
-        ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, locationReason
         );
-        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, sleepReason
         );
 
@@ -986,7 +993,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         socialListView.setAdapter(socialAdapter);
         locationListView.setAdapter(locationAdapter);
         sleepListView.setAdapter(sleepAdapter);
-
 
         if(phoneReason.isEmpty())
             phoneContainer.setVisibility(View.GONE);
