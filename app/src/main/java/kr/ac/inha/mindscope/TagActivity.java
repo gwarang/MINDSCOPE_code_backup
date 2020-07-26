@@ -139,7 +139,6 @@ public class TagActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.toolbar_save:
-                // TODO 기록 태그 저장
                 break;
             case android.R.id.home:
                 finish();

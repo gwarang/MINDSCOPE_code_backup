@@ -624,17 +624,17 @@ public class Tools {
 
         NotificationCompat.Action nextTimeAction =
                 new NotificationCompat.Action.Builder(
-                        R.mipmap.ic_launcher_no_bg,
+                        R.mipmap.ic_launcher_low_foreground,
                         con.getString(R.string.next_time),
                         nextTimePI).build();
         NotificationCompat.Action muteTodayAction =
                 new NotificationCompat.Action.Builder(
-                        R.mipmap.ic_launcher_no_bg,
+                        R.mipmap.ic_launcher_low_foreground,
                         con.getString(R.string.mute_today),
                         muteTodayPI).build();
         NotificationCompat.Action stressRelAction =
                 new NotificationCompat.Action.Builder(
-                        R.mipmap.ic_launcher_no_bg,
+                        R.mipmap.ic_launcher_low_foreground,
                         con.getString(R.string.do_intervention),
                         stressRelPI).build();
 
@@ -650,7 +650,7 @@ public class Tools {
                 .addAction(nextTimeAction)
                 .addAction(muteTodayAction)
                 .addAction(stressRelAction)
-                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

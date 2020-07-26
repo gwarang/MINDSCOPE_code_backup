@@ -150,7 +150,7 @@ public class StressReportFragment2 extends Fragment {
         }
 
         final String accTxt1 = "사실 저는 ";
-        final String accTxt2 = String.format("%.2f", accuracy) + "%";
+        final String accTxt2 = String.format("%.2f", (accuracy.floatValue()*100)) + "%";
         final String accTxt3 = "의 확신을 가지고 있었어요.";
         String accTxtResult = accTxt1 + accTxt2 + accTxt3;
         Spannable spannable = new SpannableString(accTxtResult);

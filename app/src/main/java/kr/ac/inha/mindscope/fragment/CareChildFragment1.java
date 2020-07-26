@@ -47,6 +47,7 @@ public class CareChildFragment1 extends Fragment {
     private static final int STRESS_LV1 = 0;
     private static final int STRESS_LV2 = 1;
     private static final int STRESS_LV3 = 2;
+    private static final int NON_SELF_STRESS_LV = 3;
     private static final int ORDER1 = 1;
     private static final int ORDER2 = 2;
     private static final int ORDER3 = 3;
@@ -149,7 +150,7 @@ public class CareChildFragment1 extends Fragment {
             }
         }
 
-        selfStressReportWithOrderIndex = new int[4];
+        selfStressReportWithOrderIndex = new int[]{NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV};
         if(selfStressReports != null){
             for(String selfReportStr : selfStressReports){
                 String[] result = selfReportStr.split(" ");
@@ -176,7 +177,7 @@ public class CareChildFragment1 extends Fragment {
 
         // checkbox UI update
         for(short i = 0; i < selfStressReportWithOrderIndex.length; i++){
-            if(selfStressReportWithOrderIndex[i] != 0){
+            if(selfStressReportWithOrderIndex[i] != NON_SELF_STRESS_LV){
                 switch (i+1){
                     case ORDER1:
                         checkBox1.setChecked(true);
@@ -352,6 +353,7 @@ public class CareChildFragment1 extends Fragment {
         final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
         if (responseMessage.getDoneSuccessfully()) {
             List<String> values = responseMessage.getValueList();
+            List<Long> timestampValues = responseMessage.getTimestampList();
             if(!values.isEmpty()){
                 for(String report : values){
                     stressReports = values;
@@ -420,7 +422,7 @@ public class CareChildFragment1 extends Fragment {
     public float getAvgStress(){
         int sumStress = 0;
         for(int order = 1; order <= selfStressReportWithOrderIndex.length; order++){
-            if(selfStressReportWithOrderIndex[order -1] != 0){
+            if(selfStressReportWithOrderIndex[order -1] != NON_SELF_STRESS_LV){
                 sumStress += selfStressReportWithOrderIndex[order - 1];
             }
             else{
@@ -452,7 +454,7 @@ public class CareChildFragment1 extends Fragment {
                 try {
                     int order = resultSet[0].getInt("ema_order");
                     for(short stressLevel = 0; stressLevel < resultSet.length; stressLevel++){
-                        if(resultSet[stressLevel].getBoolean("model_tag") && selfStressReportWithOrderIndex[order - 1] == 0){
+                        if(resultSet[stressLevel].getBoolean("model_tag") && selfStressReportWithOrderIndex[order - 1] == NON_SELF_STRESS_LV){
                             switch (stressLevel){
                                 case STRESS_LV1:
                                     switch (order){

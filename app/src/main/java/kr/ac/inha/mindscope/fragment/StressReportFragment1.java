@@ -39,6 +39,7 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.fragment.MeFragmentStep2.TIMESTAMP_ONE_DAY;
 import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class StressReportFragment1 extends Fragment {
@@ -126,7 +127,7 @@ public class StressReportFragment1 extends Fragment {
                 try {
                     if(jsonObjects[0] != null){
                         if(jsonObjects[i].getBoolean("model_tag")){
-                            stressLevel = i+1;
+                            stressLevel = i;
                             day_num = jsonObjects[i].getInt("day_num");
                             order = jsonObjects[i].getInt("ema_order");
                             accuracy = jsonObjects[i].getDouble("accuracy");
@@ -181,26 +182,40 @@ public class StressReportFragment1 extends Fragment {
 
         // UI
         dateView = view.findViewById(R.id.report_step2_date);
-        Date currentTime = Calendar.getInstance().getTime();
+        Date currentTime = new Date(reportTimestamp);
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
 
         currentHours = cal.get(Calendar.HOUR_OF_DAY);
-        Log.i(TAG, "current hours: " + currentHours);
         timeView = view.findViewById(R.id.report_step2_time);
-        if(currentHours < 11){
-            timeView.setText(getResources().getString(R.string.time_step2_duration1));
+        switch(order){
+            case 1:
+                timeView.setText(getResources().getString(R.string.time_step2_duration1));
+                break;
+            case 2:
+                timeView.setText(getResources().getString(R.string.time_step2_duration2));
+                break;
+            case 3:
+                timeView.setText(getResources().getString(R.string.time_step2_duration3));
+                break;
+            case 4:
+                timeView.setText(getResources().getString(R.string.time_step2_duration4));
+                break;
+
         }
-        else if(currentHours < 15){
-            timeView.setText(getResources().getString(R.string.time_step2_duration2));
-        }
-        else if(currentHours < 19){
-            timeView.setText(getResources().getString(R.string.time_step2_duration3));
-        }
-        else if(currentHours < 23){
-            timeView.setText(getResources().getString(R.string.time_step2_duration4));
-        }
+//        if(currentHours < 11){
+//            timeView.setText(getResources().getString(R.string.time_step2_duration1));
+//        }
+//        else if(currentHours < 15){
+//            timeView.setText(getResources().getString(R.string.time_step2_duration2));
+//        }
+//        else if(currentHours < 19){
+//            timeView.setText(getResources().getString(R.string.time_step2_duration3));
+//        }
+//        else if(currentHours < 23){
+//            timeView.setText(getResources().getString(R.string.time_step2_duration4));
+//        }
 
 
         btnReport = view.findViewById(R.id.toolbar_report_btn);
@@ -309,10 +324,33 @@ public class StressReportFragment1 extends Fragment {
 
         int reportOrder = getReportPreviousOrder(fromCalendar);
         // initialize calendar time
-        if (reportOrder != 0){
+        if (reportOrder < 4) {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
             fromCalendar.set(Calendar.MINUTE, 0);
             fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+        }else{
+            if(fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION){
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                fromCalendar.set(Calendar.MINUTE, 0);
+                fromCalendar.set(Calendar.SECOND, 0);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                tillCalendar.set(Calendar.MINUTE, 59);
+                tillCalendar.set(Calendar.SECOND, 59);
+                long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                long tillTImestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                fromCalendar.setTimeInMillis(fromTimestampYesterday);
+                tillCalendar.setTimeInMillis(tillTImestampYesterday);
+            }else{
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                fromCalendar.set(Calendar.MINUTE, 0);
+                fromCalendar.set(Calendar.SECOND, 0);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                tillCalendar.set(Calendar.MINUTE, 59);
+                tillCalendar.set(Calendar.SECOND, 59);
+            }
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -339,8 +377,8 @@ public class StressReportFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fromCalendar.getTimeInMillis()) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tillCalendar.getTimeInMillis()) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis())
+                .setTillTimestamp(tillCalendar.getTimeInMillis())
                 .build();
 
 

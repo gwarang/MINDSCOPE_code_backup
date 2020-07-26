@@ -242,7 +242,7 @@ public class LocationsSettingActivity extends AppCompatActivity implements OnMap
                 location_title = TITLE_ADDITIONAL;
                 break;
             default:
-                iconDrawable = ContextCompat.getDrawable(this, R.mipmap.ic_launcher_no_bg);
+                iconDrawable = ContextCompat.getDrawable(this, R.mipmap.ic_launcher_low_foreground);
                 location_title = "My location";
                 break;
         }

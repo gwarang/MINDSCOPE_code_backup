@@ -57,7 +57,6 @@ public class InterventionSaveActivity extends AppCompatActivity {
                     Toast.makeText(this, "스트레스 해소 방안을 입력해주세요!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "새로운 스트레스 해소방안 저장!", Toast.LENGTH_SHORT).show();
-                    // TODO 선택한 해소방안도 따로 DB 구성해야하는가?
                     SharedPreferences prefs = getSharedPreferences("intervention", MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("curIntervention", interventionEdit.getText().toString());

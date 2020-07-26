@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 .setTicker("New Message Alert!")
                 .setOngoing(true)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_ALL);
 
@@ -815,7 +815,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updatePointAndShowDialog(Intent intent) {
         if (intent.getExtras() != null && intent.getExtras().getBoolean("get_point", false)) {
-            // TODO point 얻는거 / alert dialog
             Log.i(TAG, "point dialog test");
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
             pointCustomDialog.show();

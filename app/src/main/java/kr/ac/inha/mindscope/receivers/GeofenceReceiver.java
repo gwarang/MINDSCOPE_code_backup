@@ -82,7 +82,7 @@ public class GeofenceReceiver extends BroadcastReceiver {
                 .setContentText(content)
                 .setTicker("New Message Alert!")
                 .setAutoCancel(true)
-                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_ALL);
 

@@ -369,7 +369,7 @@ public class MainService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE);
         Notification notification = builder.build();
         startForeground(ID_SERVICE, notification);
@@ -530,7 +530,7 @@ public class MainService extends Service {
                     .setTicker("New Message Alert!")
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                    .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(Notification.DEFAULT_ALL);
         } else {
@@ -547,7 +547,7 @@ public class MainService extends Service {
                     .setTicker("New Message Alert!")
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                    .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(Notification.DEFAULT_ALL);
         }
@@ -582,7 +582,7 @@ public class MainService extends Service {
                 .setTicker("New Message Alert!")
                 .setOngoing(true)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher_no_bg)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_ALL);
 
