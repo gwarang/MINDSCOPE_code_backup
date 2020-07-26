@@ -106,6 +106,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     ScrollView defaultContainer;
     ConstraintLayout hiddenContainer;
+    ConstraintLayout dayDetailContainer;
 
     ImageView hiddenStressImg;
     TextView hiddenDateView;
@@ -156,6 +157,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         Log.e(TAG, "join timestamp " + joinTimestamp);
 
         defaultContainer = root.findViewById(R.id.frg_report_step2_container1);
+        dayDetailContainer = root.findViewById(R.id.frg_report_step2_date_container);
 
         Calendar firstDayCal = Calendar.getInstance(Locale.KOREA);
         firstDayCal.setTimeInMillis(joinTimestamp);
@@ -395,20 +397,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         loadDailyPoints(day);
         // endregion
 
-        // region (2) average daily stress level
-        int[] stressLvlImageResources = new int[]{
-                R.drawable.icon_low,
-                R.drawable.icon_littlehigh,
-                R.drawable.icon_high
-        };
-        if (dailyAverageStressLevels.containsKey(day)) {
-            dailyAverageStressLevelView.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day)]);
-            dailyAverageStressLevelView.setVisibility(View.VISIBLE);
-        } else
-            dailyAverageStressLevelView.setVisibility(View.GONE);
-        // endregion
-
-        // region (3) detailed view
+        // region (2) detailed view
         CheckBox[] checkBoxes = new CheckBox[]{checkBoxEmaOrder1, checkBoxEmaOrder2, checkBoxEmaOrder3, checkBoxEmaOrder4};
         ImageView[] imageViews = new ImageView[]{imageViewSlot1, imageViewSlot2, imageViewSlot3, imageViewSlot4};
         TextView[] textViews = new TextView[]{textViewSlot1, textViewSlot2, textViewSlot3, textViewSlot4};
@@ -464,7 +453,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 checkBox.setChecked(false);
         // endregion
 
-        // region (4) daily comment
+        // region (3) daily comment
         new Thread(() -> {
             SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
             int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
@@ -526,6 +515,22 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             final String finalComment = lastComment;
             requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
         }).start();
+        // endregion
+
+        // region (4) average daily stress level
+        int[] stressLvlImageResources = new int[]{
+                R.drawable.icon_low,
+                R.drawable.icon_littlehigh,
+                R.drawable.icon_high
+        };
+        if (dailyAverageStressLevels.containsKey(day)) {
+            dayDetailContainer.setVisibility(View.VISIBLE);
+            dailyAverageStressLevelView.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day)]);
+            dailyAverageStressLevelView.setVisibility(View.VISIBLE);
+        } else{
+            dayDetailContainer.setVisibility(View.GONE);
+            dailyAverageStressLevelView.setVisibility(View.GONE);
+        }
         // endregion
 
         materialCalendarView.invalidateDecorators();

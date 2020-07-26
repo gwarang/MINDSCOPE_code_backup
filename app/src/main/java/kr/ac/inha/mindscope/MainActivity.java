@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             if(intent.getBooleanExtra("get_point", false)){
                 updatePointAndShowDialog(intent);
             }
-
         }
 
 
@@ -787,7 +786,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavController navController;
         // Bottom Navigation Bar
-        BottomNavigationView navView = (BottomNavigationView) findViewById(R.id.nav_view);
+        BottomNavigationView navView = findViewById(R.id.nav_view);
 
         getSupportActionBar().hide();
         if (stepChange.getInt("stepCheck", 0) == 2) {
@@ -799,6 +798,7 @@ public class MainActivity extends AppCompatActivity {
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             navController.setGraph(R.navigation.mobile_navigation_stpe2);
             Log.i(TAG, "nav2");
+
         } else {
             // STEP 1
             navView.getMenu().clear();
@@ -808,9 +808,12 @@ public class MainActivity extends AppCompatActivity {
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             Log.i(TAG, "nav1");
         }
-//        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+//        if(getIntent().getBooleanExtra("today_last_report", false)){
+//            navController.navigate(R.id.action_me_to_care_step2);
+//            getIntent().removeExtra("today_last_report");
+//        }
     }
 
     private void updatePointAndShowDialog(Intent intent) {

@@ -328,6 +328,7 @@ public class StressReportFragment2 extends Fragment {
                     editor.putInt("order", order);
                     editor.putFloat("accuracy", accuracy.floatValue());
                     editor.putString("feature_ids", feature_ids);
+                    editor.putBoolean("today_last_report", true);
                     editor.apply();
 
                     long timestamp = System.currentTimeMillis();
@@ -365,6 +366,7 @@ public class StressReportFragment2 extends Fragment {
                     editor.putInt("day_num", day_num);
                     editor.putInt("order", order);
                     editor.putFloat("accuracy", accuracy.floatValue());
+                    editor.putBoolean("today_last_report", false);
                     editor.putString("feature_ids", feature_ids);
                     editor.apply();
 

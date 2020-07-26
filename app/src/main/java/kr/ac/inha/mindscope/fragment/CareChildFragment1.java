@@ -38,6 +38,7 @@ import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 
+import static kr.ac.inha.mindscope.fragment.MeFragmentStep2.TIMESTAMP_ONE_DAY;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 public class CareChildFragment1 extends Fragment {
@@ -52,6 +53,8 @@ public class CareChildFragment1 extends Fragment {
     private static final int ORDER2 = 2;
     private static final int ORDER3 = 3;
     private static final int ORDER4 = 4;
+
+    long timestamp;
 
     //region variable
     ImageView stressAvgImg;
@@ -306,10 +309,7 @@ public class CareChildFragment1 extends Fragment {
 
 
 
-        Date currentTime = Calendar.getInstance().getTime();
-        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
-        dateTextView.setText(date_text + "의");
-        hiddenDateView.setText(date_text);
+
 
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
@@ -321,12 +321,30 @@ public class CareChildFragment1 extends Fragment {
         // initialize timestamp from today 00:00:00 to 23:59:59
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
-        fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        fromCalendar.set(Calendar.MINUTE, 0);
-        fromCalendar.set(Calendar.SECOND, 0);
-        tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
-        tillCalendar.set(Calendar.MINUTE, 59);
-        tillCalendar.set(Calendar.SECOND, 59);
+        // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
+        if(fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11){
+            // today
+            fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            fromCalendar.set(Calendar.MINUTE, 0);
+            fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+        }else{
+            // yesterday
+            fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            fromCalendar.set(Calendar.MINUTE, 0);
+            fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+            long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+            long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+            fromCalendar.setTimeInMillis(fromTimestampYesterday);
+            tillCalendar.setTimeInMillis(tillTimestampYesterday);
+        }
+        timestamp = fromCalendar.getTimeInMillis();
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
@@ -374,12 +392,30 @@ public class CareChildFragment1 extends Fragment {
         // initialize timestamp from today 00:00:00 to 23:59:59
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
-        fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        fromCalendar.set(Calendar.MINUTE, 0);
-        fromCalendar.set(Calendar.SECOND, 0);
-        tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
-        tillCalendar.set(Calendar.MINUTE, 59);
-        tillCalendar.set(Calendar.SECOND, 59);
+
+        // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
+        if(fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11){
+            // today
+            fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            fromCalendar.set(Calendar.MINUTE, 0);
+            fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+        }else{
+            // yesterday
+            fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            fromCalendar.set(Calendar.MINUTE, 0);
+            fromCalendar.set(Calendar.SECOND, 0);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            tillCalendar.set(Calendar.MINUTE, 59);
+            tillCalendar.set(Calendar.SECOND, 59);
+            long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+            long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+            fromCalendar.setTimeInMillis(fromTimestampYesterday);
+            tillCalendar.setTimeInMillis(tillTimestampYesterday);
+        }
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
@@ -448,6 +484,12 @@ public class CareChildFragment1 extends Fragment {
     }
 
     public void updateUI(){
+
+        Date currentTime = new Date(timestamp);
+        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
+        dateTextView.setText(date_text + "의");
+        hiddenDateView.setText(date_text);
+
         // each stress level view update
         for(JSONObject[] resultSet : stressReportsJsonArray){
             if(resultSet != null){

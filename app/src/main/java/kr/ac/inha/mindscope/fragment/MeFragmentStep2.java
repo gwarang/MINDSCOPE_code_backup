@@ -36,6 +36,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -60,6 +61,7 @@ public class MeFragmentStep2 extends Fragment {
 
     private static final String TAG = "MeFragmentStep2";
     public static JSONObject[] jsonObjects;
+    public static View view;
     static int lastReportHours;
     public int stressLevel;
     int day_num;
@@ -79,12 +81,10 @@ public class MeFragmentStep2 extends Fragment {
     private TextView dateView;
     private TextView timeView;
     private TextView stressLvView;
+    private TextView waitNextReportTextView;
     private Button reportBtn;
     private String feature_ids;
-
-    public static View view;
-
-    final Handler handler = new Handler(Looper.getMainLooper()){
+    final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             applyUi(view);
@@ -119,9 +119,17 @@ public class MeFragmentStep2 extends Fragment {
 
         super.onResume();
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+        SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+
+        if(stressReportPrefs.getBoolean("today_last_report", false)){
+//            SharedPreferences.Editor editor = stressReportPrefs.edit();
+//            editor.putBoolean("today_last_report", false);
+//            editor.apply();
+            Navigation.findNavController(view).navigate(R.id.action_me_to_care_step2);
+        }
     }
 
-    public void applyUi(View view){
+    public void applyUi(View view) {
 //        SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
         Context context = MainActivity.getInstance();
 
@@ -129,6 +137,7 @@ public class MeFragmentStep2 extends Fragment {
         beforeTextView = view.findViewById(R.id.frg_me_step2_before_time);
         timeContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
         stressLvView = view.findViewById(R.id.txt_stress_level);
+        waitNextReportTextView = view.findViewById(R.id.txt_wait_next_report);
 
 
         if (feature_ids != null)
@@ -202,7 +211,7 @@ public class MeFragmentStep2 extends Fragment {
 
 
         // TODO 추후 step 시간으로 확인할때는 삭제할 부분
-        stepTestBtn = (Button) view.findViewById(R.id.step_test_btn_step2);
+        stepTestBtn = view.findViewById(R.id.step_test_btn_step2);
         stepTestBtn.setOnClickListener(view1 -> {
             SharedPreferences stepChange = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = stepChange.edit();
@@ -220,7 +229,7 @@ public class MeFragmentStep2 extends Fragment {
             }
         });
 
-        reportBtn = (Button) view.findViewById(R.id.report_test_btn);
+        reportBtn = view.findViewById(R.id.report_test_btn);
         reportBtn.setOnClickListener(view12 -> {
             Intent intent = new Intent(getActivity(), StressReportActivity.class);
             startActivity(intent);
@@ -357,8 +366,8 @@ public class MeFragmentStep2 extends Fragment {
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
-        }else{
-            if(fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION){
+        } else {
+            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
                 fromCalendar.set(Calendar.MINUTE, 0);
                 fromCalendar.set(Calendar.SECOND, 0);
@@ -366,10 +375,10 @@ public class MeFragmentStep2 extends Fragment {
                 tillCalendar.set(Calendar.MINUTE, 59);
                 tillCalendar.set(Calendar.SECOND, 59);
                 long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-                long tillTImestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
                 fromCalendar.setTimeInMillis(fromTimestampYesterday);
-                tillCalendar.setTimeInMillis(tillTImestampYesterday);
-            }else{
+                tillCalendar.setTimeInMillis(tillTimestampYesterday);
+            } else {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
                 fromCalendar.set(Calendar.MINUTE, 0);
                 fromCalendar.set(Calendar.SECOND, 0);
@@ -538,7 +547,7 @@ public class MeFragmentStep2 extends Fragment {
         } else if ((REPORT_NOTIF_HOURS[3] - REPORT_DURATION) <= curHour &&
                 cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[3]) {
             return 3;
-        } else /*if(REPORT_NOTIF_HOURS[3] == curHour)*/{
+        } else /*if(REPORT_NOTIF_HOURS[3] == curHour)*/ {
             return 4;
         }
     }

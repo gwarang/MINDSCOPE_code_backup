@@ -8,7 +8,11 @@
     <fragment
         android:id="@+id/navigation_me_step2"
         android:name="kr.ac.inha.mindscope.fragment.MeFragmentStep2"
-        tools:layout="@layout/fragment_me_step2" />
+        tools:layout="@layout/fragment_me_step2">
+        <action
+            android:id="@+id/action_me_to_care_step2"
+            app:destination="@id/navigation_care_step2"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_care_step2"
