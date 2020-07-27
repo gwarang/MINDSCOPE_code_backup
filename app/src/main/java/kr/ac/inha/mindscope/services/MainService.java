@@ -128,7 +128,9 @@ public class MainService extends Service {
             int ema_order = Tools.getEMAOrderAtExactTime(curCal);
 
             // TODO step 조건 추가할것
-            if (ema_order != 0 && canSendNotif) {
+            SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+            int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
+            if (stepCheck == 1 && ema_order != 0 && canSendNotif) {
                 Log.e(TAG, "EMA order 1: " + ema_order);
                 sendNotification(ema_order, KINDS_NOTI_EMA);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
@@ -147,7 +149,7 @@ public class MainService extends Service {
             int report_order = Tools.getReportOrderAtExactTime(curCal);
 
             // TODO step 조건 추가할것
-            if (report_order != 0 && canSendNotifReport) {
+            if (stepCheck == 2 && report_order != 0 && canSendNotifReport) {
                 Log.e(TAG, "REPORT order 1: " + report_order);
                 sendNotification(report_order, KINDS_NOTI_REPORT);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);

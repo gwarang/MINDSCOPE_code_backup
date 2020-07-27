@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +63,8 @@ public class TagActivity extends AppCompatActivity {
         tagNowView = findViewById(R.id.tag_now_my);
         tagBtn = findViewById(R.id.toolbar_tag_btn);
         inputTag = findViewById(R.id.tag_edit);
+        inputTag.addTextChangedListener(textWatcher);
+        inputTag.setOnFocusChangeListener(focusChangeListener);
         hiddenLayout = findViewById(R.id.tag_container_my);
 
         SharedPreferences prefs = getSharedPreferences("hashtags", MODE_PRIVATE);
@@ -131,6 +135,53 @@ public class TagActivity extends AppCompatActivity {
             intent.putExtra("get_point", true);
             finish();
             startActivity(intent);
+
+        }
+    };
+
+    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if(b){
+                Log.e(TAG, "focus true");
+                String s = inputTag.getText().toString();
+                if(inputTag.getText().toString().equals("")){
+                    Log.e(TAG, "add first #");
+                    inputTag.setText("#");
+                    inputTag.setSelection(inputTag.getText().length());
+                }
+            }
+        }
+    };
+
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//            if(inputTag.isFocusable() && charSequence.equals("")){
+//                inputTag.setText("#");
+//            }
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            Log.e(TAG, "onTextChanged");
+
+            if(inputTag.isFocusable()){
+//                if(charSequence.length() == 1 && charSequence.toString() != "#" && charSequence.toString() != " "){
+//                    inputTag.setText("#"+inputTag.getText());
+//                    inputTag.setSelection(inputTag.getText().length());
+//                }
+                if(charSequence.length() > 0 && charSequence.charAt(charSequence.length()-1) == ' '){
+                    inputTag.setText(inputTag.getText().toString().replace(' ', '#'));
+                    inputTag.setSelection(inputTag.getText().length());
+                    Log.e(TAG, "add #");
+                }
+            }
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
 
         }
     };

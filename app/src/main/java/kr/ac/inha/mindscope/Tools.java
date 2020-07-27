@@ -455,20 +455,27 @@ public class Tools {
 
     public static void updatePoint(Context context) {
         long calDateDays = 0;
-        SharedPreferences a = context.getSharedPreferences("firstDate", MODE_PRIVATE);
-        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date firstDate = format.parse(firstTimeStr);
-            Date currentDate = Calendar.getInstance().getTime();
-            Log.i(TAG, "first, current: " + firstDate + ", " + currentDate);
-            long caldate = firstDate.getTime() - currentDate.getTime();
-            calDateDays = caldate / (24 * 60 * 60 * 1000);
-            calDateDays = Math.abs(calDateDays);
-            Log.i(TAG, "Day num: " + calDateDays);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
+        long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
+        long timestamp = System.currentTimeMillis();
+
+        long diffTimestamp = timestamp - joinTimestamp;
+        calDateDays = Math.abs(diffTimestamp / (24 * 60 * 60 * 1000));
+//
+//        SharedPreferences a = context.getSharedPreferences("firstDate", MODE_PRIVATE);
+//        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        try {
+//            Date firstDate = format.parse(firstTimeStr);
+//            Date currentDate = Calendar.getInstance().getTime();
+//            Log.i(TAG, "first, current: " + firstDate + ", " + currentDate);
+//            long caldate = firstDate.getTime() - currentDate.getTime();
+//            calDateDays = caldate / (24 * 60 * 60 * 1000);
+//            calDateDays = Math.abs(calDateDays);
+//            Log.i(TAG, "Day num: " + calDateDays);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
 
 //        SharedPreferences points = context.getSharedPreferences("points", MODE_PRIVATE);
 //        SharedPreferences.Editor pointsEditor = points.edit();
@@ -487,68 +494,66 @@ public class Tools {
 //        pointsEditor.putInt("sumPoints", newSumPoints);
 //        pointsEditor.apply();
 
-
-        long timestamp = System.currentTimeMillis();
         SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
         SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", MODE_PRIVATE);
         int dataSourceId = prefs.getInt("REWARD_POINTS", -1);
         assert dataSourceId != -1;
         Log.i(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
-        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, (int) calDateDays, Tools.POINT_INCREASE_VALUE);
+        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, calDateDays, Tools.POINT_INCREASE_VALUE);
 
-        // force upload to server
-        Thread forceUploadThread = new Thread(){
-            @Override
-            public void run() {
-                if (Tools.isNetworkAvailable()) {
-                    Cursor cursor = DbMgr.getSensorData();
-                    if (cursor.moveToFirst()) {
-                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
-                                context.getString(R.string.grpc_host),
-                                Integer.parseInt(context.getString(R.string.grpc_port))
-                        ).usePlaintext().build();
-                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-
-                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-
-                        try {
-                            do {
-                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
-                                        .setUserId(userId)
-                                        .setEmail(email)
-                                        .setDataSource(cursor.getInt(1))
-                                        .setTimestamp(cursor.getLong(2))
-                                        .setValues(cursor.getString(4))
-                                        .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
-                                        .build();
-//                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
-//                                Log.e("submitThread", "Submission: " + res);
-                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
-
-                                if (responseMessage.getDoneSuccessfully()) {
-                                    DbMgr.deleteRecord(cursor.getInt(0));
-                                }
-
-                            } while (cursor.moveToNext());
-                        } catch (StatusRuntimeException e) {
-                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
-                            e.printStackTrace();
-                        } finally {
-                            channel.shutdown();
-                        }
-                    }
-                    cursor.close();
-                }
-            }
-        };
-        forceUploadThread.start();
-
-        try {
-            forceUploadThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        // force upload to server
+//        Thread forceUploadThread = new Thread(){
+//            @Override
+//            public void run() {
+//                if (Tools.isNetworkAvailable()) {
+//                    Cursor cursor = DbMgr.getSensorData();
+//                    if (cursor.moveToFirst()) {
+//                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
+//                                context.getString(R.string.grpc_host),
+//                                Integer.parseInt(context.getString(R.string.grpc_port))
+//                        ).usePlaintext().build();
+//                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+//
+//                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+//                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+//
+//                        try {
+//                            do {
+//                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
+//                                        .setUserId(userId)
+//                                        .setEmail(email)
+//                                        .setDataSource(cursor.getInt(1))
+//                                        .setTimestamp(cursor.getLong(2))
+//                                        .setValues(cursor.getString(4))
+//                                        .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
+//                                        .build();
+////                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
+////                                Log.e("submitThread", "Submission: " + res);
+//                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
+//
+//                                if (responseMessage.getDoneSuccessfully()) {
+//                                    DbMgr.deleteRecord(cursor.getInt(0));
+//                                }
+//
+//                            } while (cursor.moveToNext());
+//                        } catch (StatusRuntimeException e) {
+//                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
+//                            e.printStackTrace();
+//                        } finally {
+//                            channel.shutdown();
+//                        }
+//                    }
+//                    cursor.close();
+//                }
+//            }
+//        };
+//        forceUploadThread.start();
+//
+//        try {
+//            forceUploadThread.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /* Zaturi start */
