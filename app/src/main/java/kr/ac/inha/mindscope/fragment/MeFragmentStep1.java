@@ -69,6 +69,7 @@ public class MeFragmentStep1 extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_me, container, false);
+        Context context = requireContext();
 //        final TextView textView = root.findViewById(R.id.text_me);
         TextView date = root.findViewById(R.id.frg_me_date);
 
@@ -80,7 +81,17 @@ public class MeFragmentStep1 extends Fragment {
 
         Calendar cal = Calendar.getInstance();
 
-        if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3) {
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        int step = stepChangePrefs.getInt("stepCheck", 0);
+
+        if(step == 0){
+            before11Hours.setText(context.getResources().getString(R.string.string_frg_me_step0));
+            before11Hours.setVisibility(View.VISIBLE);
+            date.setVisibility(View.INVISIBLE);
+            attdView.setVisibility(View.INVISIBLE);
+            timeContainer.setVisibility(View.INVISIBLE);
+        }
+        else if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3) {
             before11Hours.setVisibility(View.VISIBLE);
             date.setVisibility(View.INVISIBLE);
             attdView.setVisibility(View.INVISIBLE);
@@ -113,8 +124,8 @@ public class MeFragmentStep1 extends Fragment {
         date.setText(date_text);
 
 
-        appBarLayout = (AppBarLayout) root.findViewById(R.id.frg_me_app_bar);
-        btnMap = (ImageButton) root.findViewById(R.id.fragment_me_btn_map);
+        appBarLayout = root.findViewById(R.id.frg_me_app_bar);
+        btnMap = root.findViewById(R.id.fragment_me_btn_map);
 
 
         btnMap.setOnClickListener(view -> {
@@ -124,7 +135,7 @@ public class MeFragmentStep1 extends Fragment {
 
 
         // TODO 추후 step 시간으로 확인할때는 삭제할 부분
-        stepTestBtn = (Button) root.findViewById(R.id.step_test_btn);
+        stepTestBtn = root.findViewById(R.id.step_test_btn);
         stepTestBtn.setOnClickListener(view -> {
             SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", getContext().MODE_PRIVATE);
             SharedPreferences.Editor editor = stepChange.edit();
@@ -142,7 +153,7 @@ public class MeFragmentStep1 extends Fragment {
             }
         });
 
-        emaTestBtn = (Button) root.findViewById(R.id.ema_test_btn);
+        emaTestBtn = root.findViewById(R.id.ema_test_btn);
         emaTestBtn.setOnClickListener(view -> {
             Intent intent = new Intent(getActivity(), EMAActivity.class);
             startActivity(intent);
@@ -242,7 +253,7 @@ public class MeFragmentStep1 extends Fragment {
         }
 
         // time check
-        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("EmaSubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         Calendar cal = Calendar.getInstance();
         int curHours = cal.get(Calendar.HOUR_OF_DAY);
         for (short i = 0; i < 4; i++) {
@@ -256,46 +267,6 @@ public class MeFragmentStep1 extends Fragment {
                 }
             }
         }
-//        if(curHours >= 11 && emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false)){
-//            time1.setText(getResources().getString(R.string.string_survey_incomplete));
-//            time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-//        }
-//        if(curHours >= 15){
-//            time2.setText(getResources().getString(R.string.string_survey_incomplete));
-//            time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-//        }
-//        if(curHours >= 19){
-//            time3.setText(getResources().getString(R.string.string_survey_incomplete));
-//            time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-//        }
-//        if(curHours >= 23){
-//            time4.setText(getResources().getString(R.string.string_survey_incomplete));
-//            time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_incomplete));
-//        }
-//
-//        // submit check
-//        if(values != null){
-//            for(String val : values){
-//                switch (Integer.parseInt(val.split(Tools.DATA_SOURCE_SEPARATOR)[1])){
-//                    case 1:
-//                        time1.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-//                        time1Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-//                        break;
-//                    case 2:
-//                        time2.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-//                        time2Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-//                        break;
-//                    case 3:
-//                        time3.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-//                        time3Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-//                        break;
-//                    case 4:
-//                        time4.setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-//                        time4Btn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.btn_time_complete));
-//                        break;
-//                }
-//            }
-//        }
     }
 
     public void loadAllPoints() {

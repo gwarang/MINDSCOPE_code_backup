@@ -15,7 +15,7 @@
     <string name="url_audio_submit">http://%1$s/submit_audio</string>
     <string name="url_location_submit">http://%1$s/sensor_data/locations_submit</string>
 
-    <string name="stress_campaign_id">14</string>
+    <string name="stress_campaign_id">15</string>
 
     <string name="app_name">MINDSCOPE</string>
     <string name="ConnectionEstablishedMsg">Connection established</string>
@@ -296,6 +296,7 @@
     <string name="string_first_start_step1_txt"><![CDATA[STEP 1에서는 <font color="#3e89e0">하루 4번</font> 설문을 하게 됩니다.<\br>설문은 총 <font color="#3e89e0">4문항</font>으로 구성되어 있으며<\br>설문 하나를 완료하면 <font color="#3e89e0">250포인트</font>가 적립<\br>됩니다. <font color="#3e89e0">기록 태그</font>를 입력해주신다면 마인드<\br>스코프의 발전에 더 큰 도움이 될거에요!]]></string>
     <string name="string_first_start_step2_txt"><![CDATA[STEP 2에서는 마인드스코프가<\br>스트레스 예측을 시작합니다.<\br><\br>하루에 총 <font color="#3e89e0">4번</font> 오는 <font color="#3e89e0">스트레스 리포트</font>를<\br>통해 나의 스트레스 상태와 측정 근거를<\br>알아 봅시다. 그리고 매일 밤 도착하는<\br> <font color="#3e89e0">오늘의 리포트</font>를 통해 하루를 돌아봐요.<\br>리포트 하나를 확인하실 때마다<\br><font color="#3e89e0">250 포인트</font>가 적립됩니다!]]></string>
 
+    <string name="string_frg_me_step0">내일 오전 11시부터\n스트레스 측정 알림이 도착할 예정입니다!\n조금만 기다려주세요.</string>
     <string name="string_frg_me_before_11hours">오전 11시부터\n스트레스 측정 알림이 도착할 예정입니다!\n조금만 기다려주세요.</string>
     <string name="string_frg_me_stpe2_before_txt1">마인드스코프가\n스트레스 리포트를 작성중입니다.</string>
     <string name="string_frg_me_stpe2_before_txt2"> 오전 11:00에\n첫 리포트가 도착할 예정입니다!</string>
@@ -314,5 +315,9 @@
 
     <string name="string_last_stress_report">오늘의 보고서가 완성되었어요!\n마음케어로 이동합니다.</string>
 
+    <string name="when_network_unable">Please connect to the Internet for the first launch!</string>
+
+    <string name="string_before_start_step2_title">마인드스코프가\n케어 방법을 찾는 중입니다.</string>
+    <string name="string_before_start_step2_text">오늘 하루의 스트레스를 분석, 기록하고\n스트레스 해소방안을 찾아보아요!</string>
 
 </resources>

@@ -44,59 +44,80 @@ import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class StressReportFragment1 extends Fragment {
 
-    private static final String TAG = "StressReportFragment1";
-
-    public static JSONObject[] jsonObjects;
     public static final int REPORT_DURATION = 4;
-
+    private static final String TAG = "StressReportFragment1";
+    private static final int TIMESTAMP_END_INDEX = 12;
+    private static final int RESULTS_START_INDEX = 14;
+    private static final int RESULTS_INDICATOR_INDEX = 4;
+    public static JSONObject[] jsonObjects;
+    public static int reportAnswer;
+    static int currentHours;
+    public int stressLevel;
     TextView dateView;
     TextView timeView;
     TextView stressLvView;
-
     ImageButton lowBtn;
     ImageButton littleHighBtn;
     ImageButton highBtn;
-
     ImageView stressLevelImg;
     TextView stressLevelTxt;
-
     Button btnReport;
-
-    static int currentHours;
-    public static int reportAnswer;
-    private int reportOrder;
-    private long reportDay;
-
     int day_num;
     int order;
     Double accuracy;
     String feature_ids;
-
-    public int stressLevel;
-
     long reportTimestamp;
+    final View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
 
-    private static final int TIMESTAMP_END_INDEX = 12;
-    private static final int RESULTS_START_INDEX = 14;
-    private static final int RESULTS_INDICATOR_INDEX = 4;
+            if (reportAnswer == 5) {
+                Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
+            } else {
+                if (jsonObjects != null) {
+                    try {
+                        day_num = jsonObjects[reportAnswer].getInt("day_num");
+                        order = jsonObjects[reportAnswer].getInt("ema_order");
+                        accuracy = jsonObjects[stressLevel].getDouble("accuracy");
+                        feature_ids = jsonObjects[reportAnswer].getString("feature_ids");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
+                final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                if (notificationManager != null) {
+                    notificationManager.cancel(EMA_NOTI_ID);
+                }
+
+
+                Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+                ((StressReportActivity) requireActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+
+                Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, reportAnswer);
+            }
+        }
+
+    };
+    private int reportOrder;
+    private long reportDay;
 
     public StressReportFragment1() {
         // Required empty public constructor
+    }
+
+    public static StressReportFragment1 newInstance(int stressLevel) {
+        StressReportFragment1 fragment = new StressReportFragment1();
+        Bundle bundle = new Bundle();
+        bundle.putInt("stressLevel", stressLevel);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
-    }
-
-    public static StressReportFragment1 newInstance(int stressLevel){
-        StressReportFragment1 fragment = new StressReportFragment1();
-        Bundle bundle = new Bundle();
-        bundle.putInt("stressLevel", stressLevel);
-        fragment.setArguments(bundle);
-        return fragment;
     }
 
     @Override
@@ -107,8 +128,6 @@ public class StressReportFragment1 extends Fragment {
         }
 
 
-
-
     }
 
     @Override
@@ -117,16 +136,16 @@ public class StressReportFragment1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stress_report1, null);
 
-        String stressReportStr =  gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
+        String stressReportStr = gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
 
         jsonObjects = Tools.parsingStressReport(stressReportStr);
 
 
         if (jsonObjects != null) {
-            for(short i = 0; i < jsonObjects.length; i++){
+            for (short i = 0; i < jsonObjects.length; i++) {
                 try {
-                    if(jsonObjects[0] != null){
-                        if(jsonObjects[i].getBoolean("model_tag")){
+                    if (jsonObjects[0] != null) {
+                        if (jsonObjects[i].getBoolean("model_tag")) {
                             stressLevel = i;
                             day_num = jsonObjects[i].getInt("day_num");
                             order = jsonObjects[i].getInt("ema_order");
@@ -137,8 +156,7 @@ public class StressReportFragment1 extends Fragment {
                             editor.putInt("result", stressLevel);
                             editor.apply();
                         }
-                    }
-                    else{
+                    } else {
                         Log.e(TAG, "report is not in jsonObjects");
                     }
 
@@ -154,7 +172,7 @@ public class StressReportFragment1 extends Fragment {
         return view;
     }
 
-    public void init(View view){
+    public void init(View view) {
 
 
         Calendar cal = Calendar.getInstance();
@@ -162,7 +180,7 @@ public class StressReportFragment1 extends Fragment {
         stressLevelImg = view.findViewById(R.id.report_step2_img);
         stressLevelTxt = view.findViewById(R.id.report_step2_result);
 
-        switch (stressLevel){
+        switch (stressLevel) {
             case STRESS_LV1:
                 stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
                 stressLevelTxt.setText(Html.fromHtml(getResources().getString(R.string.string_stress_report_low)));
@@ -189,7 +207,7 @@ public class StressReportFragment1 extends Fragment {
 
         currentHours = cal.get(Calendar.HOUR_OF_DAY);
         timeView = view.findViewById(R.id.report_step2_time);
-        switch(order){
+        switch (order) {
             case 1:
                 timeView.setText(getResources().getString(R.string.time_step2_duration1));
                 break;
@@ -248,16 +266,12 @@ public class StressReportFragment1 extends Fragment {
         });
 
 
-
-
-
-
     }
 
-    public long getDayNum(){
-        long dayNum=0;
+    public long getDayNum() {
+        long dayNum = 0;
         SharedPreferences a = getActivity().getSharedPreferences("firstDate", Context.MODE_PRIVATE);
-        String  firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
+        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date firstDate = format.parse(firstTimeStr);
@@ -266,7 +280,7 @@ public class StressReportFragment1 extends Fragment {
 
             long caldate = firstDate.getTime() - currentDate.getTime();
 
-            dayNum = caldate / (24*60*60*1000);
+            dayNum = caldate / (24 * 60 * 60 * 1000);
 
             dayNum = Math.abs(dayNum);
 
@@ -281,40 +295,7 @@ public class StressReportFragment1 extends Fragment {
         return dayNum;
     }
 
-    final View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-            if (reportAnswer == 5) {
-                Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
-            } else {
-                if (jsonObjects != null) {
-                    try {
-                        day_num = jsonObjects[reportAnswer].getInt("day_num");
-                        order = jsonObjects[reportAnswer].getInt("ema_order");
-                        accuracy = jsonObjects[stressLevel].getDouble("accuracy");
-                        feature_ids = jsonObjects[reportAnswer].getString("feature_ids");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                if (notificationManager != null) {
-                    notificationManager.cancel(EMA_NOTI_ID);
-                }
-
-
-                Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
-                ((StressReportActivity) requireActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
-
-                Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, reportAnswer);
-            }
-        }
-
-    };
-
-    public String gettingStressReportFromGRPC(){
+    public String gettingStressReportFromGRPC() {
         String stresReportStr = "";
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
@@ -331,8 +312,8 @@ public class StressReportFragment1 extends Fragment {
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
-        }else{
-            if(fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION){
+        } else {
+            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
                 fromCalendar.set(Calendar.MINUTE, 0);
                 fromCalendar.set(Calendar.SECOND, 0);
@@ -343,7 +324,7 @@ public class StressReportFragment1 extends Fragment {
                 long tillTImestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
                 fromCalendar.setTimeInMillis(fromTimestampYesterday);
                 tillCalendar.setTimeInMillis(tillTImestampYesterday);
-            }else{
+            } else {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
                 fromCalendar.set(Calendar.MINUTE, 0);
                 fromCalendar.set(Calendar.SECOND, 0);
@@ -367,63 +348,64 @@ public class StressReportFragment1 extends Fragment {
         long fillMillis = 1593583201000l;
         long tillTime = 1593597601000l;
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+        if (Tools.isNetworkAvailable()) {
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
-        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
-        EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fromCalendar.getTimeInMillis())
-                .setTillTimestamp(tillCalendar.getTimeInMillis())
-                .build();
+            EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                    .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                    .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
+                    .setFromTimestamp(fromCalendar.getTimeInMillis())
+                    .setTillTimestamp(tillCalendar.getTimeInMillis())
+                    .build();
 
 
-        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
-        if (responseMessage.getDoneSuccessfully()) {
-            List<String> values = responseMessage.getValueList();
-            List<Long> valuesTimestamp = responseMessage.getTimestampList();
-            if(!values.isEmpty()){
-                stresReportStr = values.get(0);
-                Log.d(TAG, "stressReportStr: " + stresReportStr);
-            }else{
-                Log.d(TAG, "values empty");
+            final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+            if (responseMessage.getDoneSuccessfully()) {
+                List<String> values = responseMessage.getValueList();
+                List<Long> valuesTimestamp = responseMessage.getTimestampList();
+                if (!values.isEmpty()) {
+                    stresReportStr = values.get(0);
+                    Log.d(TAG, "stressReportStr: " + stresReportStr);
+                } else {
+                    Log.d(TAG, "values empty");
+                }
+                if (!valuesTimestamp.isEmpty()) {
+                    reportTimestamp = valuesTimestamp.get(0);
+                    Log.d(TAG, "report timestamp from gRPC is " + reportTimestamp);
+                } else {
+                    Log.d(TAG, "report timestamp from gRPC is empty");
+                }
             }
-            if(!valuesTimestamp.isEmpty()){
-                reportTimestamp = valuesTimestamp.get(0);
-                Log.d(TAG, "report timestamp from gRPC is " + reportTimestamp);
-            }else{
-                Log.d(TAG, "report timestamp from gRPC is empty");
-            }
+
+            channel.shutdown();
+            //end getting data from gRPC
+        } else {
+            Toast.makeText(requireContext(), requireActivity().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
+            requireActivity().finish();
         }
-
-        channel.shutdown();
-        //end getting data from gRPC
 
         return stresReportStr;
     }
 
-    public int getReportPreviousOrder(Calendar cal){
-        if((REPORT_NOTIF_HOURS[0] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]){
+    public int getReportPreviousOrder(Calendar cal) {
+        if ((REPORT_NOTIF_HOURS[0] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
             return 0;
-        }
-        else if((REPORT_NOTIF_HOURS[1] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[1]){
+        } else if ((REPORT_NOTIF_HOURS[1] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[1]) {
             return 1;
-        }
-        else if((REPORT_NOTIF_HOURS[2] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[2]){
+        } else if ((REPORT_NOTIF_HOURS[2] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[2]) {
             return 2;
-        }
-        else if((REPORT_NOTIF_HOURS[3] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[3]){
+        } else if ((REPORT_NOTIF_HOURS[3] - REPORT_DURATION) <= cal.get(Calendar.HOUR_OF_DAY) &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[3]) {
             return 3;
-        }
-        else{
+        } else {
             return 4;
         }
     }

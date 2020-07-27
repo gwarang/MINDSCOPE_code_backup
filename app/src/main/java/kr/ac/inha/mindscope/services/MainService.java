@@ -51,6 +51,7 @@ import kr.ac.inha.mindscope.Tools;
 import kr.ac.inha.mindscope.receivers.ActivityRecognitionReceiver;
 import kr.ac.inha.mindscope.receivers.ActivityTransitionsReceiver;
 import kr.ac.inha.mindscope.receivers.CallReceiver;
+import kr.ac.inha.mindscope.receivers.DateChangeReceiver;
 import kr.ac.inha.mindscope.receivers.ScreenAndUnlockReceiver;
 
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
@@ -73,10 +74,14 @@ public class MainService extends Service {
     private static final short AUDIO_RECORDING_DURATION = 5;  //in sec
     private static final int ACTIVITY_RECOGNITION_INTERVAL = 40; //in sec
     private static final int APP_USAGE_SAVE_PERIOD = 3; //in sec
-    private static final int APP_USAGE_SUBMIT_PERIOD = 30; //in sec
+    private static final int APP_USAGE_SUBMIT_PERIOD = 60; //in sec
     private static final int KINDS_NOTI_EMA = 1;
     private static final int KINDS_NOTI_REPORT = 2;
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE =  60 * 60 * 24 * 1 * 1000;/*60 * 60 * 24 * 1 * 1000;*/  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
     //endregion
+
+    private DateChangeReceiver dateChangeReceiver;
 
     public static HashMap<String, Integer> sensorNameToTypeMap;
     public static SparseIntArray sensorToDataSourceIdMap;
@@ -128,8 +133,28 @@ public class MainService extends Service {
             int ema_order = Tools.getEMAOrderAtExactTime(curCal);
 
             // TODO step 조건 추가할것
+            //region step check
             SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+
+            long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
+            if(joinTimestamp == 0)
+                joinTimestamp = getJoinTime();
             int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
+
+            // step1
+            if(stepCheck == 0 && curTimestamp - joinTimestamp >= STEP0_EXPIRE_TIMESTAMP_VALUE){
+                SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
+                stepEditor.putInt("stepCheck", 1);
+                stepEditor.apply();
+            }
+            // step2
+            if(stepCheck == 1 && curTimestamp - joinTimestamp >= STEP1_EXPIRE_TIMESTAMP_VALUE){
+                SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
+                stepEditor.putInt("stepCheck", 2);
+                stepEditor.apply();
+            }
+            //endregion
+
             if (stepCheck == 1 && ema_order != 0 && canSendNotif) {
                 Log.e(TAG, "EMA order 1: " + ema_order);
                 sendNotification(ema_order, KINDS_NOTI_EMA);
@@ -148,7 +173,7 @@ public class MainService extends Service {
             //region Sending Notification and some statistics periodically - STRESS REPORT
             int report_order = Tools.getReportOrderAtExactTime(curCal);
 
-            // TODO step 조건 추가할것
+
             if (stepCheck == 2 && report_order != 0 && canSendNotifReport) {
                 Log.e(TAG, "REPORT order 1: " + report_order);
                 sendNotification(report_order, KINDS_NOTI_REPORT);
@@ -219,7 +244,7 @@ public class MainService extends Service {
             //endregion
 
 
-            mainHandler.postDelayed(this, 5 * 1000);
+            mainHandler.postDelayed(this, 10 * 1000);
         }
     };
 
@@ -326,6 +351,10 @@ public class MainService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        IntentFilter dateChangeFilter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        dateChangeReceiver = new DateChangeReceiver();
+        registerReceiver(dateChangeReceiver, dateChangeFilter);
+
         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
         if (DbMgr.getDB() == null)
             DbMgr.init(getApplicationContext());
@@ -420,6 +449,7 @@ public class MainService extends Service {
         appUsageSaveHandler.removeCallbacks(appUsageSaveRunnable);
         appUsageSubmitHandler.removeCallbacks(appUsageSubmitRunnable);
         dataSubmissionHandler.removeCallbacks(dataSubmitRunnable);
+        unregisterReceiver(dateChangeReceiver);
         //endregion
 
         //region Stop foreground service
@@ -633,5 +663,36 @@ public class MainService extends Service {
             }
         }).start();
 
+    }
+
+    public long getJoinTime() {
+        long firstDayTimestamp = 0;
+        SharedPreferences loginPrefs = getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+        SharedPreferences.Editor editor = stepChangePrefs.edit();
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+        EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                .build();
+        EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+        if (responseMessage.getDoneSuccessfully()) {
+            long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(joinTimestamp);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            editor.putLong("join_timestamp", cal.getTimeInMillis());
+            editor.apply();
+            firstDayTimestamp = cal.getTimeInMillis();
+        }
+        channel.shutdown();
+        return firstDayTimestamp;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
+import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 
@@ -87,6 +89,7 @@ public class CareChildFragment1 extends Fragment {
 
     ConstraintLayout defaultContainer;
     ConstraintLayout hiddenContainer;
+    RelativeLayout beforeStartStep2Container;
 
     ImageView hiddenStressImg;
     TextView hiddenDateView;
@@ -261,7 +264,25 @@ public class CareChildFragment1 extends Fragment {
     }
 
     public void init(View view){
+        Context context = MainActivity.getInstance();
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        Calendar cal = Calendar.getInstance();
+        boolean firstStartCareStep2Check = stepChangePrefs.getBoolean("first_start_care_step2_check", false);
+
         defaultContainer = view.findViewById(R.id.child1_container1);
+        beforeStartStep2Container = view.findViewById(R.id.before_start_step2_container);
+
+        if(!firstStartCareStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
+            defaultContainer.setVisibility(View.INVISIBLE);
+            beforeStartStep2Container.setVisibility(View.VISIBLE);
+        }
+        else{
+            if(!firstStartCareStep2Check){
+                SharedPreferences.Editor editor = stepChangePrefs.edit();
+                editor.putBoolean("first_start_care_step2_check", true);
+                editor.apply();
+            }
+        }
         stressAvgImg = view.findViewById(R.id.child1_img);
         dateTextView = view.findViewById(R.id.child1_date);
         stressAvgTextview= view.findViewById(R.id.child1_stress_level);
@@ -306,12 +327,8 @@ public class CareChildFragment1 extends Fragment {
         sleepContainer = view.findViewById(R.id.child1_listview_sleep_container);
 
         reasonContainer = view.findViewById(R.id.child1_stress_reason_container);
-
-
-
-
-
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+
     }
 
     public void getStressReportDataFromGRPC(){

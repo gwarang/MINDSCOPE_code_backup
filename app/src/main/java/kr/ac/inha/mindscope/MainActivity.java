@@ -4,6 +4,9 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,6 +36,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -49,30 +52,26 @@ import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
 import kr.ac.inha.mindscope.services.MainService;
 
 import static kr.ac.inha.mindscope.services.MainService.HEARTBEAT_PERIOD;
+import static kr.ac.inha.mindscope.services.MainService.PERMISSION_REQUEST_NOTIFICATION_ID;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
     private static Context mContext;
-
-    private Intent customSensorsService;
     ConnectionMonitor connectionMonitor;
+
 
     private SharedPreferences loginPrefs;
     SharedPreferences configPrefs;
     SharedPreferences firstPref;
     SharedPreferences prefPermission;
-
-    Dialog firstStartStep1Dialog;
-    Button firstStartStep1DialogBtn;
-    TextView firstStartStep1DialogTitle;
-    TextView firstStartStep1DialogTxt;
-    RelativeLayout firstStartStep1Layout;
-
+    Dialog firstStartStepDialog;
+    Button firstStartStepDialogBtn;
+    TextView firstStartStepDialogTitle;
+    TextView firstStartStepDialogTxt;
+    RelativeLayout firstStartStepLayout;
     AppBarConfiguration appBarConfiguration;
-
+    private Intent customSensorsService;
     private Intent checkIntent;
 
     private AlertDialog dialog;
@@ -93,37 +92,73 @@ public class MainActivity extends AppCompatActivity {
             heartBeatHandler.postDelayed(this, HEARTBEAT_PERIOD * 1000);
         }
     };
+    private View.OnClickListener pointDialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            pointCustomDialog.dismiss();
+        }
+    };
 
-//    private void sendNotificationForPermissionSetting() {
-//        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 //
-//        Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        String channelId = "StressSensor_permission_notif";
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
-//        builder.setContentTitle(this.getString(R.string.app_name))
-//                .setContentText(this.getString(R.string.grant_permissions))
-//                .setTicker("New Message Alert!")
-//                .setOngoing(true)
-//                .setContentIntent(pendingIntent)
-//                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setDefaults(Notification.DEFAULT_ALL);
-//
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
-//            if (notificationManager != null) {
-//                notificationManager.createNotificationChannel(channel);
-//            }
-//        }
-//
-//        final Notification notification = builder.build();
-//        if (notificationManager != null) {
-//            notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
-//        }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu, menu);
+//        return super.onCreateOptionsMenu(menu);
 //    }
+    private View.OnClickListener firstStartStep1DialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstStartStep1", true);
+            editor.apply();
+            firstStartStepDialog.dismiss();
+        }
+    };
+    private View.OnClickListener firstStartStep2DialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstStartStep2", true);
+            editor.apply();
+            firstStartStepDialog.dismiss();
+        }
+    };
 
+    public static synchronized Context getInstance() {
+        return mContext;
+    }
+
+    private void sendNotificationForPermissionSetting() {
+        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String channelId = "StressSensor_permission_notif";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
+        builder.setContentTitle(this.getString(R.string.app_name))
+                .setContentText(this.getString(R.string.grant_permissions))
+                .setTicker("New Message Alert!")
+                .setOngoing(true)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+        final Notification notification = builder.build();
+        if (notificationManager != null) {
+            notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
         heartBeatHandler.post(heartBeatSendRunnable);
 
         cancelPreviousAppUseNotification();
@@ -244,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         customSensorsService = new Intent(this, MainService.class);
+        initUserStats(true, 0, 0, null);
 
         if (Tools.isNetworkAvailable()) {
             loadCampaign();
@@ -269,9 +304,8 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-//        updateStats();
+        updateStats();
     }
-
 
     @Override
     protected void onStart() {
@@ -374,6 +408,73 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
+    public void updateStats() {
+        if (Tools.isNetworkAvailable())
+            new Thread(() -> {
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .build();
+                try {
+                    EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        final long join_timestamp = responseMessage.getCampaignJoinTimestamp();
+                        final long hb_phone = responseMessage.getLastHeartbeatTimestamp();
+                        final int samples_amount = responseMessage.getAmountOfSubmittedDataSamples();
+                        runOnUiThread(() -> initUserStats(false, join_timestamp, hb_phone, String.valueOf(samples_amount)));
+                    } else {
+                        runOnUiThread(() -> initUserStats(true, 0, 0, null));
+                    }
+                } catch (StatusRuntimeException e) {
+                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                    e.printStackTrace();
+                    runOnUiThread(() -> initUserStats(true, 0, 0, null));
+
+                }
+
+//                Calendar fromCal = Calendar.getInstance();
+//                fromCal.set(Calendar.HOUR_OF_DAY, 0);
+//                fromCal.set(Calendar.MINUTE, 0);
+//                fromCal.set(Calendar.SECOND, 0);
+//                fromCal.set(Calendar.MILLISECOND, 0);
+//                Calendar tillCal = (Calendar) fromCal.clone();
+//                tillCal.set(Calendar.HOUR_OF_DAY, 23);
+//                tillCal.set(Calendar.MINUTE, 59);
+//                tillCal.set(Calendar.SECOND, 59);
+//                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+//                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+//                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+//                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+//                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+//                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
+//                        .setFromTimestamp(fromCal.getTimeInMillis())
+//                        .setTillTimestamp(tillCal.getTimeInMillis())
+//                        .build();
+//                try {
+//                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+//                    if (responseMessage.getDoneSuccessfully()) {
+//                        runOnUiThread(() -> updateEmaResponseView(responseMessage.getValueList()));
+//                    } else {
+//                        runOnUiThread(() -> initUserStats(true, 0, 0, null));
+//                    }
+//                } catch (StatusRuntimeException e) {
+//                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+//                    e.printStackTrace();
+//                    runOnUiThread(() -> updateEmaResponseView(null));
+//
+//                } finally {
+                channel.shutdown();
+//                }
+            }).start();
+        else {
+            Toast.makeText(MainActivity.this, "Please connect to Internet!", Toast.LENGTH_SHORT).show();
+            runOnUiThread(() -> initUserStats(true, 0, 0, null));
+        }
+    }
 
     public long getJoinTime() {
         long firstDayTimestamp = 0;
@@ -405,7 +506,6 @@ public class MainActivity extends AppCompatActivity {
         channel.shutdown();
         return firstDayTimestamp;
     }
-
 
     public void restartServiceClick(MenuItem item) {
         customSensorsService = new Intent(this, MainService.class);
@@ -485,6 +585,7 @@ public class MainActivity extends AppCompatActivity {
                 channel.shutdown();
             }
         }).start();
+
     }
 
     private void setUpCampaignConfigurations(String name, String notes, String creatorEmail, String configJson, long startTimestamp, long endTimestamp, int participantCount) throws JSONException {
@@ -512,24 +613,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private View.OnClickListener pointDialogListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            pointCustomDialog.dismiss();
-        }
-    };
-
-    private View.OnClickListener firstStartStep1DialogListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("firstStartStep1", true);
-            editor.apply();
-            firstStartStep1Dialog.dismiss();
-        }
-    };
-
     private void createSharedPrefPoints() {
         SharedPreferences points = getSharedPreferences("points", MODE_PRIVATE);
         SharedPreferences.Editor pointsEditor = points.edit();
@@ -546,46 +629,46 @@ public class MainActivity extends AppCompatActivity {
         int step = stepChange.getInt("stepCheck", 0);
 
         long joinTimestamp = 0;
-        if((joinTimestamp = stepChange.getLong("join_timestamp", 0)) == 0)
+        if ((joinTimestamp = stepChange.getLong("join_timestamp", 0)) == 0)
             joinTimestamp = getJoinTime();
 
-        if (step == 0 && (System.currentTimeMillis() - joinTimestamp >= STEP0_EXPIRE_TIMESTAMP_VALUE)) {
+        if (step == 1 && !stepChange.getBoolean("step1Done", false)) {
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
             // step1 첫 시작시 dialog
-            firstStartStep1Dialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
-            firstStartStep1Dialog.setContentView(view);
-            firstStartStep1Layout = view.findViewById(R.id.first_start_step1_layout);
-            firstStartStep1DialogBtn = view.findViewById(R.id.first_start_step1_btn);
-            firstStartStep1DialogTitle = view.findViewById(R.id.first_start_step1_title);
-            firstStartStep1DialogTitle.setText(getResources().getString(R.string.string_first_start_step1_title));
-            firstStartStep1DialogTxt = view.findViewById(R.id.first_start_step1_txt);
-            firstStartStep1DialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step1_txt)));
-            firstStartStep1DialogBtn.setOnClickListener(firstStartStep1DialogListener);
-            firstStartStep1Dialog.show();
-
-            SharedPreferences.Editor stepEditor = stepChange.edit();
-            stepEditor.putInt("stepCheck", 1);
-            stepEditor.apply();
+            firstStartStepDialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
+            firstStartStepDialog.setCancelable(false);
+            firstStartStepDialog.setContentView(view);
+            firstStartStepLayout = view.findViewById(R.id.first_start_step_layout);
+            firstStartStepDialogBtn = view.findViewById(R.id.first_start_step_btn);
+            firstStartStepDialogTitle = view.findViewById(R.id.first_start_step_title);
+            firstStartStepDialogTitle.setText(getResources().getString(R.string.string_first_start_step1_title));
+            firstStartStepDialogTxt = view.findViewById(R.id.first_start_step_txt);
+            firstStartStepDialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step1_txt)));
+            firstStartStepDialogBtn.setOnClickListener(firstStartStep1DialogListener);
+            firstStartStepDialog.show();
+            SharedPreferences.Editor editor = stepChange.edit();
+            editor.putBoolean("step1Done", true);
+            editor.apply();
         }
 
         // step2
-        if (step == 1 && !stepChange.getBoolean("step2Done", false) && (System.currentTimeMillis() - joinTimestamp >= STEP1_EXPIRE_TIMESTAMP_VALUE)) {
+        if (step == 2 && !stepChange.getBoolean("step2Done", false)) {
 
             // step2 첫 시작시 dialog
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
-            firstStartStep1Dialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
-            firstStartStep1Dialog.setContentView(view);
-            firstStartStep1Layout = view.findViewById(R.id.first_start_step1_layout);
-            firstStartStep1DialogBtn = view.findViewById(R.id.first_start_step1_btn);
-            firstStartStep1DialogTitle = view.findViewById(R.id.first_start_step1_title);
-            firstStartStep1DialogTitle.setText(getResources().getString(R.string.string_first_start_step2_title));
-            firstStartStep1DialogTxt = view.findViewById(R.id.first_start_step1_txt);
-            firstStartStep1DialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step2_txt)));
-            firstStartStep1DialogBtn.setOnClickListener(firstStartStep1DialogListener);
-            firstStartStep1Dialog.show();
+            firstStartStepDialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
+            firstStartStepDialog.setContentView(view);
+            firstStartStepDialog.setCancelable(false);
+            firstStartStepLayout = view.findViewById(R.id.first_start_step_layout);
+            firstStartStepDialogBtn = view.findViewById(R.id.first_start_step_btn);
+            firstStartStepDialogTitle = view.findViewById(R.id.first_start_step_title);
+            firstStartStepDialogTitle.setText(getResources().getString(R.string.string_first_start_step2_title));
+            firstStartStepDialogTxt = view.findViewById(R.id.first_start_step_txt);
+            firstStartStepDialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step2_txt)));
+            firstStartStepDialogBtn.setOnClickListener(firstStartStep2DialogListener);
+            firstStartStepDialog.show();
 
             SharedPreferences.Editor editor = stepChange.edit();
-            editor.putInt("stepCheck", 2);
             editor.putBoolean("step2Done", true);
             editor.apply();
 
@@ -629,13 +712,10 @@ public class MainActivity extends AppCompatActivity {
         if (intent.getExtras() != null && intent.getExtras().getBoolean("get_point", false)) {
             Log.i(TAG, "point dialog test");
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
+            pointCustomDialog.setCancelable(false);
             pointCustomDialog.show();
             intent.putExtra("get_point", false);
         }
-    }
-
-    public static synchronized Context getInstance() {
-        return mContext;
     }
 
 }

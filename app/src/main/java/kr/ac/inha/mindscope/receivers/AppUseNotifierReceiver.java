@@ -11,13 +11,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-import androidx.core.app.NotificationCompat;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import androidx.core.app.NotificationCompat;
 import kr.ac.inha.mindscope.BuildConfig;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
@@ -57,7 +56,7 @@ public class AppUseNotifierReceiver extends BroadcastReceiver {
                 .setContentText(String.format(Locale.getDefault(), "You didn't use the app for %d days =) Please check it out!", diffInDays))
                 .setTicker("New MindScope Notification!")
                 .setAutoCancel(false)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setContentIntent(pendingIntent)
                 .build();
 

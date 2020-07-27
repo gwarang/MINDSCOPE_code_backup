@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -108,7 +109,9 @@ public class StressReportFragment2 extends Fragment {
             this.stressLevel = getArguments().getInt("stressLevel");
             this.reportAnswer = getArguments().getInt("reportAnswer");
             this.day_num = getArguments().getInt("day_num");
-            this.order = getArguments().getInt("order");
+//            this.order = getArguments().getInt("order");
+            Calendar cal = Calendar.getInstance();
+            this.order = Tools.getReportOrderFromRangeAfterReport(cal);
             this.accuracy = getArguments().getDouble("accuracy");
             this.feature_ids = getArguments().getString("feature_ids"); //
             Log.i(TAG, String.format("%d %d %d %d %d %.2f %s", reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
@@ -331,6 +334,14 @@ public class StressReportFragment2 extends Fragment {
                     editor.putBoolean("today_last_report", true);
                     editor.apply();
 
+                    SharedPreferences emaSubmitCheckPrefs = context.getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
+                    String reportSubmit = "self_report_submit_check_" + order;
+                    Calendar cal = Calendar.getInstance();
+                    emaSubmitEditor.putBoolean(reportSubmit, true);
+                    emaSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
+                    emaSubmitEditor.apply();
+
                     long timestamp = System.currentTimeMillis();
 
                     SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
@@ -369,6 +380,15 @@ public class StressReportFragment2 extends Fragment {
                     editor.putBoolean("today_last_report", false);
                     editor.putString("feature_ids", feature_ids);
                     editor.apply();
+
+                    SharedPreferences reportSubmitCheckPrefs = context.getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor reportSubmitEditor = reportSubmitCheckPrefs.edit();
+                    String reportSubmit = "self_report_submit_check_" + order;
+                    Log.e(TAG, reportSubmit);
+                    Calendar cal = Calendar.getInstance();
+                    reportSubmitEditor.putBoolean(reportSubmit, true);
+                    reportSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
+                    reportSubmitEditor.apply();
 
                     long timestamp = System.currentTimeMillis();
                     SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);

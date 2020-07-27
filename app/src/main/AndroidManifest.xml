@@ -30,6 +30,9 @@
             android:label="@string/title_activity_maps"
             android:theme="@style/AppThemeNoActionBar"
             tools:replace="android:theme" />
+        <activity
+            android:name=".FirstStartActivity"
+            android:theme="@style/AppThemeNoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -38,9 +41,6 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <activity
-            android:name=".FirstStartActivity"
-            android:theme="@style/AppThemeNoActionBar" />
         <activity
             android:name=".SplashActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
@@ -73,13 +73,17 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <receiver
+            android:name=".receivers.DateChangeReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
+        <receiver
             android:name=".receivers.AppUseNotifierReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="kr.ac.inha.nsl.ET_Notification" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".receivers.GeofenceReceiver" />
         <receiver android:name=".receivers.ActivityRecognitionReceiver" />
         <receiver android:name=".receivers.ActivityTransitionsReceiver" />
@@ -123,11 +127,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
         <service
             android:name=".services.InterventionService"
             android:enabled="true"
-            android:exported="true"></service>
-
+            android:exported="true" />
         <service android:name=".services.MainService" />
         <service
             android:name=".services.LocationService"

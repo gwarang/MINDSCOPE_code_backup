@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -37,7 +36,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -336,7 +334,7 @@ public class Tools {
         return isReachable;
     }
 
-    static boolean isMainServiceRunning(Context con) {
+    public static boolean isMainServiceRunning(Context con) {
         ActivityManager manager = (ActivityManager) con.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (MainService.class.getName().equals(service.service.getClassName())) {

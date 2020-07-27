@@ -60,6 +60,7 @@ public class MeFragmentStep2 extends Fragment {
     public static final long TIMESTAMP_ONE_DAY = 60 * 60 * 24 * 1000;
 
     private static final String TAG = "MeFragmentStep2";
+    private static final int DAYS_UNITL_STEP_STARTS = 4; // TODO change 15 for study
     public static JSONObject[] jsonObjects;
     public static View view;
     static int lastReportHours;
@@ -70,8 +71,8 @@ public class MeFragmentStep2 extends Fragment {
     ScrollView reasonContainer;
     ImageView stressImg;
     ConstraintLayout allContainer;
-    ConstraintLayout timeContainer;
-    TextView beforeTextView;
+    ConstraintLayout firstStartBefore11hoursContainer;
+    TextView before11hoursTextView;
     long reportTimestamp;
     List<String> selfStressReports;
     boolean notSubmit = false;
@@ -121,6 +122,8 @@ public class MeFragmentStep2 extends Fragment {
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
         SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
 
+
+
         if(stressReportPrefs.getBoolean("today_last_report", false)){
 //            SharedPreferences.Editor editor = stressReportPrefs.edit();
 //            editor.putBoolean("today_last_report", false);
@@ -134,106 +137,136 @@ public class MeFragmentStep2 extends Fragment {
         Context context = MainActivity.getInstance();
 
         allContainer = view.findViewById(R.id.frg_me_step2_container);
-        beforeTextView = view.findViewById(R.id.frg_me_step2_before_time);
-        timeContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
+
         stressLvView = view.findViewById(R.id.txt_stress_level);
         waitNextReportTextView = view.findViewById(R.id.txt_wait_next_report);
-
-
-        if (feature_ids != null)
-            featureViewUpdate(feature_ids, view);
-        else
-            Log.e(TAG, "feature_ids string is null");
-
-        reasonContainer = view.findViewById(R.id.stress_reason_container);
-        stressImg = view.findViewById(R.id.frg_me_step2_img1);
-
-        switch (stressLevel) {
-            case STRESS_LV1:
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low)));
-                } else {
-                    stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
-                }
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
-                stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
-                break;
-            case STRESS_LV2:
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh)));
-                } else {
-                    stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
-                }
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
-                stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
-                break;
-            case STRESS_LV3:
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high)));
-                } else {
-                    stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
-                }
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
-                stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
-                break;
-        }
-
-        btnMap = view.findViewById(R.id.fragment_me_step2_btn_map);
-        btnMap.setOnClickListener(view13 -> {
-            Intent intent = new Intent(getActivity(), MapsActivity.class);
-            startActivity(intent);
-        });
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(reportTimestamp);
-
-        dateView = view.findViewById(R.id.frg_me_step2_date1);
-        Date currentTime = new Date();
-        currentTime.setTime(reportTimestamp);
-        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
-        dateView.setText(date_text);
-
-
-        lastReportHours = cal.get(Calendar.HOUR_OF_DAY);
-        Log.i(TAG, "current hours: " + lastReportHours);
-        timeView = (TextView) view.findViewById(R.id.frg_me_step2_time1);
-        if (lastReportHours >= 22) {
-            timeView.setText(context.getResources().getString(R.string.time_report_duration4));
-        } else if (lastReportHours >= 18) {
-            timeView.setText(context.getResources().getString(R.string.time_report_duration3));
-        } else if (lastReportHours >= 14) {
-            timeView.setText(context.getResources().getString(R.string.time_report_duration2));
-        } else if (lastReportHours >= 10) {
-            timeView.setText(context.getResources().getString(R.string.time_report_duration1));
-        } else {
-            timeView.setText(context.getResources().getString(R.string.time_report_duration4));
-        }
-
-
-        // TODO 추후 step 시간으로 확인할때는 삭제할 부분
-        stepTestBtn = view.findViewById(R.id.step_test_btn_step2);
-        stepTestBtn.setOnClickListener(view1 -> {
-            SharedPreferences stepChange = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = stepChange.edit();
-
-            if (stepChange.getInt("stepCheck", 0) == 1) {
-                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                stepTestBtn.setText("STEP 2");
-                editor.putInt("stepCheck", 2);
-                editor.apply();
-            } else {
-                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                stepTestBtn.setText("STEP 1");
-                editor.putInt("stepCheck", 1);
-                editor.apply();
+        waitNextReportTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Tools.sendStressInterventionNoti(context);
             }
         });
 
-        reportBtn = view.findViewById(R.id.report_test_btn);
-        reportBtn.setOnClickListener(view12 -> {
-            Intent intent = new Intent(getActivity(), StressReportActivity.class);
-            startActivity(intent);
-        });
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
+        Calendar cal = Calendar.getInstance();
+        boolean firstStartStep2Check = stepChangePrefs.getBoolean("first_start_step2_check", false);
+        boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
+        if(!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
+            before11hoursTextView = view.findViewById(R.id.frg_me_step2_before_time);
+            Calendar step2Cal = Calendar.getInstance();
+            step2Cal.setTimeInMillis(stepChangePrefs.getLong("join_timestamp", 0));
+            step2Cal.add(Calendar.DATE, DAYS_UNITL_STEP_STARTS);
+            String stepDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE) ", Locale.getDefault()).format(step2Cal.getTimeInMillis());
+            before11hoursTextView.setText(stepDateStr + context.getResources().getString(R.string.string_frg_me_stpe2_before_txt1));
+            firstStartBefore11hoursContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
+            firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
+            allContainer.setVisibility(View.INVISIBLE);
+        }
+        else{
+            if(!firstStartStep2Check){
+                SharedPreferences.Editor editor = stepChangePrefs.edit();
+                editor.putBoolean("first_start_step2_check", true);
+                editor.apply();
+            }
+
+            if (feature_ids != null)
+                featureViewUpdate(feature_ids, view);
+            else
+                Log.e(TAG, "feature_ids string is null");
+
+            reasonContainer = view.findViewById(R.id.stress_reason_container);
+            stressImg = view.findViewById(R.id.frg_me_step2_img1);
+
+            switch (stressLevel) {
+                case STRESS_LV1:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low)));
+                    } else {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
+                    }
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                    stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
+                    break;
+                case STRESS_LV2:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh)));
+                    } else {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
+                    }
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                    stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
+                    break;
+                case STRESS_LV3:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high)));
+                    } else {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
+                    }
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                    stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
+                    break;
+            }
+
+            btnMap = view.findViewById(R.id.fragment_me_step2_btn_map);
+            btnMap.setOnClickListener(view13 -> {
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                startActivity(intent);
+            });
+
+
+            cal.setTimeInMillis(reportTimestamp);
+
+            dateView = view.findViewById(R.id.frg_me_step2_date1);
+            Date currentTime = new Date();
+            currentTime.setTime(reportTimestamp);
+            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
+            dateView.setText(date_text);
+
+
+            lastReportHours = cal.get(Calendar.HOUR_OF_DAY);
+            Log.i(TAG, "current hours: " + lastReportHours);
+            timeView = (TextView) view.findViewById(R.id.frg_me_step2_time1);
+            if (lastReportHours >= 22) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration4));
+            } else if (lastReportHours >= 18) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration3));
+            } else if (lastReportHours >= 14) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration2));
+            } else if (lastReportHours >= 10) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration1));
+            } else {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration4));
+            }
+
+
+            // TODO 추후 step 시간으로 확인할때는 삭제할 부분
+            stepTestBtn = view.findViewById(R.id.step_test_btn_step2);
+            stepTestBtn.setOnClickListener(view1 -> {
+                SharedPreferences stepChange = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = stepChange.edit();
+
+                if (stepChange.getInt("stepCheck", 0) == 1) {
+                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+                    stepTestBtn.setText("STEP 2");
+                    editor.putInt("stepCheck", 2);
+                    editor.apply();
+                } else {
+                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+                    stepTestBtn.setText("STEP 1");
+                    editor.putInt("stepCheck", 1);
+                    editor.apply();
+                }
+            });
+
+            reportBtn = view.findViewById(R.id.report_test_btn);
+            reportBtn.setOnClickListener(view12 -> {
+                Intent intent = new Intent(getActivity(), StressReportActivity.class);
+                startActivity(intent);
+            });
+        }
+        if(isFirstStartStep2DialogShowing)
+            startStressReportActivityWhenNotSubmitted();
     }
 
     public void featureViewUpdate(String feature_ids, View view) {
@@ -605,6 +638,36 @@ public class MeFragmentStep2 extends Fragment {
             channel.shutdown();
         }).start();
 
+    }
+
+    public void startStressReportActivityWhenNotSubmitted() {
+        SharedPreferences selfReportSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor reportSubmitEditor = selfReportSubmitCheckPrefs.edit();
+        boolean[] submits = {
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false),
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false),
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false),
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false),
+        };
+        Calendar cal = Calendar.getInstance();
+        int curHour = cal.get(Calendar.HOUR_OF_DAY);
+        int todayDate = cal.get(Calendar.DATE);
+        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1)) {
+            for (short i = 0; i < 4; i++) {
+                reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
+                reportSubmitEditor.apply();
+            }
+        }
+        for (short i = 0; i < 4; i++) {
+            if (curHour == REPORT_NOTIF_HOURS[i] && !submits[i]) {
+                int ema_order = Tools.getReportOrderFromRangeAfterReport(cal);
+                if (ema_order != 0) {
+                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
+//                    intent.putExtra("ema_order", ema_order);
+                    startActivity(intent);
+                }
+            }
+        }
     }
 
 }

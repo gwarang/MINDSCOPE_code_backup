@@ -50,6 +50,7 @@ public class InterventionService extends Service {
             saveStressIntervention(this, System.currentTimeMillis(), curIntervention, STRESS_MUTE_TODAY, PATH_NOTIFICATION);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("muteToday", true);
+            Log.e(TAG, "mute today is ture");
             editor.putInt("muteDate", cal.get(Calendar.DATE));
             editor.apply();
         }

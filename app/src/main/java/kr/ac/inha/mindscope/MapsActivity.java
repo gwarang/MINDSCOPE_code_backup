@@ -209,6 +209,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (firstMap != 1) {
 
             firstMapStartDialog = new FirstMapStartDialog(this, clickListener);
+            firstMapStartDialog.setCancelable(false);
             firstMapStartDialog.show();
 
 //            AlertDialog.Builder builder = new AlertDialog.Builder(this);
