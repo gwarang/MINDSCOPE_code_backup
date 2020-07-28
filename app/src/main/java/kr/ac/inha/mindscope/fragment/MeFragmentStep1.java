@@ -3,6 +3,8 @@ package kr.ac.inha.mindscope.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -59,6 +61,7 @@ public class MeFragmentStep1 extends Fragment {
     private TextView sumPointsView;
     private TextView before11Hours;
     private TextView attdView;
+    private TextView versionNameTextView;
     private RelativeLayout timeContainer;
     boolean isNetworkToastMsgAbail;
 
@@ -81,6 +84,9 @@ public class MeFragmentStep1 extends Fragment {
         before11Hours = root.findViewById(R.id.frg_me_before_11hours);
         attdView = root.findViewById(R.id.today_survey_attd);
         timeContainer = root.findViewById(R.id.time_container);
+        versionNameTextView = root.findViewById(R.id.version_name_step1);
+        versionNameTextView.setText(getVersionInfo(requireContext()));
+
 
         Calendar cal = Calendar.getInstance();
 
@@ -391,5 +397,21 @@ public class MeFragmentStep1 extends Fragment {
             }
         }
         updateEmaResponseView();
+    }
+
+    public String getVersionInfo(Context context){
+        String version = "Unknown";
+        PackageInfo packageInfo;
+
+        if(context == null){
+            return version;
+        }
+        try {
+            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
+            version = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
     }
 }

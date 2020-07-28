@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -120,28 +119,13 @@ public class EMAActivity extends AppCompatActivity {
 
     public int getDayNum() {
         long dayNum = 0;
-        SharedPreferences a = getSharedPreferences("firstDate", MODE_PRIVATE);
-        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date firstDate = format.parse(firstTimeStr);
-            Date currentDate = Calendar.getInstance().getTime();
-            Log.i(TAG, "first, current: " + firstDate + ", " + currentDate);
-
-            long caldate = firstDate.getTime() - currentDate.getTime();
-
-            dayNum = caldate / (24 * 60 * 60 * 1000);
-
-            dayNum = Math.abs(dayNum);
-
-            Log.i(TAG, "Day num: " + dayNum);
-
-            return (int)dayNum;
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
+        SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+        long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
+        Calendar cal = Calendar.getInstance();
+        long caldate = joinTimestamp - cal.getTimeInMillis();
+        dayNum = caldate / (24 * 60 * 60 * 1000);
+        dayNum = Math.abs(dayNum);
+        Log.i(TAG, "Day num: " + dayNum);
         return (int)dayNum;
     }
 

@@ -54,6 +54,15 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/step_test_btn"/>
 
+            <TextView
+                android:id="@+id/version_name_step1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
             <ImageButton
                 android:id="@+id/fragment_me_btn_map"
                 android:layout_width="wrap_content"

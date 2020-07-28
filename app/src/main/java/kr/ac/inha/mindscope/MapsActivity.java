@@ -21,7 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -69,22 +69,17 @@ import static kr.ac.inha.mindscope.LocationAdapter.EDIT_CODE;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick, GoogleMap.OnMapClickListener {
 
     public static final String TAG = "MapsActivity";
-
     private static final String ACTION_SELECT_PLACE = "SELECT_PLACE";
     private static final String ACTION_CLICK_SAVE_SELECT_PLACE = "CLICK_SAVE_SELECT_PLACE";
-
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     private GoogleMap mMap;
     LocationManager locationManager;
     Toolbar toolbar;
-
-
     ListView listView;
     ImageButton currentLocationBtn;
-
+    Button mapSaveBtn;
     private Marker currentGeofenceMarker;
     private Circle geoLimits;
-
     private static final Float ZOOM_LEVLE = 16f;
 
     //region Constants
@@ -110,49 +105,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     String selectedAddress;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
-
     ArrayList<StoreLocation> locationArrayList;
-
-
     public static final int GEOFENCE_RADIUS_DEFAULT = 100;
-
     FirstMapStartDialog firstMapStartDialog;
 
-    @Override
-    public void onMapClick(LatLng latLng) {
-        selectedLatLng = latLng;
 
-        // reverse geocoding
-        final Geocoder geocoder = new Geocoder(this);
-        List<Address> addressesList = null;
-        try {
-            addressesList = geocoder.getFromLocation(selectedLatLng.latitude, selectedLatLng.longitude, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(addressesList != null){
-            if(addressesList.size() == 0){
-                Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
-            }else {
-                selectedAddress = addressesList.get(0).getAddressLine(0);
-                selectedName = addressesList.get(0).getFeatureName();
-            }
-        }
-
-        MarkerOptions optionsMarker = new MarkerOptions()
-                .position(latLng);
-
-        if(mMap != null){
-            if(currentGeofenceMarker != null){
-                currentGeofenceMarker.remove();
-            }
-            currentGeofenceMarker = mMap.addMarker(optionsMarker);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
-        }
-
-        Log.e(TAG, "onMapClick" + selectedLatLng.toString());
-
-    }
 
     //region Internal classes
     static class StoreLocation {
@@ -208,7 +165,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (firstMap != 1) {
 
-            firstMapStartDialog = new FirstMapStartDialog(this, clickListener);
+            firstMapStartDialog = new FirstMapStartDialog(this, dialogClickListener);
             firstMapStartDialog.setCancelable(false);
             firstMapStartDialog.show();
 
@@ -235,19 +192,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         updateListView();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                StoreLocation storeLocation = (StoreLocation) listView.getItemAtPosition(i);
-                changeMarkerPlaceInfo(storeLocation);
-            }
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            StoreLocation storeLocation = (StoreLocation) listView.getItemAtPosition(i);
+            changeMarkerPlaceInfo(storeLocation);
         });
-
-        currentLocationBtn = (ImageButton) findViewById(R.id.current_location_btn);
+        currentLocationBtn = findViewById(R.id.current_location_btn);
         loadingLayout = findViewById(R.id.loading_frame);
         loadingLayout.setVisibility(View.VISIBLE);
         loadingLayout.bringToFront();
         Tools.disable_touch(this);
+        mapSaveBtn = findViewById(R.id.map_save_btn);
+        mapSaveBtn.setOnClickListener(mapSaveClickListener);
 
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -272,7 +227,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
 
 
@@ -401,7 +356,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+        selectedLatLng = latLng;
 
+        // reverse geocoding
+        final Geocoder geocoder = new Geocoder(this);
+        List<Address> addressesList = null;
+        try {
+            addressesList = geocoder.getFromLocation(selectedLatLng.latitude, selectedLatLng.longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(addressesList != null){
+            if(addressesList.size() == 0){
+                Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
+            }else {
+                selectedAddress = addressesList.get(0).getAddressLine(0);
+                selectedName = addressesList.get(0).getFeatureName();
+            }
+        }
+
+        MarkerOptions optionsMarker = new MarkerOptions()
+                .position(latLng);
+
+        if(mMap != null){
+            if(currentGeofenceMarker != null){
+                currentGeofenceMarker.remove();
+            }
+            currentGeofenceMarker = mMap.addMarker(optionsMarker);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
+        }
+
+        Log.e(TAG, "onMapClick" + selectedLatLng.toString());
+
+    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -531,7 +520,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-
     static StoreLocation getLocationData(Context con, String locationId) {
         SharedPreferences locationPrefs = con.getSharedPreferences("UserLocations", MODE_PRIVATE);
         float lat = locationPrefs.getFloat(locationId + "_LAT", 0);
@@ -544,12 +532,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return null;
     }
 
-
     @Override
     public void onBackPressed() {
         //
     }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -557,29 +543,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.toolbar_map_current_save_btn:
 //                Toast.makeText(this, "장소 저장 액티비티 실행", Toast.LENGTH_SHORT).show();
                 // Call 장소 저장 액티비티
-                if (selectedLatLng != null) {
-                    Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
-                    if(checkForFirstHomeSetting){
-                        intent.putExtra("name", selectedName);
-                        intent.putExtra("address", selectedAddress);
-                        intent.putExtra("lat", selectedLatLng.latitude);
-                        intent.putExtra("lng", selectedLatLng.longitude);
-                        intent.putExtra("home_setting", true);
-                    }else{
-                        intent.putExtra("name", selectedName);
-                        intent.putExtra("address", selectedAddress);
-                        intent.putExtra("lat", selectedLatLng.latitude);
-                        intent.putExtra("lng", selectedLatLng.longitude);
-                        intent.putExtra("home_setting", false);
-                    }
-                    startActivity(intent);
-                    Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_SELECT_PLACE);
-                } else {
-                    Toast.makeText(this, "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();
-                }
-
-                return true;
-            case android.R.id.home:
                 Intent intent = new Intent(MapsActivity.this, MainActivity.class);
                 intent.putExtra("first_start_step1", checkForFirstStartStep1);
                 Log.e(TAG, "first start stpe1 : " + checkForFirstStartStep1);
@@ -648,12 +611,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
+    private View.OnClickListener dialogClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             firstMapStartDialog.dismiss();
             checkForFirstHomeSetting = true;
             checkForFirstStartStep1 = true;
+        }
+    };
+
+    private View.OnClickListener mapSaveClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (selectedLatLng != null) {
+                Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
+                if(checkForFirstHomeSetting){
+                    intent.putExtra("name", selectedName);
+                    intent.putExtra("address", selectedAddress);
+                    intent.putExtra("lat", selectedLatLng.latitude);
+                    intent.putExtra("lng", selectedLatLng.longitude);
+                    intent.putExtra("home_setting", true);
+                }else{
+                    intent.putExtra("name", selectedName);
+                    intent.putExtra("address", selectedAddress);
+                    intent.putExtra("lat", selectedLatLng.latitude);
+                    intent.putExtra("lng", selectedLatLng.longitude);
+                    intent.putExtra("home_setting", false);
+                }
+                startActivity(intent);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_SELECT_PLACE);
+            } else {
+                Toast.makeText(getApplicationContext(), "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 }

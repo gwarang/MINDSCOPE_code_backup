@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -84,6 +86,7 @@ public class MeFragmentStep2 extends Fragment {
     private TextView timeView;
     private TextView stressLvView;
     private TextView waitNextReportTextView;
+    private TextView versionNameTextView;
     private Button reportBtn;
     private String feature_ids;
     final Handler handler = new Handler(Looper.getMainLooper()) {
@@ -152,6 +155,8 @@ public class MeFragmentStep2 extends Fragment {
         });
         dateView = view.findViewById(R.id.frg_me_step2_date1);
         timeView = (TextView) view.findViewById(R.id.frg_me_step2_time1);
+        versionNameTextView = view.findViewById(R.id.version_name_step2);
+        versionNameTextView.setText(getVersionInfo(requireContext()));
     }
 
     public void applyUi(View view) {
@@ -668,6 +673,22 @@ public class MeFragmentStep2 extends Fragment {
                 }
             }
         }
+    }
+
+    public String getVersionInfo(Context context){
+        String version = "Unknown";
+        PackageInfo packageInfo;
+
+        if(context == null){
+            return version;
+        }
+        try {
+            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
+            version = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
     }
 
 }

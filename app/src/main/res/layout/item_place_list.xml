@@ -42,6 +42,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/guide_text_size"
+                android:visibility="gone"
                 android:text="place name"/>
 
             <TextView
