@@ -21,6 +21,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
@@ -127,15 +128,19 @@ public class MeFragmentStep1 extends Fragment {
         time3Btn = root.findViewById(R.id.time3_btn);
         time4Btn = root.findViewById(R.id.time4_btn);
 
-        if(cal.get(Calendar.HOUR_OF_DAY) < 3){
-            long curTimestmamp = cal.getTimeInMillis();
-            long yesterdayCalTimestamp = curTimestmamp - 60 * 60 * 24 * 1000;
-            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(yesterdayCalTimestamp);
-            date.setText(date_text);
-        }else{
-            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(cal.getTimeInMillis());
-            date.setText(date_text);
-        }
+//        if(cal.get(Calendar.HOUR_OF_DAY) < 3){
+//            long curTimestmamp = cal.getTimeInMillis();
+//            long yesterdayCalTimestamp = curTimestmamp - 60 * 60 * 24 * 1000;
+//            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(yesterdayCalTimestamp);
+//            date.setText(date_text);
+//        }else{
+//            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(cal.getTimeInMillis());
+//            date.setText(date_text);
+//        }
+
+        Date currentTime = Calendar.getInstance().getTime();
+        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
+        date.setText(date_text);
 
 
         appBarLayout = root.findViewById(R.id.frg_me_app_bar);
@@ -276,7 +281,7 @@ public class MeFragmentStep1 extends Fragment {
         Calendar cal = Calendar.getInstance();
         int curHours = cal.get(Calendar.HOUR_OF_DAY);
         for (short i = 0; i < 4; i++) {
-            if(curHours >= SUBMIT_HOUR[i] || curHours < 3){
+            if(curHours >= SUBMIT_HOUR[i]){
                 if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
                     times[i].setText(getResources().getString(R.string.string_survey_incomplete));
                     timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_incomplete));
