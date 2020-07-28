@@ -118,7 +118,7 @@ public class EMAActivity extends AppCompatActivity {
         init();
     }
 
-    public long getDayNum() {
+    public int getDayNum() {
         long dayNum = 0;
         SharedPreferences a = getSharedPreferences("firstDate", MODE_PRIVATE);
         String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
@@ -136,13 +136,13 @@ public class EMAActivity extends AppCompatActivity {
 
             Log.i(TAG, "Day num: " + dayNum);
 
-            return dayNum;
+            return (int)dayNum;
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return dayNum;
+        return (int)dayNum;
     }
 
     @Override
@@ -430,7 +430,7 @@ public class EMAActivity extends AppCompatActivity {
             notificationManager.cancel(EMA_NOTI_ID);
         }
 
-        SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("EmaSubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
         String emaSubmit = "ema_submit_check_" + emaOrder;
         Calendar cal = Calendar.getInstance();

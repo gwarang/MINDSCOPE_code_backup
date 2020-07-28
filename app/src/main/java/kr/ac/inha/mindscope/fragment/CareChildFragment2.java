@@ -195,14 +195,16 @@ public class CareChildFragment2 extends Fragment {
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
                 String newPerformed = doneInterventionText.getText() + String.format("%s에 %s을/를 수행하였습니다.\n",dateFormat.format(System.currentTimeMillis()), currentIntervention.getText());
-
                 doneInterventionText.setText(newPerformed);
+                doneInterventionText.setVisibility(View.VISIBLE);
 
                 Calendar cal = Calendar.getInstance();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
                 String curIntervention = prefs.getString("curIntervention", "");
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean("didIntervention", true);
+                editor.putString("performedIntervention", newPerformed);
+                editor.putInt("performedDate", cal.get(Calendar.DATE));
                 editor.apply();
                 Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, STRESS_DO_INTERVENTION,0);
             }
@@ -355,6 +357,10 @@ public class CareChildFragment2 extends Fragment {
                 requireActivity().runOnUiThread(() -> {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
                     StringBuilder didInterventionStr = new StringBuilder();
+                    SharedPreferences interventionPrefs = requireContext().getSharedPreferences("intervention", MODE_PRIVATE);
+                    String performedIntervention = interventionPrefs.getString("performedIntervention", null);
+                    int performedDate = interventionPrefs.getInt("performedDate", 0);
+
                     for (String[] s : todayPerformedInterventions) {
                         String timeText = dateFormat.format(Long.parseLong(s[0]));
                         didInterventionStr.append(String.format("%s에 \'%s\'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));

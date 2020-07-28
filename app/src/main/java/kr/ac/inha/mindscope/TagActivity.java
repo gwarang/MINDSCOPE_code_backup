@@ -34,7 +34,6 @@ public class TagActivity extends AppCompatActivity {
     private static final String DONE = "완료";
 
     TextView tag3hoursView;
-    TextView tagNowView;
     Button tagBtn;
     EditText inputTag;
     LinearLayout loadingLayout;
@@ -42,8 +41,6 @@ public class TagActivity extends AppCompatActivity {
     long timestamp;
     int dayNum;
     int emaOrder;
-
-    LinearLayout hiddenLayout;
 
     Toolbar toolbar;
 
@@ -60,12 +57,10 @@ public class TagActivity extends AppCompatActivity {
         loadingLayout = findViewById(R.id.loading_frame_tag);
         loadingLayout.setVisibility(View.GONE);
         tag3hoursView = findViewById(R.id.tag_3hours_list);
-        tagNowView = findViewById(R.id.tag_now_my);
         tagBtn = findViewById(R.id.toolbar_tag_btn);
         inputTag = findViewById(R.id.tag_edit);
         inputTag.addTextChangedListener(textWatcher);
         inputTag.setOnFocusChangeListener(focusChangeListener);
-        hiddenLayout = findViewById(R.id.tag_container_my);
 
         SharedPreferences prefs = getSharedPreferences("hashtags", MODE_PRIVATE);
         String str3hoursago = prefs.getString("lasthashtags", "");
@@ -97,7 +92,6 @@ public class TagActivity extends AppCompatActivity {
         public void onClick(View view) {
 
             loadingLayout.setVisibility(View.VISIBLE);
-            hiddenLayout.setVisibility(View.VISIBLE);
             tagBtn.setText(DONE);
 
             String hashTagStr = String.valueOf(inputTag.getText());
@@ -112,7 +106,6 @@ public class TagActivity extends AppCompatActivity {
                 forMyTags = forMyTags + matcher.group() + " ";
             }
             Log.i(TAG, forMyTags);
-            tagNowView.setText(forMyTags);
 
             SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
@@ -124,7 +117,7 @@ public class TagActivity extends AppCompatActivity {
 
             SharedPreferences hashtagsPrefs = getSharedPreferences("hashtags", MODE_PRIVATE);
             SharedPreferences.Editor editor = hashtagsPrefs.edit();
-            editor.putString("lasthashtags", tagNowView.getText().toString());
+            editor.putString("lasthashtags", forMyTags);
             editor.apply();
 
             Context context = getApplicationContext();
@@ -204,7 +197,6 @@ public class TagActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        hiddenLayout.setVisibility(View.GONE);
         super.onDestroy();
     }
 }

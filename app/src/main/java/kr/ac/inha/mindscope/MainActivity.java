@@ -108,9 +108,13 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener firstStartStep1DialogListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            SharedPreferences stepChange = getSharedPreferences("stepChange", MODE_PRIVATE);
+            SharedPreferences.Editor editor = stepChange.edit();
             SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("firstStartStep1", true);
+            SharedPreferences.Editor firstStartStepEditor = prefs.edit();
+            firstStartStepEditor.putBoolean("firstStartStep1", true);
+            firstStartStepEditor.apply();
+            editor.putBoolean("step1Done", true);
             editor.apply();
             firstStartStepDialog.dismiss();
         }
@@ -119,8 +123,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("firstStartStep2", true);
+            SharedPreferences.Editor firstStartStepEditor = prefs.edit();
+            firstStartStepEditor.putBoolean("firstStartStep2", true);
+            firstStartStepEditor.apply();
+            SharedPreferences stepChange = getSharedPreferences("stepChange", MODE_PRIVATE);
+            SharedPreferences.Editor editor = stepChange.edit();
+            editor.putBoolean("step2Done", true);
             editor.apply();
             firstStartStepDialog.dismiss();
         }
@@ -300,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         } else {
-            Toast.makeText(this, "Please connect to the Internet for the first launch!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Please connect to the Internet for the first launch!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -471,7 +479,7 @@ public class MainActivity extends AppCompatActivity {
 //                }
             }).start();
         else {
-            Toast.makeText(MainActivity.this, "Please connect to Internet!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Please connect to Internet!", Toast.LENGTH_SHORT).show();
             runOnUiThread(() -> initUserStats(true, 0, 0, null));
         }
     }
@@ -646,9 +654,7 @@ public class MainActivity extends AppCompatActivity {
             firstStartStepDialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step1_txt)));
             firstStartStepDialogBtn.setOnClickListener(firstStartStep1DialogListener);
             firstStartStepDialog.show();
-            SharedPreferences.Editor editor = stepChange.edit();
-            editor.putBoolean("step1Done", true);
-            editor.apply();
+
         }
 
         // step2
@@ -667,6 +673,11 @@ public class MainActivity extends AppCompatActivity {
             firstStartStepDialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step2_txt)));
             firstStartStepDialogBtn.setOnClickListener(firstStartStep2DialogListener);
             firstStartStepDialog.show();
+
+            SharedPreferences prefs = getSharedPreferences("firstStart", MODE_PRIVATE);
+            SharedPreferences.Editor firstStartStepEditor = prefs.edit();
+            firstStartStepEditor.putBoolean("firstStartStep2", true);
+            firstStartStepEditor.apply();
 
             SharedPreferences.Editor editor = stepChange.edit();
             editor.putBoolean("step2Done", true);

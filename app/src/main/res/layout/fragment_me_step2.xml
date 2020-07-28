@@ -411,6 +411,7 @@
         <TextView
             android:id="@+id/txt_wait_next_report"
             android:layout_marginTop="19dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintTop_toBottomOf="@id/stress_reason_container"
             app:layout_constraintBottom_toBottomOf="parent"
             android:textAlignment="center"

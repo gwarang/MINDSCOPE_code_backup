@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,8 +143,12 @@ public class CareChildFragment1 extends Fragment {
 
         init(view);
 
-        getStressReportDataFromGRPC();
-        getSelfStressReportDataFromGRPC();
+        if(Tools.isNetworkAvailable()){
+            getStressReportDataFromGRPC();
+            getSelfStressReportDataFromGRPC();
+        }else{
+            Toast.makeText(requireContext(), requireContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
+        }
 
 
 

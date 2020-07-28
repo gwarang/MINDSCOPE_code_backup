@@ -454,67 +454,69 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // endregion
 
         // region (3) daily comment
-        new Thread(() -> {
-            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
-            final int DAILY_COMMENT = 84;
+        if(Tools.isNetworkAvailable()){
+            new Thread(() -> {
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+                final int DAILY_COMMENT = 84;
 
-            Calendar cal = Calendar.getInstance();
-            cal.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long fromTimestamp = cal.getTimeInMillis();
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            long tillTimestamp = cal.getTimeInMillis();
+                Calendar cal = Calendar.getInstance();
+                cal.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                long fromTimestamp = cal.getTimeInMillis();
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+                long tillTimestamp = cal.getTimeInMillis();
 
-            if (dailyAverageStressLevels.containsKey(day)) {
-                int[] stressLevelStrings = new int[]{
-                        R.string.string_stress_level_low,
-                        R.string.string_stress_level_littlehigh,
-                        R.string.string_stress_level_high
-                };
-                int stressLevel = dailyAverageStressLevels.get(day);
-                requireActivity().runOnUiThread(() -> {
-                    txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel])));
-                    txtStressLevel.setVisibility(View.VISIBLE);
-                });
-            } else
-                requireActivity().runOnUiThread(() -> {
-                    txtStressLevel.setVisibility(View.GONE); // should never happen
-                });
+                if (dailyAverageStressLevels.containsKey(day)) {
+                    int[] stressLevelStrings = new int[]{
+                            R.string.string_stress_level_low,
+                            R.string.string_stress_level_littlehigh,
+                            R.string.string_stress_level_high
+                    };
+                    int stressLevel = dailyAverageStressLevels.get(day);
+                    requireActivity().runOnUiThread(() -> {
+                        txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel])));
+                        txtStressLevel.setVisibility(View.VISIBLE);
+                    });
+                } else
+                    requireActivity().runOnUiThread(() -> {
+                        txtStressLevel.setVisibility(View.GONE); // should never happen
+                    });
 
 
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                    .setUserId(userId)
-                    .setEmail(email)
-                    .setTargetEmail(email)
-                    .setTargetCampaignId(campaignId)
-                    .setTargetDataSourceId(DAILY_COMMENT)
-                    .setFromTimestamp(fromTimestamp)
-                    .setTillTimestamp(tillTimestamp)
-                    .build();
-            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-            long lastTimestamp = Long.MIN_VALUE;
-            String lastComment = "";
-            if (responseMessage.getDoneSuccessfully())
-                for (String value : responseMessage.getValueList()) {
-                    String[] cells = value.split(" ");
-                    long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
-                    String comment = value.substring(value.indexOf(' ') + 1);
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(userId)
+                        .setEmail(email)
+                        .setTargetEmail(email)
+                        .setTargetCampaignId(campaignId)
+                        .setTargetDataSourceId(DAILY_COMMENT)
+                        .setFromTimestamp(fromTimestamp)
+                        .setTillTimestamp(tillTimestamp)
+                        .build();
+                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                long lastTimestamp = Long.MIN_VALUE;
+                String lastComment = "";
+                if (responseMessage.getDoneSuccessfully())
+                    for (String value : responseMessage.getValueList()) {
+                        String[] cells = value.split(" ");
+                        long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
+                        String comment = value.substring(value.indexOf(' ') + 1);
 
-                    if (timestamp > lastTimestamp) {
-                        lastTimestamp = timestamp;
-                        lastComment = comment;
+                        if (timestamp > lastTimestamp) {
+                            lastTimestamp = timestamp;
+                            lastComment = comment;
+                        }
                     }
-                }
-            channel.shutdown();
+                channel.shutdown();
 
-            final String finalComment = lastComment;
-            requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
-        }).start();
+                final String finalComment = lastComment;
+                requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
+            }).start();
+        }
         // endregion
 
         // region (4) average daily stress level
@@ -679,180 +681,193 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         long firstDayTimestamp = 0;
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-        EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
-                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                .build();
-        EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-        if (responseMessage.getDoneSuccessfully()) {
-            long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
-            firstDayTimestamp = joinTimestamp;
+        if(Tools.isNetworkAvailable()){
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+            EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                    .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                    .build();
+            EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+            if (responseMessage.getDoneSuccessfully()) {
+                long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
+                firstDayTimestamp = joinTimestamp;
+            }
+            channel.shutdown();
+        }else{
+            Toast.makeText(requireContext(), requireContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
         }
-        channel.shutdown();
         return firstDayTimestamp;
     }
 
     public void loadAllPoints() {
-        new Thread(() -> {
-            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-            final int REWARD_POINTS = 58;
+        if(Tools.isNetworkAvailable()){
+            new Thread(() -> {
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
+                final int REWARD_POINTS = 58;
 
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            Calendar c = Calendar.getInstance();
-            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                    .setUserId(userId)
-                    .setEmail(email)
-                    .setTargetEmail(email)
-                    .setTargetCampaignId(campaignId)
-                    .setTargetDataSourceId(REWARD_POINTS)
-                    .setFromTimestamp(0)
-                    .setTillTimestamp(c.getTimeInMillis())
-                    .build();
-            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-            int points = 0;
-            if (responseMessage.getDoneSuccessfully())
-                for (String value : responseMessage.getValueList()) {
-                    String[] cells = value.split(" ");
-                    if (cells.length != 3)
-                        continue;
-                    points += Integer.parseInt(cells[2]);
-                }
-            channel.shutdown();
-            final int finalPoints = points;
-            requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
-        }).start();
-    }
-
-    public void loadDailyPoints(CalendarDay day) {
-        new Thread(() -> {
-            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-            final int REWARD_POINTS = 58;
-
-            Calendar c = Calendar.getInstance();
-            c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            long fromTimestamp = c.getTimeInMillis();
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            long tillTimestamp = c.getTimeInMillis();
-
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                    .setUserId(userId)
-                    .setEmail(email)
-                    .setTargetEmail(email)
-                    .setTargetCampaignId(campaignId)
-                    .setTargetDataSourceId(REWARD_POINTS)
-                    .setFromTimestamp(fromTimestamp)
-                    .setTillTimestamp(tillTimestamp)
-                    .build();
-            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-            int dailyPoints = 0;
-            if (responseMessage.getDoneSuccessfully())
-                for (String value : responseMessage.getValueList()) {
-                    String[] cells = value.split(" ");
-                    if (cells.length != 3)
-                        continue;
-                    dailyPoints += Integer.parseInt(cells[2]);
-                }
-            channel.shutdown();
-            final int finalDailyPoints = dailyPoints;
-            requireActivity().runOnUiThread(() -> dailyPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
-        }).start();
-    }
-
-    public void loadAllStressLevelsFromServer() {
-        // [Kevin] load stress levels (submissions & predictions) from gRPC server
-        new Thread(() -> {
-            SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-
-            Calendar c = Calendar.getInstance();
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            long tillTimestamp = c.getTimeInMillis();
-            c.setTimeInMillis(joinTimestamp);
-            long fromTimestamp = c.getTimeInMillis();
-
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            final int SUBMITTED = 55, PREDICTION = 56;
-            stressLevels.clear();
-            for (int dataSourceId : new int[]{SUBMITTED, PREDICTION}) {
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                Calendar c = Calendar.getInstance();
                 EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
                         .setUserId(userId)
                         .setEmail(email)
                         .setTargetEmail(email)
                         .setTargetCampaignId(campaignId)
-                        .setTargetDataSourceId(dataSourceId)
+                        .setTargetDataSourceId(REWARD_POINTS)
+                        .setFromTimestamp(0)
+                        .setTillTimestamp(c.getTimeInMillis())
+                        .build();
+                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                int points = 0;
+                if (responseMessage.getDoneSuccessfully())
+                    for (String value : responseMessage.getValueList()) {
+                        String[] cells = value.split(" ");
+                        if (cells.length != 3)
+                            continue;
+                        points += Integer.parseInt(cells[2]);
+                    }
+                channel.shutdown();
+                final int finalPoints = points;
+                requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
+            }).start();
+        }
+    }
+
+    public void loadDailyPoints(CalendarDay day) {
+        if(Tools.isNetworkAvailable()){
+            new Thread(() -> {
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
+                final int REWARD_POINTS = 58;
+
+                Calendar c = Calendar.getInstance();
+                c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+                c.set(Calendar.MILLISECOND, 0);
+                long fromTimestamp = c.getTimeInMillis();
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                long tillTimestamp = c.getTimeInMillis();
+
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(userId)
+                        .setEmail(email)
+                        .setTargetEmail(email)
+                        .setTargetCampaignId(campaignId)
+                        .setTargetDataSourceId(REWARD_POINTS)
                         .setFromTimestamp(fromTimestamp)
                         .setTillTimestamp(tillTimestamp)
                         .build();
                 EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                if (responseMessage.getDoneSuccessfully()) {
-                    List<String> values = responseMessage.getValueList();
-                    List<Long> timestamps = responseMessage.getTimestampList();
-                    for (int n = 0; n < values.size(); n++) {
-                        String value = values.get(n);
-                        long timestamp = 0;
-                        int emaOrder = -1;
-                        int stressLevel = 0;
-                        if (dataSourceId == SUBMITTED) {
-                            // self-report
-                            String[] cells = value.split(" ");
-                            if (cells.length != 5)
-                                continue;
-                            emaOrder = Integer.parseInt(cells[2]);
-                            timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
-                            stressLevel = Integer.parseInt(cells[4]);
-                        } else {
-                            // prediction
-                            try {
-                                JSONObject cells = new JSONObject(value);
-                                timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
-                                c.setTimeInMillis(timestamp);
-                                timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+                int dailyPoints = 0;
+                if (responseMessage.getDoneSuccessfully())
+                    for (String value : responseMessage.getValueList()) {
+                        String[] cells = value.split(" ");
+                        if (cells.length != 3)
+                            continue;
+                        dailyPoints += Integer.parseInt(cells[2]);
+                    }
+                channel.shutdown();
+                final int finalDailyPoints = dailyPoints;
+                requireActivity().runOnUiThread(() -> dailyPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
+            }).start();
+        }
 
-                                Iterator<String> keys = cells.keys();
-                                do {
-                                    String key = keys.next();
-                                    if (cells.getJSONObject(key).getBoolean("model_tag"))
-                                        stressLevel = Integer.parseInt(key);
+
+    }
+
+    public void loadAllStressLevelsFromServer() {
+        if(Tools.isNetworkAvailable()){
+            // [Kevin] load stress levels (submissions & predictions) from gRPC server
+            new Thread(() -> {
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
+
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+                c.set(Calendar.MILLISECOND, 0);
+                long tillTimestamp = c.getTimeInMillis();
+                c.setTimeInMillis(joinTimestamp);
+                long fromTimestamp = c.getTimeInMillis();
+
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                final int SUBMITTED = 55, PREDICTION = 56;
+                stressLevels.clear();
+                for (int dataSourceId : new int[]{SUBMITTED, PREDICTION}) {
+                    EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                            .setUserId(userId)
+                            .setEmail(email)
+                            .setTargetEmail(email)
+                            .setTargetCampaignId(campaignId)
+                            .setTargetDataSourceId(dataSourceId)
+                            .setFromTimestamp(fromTimestamp)
+                            .setTillTimestamp(tillTimestamp)
+                            .build();
+                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        List<String> values = responseMessage.getValueList();
+                        List<Long> timestamps = responseMessage.getTimestampList();
+                        for (int n = 0; n < values.size(); n++) {
+                            String value = values.get(n);
+                            long timestamp = 0;
+                            int emaOrder = -1;
+                            int stressLevel = 0;
+                            if (dataSourceId == SUBMITTED) {
+                                // self-report
+                                String[] cells = value.split(" ");
+                                if (cells.length != 5)
+                                    continue;
+                                emaOrder = Integer.parseInt(cells[2]);
+                                timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
+                                stressLevel = Integer.parseInt(cells[4]);
+                            } else {
+                                // prediction
+                                try {
+                                    JSONObject cells = new JSONObject(value);
+                                    timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
+                                    c.setTimeInMillis(timestamp);
+                                    timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+
+                                    Iterator<String> keys = cells.keys();
+                                    do {
+                                        String key = keys.next();
+                                        if (cells.getJSONObject(key).getBoolean("model_tag"))
+                                            stressLevel = Integer.parseInt(key);
+                                    }
+                                    while (keys.hasNext());
+                                } catch (JSONException e) {
+                                    continue;
                                 }
-                                while (keys.hasNext());
-                            } catch (JSONException e) {
-                                continue;
                             }
-                        }
-                        if (stressLevel < 3) {
-                            c.setTimeInMillis(timestamp);
-                            c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
-                            c.set(Calendar.MILLISECOND, 0);
-                            timestamp = c.getTimeInMillis();
+                            if (stressLevel < 3) {
+                                c.setTimeInMillis(timestamp);
+                                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
+                                c.set(Calendar.MILLISECOND, 0);
+                                timestamp = c.getTimeInMillis();
 
-                            if (!stressLevels.containsKey(timestamp))
-                                stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+                                if (!stressLevels.containsKey(timestamp))
+                                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+                            }
                         }
                     }
                 }
-            }
-            channel.shutdown();
-            applyStressLevelUI();
-        }).start();
+                channel.shutdown();
+                applyStressLevelUI();
+            }).start();
+        }
+
     }
 
     private int getEmaOrderHour(int emaOrder) {

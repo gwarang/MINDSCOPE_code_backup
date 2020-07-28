@@ -111,7 +111,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
                 if (editText.getText().toString().equals("")) {
                     Toast.makeText(this, "장소를 입력해주세요!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "장소 저장", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "장소 저장", Toast.LENGTH_SHORT).show();
                     // setLocation
                     setLocation(editText.getText().toString(), selectedLat, selectedLng);
                     Log.i(TAG, "placeUserName, double lat lng, float lat lng: " + editText.getText().toString() + ", " + selectedLat + ", " + selectedLng + ", " + selectedLat.floatValue() + ", " + selectedLng.floatValue());
@@ -176,7 +176,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
 
         GeofenceHelper.startGeofence(getApplicationContext(), location_id, position, GEOFENCE_RADIUS_DEFAULT);
 
-        Toast.makeText(getApplicationContext(), placeUserName + getString(R.string.location_set), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), placeUserName + " " + getString(R.string.location_set), Toast.LENGTH_SHORT).show();
 
     }
 }

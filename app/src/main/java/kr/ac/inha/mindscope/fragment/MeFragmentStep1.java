@@ -60,6 +60,7 @@ public class MeFragmentStep1 extends Fragment {
     private TextView before11Hours;
     private TextView attdView;
     private RelativeLayout timeContainer;
+    boolean isNetworkToastMsgAbail;
 
     public static MeFragmentStep1 newInstance() {
         return new MeFragmentStep1();
@@ -72,6 +73,8 @@ public class MeFragmentStep1 extends Fragment {
         Context context = requireContext();
 //        final TextView textView = root.findViewById(R.id.text_me);
         TextView date = root.findViewById(R.id.frg_me_date);
+
+        isNetworkToastMsgAbail = true;
 
         todayPointsView = root.findViewById(R.id.point_today);
         sumPointsView = root.findViewById(R.id.point_my);
@@ -226,7 +229,12 @@ public class MeFragmentStep1 extends Fragment {
                 }
             }).start();
         else {
-            Toast.makeText(getContext(), "Please connect to Internet!", Toast.LENGTH_SHORT).show();
+            synchronized (this){
+                if(isNetworkToastMsgAbail){
+                    Toast.makeText(getContext(), getContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
+                    isNetworkToastMsgAbail = false;
+                }
+            }
         }
     }
 
@@ -270,86 +278,92 @@ public class MeFragmentStep1 extends Fragment {
     }
 
     public void loadAllPoints() {
-        new Thread(() -> {
-            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
-            final int REWARD_POINTS = 58;
+        Context context = requireContext();
+        if(Tools.isNetworkAvailable()){
+            new Thread(() -> {
+                SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+                final int REWARD_POINTS = 58;
 
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            Calendar c = Calendar.getInstance();
-            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                    .setUserId(userId)
-                    .setEmail(email)
-                    .setTargetEmail(email)
-                    .setTargetCampaignId(campaignId)
-                    .setTargetDataSourceId(REWARD_POINTS)
-                    .setFromTimestamp(0)
-                    .setTillTimestamp(c.getTimeInMillis())
-                    .build();
-            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-            int points = 0;
-            if (responseMessage.getDoneSuccessfully())
-                for (String value : responseMessage.getValueList()) {
-                    String[] cells = value.split(" ");
-                    if (cells.length != 3)
-                        continue;
-                    points += Integer.parseInt(cells[2]);
-                }
-            channel.shutdown();
-            final int finalPoints = points;
-            requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
-        }).start();
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                Calendar c = Calendar.getInstance();
+                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(userId)
+                        .setEmail(email)
+                        .setTargetEmail(email)
+                        .setTargetCampaignId(campaignId)
+                        .setTargetDataSourceId(REWARD_POINTS)
+                        .setFromTimestamp(0)
+                        .setTillTimestamp(c.getTimeInMillis())
+                        .build();
+                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                int points = 0;
+                if (responseMessage.getDoneSuccessfully())
+                    for (String value : responseMessage.getValueList()) {
+                        String[] cells = value.split(" ");
+                        if (cells.length != 3)
+                            continue;
+                        points += Integer.parseInt(cells[2]);
+                    }
+                channel.shutdown();
+                final int finalPoints = points;
+                requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
+            }).start();
+        }
     }
 
     public void loadDailyPoints() {
-        new Thread(() -> {
-            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
-            final int REWARD_POINTS = 58;
+        Context context = requireContext();
+        if(Tools.isNetworkAvailable()){
+            new Thread(() -> {
+                SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+                final int REWARD_POINTS = 58;
 
-            Calendar fromCal = Calendar.getInstance();
-            fromCal.set(Calendar.HOUR_OF_DAY, 0);
-            fromCal.set(Calendar.MINUTE, 0);
-            fromCal.set(Calendar.SECOND, 0);
-            fromCal.set(Calendar.MILLISECOND, 0);
-            Calendar tillCal = (Calendar) fromCal.clone();
-            tillCal.set(Calendar.HOUR_OF_DAY, 23);
-            tillCal.set(Calendar.MINUTE, 59);
-            tillCal.set(Calendar.SECOND, 59);
+                Calendar fromCal = Calendar.getInstance();
+                fromCal.set(Calendar.HOUR_OF_DAY, 0);
+                fromCal.set(Calendar.MINUTE, 0);
+                fromCal.set(Calendar.SECOND, 0);
+                fromCal.set(Calendar.MILLISECOND, 0);
+                Calendar tillCal = (Calendar) fromCal.clone();
+                tillCal.set(Calendar.HOUR_OF_DAY, 23);
+                tillCal.set(Calendar.MINUTE, 59);
+                tillCal.set(Calendar.SECOND, 59);
 
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                    .setUserId(userId)
-                    .setEmail(email)
-                    .setTargetEmail(email)
-                    .setTargetCampaignId(campaignId)
-                    .setTargetDataSourceId(REWARD_POINTS)
-                    .setFromTimestamp(fromCal.getTimeInMillis())
-                    .setTillTimestamp(tillCal.getTimeInMillis())
-                    .build();
-            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-            int dailyPoints = 0;
-            if (responseMessage.getDoneSuccessfully())
-                for (String value : responseMessage.getValueList()) {
-                    String[] cells = value.split(" ");
-                    if (cells.length != 3)
-                        continue;
-                    dailyPoints += Integer.parseInt(cells[2]);
-                }
-            channel.shutdown();
-            final int finalDailyPoints = dailyPoints;
-            requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
-        }).start();
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(userId)
+                        .setEmail(email)
+                        .setTargetEmail(email)
+                        .setTargetCampaignId(campaignId)
+                        .setTargetDataSourceId(REWARD_POINTS)
+                        .setFromTimestamp(fromCal.getTimeInMillis())
+                        .setTillTimestamp(tillCal.getTimeInMillis())
+                        .build();
+                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                int dailyPoints = 0;
+                if (responseMessage.getDoneSuccessfully())
+                    for (String value : responseMessage.getValueList()) {
+                        String[] cells = value.split(" ");
+                        if (cells.length != 3)
+                            continue;
+                        dailyPoints += Integer.parseInt(cells[2]);
+                    }
+                channel.shutdown();
+                final int finalDailyPoints = dailyPoints;
+                requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
+            }).start();
+        }
     }
 
     public void startEmaActivityWhenNotSubmitted() {
-        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("EmaSubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
         boolean[] submits = {
                 emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false),

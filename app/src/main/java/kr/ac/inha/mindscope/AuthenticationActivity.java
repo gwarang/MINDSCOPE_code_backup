@@ -2,6 +2,7 @@ package kr.ac.inha.mindscope;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import androidx.core.content.ContextCompat;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -33,6 +35,8 @@ public class AuthenticationActivity extends Activity {
     private static final int RC_OPEN_MAIN_ACTIVITY = 101;
     private static final int RC_OPEN_APP_STORE = 102;
 
+    Context context;
+
     // region Variables
     public static final String TAG = "AuthenticationActivity";
     private SharedPreferences loginPrefs;
@@ -45,12 +49,15 @@ public class AuthenticationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
+        context = getApplicationContext();
+
         if (authAppIsNotInstalled()) {
-            Toast.makeText(this, "Please install the EasyTrack Authenticator and reopen the application!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, context.getResources().getString(R.string.install_easy_track_msg), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=inha.nsl.easytrack"));
             intent.setPackage("com.android.vending");
             startActivityForResult(intent, RC_OPEN_APP_STORE);
+            this.finish();
         } else {
             loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);
             if (loginPrefs.getBoolean("logged_in", false)) {
@@ -63,7 +70,7 @@ public class AuthenticationActivity extends Activity {
 
     public void authenticateClick(View view) {
         if (authAppIsNotInstalled())
-            Toast.makeText(this, "Please install the EasyTrack Authenticator and reopen the application!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, context.getResources().getString(R.string.install_easy_track_msg), Toast.LENGTH_SHORT).show();
         else {
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage("inha.nsl.easytrack");
             if (launchIntent != null) {
@@ -118,7 +125,7 @@ public class AuthenticationActivity extends Activity {
                             final EtService.BindUserToCampaignResponseMessage responseMessage = stub.bindUserToCampaign(requestMessage);
                             if (responseMessage.getDoneSuccessfully())
                                 runOnUiThread(() -> {
-                                    Toast.makeText(AuthenticationActivity.this, "Successfully authorized and connected to the EasyTrack campaign!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AuthenticationActivity.this, context.getResources().getString(R.string.success_auth_and_connect_campaign_msg), Toast.LENGTH_SHORT).show();
                                     loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);
                                     SharedPreferences.Editor editor = loginPrefs.edit();
                                     editor.putString(name, fullName);

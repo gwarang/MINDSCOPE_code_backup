@@ -45,7 +45,7 @@ public class PointCustomDialog extends Dialog {
 
         todayPointsView = findViewById(R.id.point_today_value);
         sumPointsView = findViewById(R.id.point_sum_value);
-        retrievePointFromServer();
+//        retrievePointFromServer();
         todayPointsView.setText(String.valueOf(todayPoints));
         sumPointsView.setText(String.valueOf(sumPoints));
         btn = findViewById(R.id.point_btn);
