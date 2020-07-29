@@ -1,6 +1,7 @@
 package kr.ac.inha.mindscope;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -97,7 +98,9 @@ public class EMAActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-            dialog = Tools.requestPermissions(EMAActivity.this);
+//            dialog = Tools.requestPermissions(EMAActivity.this);
+            Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(EMAActivity.this);
+            permissionDialog.show();
         }
         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
         if (!loginPrefs.getBoolean("logged_in", false)) {

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,7 +22,10 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -161,6 +165,23 @@ public class Tools {
 
 
         return alertDialog.show();
+    }
+
+    static Dialog requestPermissionsWithCustomDialog(final Activity activity){
+        View view = activity.getLayoutInflater().inflate(R.layout.permission_dialog, null);
+        final Dialog dialog = new Dialog(activity, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
+        dialog.setContentView(view);
+        dialog.setCancelable(false);
+        RelativeLayout permissionLayout = view.findViewById(R.id.permission_dialog_layout);
+        Button permissionBtn = view.findViewById(R.id.permission_btn);
+        permissionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Tools.grantPermissions(activity, PERMISSIONS);
+                dialog.dismiss();
+            }
+        });
+        return dialog;
     }
 
     private static void grantPermissions(Activity activity, String... permissions) {

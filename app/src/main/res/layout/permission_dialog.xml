@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/permission_dialog_layout">
+
+    <ImageView
+        android:id="@+id/permission_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/icon_low"
+        android:layout_above="@id/permission_shadow_img"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"/>
+
+    <View
+        android:id="@+id/permission_shadow_img"
+        android:layout_width="89dp"
+        android:layout_height="10dp"
+        android:background="@drawable/img_shadow"
+        android:layout_above="@id/permission_dialog_txt1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="72dp"/>
+
+    <TextView
+        android:id="@+id/permission_dialog_txt1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/string_permission_txt1"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size16"
+        android:textColor="@color/textColor_default_light"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:id="@+id/permission_dialog_txt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/permission_dialog_txt1"
+        android:text="@string/string_permission_txt2"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size16"
+        android:textColor="@color/textColor_default"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/permission_btn"
+        android:layout_width="167dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/permission_dialog_txt2"
+        android:text="연동하기"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/notosanscjkkrmedium"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size16"
+        android:background="@drawable/btn_start_enable"
+        android:textColor="@color/color_white"/>
+
+</RelativeLayout>

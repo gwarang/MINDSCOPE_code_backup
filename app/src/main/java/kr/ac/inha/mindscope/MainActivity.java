@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -255,7 +254,9 @@ public class MainActivity extends AppCompatActivity {
         changeNav();
 
         if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-            dialog = Tools.requestPermissions(MainActivity.this);
+//            dialog = Tools.requestPermissions(MainActivity.this);
+            Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+            permissionDialog.show();
         }
 
         try {
@@ -520,7 +521,14 @@ public class MainActivity extends AppCompatActivity {
         if (item != null) {
             stopService(customSensorsService);
             if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-                runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
+//                runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+                        permissionDialog.show();
+                    }
+                });
             } else {
                 Log.e(TAG, "restartServiceClick: 3");
                 if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
@@ -537,7 +545,11 @@ public class MainActivity extends AppCompatActivity {
                 customSensorsService = new Intent(this, MainService.class);
                 stopService(customSensorsService);
                 if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-                    runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
+//                    runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
+                    runOnUiThread(() -> {
+                        Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+                        permissionDialog.show();
+                    });
                 } else {
                     if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
                         Log.e(TAG, "RESTART SERVICE");

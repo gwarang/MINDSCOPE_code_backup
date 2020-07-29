@@ -1,6 +1,7 @@
 package kr.ac.inha.mindscope;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -138,7 +139,9 @@ public class FirstStartActivity extends AppCompatActivity {
     protected void onResume() {
 
         if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-            dialog = Tools.requestPermissions(FirstStartActivity.this);
+//            dialog = Tools.requestPermissions(FirstStartActivity.this);
+            Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(FirstStartActivity.this);
+            permissionDialog.show();
         }
         super.onResume();
         Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_OPEN_PAGE);
