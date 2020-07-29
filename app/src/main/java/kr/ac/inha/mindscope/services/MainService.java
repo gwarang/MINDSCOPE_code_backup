@@ -105,8 +105,12 @@ public class MainService extends Service {
     private ActivityRecognitionClient activityTransitionClient;
     private PendingIntent activityTransPendingIntent;
 
-    private boolean canSendNotif = true;
+    public static boolean canSendNotif = true;
     private boolean canSendNotifReport = true;
+
+    public boolean getCanSendNotif(){
+        return this.canSendNotif;
+    }
 
     private Handler mainHandler = new Handler();
     public static Boolean permissionNotificationPosted;

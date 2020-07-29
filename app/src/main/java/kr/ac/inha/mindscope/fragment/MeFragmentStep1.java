@@ -38,6 +38,7 @@ import kr.ac.inha.mindscope.EMAActivity;
 import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
+import kr.ac.inha.mindscope.services.MainService;
 
 public class MeFragmentStep1 extends Fragment {
 
@@ -158,7 +159,7 @@ public class MeFragmentStep1 extends Fragment {
         // TODO 추후 step 시간으로 확인할때는 삭제할 부분
         stepTestBtn = root.findViewById(R.id.step_test_btn);
         stepTestBtn.setOnClickListener(view -> {
-            SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", getContext().MODE_PRIVATE);
+            SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = stepChange.edit();
 
             if (stepChange.getInt("stepCheck", 0) == 1) {
@@ -430,15 +431,12 @@ public class MeFragmentStep1 extends Fragment {
     public void updateEmaNotiCheckVariable(View view){
         TextView emaStepCheckView = view.findViewById(R.id.ema_step_check);
         TextView emaOrderExactView = view.findViewById(R.id.ema_order_exact_time_check);
-        TextView emaOrderRangeView = view.findViewById(R.id.ema_order_range_time_check);
         TextView emaCanSendNotiView = view.findViewById(R.id.ema_can_send_noti_check);
 
         SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-        emaStepCheckView.setText(stepChangePrefs.getString("stepCheck", ""));
+        emaStepCheckView.setText("STEP : " + stepChangePrefs.getInt("stepCheck", 0));
         Calendar cal = Calendar.getInstance();
-        emaOrderExactView.setText(String.valueOf(Tools.getEMAOrderAtExactTime(cal)));
-        emaOrderRangeView.setText(String.valueOf(Tools.getEMAOrderFromRangeAfterEMA(cal)));
-
-
+        emaOrderExactView.setText("ema order : " + String.valueOf(Tools.getEMAOrderAtExactTime(cal)));
+        emaCanSendNotiView.setText("canSendNofi : " + MainService.canSendNotif);
     }
 }

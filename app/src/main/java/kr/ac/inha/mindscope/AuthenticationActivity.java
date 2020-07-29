@@ -19,8 +19,6 @@ import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-
-import androidx.core.content.ContextCompat;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -56,8 +54,8 @@ public class AuthenticationActivity extends Activity {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=inha.nsl.easytrack"));
             intent.setPackage("com.android.vending");
+            finishAffinity();
             startActivityForResult(intent, RC_OPEN_APP_STORE);
-            this.finish();
         } else {
             loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);
             if (loginPrefs.getBoolean("logged_in", false)) {
