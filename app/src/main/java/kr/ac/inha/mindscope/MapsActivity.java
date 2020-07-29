@@ -205,7 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapSaveBtn.setOnClickListener(mapSaveClickListener);
 
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
 
         currentLocationBtn.setOnClickListener(new View.OnClickListener() {
@@ -215,13 +215,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        // GPS setting check
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            startActivity(intent);
-            finish();
-        }
+//        // GPS setting check
+//        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//            Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
+//            intent.addCategory(Intent.CATEGORY_DEFAULT);
+//            startActivity(intent);
+//            finish();
+//        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_map);
         setSupportActionBar(toolbar);
@@ -457,26 +457,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Drawable iconDrawable;
         String location_title;
         switch (location.getmId()) {
-            case ID_HOME:
-                iconDrawable = ContextCompat.getDrawable(this, R.drawable.home);
-                location_title = TITLE_HOME;
-                break;
-            case ID_DORM:
-                iconDrawable = ContextCompat.getDrawable(this, R.drawable.dormitory);
-                location_title = TITLE_DORM;
-                break;
-            case ID_UNIV:
-                iconDrawable = ContextCompat.getDrawable(this, R.drawable.university);
-                location_title = TITLE_UNIV;
-                break;
-            case ID_LIBRARY:
-                iconDrawable = ContextCompat.getDrawable(this, R.drawable.library);
-                location_title = TITLE_LIBRARY;
-                break;
-            case ID_ADDITIONAL:
-                iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
-                location_title = TITLE_ADDITIONAL;
-                break;
+//            case ID_HOME:
+//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.home);
+//                location_title = TITLE_HOME;
+//                break;
+//            case ID_DORM:
+//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.dormitory);
+//                location_title = TITLE_DORM;
+//                break;
+//            case ID_UNIV:
+//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.university);
+//                location_title = TITLE_UNIV;
+//                break;
+//            case ID_LIBRARY:
+//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.library);
+//                location_title = TITLE_LIBRARY;
+//                break;
+//            case ID_ADDITIONAL:
+//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
+//                location_title = TITLE_ADDITIONAL;
+//                break;
             default:
                 iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
                 location_title = location.getmId();
@@ -485,11 +485,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         assert iconDrawable != null;
         Bitmap iconBmp = ((BitmapDrawable) iconDrawable).getBitmap();
+//        mMap.addMarker(new MarkerOptions()
+//                .title(location_title)
+//                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
+//                .position(location.getmLatLng())
+//                .icon(BitmapDescriptorFactory.fromBitmap(iconBmp)));
         mMap.addMarker(new MarkerOptions()
                 .title(location_title)
-                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
-                .position(location.getmLatLng())
-                .icon(BitmapDescriptorFactory.fromBitmap(iconBmp)));
+                .position(location.getmLatLng()));
     }
 
     // place info marker
