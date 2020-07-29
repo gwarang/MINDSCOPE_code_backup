@@ -77,6 +77,8 @@ public class MeFragmentStep1 extends Fragment {
 //        final TextView textView = root.findViewById(R.id.text_me);
         TextView date = root.findViewById(R.id.frg_me_date);
 
+        updateEmaNotiCheckVariable(root);
+
         isNetworkToastMsgAbail = true;
 
         todayPointsView = root.findViewById(R.id.point_today);
@@ -423,5 +425,20 @@ public class MeFragmentStep1 extends Fragment {
             e.printStackTrace();
         }
         return version;
+    }
+
+    public void updateEmaNotiCheckVariable(View view){
+        TextView emaStepCheckView = view.findViewById(R.id.ema_step_check);
+        TextView emaOrderExactView = view.findViewById(R.id.ema_order_exact_time_check);
+        TextView emaOrderRangeView = view.findViewById(R.id.ema_order_range_time_check);
+        TextView emaCanSendNotiView = view.findViewById(R.id.ema_can_send_noti_check);
+
+        SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        emaStepCheckView.setText(stepChangePrefs.getString("stepCheck", ""));
+        Calendar cal = Calendar.getInstance();
+        emaOrderExactView.setText(String.valueOf(Tools.getEMAOrderAtExactTime(cal)));
+        emaOrderRangeView.setText(String.valueOf(Tools.getEMAOrderFromRangeAfterEMA(cal)));
+
+
     }
 }
