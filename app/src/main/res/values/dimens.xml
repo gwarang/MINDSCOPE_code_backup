@@ -17,6 +17,7 @@
     <dimen  name="my_text_size14">14sp</dimen>
     <dimen  name="my_text_size15">15sp</dimen>
     <dimen  name="my_text_size16">16sp</dimen>
+    <dimen  name="my_text_size18">18sp</dimen>
     <dimen  name="my_text_size20">20sp</dimen>
     <dimen  name="my_text_size30">30sp</dimen>
 

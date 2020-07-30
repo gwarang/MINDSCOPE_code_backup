@@ -16,7 +16,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -34,8 +34,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -66,6 +64,7 @@ import androidx.core.content.ContextCompat;
 import kr.ac.inha.mindscope.dialog.FirstMapStartDialog;
 
 import static kr.ac.inha.mindscope.LocationAdapter.EDIT_CODE;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick, GoogleMap.OnMapClickListener {
 
@@ -77,6 +76,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationManager locationManager;
     Toolbar toolbar;
     ListView listView;
+    ScrollView scrollView;
     ImageButton currentLocationBtn;
     Button mapSaveBtn;
     private Marker currentGeofenceMarker;
@@ -197,6 +197,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             StoreLocation storeLocation = (StoreLocation) listView.getItemAtPosition(i);
             changeMarkerPlaceInfo(storeLocation);
         });
+        scrollView = findViewById(R.id.map_scrollview);
         currentLocationBtn = findViewById(R.id.current_location_btn);
         loadingLayout = findViewById(R.id.loading_frame);
         loadingLayout.setVisibility(View.VISIBLE);
@@ -232,9 +233,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         actionBar.setDisplayShowTitleEnabled(false);
 
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null)
+        ScrollableMapFragment mapFragment = (ScrollableMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null){
             mapFragment.getMapAsync(this);
+            mapFragment.setListener(new ScrollableMapFragment.OnTouchListener() {
+                @Override
+                public void onActionDown() {
+                    scrollView.requestDisallowInterceptTouchEvent(true);
+                }
+
+                @Override
+                public void onActionUp() {
+                    scrollView.requestDisallowInterceptTouchEvent(false);
+                }
+            });
+        }
 
 
         String apiKey = getResources().getString(R.string.google_maps_key);
@@ -291,6 +304,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         listView = findViewById(R.id.place_list);
         listView.setEmptyView(findViewById(android.R.id.empty));
         listView.setAdapter(adapter);
+        setListViewHeightBasedOnChildren(listView);
     }
 
     @Override
@@ -589,6 +603,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+
+
     private void getCurrentLocation() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -675,5 +691,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
+
 }
 
