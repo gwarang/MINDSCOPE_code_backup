@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static Context mContext;
     ConnectionMonitor connectionMonitor;
+    Dialog permissionDialog;
 
 
     private SharedPreferences loginPrefs;
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
 //            dialog = Tools.requestPermissions(MainActivity.this);
-            Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+            permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
             permissionDialog.show();
         }
 
@@ -348,6 +349,10 @@ public class MainActivity extends AppCompatActivity {
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
+        }
+        if (permissionDialog != null){
+            permissionDialog.dismiss();
+            permissionDialog = null;
         }
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
@@ -525,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+                        permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
                         permissionDialog.show();
                     }
                 });
@@ -547,7 +552,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
 //                    runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
                     runOnUiThread(() -> {
-                        Dialog permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+                        permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
                         permissionDialog.show();
                     });
                 } else {
