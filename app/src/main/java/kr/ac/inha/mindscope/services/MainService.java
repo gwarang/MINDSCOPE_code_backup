@@ -146,14 +146,14 @@ public class MainService extends Service {
                 joinTimestamp = getJoinTime();
             int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
-            // step1
-            if(stepCheck == 0 && curTimestamp - joinTimestamp >= STEP0_EXPIRE_TIMESTAMP_VALUE){
+            if(curTimestamp - joinTimestamp >= STEP0_EXPIRE_TIMESTAMP_VALUE){
+                // step1
                 SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
                 stepEditor.putInt("stepCheck", 1);
                 stepEditor.apply();
             }
-            // step2
-            if(stepCheck == 1 && curTimestamp - joinTimestamp >= STEP1_EXPIRE_TIMESTAMP_VALUE){
+            else if(curTimestamp - joinTimestamp >= STEP1_EXPIRE_TIMESTAMP_VALUE){
+                // step2
                 SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
                 stepEditor.putInt("stepCheck", 2);
                 stepEditor.apply();
@@ -680,28 +680,30 @@ public class MainService extends Service {
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         SharedPreferences.Editor editor = stepChangePrefs.edit();
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-        EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
-                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                .build();
-        EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-        if (responseMessage.getDoneSuccessfully()) {
-            long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(joinTimestamp);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            editor.putLong("join_timestamp", cal.getTimeInMillis());
-            editor.apply();
-            firstDayTimestamp = cal.getTimeInMillis();
+        if(Tools.isNetworkAvailable()){
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+            EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                    .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                    .build();
+            EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+            if (responseMessage.getDoneSuccessfully()) {
+                long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(joinTimestamp);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                editor.putLong("join_timestamp", cal.getTimeInMillis());
+                editor.apply();
+                firstDayTimestamp = cal.getTimeInMillis();
+            }
+            channel.shutdown();
         }
-        channel.shutdown();
         return firstDayTimestamp;
     }
 }
