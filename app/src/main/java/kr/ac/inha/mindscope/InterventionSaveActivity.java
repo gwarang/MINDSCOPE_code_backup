@@ -3,9 +3,11 @@ package kr.ac.inha.mindscope;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,7 +21,7 @@ import androidx.core.app.NavUtils;
 
 public class InterventionSaveActivity extends AppCompatActivity {
 
-    private static final String TAG = "InterventionSaveActivity";
+    private static final String TAG = "IntervSaveActivity";
     Toolbar toolbar;
     EditText interventionEdit;
 
@@ -37,6 +39,7 @@ public class InterventionSaveActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
 
         interventionEdit = findViewById(R.id.input_intervention);
+        interventionEdit.setOnFocusChangeListener(focusChangeListener);
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             interventionEdit.setHint(intent.getExtras().getString("currentIntervention"));
@@ -77,4 +80,19 @@ public class InterventionSaveActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.toolbar_btn_save, menu);
         return true;
     }
+
+    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if(b){
+                Log.e(TAG, "focus true");
+                String s = interventionEdit.getText().toString();
+                if(interventionEdit.getText().toString().equals("")){
+                    Log.e(TAG, "add first #");
+                    interventionEdit.setText("#");
+                    interventionEdit.setSelection(interventionEdit.getText().length());
+                }
+            }
+        }
+    };
 }
