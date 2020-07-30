@@ -713,6 +713,7 @@ public class MainActivity extends AppCompatActivity {
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             navController.setGraph(R.navigation.mobile_navigation_stpe2);
             Log.i(TAG, "nav2");
+//            navController.getCurrentDestination()
 
         } else {
             // STEP 1 -- stepCheck == 0 or 1

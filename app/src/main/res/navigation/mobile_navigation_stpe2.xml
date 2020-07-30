@@ -11,17 +11,46 @@
         tools:layout="@layout/fragment_me_step2">
         <action
             android:id="@+id/action_me_to_care_step2"
-            app:destination="@id/navigation_care_step2"/>
+            app:destination="@id/navigation_care_step2"
+            app:popUpTo="@+id/navigation_care_step2"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_me_to_report_step2"
+            app:destination="@id/navigation_report_step2"
+            app:popUpTo="@+id/navigation_report_step2"
+            app:popUpToInclusive="true"/>
     </fragment>
 
     <fragment
         android:id="@+id/navigation_care_step2"
         android:name="kr.ac.inha.mindscope.fragment.CareFragmentStep2"
-        tools:layout="@layout/fragment_care_step2" />
+        tools:layout="@layout/fragment_care_step2">
+        <action
+            android:id="@+id/action_care_to_me_step2"
+            app:destination="@id/navigation_me_step2"
+            app:popUpTo="@+id/navigation_me_step2"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_care_to_report_step2"
+            app:destination="@id/navigation_report_step2"
+            app:popUpTo="@+id/navigation_report_step2"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_report_step2"
         android:name="kr.ac.inha.mindscope.fragment.ReportFragmentStep2"
-        tools:layout="@layout/fragment_report_step2" />
+        tools:layout="@layout/fragment_report_step2">
+        <action
+            android:id="@+id/action_report_to_me_step2"
+            app:destination="@id/navigation_me_step2"
+            app:popUpTo="@+id/navigation_me_step2"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_report_to_care_step2"
+            app:destination="@id/navigation_care_step2"
+            app:popUpTo="@+id/navigation_care_step2"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
 </navigation>

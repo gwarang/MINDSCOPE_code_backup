@@ -126,6 +126,8 @@ public class TagActivity extends AppCompatActivity {
 
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("get_point", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             finish();
             startActivity(intent);
 

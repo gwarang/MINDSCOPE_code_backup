@@ -68,7 +68,11 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
 
         placeNameView.setText(locationObject.getmName());
         placeAddressView.setText(locationObject.getmAddress());
-        placeUserNameView.setText(locationObject.getmId());
+        if(locationObject.getmId().equals(ID_HOME)){
+            placeUserNameView.setText(context.getResources().getString(R.string.place_home));
+        }else{
+            placeUserNameView.setText(locationObject.getmId());
+        }
 
         Button editButton = convertView.findViewById(R.id.btn_place_info_edit);
         Button deleteButton = convertView.findViewById(R.id.btn_place_info_delete);

@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -409,6 +410,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
+    @Override
     public void onProviderEnabled(String s) {
 
     }
@@ -634,6 +660,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra("lat", selectedLatLng.latitude);
                     intent.putExtra("lng", selectedLatLng.longitude);
                     intent.putExtra("home_setting", true);
+                    checkForFirstHomeSetting = false;
                 }else{
                     intent.putExtra("name", selectedName);
                     intent.putExtra("address", selectedAddress);

@@ -359,6 +359,8 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("accuracy", accuracy);
                     intent.putExtra("feature_ids", feature_ids);
                     intent.putExtra("get_point", true);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
                     final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -405,6 +407,8 @@ public class StressReportFragment2 extends Fragment {
                     intent.putExtra("accuracy", accuracy);
                     intent.putExtra("feature_ids", feature_ids);
                     intent.putExtra("get_point", true);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
                     final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

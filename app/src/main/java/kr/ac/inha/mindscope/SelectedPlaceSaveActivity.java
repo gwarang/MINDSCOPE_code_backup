@@ -75,7 +75,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         home_setting = intent.getBooleanExtra("home_setting", false);
 
         if(home_setting){
-            editText.setText("집");
+            editText.setText(getResources().getString(R.string.place_home));
             editText.setEnabled(false);
             firstHomeSettingHelpText.setVisibility(View.VISIBLE);
         }else{
@@ -153,7 +153,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         }
 
         String location_id;
-        if (placeUserName.equals("집")) {
+        if (placeUserName.equals("집") || placeUserName.equals("Home")) {
             editor.putFloat(ID_HOME + "_LAT", lat.floatValue());
             editor.putFloat(ID_HOME + "_LNG", lng.floatValue());
             editor.putString(ID_HOME + "_ADDRESS", selectedPlaceAddress);

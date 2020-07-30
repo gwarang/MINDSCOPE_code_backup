@@ -139,6 +139,7 @@
     <string name="step1_notice">이 기능은 2주 간의 설문을 마친 뒤\nSTEP 2부터 잠금 해제 됩니다</string>
 
     <string name="place_name">위치</string>
+    <string name="place_home">집</string>
     <string name="place_address">주소</string>
     <string name="place_user_name">이름</string>
 
