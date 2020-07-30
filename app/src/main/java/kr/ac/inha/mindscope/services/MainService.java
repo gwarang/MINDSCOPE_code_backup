@@ -462,7 +462,7 @@ public class MainService extends Service {
         mNotificationManager.cancel(PERMISSION_REQUEST_NOTIFICATION_ID);
         //endregion
 
-        Tools.sleep(1000);
+        Tools.sleep(5000);
 
         super.onDestroy();
     }

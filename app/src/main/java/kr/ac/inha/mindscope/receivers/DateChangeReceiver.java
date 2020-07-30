@@ -14,6 +14,7 @@ import kr.ac.inha.mindscope.services.MainService;
 public class DateChangeReceiver extends BroadcastReceiver {
 
     private static final String TAG = "DateChangeReceiver";
+    private int[] restartHours = new int[]{6, 12, 18};
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -44,18 +45,21 @@ public class DateChangeReceiver extends BroadcastReceiver {
                     }
                 }
 
-            }else if(curCal.get(Calendar.HOUR_OF_DAY) == 12 && curCal.get(Calendar.MINUTE) == 0){
-                Log.e(TAG, "12:00");
-                Intent intentService = new Intent(context, MainService.class);
-                context.stopService(intentService);
-                SharedPreferences configPrefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+            }
+            for(int hour : restartHours){
+                if(curCal.get(Calendar.HOUR_OF_DAY) == hour && curCal.get(Calendar.MINUTE) == 0){
+                    Log.e(TAG, "restart at " + hour + " O'clock");
+                    Intent intentService = new Intent(context, MainService.class);
+                    context.stopService(intentService);
+                    SharedPreferences configPrefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
-                if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
-                    Log.e(TAG, "RESTART SERVICE");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        context.startForegroundService(intentService);
-                    } else {
-                        context.startService(intentService);
+                    if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
+                        Log.e(TAG, "RESTART SERVICE");
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            context.startForegroundService(intentService);
+                        } else {
+                            context.startService(intentService);
+                        }
                     }
                 }
             }
