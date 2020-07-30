@@ -46,6 +46,7 @@ import kr.ac.inha.mindscope.DbMgr;
 import kr.ac.inha.mindscope.EMAActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
+import kr.ac.inha.mindscope.SplashActivity;
 import kr.ac.inha.mindscope.StressReportActivity;
 import kr.ac.inha.mindscope.Tools;
 import kr.ac.inha.mindscope.receivers.ActivityRecognitionReceiver;
@@ -399,13 +400,17 @@ public class MainService extends Service {
         //endregion
 
         //region Posting Foreground notification when service is started
+        Intent notificationIntent = new Intent(this, SplashActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String channel_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
-                .setCategory(NotificationCompat.CATEGORY_SERVICE);
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setContentIntent(pendingIntent);
         Notification notification = builder.build();
         startForeground(ID_SERVICE, notification);
         //endregion
