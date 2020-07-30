@@ -16,7 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +43,7 @@ public class TagActivity extends AppCompatActivity {
     long timestamp;
     int dayNum;
     int emaOrder;
+    int answer1, answer2, answer3, answer4, answer5;
 
     Toolbar toolbar;
 
@@ -53,6 +56,13 @@ public class TagActivity extends AppCompatActivity {
         timestamp = intent.getLongExtra("timestamp", 0);
         dayNum = intent.getIntExtra("daynum", 0);
         emaOrder = intent.getIntExtra("emaorder", 0);
+        answer1 = intent.getIntExtra("answer1", 5);
+        answer2 = intent.getIntExtra("answer2", 5);
+        answer3 = intent.getIntExtra("answer3", 5);
+        answer4 = intent.getIntExtra("answer4", 5);
+        answer5 = intent.getIntExtra("answer5", 5);
+
+
 
         loadingLayout = findViewById(R.id.loading_frame_tag);
         loadingLayout.setVisibility(View.GONE);
@@ -114,6 +124,30 @@ public class TagActivity extends AppCompatActivity {
             for(String tag : tags){
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
             }
+
+            String answers = String.format(Locale.US, "%d %d %d %d %d",
+                    answer1,
+                    answer2,
+                    answer3,
+                    answer4,
+                    answer5);
+
+            Log.i(TAG, "answer " + answers);
+
+            int dataSourceId2 = prefs.getInt("SURVEY_EMA", -1);
+            assert dataSourceId2 != -1;
+            Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId2);
+            if (getIntent().getIntExtra("ema_order", (short) -1) != -1) {
+                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
+            }
+
+            SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+            SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
+            String emaSubmit = "ema_submit_check_" + emaOrder;
+            Calendar cal = Calendar.getInstance();
+            emaSubmitEditor.putBoolean(emaSubmit, true);
+            emaSubmitEditor.putInt("emaSubmitDate", cal.get(Calendar.DATE));
+            emaSubmitEditor.apply();
 
             SharedPreferences hashtagsPrefs = getSharedPreferences("hashtags", MODE_PRIVATE);
             SharedPreferences.Editor editor = hashtagsPrefs.edit();

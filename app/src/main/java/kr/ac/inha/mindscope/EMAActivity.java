@@ -336,79 +336,38 @@ public class EMAActivity extends AppCompatActivity {
     public void emaSubmit() {
         long timestamp = System.currentTimeMillis();
 
-//        int answer1 = seekBar1.getProgress();
-//        int answer2 = seekBar2.getProgress();
-//        int answer3 = 4;
-//        int answer4 = 4;
-//        int answer5 = 4; // new question
-//        switch (seekBar3.getProgress()) {
-//            case 0:
-//                answer3 = 4;
-//                break;
-//            case 1:
-//                answer3 = 3;
-//                break;
-//            case 2:
-//                answer3 = 2;
-//                break;
-//            case 3:
-//                answer3 = 1;
-//                break;
-//            case 4:
-//                answer3 = 0;
-//                break;
-//        }
-//        switch (seekBar4.getProgress()) {
-//            case 0:
-//                answer4 = 4;
-//                break;
-//            case 1:
-//                answer4 = 3;
-//                break;
-//            case 2:
-//                answer4 = 2;
-//                break;
-//            case 3:
-//                answer4 = 1;
-//                break;
-//            case 4:
-//                answer4 = 0;
-//                break;
-//        }
-
         if (answer1 == 5 || answer2 == 5 || answer3 == 5 || answer4 == 5 || answer5 == 5) {
             Toast.makeText(getApplicationContext(), "모든 문항에 응답해주세요!", Toast.LENGTH_LONG).show();
             return;
         }
 
-        String answers = String.format(Locale.US, "%d %d %d %d %d",
-                answer1,
-                answer2,
-                answer3,
-                answer4,
-                answer5);
-
-        Log.i(TAG, "answer " + answers);
-
-        SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-        int dataSourceId = prefs.getInt("SURVEY_EMA", -1);
-        assert dataSourceId != -1;
-        Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId);
-        if (getIntent().getIntExtra("ema_order", (short) -1) != -1) {
-            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
-        }
-
-
-        SharedPreferences.Editor editor = loginPrefs.edit();
-        editor.putBoolean("ema_btn_make_visible", false);
-        editor.apply();
-
+//        String answers = String.format(Locale.US, "%d %d %d %d %d",
+//                answer1,
+//                answer2,
+//                answer3,
+//                answer4,
+//                answer5);
+//
+//        Log.i(TAG, "answer " + answers);
+//
+//        SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+//        int dataSourceId = prefs.getInt("SURVEY_EMA", -1);
+//        assert dataSourceId != -1;
+//        Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId);
+//        if (getIntent().getIntExtra("ema_order", (short) -1) != -1) {
+//            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
+//        }
 
         //go to tag activity
         Intent intent = new Intent(this, TagActivity.class);
         intent.putExtra("timestamp", timestamp);
         intent.putExtra("daynum", todayNum);
         intent.putExtra("emaorder", emaOrder);
+        intent.putExtra("answer1", answer1);
+        intent.putExtra("answer2", answer2);
+        intent.putExtra("answer3", answer3);
+        intent.putExtra("answer4", answer4);
+        intent.putExtra("answer5", answer5);
         startActivity(intent);
 
 
@@ -417,6 +376,7 @@ public class EMAActivity extends AppCompatActivity {
             notificationManager.cancel(EMA_NOTI_ID);
         }
 
+        // TODO 동기화 후에 삭제하러 올것
         SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
         String emaSubmit = "ema_submit_check_" + emaOrder;
@@ -425,7 +385,7 @@ public class EMAActivity extends AppCompatActivity {
         emaSubmitEditor.putInt("emaSubmitDate", cal.get(Calendar.DATE));
         emaSubmitEditor.apply();
 
-        Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();
     }
 
     public void clickSubmit(View view) {

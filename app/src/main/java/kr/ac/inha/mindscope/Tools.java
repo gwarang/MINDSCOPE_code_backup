@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -520,53 +521,53 @@ public class Tools {
         Log.i(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
         DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, calDateDays, Tools.POINT_INCREASE_VALUE);
 
-//        // force upload to server
-//        Thread forceUploadThread = new Thread(){
-//            @Override
-//            public void run() {
-//                if (Tools.isNetworkAvailable()) {
-//                    Cursor cursor = DbMgr.getSensorData();
-//                    if (cursor.moveToFirst()) {
-//                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
-//                                context.getString(R.string.grpc_host),
-//                                Integer.parseInt(context.getString(R.string.grpc_port))
-//                        ).usePlaintext().build();
-//                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-//
-//                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-//                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-//
-//                        try {
-//                            do {
-//                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
-//                                        .setUserId(userId)
-//                                        .setEmail(email)
-//                                        .setDataSource(cursor.getInt(1))
-//                                        .setTimestamp(cursor.getLong(2))
-//                                        .setValues(cursor.getString(4))
-//                                        .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
-//                                        .build();
-////                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
-////                                Log.e("submitThread", "Submission: " + res);
-//                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
-//
-//                                if (responseMessage.getDoneSuccessfully()) {
-//                                    DbMgr.deleteRecord(cursor.getInt(0));
-//                                }
-//
-//                            } while (cursor.moveToNext());
-//                        } catch (StatusRuntimeException e) {
-//                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
-//                            e.printStackTrace();
-//                        } finally {
-//                            channel.shutdown();
-//                        }
-//                    }
-//                    cursor.close();
-//                }
-//            }
-//        };
-//        forceUploadThread.start();
+        // force upload to server
+        Thread forceUploadThread = new Thread(){
+            @Override
+            public void run() {
+                if (Tools.isNetworkAvailable()) {
+                    Cursor cursor = DbMgr.getSensorData();
+                    if (cursor.moveToFirst()) {
+                        ManagedChannel channel = ManagedChannelBuilder.forAddress(
+                                context.getString(R.string.grpc_host),
+                                Integer.parseInt(context.getString(R.string.grpc_port))
+                        ).usePlaintext().build();
+                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+
+                        try {
+                            do {
+                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
+                                        .setUserId(userId)
+                                        .setEmail(email)
+                                        .setDataSource(cursor.getInt(1))
+                                        .setTimestamp(cursor.getLong(2))
+                                        .setValues(cursor.getString(4))
+                                        .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
+                                        .build();
+//                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
+//                                Log.e("submitThread", "Submission: " + res);
+                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
+
+                                if (responseMessage.getDoneSuccessfully()) {
+                                    DbMgr.deleteRecord(cursor.getInt(0));
+                                }
+
+                            } while (cursor.moveToNext());
+                        } catch (StatusRuntimeException e) {
+                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
+                            e.printStackTrace();
+                        } finally {
+                            channel.shutdown();
+                        }
+                    }
+                    cursor.close();
+                }
+            }
+        };
+        forceUploadThread.start();
 //
 //        try {
 //            forceUploadThread.join();

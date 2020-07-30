@@ -22,6 +22,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
@@ -258,7 +259,6 @@ public class MeFragmentStep1 extends Fragment {
     }
 
     private void updateEmaResponseView(/*List<String> values*/) {
-
         // initialize
         TextView[] times = {
                 time1,
@@ -279,20 +279,67 @@ public class MeFragmentStep1 extends Fragment {
             timeBtn.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_inarrived));
         }
 
-        // time check
-        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
-        Calendar cal = Calendar.getInstance();
-        int curHours = cal.get(Calendar.HOUR_OF_DAY);
-        for (short i = 0; i < 4; i++) {
-            if(curHours >= SUBMIT_HOUR[i]){
-                if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
-                    times[i].setText(getResources().getString(R.string.string_survey_incomplete));
-                    timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_incomplete));
-                } else {
-                    times[i].setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
-                    timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_complete));
+
+        // sync ema submit & update ema submit check box
+        if(Tools.isNetworkAvailable()){
+            new Thread(() -> {
+                SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = emaSubmitCheckPrefs.edit();
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+                Calendar fromCal = Calendar.getInstance();
+                fromCal.set(Calendar.HOUR_OF_DAY, 0);
+                fromCal.set(Calendar.MINUTE, 0);
+                fromCal.set(Calendar.SECOND, 0);
+                fromCal.set(Calendar.MILLISECOND, 0);
+                Calendar tillCal = (Calendar) fromCal.clone();
+                tillCal.set(Calendar.HOUR_OF_DAY, 23);
+                tillCal.set(Calendar.MINUTE, 59);
+                tillCal.set(Calendar.SECOND, 59);
+                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
+                        .setFromTimestamp(fromCal.getTimeInMillis())
+                        .setTillTimestamp(tillCal.getTimeInMillis())
+                        .build();
+                try {
+                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        List<String> values = responseMessage.getValueList();
+                        for(String value : values){
+                            String[] splitValue = value.split(" ");
+                            editor.putBoolean("ema_submit_check_"+splitValue[1], true);
+                            editor.apply();
+                        }
+                    }
+                } catch (StatusRuntimeException e) {
+                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                    e.printStackTrace();
+                } finally {
+                    channel.shutdown();
                 }
-            }
+
+                requireActivity().runOnUiThread(() -> {
+                    // time check
+                    Calendar cal = Calendar.getInstance();
+                    int curHours = cal.get(Calendar.HOUR_OF_DAY);
+                    for (short i = 0; i < 4; i++) {
+                        if(curHours >= SUBMIT_HOUR[i]){
+                            if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
+                                times[i].setText(getResources().getString(R.string.string_survey_incomplete));
+                                timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_incomplete));
+                            } else {
+                                times[i].setText(Html.fromHtml(getResources().getString(R.string.string_survey_complete)));
+                                timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_complete));
+                            }
+                        }
+                    }
+                });
+            }).start();
         }
     }
 
@@ -303,7 +350,7 @@ public class MeFragmentStep1 extends Fragment {
                 SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-                int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+                int campaignId = Integer.parseInt(context.getString(R.string.stress_campaign_id));
                 final int REWARD_POINTS = 58;
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
@@ -341,7 +388,7 @@ public class MeFragmentStep1 extends Fragment {
                 SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-                int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+                int campaignId = Integer.parseInt(context.getString(R.string.stress_campaign_id));
                 final int REWARD_POINTS = 58;
 
                 Calendar fromCal = Calendar.getInstance();
