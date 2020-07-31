@@ -112,16 +112,30 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
         builder.setPositiveButton("OK", (dialog, which) -> {
             GeofenceHelper.removeGeofence(context, locationId);
             SharedPreferences.Editor editor = locationPrefs.edit();
-            editor.remove(locationId + "_LAT");
-            editor.remove(locationId + "_LNG");
-            editor.remove(locationId + "_ENTERED_TIME");
-            editor.remove(locationId + "_ADDRESS");
-            editor.remove(locationId + "_NAME");
+
+            editor.putBoolean(locationId+"_isDeleted", true);
+
+//            editor.remove(locationId + "_LAT");
+//            editor.remove(locationId + "_LNG");
+//            editor.remove(locationId + "_ENTERED_TIME");
+//            editor.remove(locationId + "_ADDRESS");
+//            editor.remove(locationId + "_NAME");
+
             String newLocationList = locationPrefs.getString("locationList", "").replace(" " + locationId, "");
             editor.putString("locationList", newLocationList);
-
             editor.apply();
             Toast.makeText(context, context.getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
+
+            SharedPreferences confPrefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+            int dataSourceId_LocationsList = confPrefs.getInt("LOCATIONS_LIST", -1);
+            assert dataSourceId_LocationsList != -1;
+            long nowTime = System.currentTimeMillis();
+            DbMgr.saveMixedData(dataSourceId_LocationsList, nowTime, 1.0f,
+                    locationId,
+                    locationPrefs.getString(locationId+"_ADDRESS", "").replace(' ', '_'),
+                    locationPrefs.getFloat(locationId+"_LAT", 0),
+                    locationPrefs.getFloat(locationId+"_LNG", 0),
+                    locationPrefs.getBoolean(locationId+"_isDeleted", true));
 
             Tools.saveApplicationLog(getContext(), MapsActivity.TAG, ACTION_CLICK_DELETE_PLACE);
 

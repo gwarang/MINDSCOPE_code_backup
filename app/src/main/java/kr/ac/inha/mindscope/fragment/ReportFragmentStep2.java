@@ -53,7 +53,6 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
-import kr.ac.inha.mindscope.StressReportDBHelper;
 import kr.ac.inha.mindscope.Tools;
 
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
@@ -126,8 +125,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ScrollView reasonContainer;
     ImageButton backArrow;
 
-
-    StressReportDBHelper dbHelper;
     private static MaterialCalendarView materialCalendarView;
 
     static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
@@ -146,7 +143,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbHelper = new StressReportDBHelper(getContext());
     }
 
     @Override
@@ -557,6 +553,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         super.onResume();
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
+
 
     // endregion
 

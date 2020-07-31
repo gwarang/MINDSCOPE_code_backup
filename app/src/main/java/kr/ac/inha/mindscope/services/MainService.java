@@ -146,7 +146,8 @@ public class MainService extends Service {
                 joinTimestamp = getJoinTime();
             int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
-            if(curTimestamp - joinTimestamp >= STEP0_EXPIRE_TIMESTAMP_VALUE){
+            long diff = curTimestamp - joinTimestamp;
+            if(diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE){
                 // step1
                 SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
                 stepEditor.putInt("stepCheck", 1);
@@ -356,6 +357,22 @@ public class MainService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        //region Posting Foreground notification when service is started
+        Intent notificationIntent = new Intent(this, SplashActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String channel_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setContentIntent(pendingIntent);
+        Notification notification = builder.build();
+        startForeground(ID_SERVICE, notification);
+        //endregion
+
         IntentFilter dateChangeFilter = new IntentFilter(Intent.ACTION_TIME_TICK);
         dateChangeReceiver = new DateChangeReceiver();
         registerReceiver(dateChangeReceiver, dateChangeFilter);
@@ -399,21 +416,7 @@ public class MainService extends Service {
         registerReceiver(mCallReceiver, intentFilter);
         //endregion
 
-        //region Posting Foreground notification when service is started
-        Intent notificationIntent = new Intent(this, SplashActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channel_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
-                .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setContentIntent(pendingIntent);
-        Notification notification = builder.build();
-        startForeground(ID_SERVICE, notification);
-        //endregion
+
 
         mainHandler.post(mainRunnable);
         appUsageSaveHandler.post(appUsageSaveRunnable);

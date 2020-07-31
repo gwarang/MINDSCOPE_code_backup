@@ -47,14 +47,13 @@ public class CareFragmentStep2 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
         SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+
 
         if(stressReportPrefs.getBoolean("today_last_report", false)){
             SharedPreferences.Editor editor = stressReportPrefs.edit();
@@ -103,6 +102,7 @@ public class CareFragmentStep2 extends Fragment {
 
         return view;
     }
+
 
     private CareViewPagerAdapter createAapter(){
         CareViewPagerAdapter adapter = new CareViewPagerAdapter(requireActivity());

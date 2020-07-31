@@ -77,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog dialog;
     private PointCustomDialog pointCustomDialog;
 
+    SharedPreferences lastPagePrefs;
+    SharedPreferences stepChangePrefs;
+    NavController navController;
+
     private Handler heartBeatHandler = new Handler();
     private Runnable heartBeatSendRunnable = new Runnable() {
         public void run() {
@@ -210,6 +214,8 @@ public class MainActivity extends AppCompatActivity {
             };
         }
 
+        lastPagePrefs = getSharedPreferences("LastPage", MODE_PRIVATE);
+        stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
 
         DbMgr.init(getApplicationContext());
         AppUseDb.init(getApplicationContext());
@@ -357,6 +363,14 @@ public class MainActivity extends AppCompatActivity {
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
 
+//        int step = stepChangePrefs.getInt("stepCheck", 0);
+//
+//        if(step == 2){
+//            SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+//            lastPagePrefsEditor.putString("last_open_nav_frg", "me");
+//            lastPagePrefsEditor.apply();
+//        }
+
         setUpNewAppUseNotification();
     }
 
@@ -493,7 +507,6 @@ public class MainActivity extends AppCompatActivity {
     public long getJoinTime() {
         long firstDayTimestamp = 0;
         SharedPreferences loginPrefs = getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-        SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         SharedPreferences.Editor editor = stepChangePrefs.edit();
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
@@ -650,14 +663,14 @@ public class MainActivity extends AppCompatActivity {
     private void changeNav() {
 
         // TODO 추후에는 시작날로부터 2주후부터 stepChange 하도록 구현할것
-        SharedPreferences stepChange = getSharedPreferences("stepChange", MODE_PRIVATE);
-        int step = stepChange.getInt("stepCheck", 0);
+        stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+        int step = stepChangePrefs.getInt("stepCheck", 0);
 
         long joinTimestamp = 0;
-        if ((joinTimestamp = stepChange.getLong("join_timestamp", 0)) == 0)
+        if ((joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0)) == 0)
             joinTimestamp = getJoinTime();
 
-        if (step == 1 && !stepChange.getBoolean("step1Done", false)) {
+        if (step == 1 && !stepChangePrefs.getBoolean("step1Done", false)) {
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
             // step1 첫 시작시 dialog
             firstStartStepDialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
@@ -675,7 +688,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // step2
-        if (step == 2 && !stepChange.getBoolean("step2Done", false)) {
+        if (step == 2 && !stepChangePrefs.getBoolean("step2Done", false)) {
 
             // step2 첫 시작시 dialog
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
@@ -696,20 +709,20 @@ public class MainActivity extends AppCompatActivity {
             firstStartStepEditor.putBoolean("firstStartStep2", true);
             firstStartStepEditor.apply();
 
-            SharedPreferences.Editor editor = stepChange.edit();
+            SharedPreferences.Editor editor = stepChangePrefs.edit();
             editor.putBoolean("step2Done", true);
             editor.apply();
 
-            Log.i(TAG, "step2 test " + stepChange.getInt("stepchange", 9));
+            Log.i(TAG, "step2 test " + stepChangePrefs.getInt("stepchange", 9));
         }
 
 
-        NavController navController;
+
         // Bottom Navigation Bar
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         getSupportActionBar().hide();
-        if (stepChange.getInt("stepCheck", 0) == 2) {
+        if (stepChangePrefs.getInt("stepCheck", 0) == 2) {
             // STEP 2
             navView.getMenu().clear();
             navView.inflateMenu(R.menu.bottom_navigation_menu_step2);

@@ -51,6 +51,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +62,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import inha.nsl.easytrack.ETServiceGrpc;
+import inha.nsl.easytrack.EtService;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.dialog.FirstMapStartDialog;
 
 import static kr.ac.inha.mindscope.LocationAdapter.EDIT_CODE;
@@ -69,85 +75,88 @@ import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHei
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, OnItemClick, GoogleMap.OnMapClickListener {
 
     public static final String TAG = "MapsActivity";
+    //region variable
+    public static final String ID_HOME = "HOME";
+    public static final String ID_DORM = "DORM";
+    public static final String ID_UNIV = "UNIV";
+    public static final String ID_LIBRARY = "LIBRARY";
+    public static final String ID_ADDITIONAL = "ADDITIONAL";
+    public static final int GEOFENCE_RADIUS_DEFAULT = 100;
     private static final String ACTION_SELECT_PLACE = "SELECT_PLACE";
     private static final String ACTION_CLICK_SAVE_SELECT_PLACE = "CLICK_SAVE_SELECT_PLACE";
+    private static final Float ZOOM_LEVLE = 16f;
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
-    private GoogleMap mMap;
+    public boolean checkForFirstStartStep1;
     LocationManager locationManager;
     Toolbar toolbar;
     ListView listView;
     ScrollView scrollView;
     ImageButton currentLocationBtn;
     Button mapSaveBtn;
+    LatLng selectedLatLng;
+    String selectedName;
+    String selectedAddress;
+    ArrayList<StoreLocation> locationArrayList;
+    FirstMapStartDialog firstMapStartDialog;
+    LinearLayout loadingLayout;
+    private GoogleMap mMap;
     private Marker currentGeofenceMarker;
     private Circle geoLimits;
-    private static final Float ZOOM_LEVLE = 16f;
-
-    //region Constants
-    public static final String ID_HOME = "HOME";
-    public static final String ID_DORM = "DORM";
-    public static final String ID_UNIV = "UNIV";
-    public static final String ID_LIBRARY = "LIBRARY";
-    public static final String ID_ADDITIONAL = "ADDITIONAL";
-    //endregion
-
-    public boolean checkForFirstStartStep1;
     private boolean checkForFirstHomeSetting = false;
-
     private String TITLE_HOME;
     private String TITLE_DORM;
     private String TITLE_UNIV;
     private String TITLE_LIBRARY;
     private String TITLE_ADDITIONAL;
-
-    // autocomplte place selected
-    LatLng selectedLatLng;
-    String selectedName;
-    String selectedAddress;
-
     private FusedLocationProviderClient fusedLocationProviderClient;
-    ArrayList<StoreLocation> locationArrayList;
-    public static final int GEOFENCE_RADIUS_DEFAULT = 100;
-    FirstMapStartDialog firstMapStartDialog;
-
-
-
-    //region Internal classes
-    static class StoreLocation {
-        LatLng mLatLng;
-        String mId;
-        String mName;
-        String mAddress;
-
-        StoreLocation(String id, LatLng latlng, String name, String address) {
-            mLatLng = latlng;
-            mId = id;
-            mName = name;
-            mAddress = address;
-        }
-
-        LatLng getmLatLng() {
-            return mLatLng;
-        }
-
-        String getmId() {
-            return mId;
-        }
-
-        String getmName() {
-            return mName;
-        }
-
-        String getmAddress() {
-            return mAddress;
-        }
-
-
-    }
     //endregion
+    private View.OnClickListener dialogClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            firstMapStartDialog.dismiss();
+            checkForFirstHomeSetting = true;
+            checkForFirstStartStep1 = true;
+        }
+    };
+    private View.OnClickListener mapSaveClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (selectedLatLng != null) {
+                Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
+                if (checkForFirstHomeSetting) {
+                    intent.putExtra("name", selectedName);
+                    intent.putExtra("address", selectedAddress);
+                    intent.putExtra("lat", selectedLatLng.latitude);
+                    intent.putExtra("lng", selectedLatLng.longitude);
+                    intent.putExtra("home_setting", true);
+                    checkForFirstHomeSetting = false;
+                } else {
+                    intent.putExtra("name", selectedName);
+                    intent.putExtra("address", selectedAddress);
+                    intent.putExtra("lat", selectedLatLng.latitude);
+                    intent.putExtra("lng", selectedLatLng.longitude);
+                    intent.putExtra("home_setting", false);
+                }
+                startActivity(intent);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_SELECT_PLACE);
+            } else {
+                Toast.makeText(getApplicationContext(), "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
-
-    LinearLayout loadingLayout;
+    static StoreLocation getLocationData(Context con, String locationId) {
+        SharedPreferences locationPrefs = con.getSharedPreferences("UserLocations", MODE_PRIVATE);
+        float lat = locationPrefs.getFloat(locationId + "_LAT", 0);
+        float lng = locationPrefs.getFloat(locationId + "_LNG", 0);
+        String name = locationPrefs.getString(locationId + "_NAME", "");
+        String address = locationPrefs.getString(locationId + "_ADDRESS", "");
+        boolean isDeleted = locationPrefs.getBoolean(locationId + "_isDeleted", false);
+        if (lat != 0 && lng != 0) {
+            return new StoreLocation(locationId, new LatLng(lat, lng), name, address, isDeleted);
+        }
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,7 +243,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         ScrollableMapFragment mapFragment = (ScrollableMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null){
+        if (mapFragment != null) {
             mapFragment.getMapAsync(this);
             mapFragment.setListener(new ScrollableMapFragment.OnTouchListener() {
                 @Override
@@ -292,12 +301,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void updateListView() {
         locationArrayList = new ArrayList<>();
         SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
-        String[] locations = locationPrefs.getString("locationList", "").split(" ");
+        String locationList = locationPrefs.getString("locationList", "");
+        if (locationList.equals("")) {
+            locationList = getLocationListFromServer();
+        }
+        String[] locations = locationList.split(" ");
         Log.e(TAG, "locationList " + locations);
         for (String location : locations) {
-            if (getLocationData(getApplicationContext(), location) != null){
+            if (getLocationData(getApplicationContext(), location) != null) {
 //                addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
                 locationArrayList.add(getLocationData(getApplicationContext(), location));
+//                StoreLocation storeLocation = getLocationData(getApplicationContext(), location);
+//                if (!storeLocation.getIsDeleted())
+
             }
         }
         LocationAdapter adapter = new LocationAdapter(this, R.layout.item_place_list, locationArrayList, this);
@@ -351,7 +367,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
         String[] locations = locationPrefs.getString("locationList", "").split(" ");
         for (String location : locations) {
-            if (getLocationData(getApplicationContext(), location) != null){
+            if (getLocationData(getApplicationContext(), location) != null) {
                 addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
                 locationArrayList.add(getLocationData(getApplicationContext(), location));
             }
@@ -383,10 +399,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(addressesList != null){
-            if(addressesList.size() == 0){
+        if (addressesList != null) {
+            if (addressesList.size() == 0) {
                 Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
-            }else {
+            } else {
                 selectedAddress = addressesList.get(0).getAddressLine(0);
                 selectedName = addressesList.get(0).getFeatureName();
             }
@@ -395,8 +411,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MarkerOptions optionsMarker = new MarkerOptions()
                 .position(latLng);
 
-        if(mMap != null){
-            if(currentGeofenceMarker != null){
+        if (mMap != null) {
+            if (currentGeofenceMarker != null) {
                 currentGeofenceMarker.remove();
             }
             currentGeofenceMarker = mMap.addMarker(optionsMarker);
@@ -458,6 +474,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+//    private void markerForGeofence(LatLng latLng) {
+//        MarkerOptions optionsMarker = new MarkerOptions()
+//                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
+//                .position(latLng)
+//                .title("Current Location test");
+//        if (mMap != null) {
+//            if (currentGeofenceMarker != null) {
+//                currentGeofenceMarker.remove();
+//            }
+//            currentGeofenceMarker = mMap.addMarker(optionsMarker);
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+//            drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
+//        }
+//    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -477,21 +508,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         geoLimits = mMap.addCircle(circleOptions);
     }
-
-//    private void markerForGeofence(LatLng latLng) {
-//        MarkerOptions optionsMarker = new MarkerOptions()
-//                .snippet(String.valueOf(GEOFENCE_RADIUS_DEFAULT))
-//                .position(latLng)
-//                .title("Current Location test");
-//        if (mMap != null) {
-//            if (currentGeofenceMarker != null) {
-//                currentGeofenceMarker.remove();
-//            }
-//            currentGeofenceMarker = mMap.addMarker(optionsMarker);
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
-//            drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
-//        }
-//    }
 
     private void addLocationMarker(StoreLocation location) {
         Drawable iconDrawable;
@@ -556,23 +572,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             intent.putExtra("placeusername", storeLocation.getmId());
             intent.putExtra("editcode", EDIT_CODE);
             startActivity(intent);
-        }else{
+        } else {
             Log.e(TAG, String.format("code %d", code));
         }
         updateListView();
 
-    }
-
-    static StoreLocation getLocationData(Context con, String locationId) {
-        SharedPreferences locationPrefs = con.getSharedPreferences("UserLocations", MODE_PRIVATE);
-        float lat = locationPrefs.getFloat(locationId + "_LAT", 0);
-        float lng = locationPrefs.getFloat(locationId + "_LNG", 0);
-        String name = locationPrefs.getString(locationId + "_NAME", "");
-        String address = locationPrefs.getString(locationId + "_ADDRESS", "");
-        if (lat != 0 && lng != 0) {
-            return new StoreLocation(locationId, new LatLng(lat, lng), name, address);
-        }
-        return null;
     }
 
     @Override
@@ -603,7 +607,74 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    private String getLocationListFromServer() {
+        String locationList = "";
+        if (Tools.isNetworkAvailable()) {
 
+            SharedPreferences loginPrefs = getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+            SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+            Calendar tillCal = Calendar.getInstance();
+
+            EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                    .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                    .setTargetDataSourceId(configPrefs.getInt("LOCATIONS_LIST", -1))
+                    .setFromTimestamp(0)
+                    .setTillTimestamp(tillCal.getTimeInMillis())
+                    .build();
+            try {
+                final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                if (responseMessage.getDoneSuccessfully()) {
+                    List<String> values = responseMessage.getValueList();
+                    final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = locationPrefs.edit();
+                    for (String value : values) {
+                        Log.e(TAG, "location list from server : " + value + " " + value.length());
+                        String[] splitValue = value.split(" ");
+                        if (splitValue.length == 5) {
+                            String placeUserName = splitValue[0];
+                            editor.putString(placeUserName + "_ADDRESS", splitValue[1].replace('_', ' '));
+                            editor.putFloat(placeUserName + "_LAT", Float.parseFloat(splitValue[2]));
+                            editor.putFloat(placeUserName + "_LNG", Float.parseFloat(splitValue[3]));
+                            editor.putBoolean(placeUserName + "_isDeleted", Boolean.parseBoolean(splitValue[4]));
+
+                            if (Boolean.parseBoolean(splitValue[4])) {
+                                String curLocationList = locationPrefs.getString("locationList", "");
+                                if (curLocationList.contains(placeUserName)) {
+                                    String newLocationList = curLocationList.replace((" " + placeUserName), "");
+                                    editor.putString("locationList", newLocationList);
+                                }
+                            }
+                            else
+                                editor.putString("locationList", String.format("%s %s", locationPrefs.getString("locationList", ""), placeUserName));
+
+                            editor.apply();
+
+                            LatLng position = new LatLng(Float.parseFloat(splitValue[2]), Float.parseFloat(splitValue[3]));
+
+                            GeofenceHelper.startGeofence(getApplicationContext(), placeUserName, position, GEOFENCE_RADIUS_DEFAULT);
+                        }
+                    }
+                    locationList = locationPrefs.getString("locationList", "");
+                }
+            } catch (StatusRuntimeException e) {
+                Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                channel.shutdown();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.when_network_unable), Toast.LENGTH_LONG).show();
+        }
+
+        return locationList;
+    }
 
     private void getCurrentLocation() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
@@ -632,10 +703,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        if(addressesList != null){
-                            if(addressesList.size() == 0){
+                        if (addressesList != null) {
+                            if (addressesList.size() == 0) {
                                 Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
-                            }else {
+                            } else {
                                 selectedAddress = addressesList.get(0).getAddressLine(0);
                                 selectedName = addressesList.get(0).getFeatureName();
                             }
@@ -644,8 +715,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         MarkerOptions optionsMarker = new MarkerOptions()
                                 .position(latLng);
 
-                        if(mMap != null){
-                            if(currentGeofenceMarker != null){
+                        if (mMap != null) {
+                            if (currentGeofenceMarker != null) {
                                 currentGeofenceMarker.remove();
                             }
                             currentGeofenceMarker = mMap.addMarker(optionsMarker);
@@ -656,41 +727,44 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    private View.OnClickListener dialogClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            firstMapStartDialog.dismiss();
-            checkForFirstHomeSetting = true;
-            checkForFirstStartStep1 = true;
-        }
-    };
+    //region Internal classes
+    static class StoreLocation {
+        LatLng mLatLng;
+        String mId;
+        String mName;
+        String mAddress;
+        boolean isDeleted;
 
-    private View.OnClickListener mapSaveClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (selectedLatLng != null) {
-                Intent intent = new Intent(MapsActivity.this, SelectedPlaceSaveActivity.class);
-                if(checkForFirstHomeSetting){
-                    intent.putExtra("name", selectedName);
-                    intent.putExtra("address", selectedAddress);
-                    intent.putExtra("lat", selectedLatLng.latitude);
-                    intent.putExtra("lng", selectedLatLng.longitude);
-                    intent.putExtra("home_setting", true);
-                    checkForFirstHomeSetting = false;
-                }else{
-                    intent.putExtra("name", selectedName);
-                    intent.putExtra("address", selectedAddress);
-                    intent.putExtra("lat", selectedLatLng.latitude);
-                    intent.putExtra("lng", selectedLatLng.longitude);
-                    intent.putExtra("home_setting", false);
-                }
-                startActivity(intent);
-                Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_SELECT_PLACE);
-            } else {
-                Toast.makeText(getApplicationContext(), "장소 검색 후 사용해주세요!", Toast.LENGTH_SHORT).show();
-            }
+        StoreLocation(String id, LatLng latlng, String name, String address, boolean isDeleted) {
+            mLatLng = latlng;
+            mId = id;
+            mName = name;
+            mAddress = address;
+            this.isDeleted = isDeleted;
         }
-    };
+
+        LatLng getmLatLng() {
+            return mLatLng;
+        }
+
+        String getmId() {
+            return mId;
+        }
+
+        String getmName() {
+            return mName;
+        }
+
+        String getmAddress() {
+            return mAddress;
+        }
+
+        boolean getIsDeleted() {
+            return this.isDeleted;
+        }
+
+
+    }
 
 }
 

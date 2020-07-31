@@ -39,6 +39,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
@@ -63,6 +64,9 @@ public class MeFragmentStep2 extends Fragment {
     public static final long TIMESTAMP_ONE_DAY = 60 * 60 * 24 * 1000;
 
     private static final String TAG = "MeFragmentStep2";
+    private static final String LAST_NAV_FRG1 = "me";
+    private static final String LAST_NAV_FRG2 = "care";
+    private static final String LAST_NAV_FRG3 = "report";
     private static final int DAYS_UNITL_STEP_STARTS = 4; // TODO change 15 for study
     public static JSONObject[] jsonObjects;
     public static View view;
@@ -89,6 +93,7 @@ public class MeFragmentStep2 extends Fragment {
     private TextView versionNameTextView;
     private Button reportBtn;
     private String feature_ids;
+    SharedPreferences lastPagePrefs;
     final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -103,7 +108,7 @@ public class MeFragmentStep2 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
     }
 
     @SuppressLint("SetTextI18n")
@@ -125,13 +130,35 @@ public class MeFragmentStep2 extends Fragment {
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
         SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
 
+        NavController navController = Navigation.findNavController(view);
+        Log.e(TAG, "navController : " + navController.getCurrentDestination().getId());
+
         if(stressReportPrefs.getBoolean("today_last_report", false)){
 //            SharedPreferences.Editor editor = stressReportPrefs.edit();
 //            editor.putBoolean("today_last_report", false);
 //            editor.apply();
-            Navigation.findNavController(view).navigate(R.id.action_me_to_care_step2);
+            navController.navigate(R.id.action_me_to_care_step2);
         }
+        else {
+            String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
+            switch (last_frg){
+                case LAST_NAV_FRG1:
+                    // nothing
+                    break;
+                case LAST_NAV_FRG2:
+                    Navigation.findNavController(view).navigate(R.id.action_me_to_care_step2);
+                    break;
+                case LAST_NAV_FRG3:
+                    Navigation.findNavController(view).navigate(R.id.action_me_to_report_step2);
+                    break;
+                default:
+                    // nothing
+                    break;
+            }
+        }
+
     }
+
 
     public void init(View view){
         Context context = MainActivity.getInstance();
