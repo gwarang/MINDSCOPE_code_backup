@@ -95,7 +95,8 @@ public class MeFragmentStep1 extends Fragment {
         Calendar cal = Calendar.getInstance();
 
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-        int step = stepChangePrefs.getInt("stepCheck", 0);
+        int step = stepChangePrefs.getInt("stepCheck", 5);
+        boolean step1Done = stepChangePrefs.getBoolean("step1Done", false);
 
         if(step == 0){
             before11Hours.setText(context.getResources().getString(R.string.string_frg_me_step0));
@@ -158,31 +159,29 @@ public class MeFragmentStep1 extends Fragment {
 
 
         // TODO 추후 step 시간으로 확인할때는 삭제할 부분
-        stepTestBtn = root.findViewById(R.id.step_test_btn);
-        stepTestBtn.setOnClickListener(view -> {
-            SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = stepChange.edit();
+//        stepTestBtn = root.findViewById(R.id.step_test_btn);
+//        stepTestBtn.setOnClickListener(view -> {
+//            SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+//            SharedPreferences.Editor editor = stepChange.edit();
+//
+//            if (stepChange.getInt("stepCheck", 0) == 1) {
+//                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+//                stepTestBtn.setText("STEP 2");
+//                editor.putInt("stepCheck", 2);
+//                editor.apply();
+//            } else {
+//                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+//                stepTestBtn.setText("STEP 1");
+//                editor.putInt("stepCheck", 1);
+//                editor.apply();
+//            }
+//        });
 
-            if (stepChange.getInt("stepCheck", 0) == 1) {
-                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                stepTestBtn.setText("STEP 2");
-                editor.putInt("stepCheck", 2);
-                editor.apply();
-            } else {
-                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-                stepTestBtn.setText("STEP 1");
-                editor.putInt("stepCheck", 1);
-                editor.apply();
-            }
-        });
-
-        emaTestBtn = root.findViewById(R.id.ema_test_btn);
-        emaTestBtn.setOnClickListener(view -> {
-            Intent intent = new Intent(getActivity(), EMAActivity.class);
-            startActivity(intent);
-        });
-
-
+//        emaTestBtn = root.findViewById(R.id.ema_test_btn);
+//        emaTestBtn.setOnClickListener(view -> {
+//            Intent intent = new Intent(getActivity(), EMAActivity.class);
+//            startActivity(intent);
+//        });
 
         return root;
     }
