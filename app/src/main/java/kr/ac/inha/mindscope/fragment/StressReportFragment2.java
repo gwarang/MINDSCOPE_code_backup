@@ -23,6 +23,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -39,6 +41,7 @@ import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
 import static kr.ac.inha.mindscope.services.MainService.STRESS_REPORT_NOTIFI_ID;
+import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -321,8 +324,6 @@ public class StressReportFragment2 extends Fragment {
 
                 Tools.updatePoint(context);
                 if (order == REPORTNUM4) {
-                    // TODO 하루의 마지막 리포트이면 '마음케어'로 이동하도록 구현, 지금은 그냥 main으로 이동함
-
                     SharedPreferences stressReportPrefs = context.getSharedPreferences("stressReport", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = stressReportPrefs.edit();
                     editor.putLong("reportTimestamp", reportTimestamp);
@@ -349,6 +350,22 @@ public class StressReportFragment2 extends Fragment {
                     assert dataSourceId != -1;
                     Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+
+                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d,%s\n",
+                            timestamp,
+                            day_num,
+                            order,
+                            yesOrNo,
+                            reportAnswer);
+//                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
+                    FileOutputStream fileOutputStream = null;
+                    try {
+                        fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
+                        fileOutputStream.write(oneReportWithTimestamp.getBytes());
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
 
                     Intent intent = new Intent(context, MainActivity.class);
@@ -398,6 +415,22 @@ public class StressReportFragment2 extends Fragment {
                     assert dataSourceId != -1;
                     Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d,%s\n",
+                            timestamp,
+                            day_num,
+                            order,
+                            yesOrNo,
+                            reportAnswer);
+//                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
+                    FileOutputStream fileOutputStream = null;
+                    try {
+                        fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
+                        fileOutputStream.write(oneReportWithTimestamp.getBytes());
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
 
                     Intent intent = new Intent(context, MainActivity.class);
                     intent.putExtra("reportTimestamp", reportTimestamp);

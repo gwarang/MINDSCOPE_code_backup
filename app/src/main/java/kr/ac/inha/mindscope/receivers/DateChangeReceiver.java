@@ -15,6 +15,8 @@ public class DateChangeReceiver extends BroadcastReceiver {
 
     private static final String TAG = "DateChangeReceiver";
     private int[] restartHours = new int[]{6, 12, 18};
+    private int[] retrieveStressReportHours = new int[]{10,14,18,22};
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -61,6 +63,13 @@ public class DateChangeReceiver extends BroadcastReceiver {
                             context.startService(intentService);
                         }
                     }
+                }
+            }
+            for(int hour : retrieveStressReportHours){
+                if(curCal.get(Calendar.HOUR_OF_DAY) == hour && curCal.get(Calendar.MINUTE) == 55){
+                    Log.e(TAG, "time to take stress report");
+                    Intent intentService = new Intent(); // TODO new service
+
                 }
             }
         }

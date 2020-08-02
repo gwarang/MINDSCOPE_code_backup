@@ -29,6 +29,10 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,6 +62,8 @@ import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
+import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
+import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
 
 public class MeFragmentStep2 extends Fragment {
 
@@ -93,6 +99,7 @@ public class MeFragmentStep2 extends Fragment {
     private TextView versionNameTextView;
     private Button reportBtn;
     private String feature_ids;
+    String stressResult;
     SharedPreferences lastPagePrefs;
     final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -117,8 +124,15 @@ public class MeFragmentStep2 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_me_step2, container, false);
+        Context context = requireContext();
         init(view);
-        gettingStressReportFromGRPC(view); // get Stress Report Result from gRPC server;
+        try {
+            stressResult = getStressResult(context);
+            updateUi(view, stressResult);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        gettingStressReportFromGRPC(view); // get Stress Report Result from gRPC server;
 
         return view;
     }
@@ -165,12 +179,12 @@ public class MeFragmentStep2 extends Fragment {
         allContainer = view.findViewById(R.id.frg_me_step2_container);
         stressLvView = view.findViewById(R.id.txt_stress_level);
         waitNextReportTextView = view.findViewById(R.id.txt_wait_next_report);
-        waitNextReportTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Tools.sendStressInterventionNoti(context);
-            }
-        });
+//        waitNextReportTextView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Tools.sendStressInterventionNoti(context);
+//            }
+//        });
         before11hoursTextView = view.findViewById(R.id.frg_me_step2_before_time);
         firstStartBefore11hoursContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
         reasonContainer = view.findViewById(R.id.stress_reason_container);
@@ -186,9 +200,17 @@ public class MeFragmentStep2 extends Fragment {
         versionNameTextView.setText(getVersionInfo(requireContext()));
     }
 
-    public void applyUi(View view) {
-//        SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+    public void updateUi(View view, String stressResult){
         Context context = MainActivity.getInstance();
+
+        String[] splitResult = stressResult.split(",");
+        long reportTimestamp = Long.parseLong(splitResult[0]);
+        int stressLevel = Integer.parseInt(splitResult[1]);
+        int day_num = Integer.parseInt(splitResult[2]);
+        int ema_order = Integer.parseInt(splitResult[3]);
+        float accuracy = Float.parseFloat(splitResult[4]);
+        String feature_ids = splitResult[5];
+        boolean model_tag = Boolean.parseBoolean(splitResult[6]);
 
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
@@ -196,7 +218,6 @@ public class MeFragmentStep2 extends Fragment {
         boolean firstStartStep2Check = stepChangePrefs.getBoolean("first_start_step2_check", false);
         boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
         if(!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
-
             Calendar step2Cal = Calendar.getInstance();
             step2Cal.setTimeInMillis(stepChangePrefs.getLong("join_timestamp", 0));
             step2Cal.add(Calendar.DATE, DAYS_UNITL_STEP_STARTS);
@@ -254,7 +275,6 @@ public class MeFragmentStep2 extends Fragment {
             dateView.setText(date_text);
 
             lastReportHours = cal.get(Calendar.HOUR_OF_DAY);
-            Log.i(TAG, "current hours: " + lastReportHours);
 
             if (lastReportHours >= 22) {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration4));
@@ -409,6 +429,144 @@ public class MeFragmentStep2 extends Fragment {
 
     }
 
+    public String getStressResult(Context context) throws IOException {
+        String stressResult = null;
+        FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader bufferedReader = new BufferedReader(isr);
+        String line;
+        ArrayList<String> predictionArray = new ArrayList<>();
+
+        //region set calendar
+        Calendar fromCalendar = Calendar.getInstance();
+        int reportOrder = Tools.getReportPreviousOrder(fromCalendar);
+        Calendar tillCalendar = Calendar.getInstance();
+
+        // initialize calendar time
+        if (reportOrder < 4) {
+            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+        } else {
+            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                fromCalendar.setTimeInMillis(fromTimestampYesterday);
+                tillCalendar.setTimeInMillis(tillTimestampYesterday);
+            } else {
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            }
+        }
+        fromCalendar.set(Calendar.MINUTE, 0);
+        fromCalendar.set(Calendar.SECOND, 0);
+        tillCalendar.set(Calendar.MINUTE, 59);
+        tillCalendar.set(Calendar.SECOND, 59);
+        //end region
+
+        //region stress prediction
+        while ((line = bufferedReader.readLine()) != null) {
+            Log.i(TAG, "readStressReport test: " + line);
+            String[] tokens = line.split(",");
+            long timestamp = Long.parseLong(tokens[0]);
+
+            if (fromCalendar.getTimeInMillis() <= timestamp && timestamp <= tillCalendar.getTimeInMillis()) {
+                predictionArray.add(line);
+            }
+        }
+        //endregion
+
+        //region self stress
+        int selfStressLv = 5;
+        try{
+            FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
+            InputStreamReader isr2 = new InputStreamReader(fis2);
+            BufferedReader bufferedReader2 = new BufferedReader(isr2);
+            String line2;
+            while ((line2 = bufferedReader2.readLine()) != null) {
+                Log.i(TAG, "readStressReport test: " + line2);
+                String[] tokens = line2.split(",");
+                long timestamp = Long.parseLong(tokens[0]);
+
+                tillCalendar.add(Calendar.HOUR_OF_DAY, 1);
+
+                if (fromCalendar.getTimeInMillis() <= timestamp && timestamp <= tillCalendar.getTimeInMillis()) {
+                    selfStressLv = Integer.parseInt(tokens[4]);
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        //endregion
+
+        if(selfStressLv != 5){
+            for(String result : predictionArray){
+                String[] splitResult = result.split(",");
+                if(Integer.parseInt(splitResult[1]) == selfStressLv){
+                    stressResult = result;
+                    break;
+                }
+            }
+        }else{
+            for(String result : predictionArray){
+                String[] splitResult = result.split(",");
+                if(Boolean.parseBoolean(splitResult[6])){
+                    stressResult = result;
+                    break;
+                }
+            }
+        }
+        return stressResult;
+    }
+
+    public void startStressReportActivityWhenNotSubmitted() {
+        SharedPreferences selfReportSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor reportSubmitEditor = selfReportSubmitCheckPrefs.edit();
+        boolean[] submits = {
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false),
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false),
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false),
+                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false),
+        };
+        Calendar cal = Calendar.getInstance();
+        int curHour = cal.get(Calendar.HOUR_OF_DAY);
+        int todayDate = cal.get(Calendar.DATE);
+        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1)) {
+            for (short i = 0; i < 4; i++) {
+                reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
+                reportSubmitEditor.apply();
+            }
+        }
+        for (short i = 0; i < 4; i++) {
+            if (curHour == REPORT_NOTIF_HOURS[i] && !submits[i]) {
+                int ema_order = Tools.getReportOrderFromRangeAfterReport(cal);
+                if (ema_order != 0) {
+                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
+//                    intent.putExtra("ema_order", ema_order);
+                    startActivity(intent);
+                }
+            }
+        }
+    }
+
+    public String getVersionInfo(Context context){
+        String version = "Unknown";
+        PackageInfo packageInfo;
+
+        if(context == null){
+            return version;
+        }
+        try {
+            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
+            version = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
+    }
+
+    //region old function
     public void gettingStressReportFromGRPC(View view) {
         Context context = requireContext();
         stressReportStr = null;
@@ -418,36 +576,28 @@ public class MeFragmentStep2 extends Fragment {
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
 
-        int reportOrder = getReportPreviousOrder(fromCalendar);
+        int reportOrder = Tools.getReportPreviousOrder(fromCalendar);
         // initialize calendar time
         if (reportOrder < 4) {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-            fromCalendar.set(Calendar.MINUTE, 0);
-            fromCalendar.set(Calendar.SECOND, 0);
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-            tillCalendar.set(Calendar.MINUTE, 59);
-            tillCalendar.set(Calendar.SECOND, 59);
         } else {
             if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-                fromCalendar.set(Calendar.MINUTE, 0);
-                fromCalendar.set(Calendar.SECOND, 0);
                 tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-                tillCalendar.set(Calendar.MINUTE, 59);
-                tillCalendar.set(Calendar.SECOND, 59);
                 long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
                 long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
                 fromCalendar.setTimeInMillis(fromTimestampYesterday);
                 tillCalendar.setTimeInMillis(tillTimestampYesterday);
             } else {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-                fromCalendar.set(Calendar.MINUTE, 0);
-                fromCalendar.set(Calendar.SECOND, 0);
                 tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-                tillCalendar.set(Calendar.MINUTE, 59);
-                tillCalendar.set(Calendar.SECOND, 59);
             }
         }
+        fromCalendar.set(Calendar.MINUTE, 0);
+        fromCalendar.set(Calendar.SECOND, 0);
+        tillCalendar.set(Calendar.MINUTE, 59);
+        tillCalendar.set(Calendar.SECOND, 59);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
@@ -596,27 +746,6 @@ public class MeFragmentStep2 extends Fragment {
 
         //end getting data from gRPC
     }
-
-    public int getReportPreviousOrder(Calendar cal) {
-        int curHour = cal.get(Calendar.HOUR_OF_DAY);
-//        if ((REPORT_NOTIF_HOURS[0] - REPORT_DURATION) <= curHour &&
-//                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
-//            return 0;
-//        }
-        if ((REPORT_NOTIF_HOURS[1] - REPORT_DURATION) <= curHour &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[1]) {
-            return 1;
-        } else if ((REPORT_NOTIF_HOURS[2] - REPORT_DURATION) <= curHour &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[2]) {
-            return 2;
-        } else if ((REPORT_NOTIF_HOURS[3] - REPORT_DURATION) <= curHour &&
-                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[3]) {
-            return 3;
-        } else /*if(REPORT_NOTIF_HOURS[3] == curHour)*/ {
-            return 4;
-        }
-    }
-
     public void getSelfStressReportDataFromGRPC() {
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
@@ -671,51 +800,115 @@ public class MeFragmentStep2 extends Fragment {
         }).start();
 
     }
+    public void applyUi(View view) {
+//        SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+        Context context = MainActivity.getInstance();
 
-    public void startStressReportActivityWhenNotSubmitted() {
-        SharedPreferences selfReportSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
-        SharedPreferences.Editor reportSubmitEditor = selfReportSubmitCheckPrefs.edit();
-        boolean[] submits = {
-                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false),
-                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false),
-                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false),
-                selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false),
-        };
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
         Calendar cal = Calendar.getInstance();
-        int curHour = cal.get(Calendar.HOUR_OF_DAY);
-        int todayDate = cal.get(Calendar.DATE);
-        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1)) {
-            for (short i = 0; i < 4; i++) {
-                reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
-                reportSubmitEditor.apply();
+        boolean firstStartStep2Check = stepChangePrefs.getBoolean("first_start_step2_check", false);
+        boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
+        if(!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
+
+            Calendar step2Cal = Calendar.getInstance();
+            step2Cal.setTimeInMillis(stepChangePrefs.getLong("join_timestamp", 0));
+            step2Cal.add(Calendar.DATE, DAYS_UNITL_STEP_STARTS);
+            String stepDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE) ", Locale.getDefault()).format(step2Cal.getTimeInMillis());
+            before11hoursTextView.setText(stepDateStr + context.getResources().getString(R.string.string_frg_me_stpe2_before_txt1));
+            firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
+            allContainer.setVisibility(View.INVISIBLE);
+        }
+        else{
+            if(!firstStartStep2Check){
+                SharedPreferences.Editor editor = stepChangePrefs.edit();
+                editor.putBoolean("first_start_step2_check", true);
+                editor.apply();
             }
-        }
-        for (short i = 0; i < 4; i++) {
-            if (curHour == REPORT_NOTIF_HOURS[i] && !submits[i]) {
-                int ema_order = Tools.getReportOrderFromRangeAfterReport(cal);
-                if (ema_order != 0) {
-                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
-//                    intent.putExtra("ema_order", ema_order);
-                    startActivity(intent);
-                }
+
+            if (feature_ids != null)
+                featureViewUpdate(feature_ids, view);
+            else
+                Log.e(TAG, "feature_ids string is null");
+
+            switch (stressLevel) {
+                case STRESS_LV1:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low)));
+                    } else {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
+                    }
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                    stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
+                    break;
+                case STRESS_LV2:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh)));
+                    } else {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
+                    }
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                    stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
+                    break;
+                case STRESS_LV3:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high)));
+                    } else {
+                        stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
+                    }
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                    stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
+                    break;
             }
+
+            cal.setTimeInMillis(reportTimestamp);
+            Date currentTime = new Date();
+            currentTime.setTime(reportTimestamp);
+            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
+            dateView.setText(date_text);
+
+            lastReportHours = cal.get(Calendar.HOUR_OF_DAY);
+            Log.i(TAG, "current hours: " + lastReportHours);
+
+            if (lastReportHours >= 22) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration4));
+            } else if (lastReportHours >= 18) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration3));
+            } else if (lastReportHours >= 14) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration2));
+            } else if (lastReportHours >= 10) {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration1));
+            } else {
+                timeView.setText(context.getResources().getString(R.string.time_report_duration4));
+            }
+
+
+//            stepTestBtn = view.findViewById(R.id.step_test_btn_step2);
+//            stepTestBtn.setOnClickListener(view1 -> {
+//                SharedPreferences stepChange = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = stepChange.edit();
+//
+//                if (stepChange.getInt("stepCheck", 0) == 1) {
+//                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+//                    stepTestBtn.setText("STEP 2");
+//                    editor.putInt("stepCheck", 2);
+//                    editor.apply();
+//                } else {
+//                    Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
+//                    stepTestBtn.setText("STEP 1");
+//                    editor.putInt("stepCheck", 1);
+//                    editor.apply();
+//                }
+//            });
+
+//            reportBtn = view.findViewById(R.id.report_test_btn);
+//            reportBtn.setOnClickListener(view12 -> {
+//                Intent intent = new Intent(getActivity(), StressReportActivity.class);
+//                startActivity(intent);
+//            });
         }
+        if(isFirstStartStep2DialogShowing)
+            startStressReportActivityWhenNotSubmitted();
     }
-
-    public String getVersionInfo(Context context){
-        String version = "Unknown";
-        PackageInfo packageInfo;
-
-        if(context == null){
-            return version;
-        }
-        try {
-            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
-            version = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
-
+    //endregion
 }

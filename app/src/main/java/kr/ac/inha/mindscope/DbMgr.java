@@ -29,7 +29,8 @@ public class DbMgr {
             sb.append(value).append(Tools.DATA_SOURCE_SEPARATOR);
         if (sb.length() > 0)
             sb.replace(sb.length() - 1, sb.length(), "");
-        saveStringData(sensorId, timestamp, accuracy, sb.toString());
+        if(sb.length() != 0)
+            saveStringData(sensorId, timestamp, accuracy, sb.toString());
     }
 
     private static void saveStringData(int dataSourceId, long timestamp, float accuracy, String data) {

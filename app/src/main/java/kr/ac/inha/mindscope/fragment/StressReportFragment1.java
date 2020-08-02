@@ -15,11 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -40,8 +44,8 @@ import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
 import static kr.ac.inha.mindscope.fragment.MeFragmentStep2.TIMESTAMP_ONE_DAY;
-import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 import static kr.ac.inha.mindscope.services.MainService.STRESS_REPORT_NOTIFI_ID;
+import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
 
 public class StressReportFragment1 extends Fragment {
 
@@ -68,6 +72,7 @@ public class StressReportFragment1 extends Fragment {
     Double accuracy;
     String feature_ids;
     long reportTimestamp;
+    ArrayList<String> predictionArray;
     final View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -75,22 +80,32 @@ public class StressReportFragment1 extends Fragment {
             if (reportAnswer == 5) {
                 Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
             } else {
-                if (jsonObjects != null) {
-                    try {
-                        day_num = jsonObjects[reportAnswer].getInt("day_num");
-                        order = jsonObjects[reportAnswer].getInt("ema_order");
-                        accuracy = jsonObjects[stressLevel].getDouble("accuracy");
-                        feature_ids = jsonObjects[reportAnswer].getString("feature_ids");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                if(stressLevel != reportAnswer){
+                    for(String result : predictionArray){
+                        String[] splitResult = result.split(",");
+                        if(Integer.parseInt(splitResult[1]) == reportAnswer){
+                            reportTimestamp = Long.parseLong(splitResult[0]);
+                            day_num = Integer.parseInt(splitResult[2]);
+                            order = Integer.parseInt(splitResult[3]);
+                            feature_ids = splitResult[5];
+                            boolean model_tag = Boolean.parseBoolean(splitResult[6]);
+                        }
                     }
                 }
-
+//                if (jsonObjects != null) {
+//                    try {
+//                        day_num = jsonObjects[reportAnswer].getInt("day_num");
+//                        order = jsonObjects[reportAnswer].getInt("ema_order");
+//                        accuracy = jsonObjects[stressLevel].getDouble("accuracy");
+//                        feature_ids = jsonObjects[reportAnswer].getString("feature_ids");
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 if (notificationManager != null) {
                     notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
                 }
-
 
                 Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
                 ((StressReportActivity) requireActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
@@ -127,8 +142,6 @@ public class StressReportFragment1 extends Fragment {
         if (getArguments() != null) {
             Log.i(TAG, "stress level from StressReportActivity: " + stressLevel); // TODO test용 추후 삭제
         }
-
-
     }
 
     @Override
@@ -136,37 +149,50 @@ public class StressReportFragment1 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stress_report1, null);
-
-        String stressReportStr = gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
-
-        jsonObjects = Tools.parsingStressReport(stressReportStr);
-
-
-        if (jsonObjects != null) {
-            for (short i = 0; i < jsonObjects.length; i++) {
-                try {
-                    if (jsonObjects[0] != null) {
-                        if (jsonObjects[i].getBoolean("model_tag")) {
-                            stressLevel = i;
-                            day_num = jsonObjects[i].getInt("day_num");
-                            order = jsonObjects[i].getInt("ema_order");
-                            accuracy = jsonObjects[i].getDouble("accuracy");
-                            feature_ids = jsonObjects[i].getString("feature_ids");
-                            SharedPreferences reportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = reportPrefs.edit();
-                            editor.putInt("result", stressLevel);
-                            editor.apply();
-                        }
-                    } else {
-                        Log.e(TAG, "report is not in jsonObjects");
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+        Context context = getContext();
+        String stressReportStr = null;
+        try {
+            stressReportStr = getStressResult(context);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+//                gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
 
+        String[] splitResult = stressReportStr.split(",");
+        reportTimestamp = Long.parseLong(splitResult[0]);
+        stressLevel = Integer.parseInt(splitResult[1]);
+        day_num = Integer.parseInt(splitResult[2]);
+        order = Integer.parseInt(splitResult[3]);
+        accuracy = Double.parseDouble(splitResult[4]);
+        feature_ids = splitResult[5];
+        boolean model_tag = Boolean.parseBoolean(splitResult[6]);
+//        jsonObjects = Tools.parsingStressReport(stressReportStr);
+
+
+//        if (jsonObjects != null) {
+//            for (short i = 0; i < jsonObjects.length; i++) {
+//                try {
+//                    if (jsonObjects[0] != null) {
+//                        if (jsonObjects[i].getBoolean("model_tag")) {
+//                            stressLevel = i;
+//                            day_num = jsonObjects[i].getInt("day_num");
+//                            order = jsonObjects[i].getInt("ema_order");
+//                            accuracy = jsonObjects[i].getDouble("accuracy");
+//                            feature_ids = jsonObjects[i].getString("feature_ids");
+//                            SharedPreferences reportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+//                            SharedPreferences.Editor editor = reportPrefs.edit();
+//                            editor.putInt("result", stressLevel);
+//                            editor.apply();
+//                        }
+//                    } else {
+//                        Log.e(TAG, "report is not in jsonObjects");
+//                    }
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
 
         init(view);
 
@@ -174,7 +200,6 @@ public class StressReportFragment1 extends Fragment {
     }
 
     public void init(View view) {
-
 
         Calendar cal = Calendar.getInstance();
 
@@ -235,11 +260,8 @@ public class StressReportFragment1 extends Fragment {
 //        else if(currentHours < 23){
 //            timeView.setText(getResources().getString(R.string.time_step2_duration4));
 //        }
-
-
         btnReport = view.findViewById(R.id.toolbar_report_btn);
         btnReport.setOnClickListener(clickListener);
-
 
         lowBtn = view.findViewById(R.id.actual_stress_answer1);
         littleHighBtn = view.findViewById(R.id.actual_stress_answer2);
@@ -265,10 +287,66 @@ public class StressReportFragment1 extends Fragment {
             reportAnswer = 2;
             btnReport.setClickable(true);
         });
-
-
     }
 
+    public String getStressResult(Context context) throws IOException {
+        String stressResult = null;
+        FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader bufferedReader = new BufferedReader(isr);
+        String line;
+        predictionArray = new ArrayList<>();
+
+        //region set calendar
+        Calendar fromCalendar = Calendar.getInstance();
+        int reportOrder = Tools.getReportPreviousOrder(fromCalendar);
+        Calendar tillCalendar = Calendar.getInstance();
+
+        // initialize calendar time
+        if (reportOrder < 4) {
+            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+        } else {
+            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+                fromCalendar.setTimeInMillis(fromTimestampYesterday);
+                tillCalendar.setTimeInMillis(tillTimestampYesterday);
+            } else {
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            }
+        }
+        fromCalendar.set(Calendar.MINUTE, 0);
+        fromCalendar.set(Calendar.SECOND, 0);
+        tillCalendar.set(Calendar.MINUTE, 59);
+        tillCalendar.set(Calendar.SECOND, 59);
+        //end region
+
+        //region stress prediction
+        while ((line = bufferedReader.readLine()) != null) {
+            Log.i(TAG, "readStressReport test: " + line);
+            String[] tokens = line.split(",");
+            long timestamp = Long.parseLong(tokens[0]);
+
+            if (fromCalendar.getTimeInMillis() <= timestamp && timestamp <= tillCalendar.getTimeInMillis()) {
+                predictionArray.add(line);
+            }
+        }
+        //endregion
+
+        for (String result : predictionArray) {
+            String[] splitResult = result.split(",");
+            if (Boolean.parseBoolean(splitResult[6])) {
+                stressResult = result;
+            }
+        }
+        return stressResult;
+    }
+
+    //region old function
     public long getDayNum() {
         long dayNum = 0;
         SharedPreferences a = getActivity().getSharedPreferences("firstDate", Context.MODE_PRIVATE);
@@ -410,6 +488,5 @@ public class StressReportFragment1 extends Fragment {
             return 4;
         }
     }
-
-
+    //endregion
 }

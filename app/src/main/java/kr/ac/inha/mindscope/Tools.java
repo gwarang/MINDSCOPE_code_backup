@@ -66,6 +66,7 @@ import static android.app.Notification.CATEGORY_ALARM;
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
 
@@ -112,6 +113,24 @@ public class Tools {
     public static final int PATH_APP = 0;
     public static final int PATH_NOTIFICATION = 1;
     /* Zaturi end */
+
+    //region static variable for Stress report
+    public static final int PREDICTION_TIMESTAMP_INDEX = 0;
+    public static final int PREDICTION_STRESSLV_INDEX = 1;
+    public static final int PREDICTION_DAYNUM_INDEX = 2;
+    public static final int PREDICTION_ORDER_INDEX = 3;
+    public static final int PREDICTION_ACCURACY_INDEX = 4;
+    public static final int PREDICTION_FEATUREIDS_INDEX = 5;
+    public static final int PREDICTION_MODELTAG_INDEX = 6;
+    public static final int SELF_REPORT_TIMESTAMP_INDEX = 0;
+    public static final int SELF_REPORT_DAYNUM_INDEX = 1;
+    public static final int SELF_REPORT_ORDER_INDEX = 2;
+    public static final int SELF_REPORT_ANALYSIS_CORRECTNESS_INDEX = 3;
+    public static final int SELF_REPORT_ANSWER_INDEX = 4;
+    public static final int SELF_REPORT_FEATRUEIDS_INDEX = 5;
+
+    //endregion
+
 
     //region Unique ID of each screen or button event
     public static final int FIRST_START_ACTIVITY = 1;
@@ -734,6 +753,26 @@ public class Tools {
             if(uniqueTagForEachActivityOrEvent != null && action != null && sb != null)
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action, sb.toString());
         }).start();
+    }
+
+    public static int getReportPreviousOrder(Calendar cal) {
+        int curHour = cal.get(Calendar.HOUR_OF_DAY);
+//        if ((REPORT_NOTIF_HOURS[0] - REPORT_DURATION) <= curHour &&
+//                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
+//            return 0;
+//        }
+        if ((REPORT_NOTIF_HOURS[1] - REPORT_DURATION) <= curHour &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[1]) {
+            return 1;
+        } else if ((REPORT_NOTIF_HOURS[2] - REPORT_DURATION) <= curHour &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[2]) {
+            return 2;
+        } else if ((REPORT_NOTIF_HOURS[3] - REPORT_DURATION) <= curHour &&
+                cal.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[3]) {
+            return 3;
+        } else /*if(REPORT_NOTIF_HOURS[3] == curHour)*/ {
+            return 4;
+        }
     }
 
 }

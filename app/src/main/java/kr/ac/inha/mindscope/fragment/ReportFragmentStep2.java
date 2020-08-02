@@ -33,6 +33,10 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,6 +63,8 @@ import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
+import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
+import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,10 +81,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     private static final int tileWidth = 45;
     private static final int tileHeight = 45;
-    private long joinTimestamp;
-    private CalendarDay selectedDay;
-    private CalendarDay chooseDay;
-
+    static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
+    static HashMap<CalendarDay, Integer> dailyAverageStressLevels = new HashMap<>();
+    static HashMap<CalendarDay, ArrayList<Triple<Long, Integer, Integer>>> dailyStressLevelClusters = new HashMap<>();
+    static HashMap<Long, JSONObject> timestampStressFeaturesMap = new HashMap<>();
+    private static MaterialCalendarView materialCalendarView;
     ImageView fragmentMeStep2BtnHelp;
     TextView dateView;
     TextView txtStressLevel;
@@ -102,16 +109,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ImageButton arrowResult3;
     ImageButton arrowResult4;
     TextView selectedDayComment;
-
     ScrollView defaultContainer;
     ConstraintLayout hiddenContainer;
     ConstraintLayout dayDetailContainer;
-
     ImageView hiddenStressImg;
     TextView hiddenDateView;
     TextView hiddenTimeView;
     TextView hiddenStressLevelView;
-
     ListView phoneListView;
     ListView activityListView;
     ListView socialListView;
@@ -124,20 +128,22 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     LinearLayout sleepContainer;
     ScrollView reasonContainer;
     ImageButton backArrow;
-
-    private static MaterialCalendarView materialCalendarView;
-
-    static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
-    static HashMap<CalendarDay, Integer> dailyAverageStressLevels = new HashMap<>();
-    static HashMap<CalendarDay, ArrayList<Triple<Long, Integer, Integer>>> dailyStressLevelClusters = new HashMap<>();
-    static HashMap<Long, JSONObject> timestampStressFeaturesMap = new HashMap<>();
+    ArrayList<String> predictionArray;
+    ArrayList<String> selfReportArray;
+    private long joinTimestamp;
+    private CalendarDay selectedDay;
+    private CalendarDay chooseDay;
     // endregion
 
     public ReportFragmentStep2() {
         // Required empty public constructor
     }
 
-
+    // region utility functions
+    public static ReportFragmentStep2 newInstance() {
+        ReportFragmentStep2 fragment = new ReportFragmentStep2();
+        return fragment;
+    }
 
     // region override
     @Override
@@ -247,7 +253,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            if(object != null){
+            if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
                     Log.e(TAG, feature_ids);
@@ -255,12 +261,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            if(feature_ids != null){
+            if (feature_ids != null) {
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
-            }
-            else{
+            } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 1);
@@ -280,7 +285,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            if(object != null){
+            if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
                     Log.e(TAG, feature_ids);
@@ -288,12 +293,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            if(feature_ids != null){
+            if (feature_ids != null) {
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
-            }
-            else{
+            } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 2);
@@ -313,7 +317,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            if(object != null){
+            if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
                     Log.e(TAG, feature_ids);
@@ -321,12 +325,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            if(feature_ids != null){
+            if (feature_ids != null) {
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
-            }
-            else{
+            } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 3);
@@ -346,7 +349,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             // TODO HR
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
-            if(object != null){
+            if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
                     Log.e(TAG, feature_ids);
@@ -354,12 +357,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            if(feature_ids != null){
+            if (feature_ids != null) {
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
-            }
-            else{
+            } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 4);
@@ -450,7 +452,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // endregion
 
         // region (3) daily comment
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
@@ -525,7 +527,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             dayDetailContainer.setVisibility(View.VISIBLE);
             dailyAverageStressLevelView.setImageResource(stressLvlImageResources[dailyAverageStressLevels.get(day)]);
             dailyAverageStressLevelView.setVisibility(View.VISIBLE);
-        } else{
+        } else {
             dayDetailContainer.setVisibility(View.GONE);
             dailyAverageStressLevelView.setVisibility(View.GONE);
         }
@@ -548,137 +550,20 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         return -1;
     }
 
+
+    // endregion
+
     @Override
     public void onResume() {
         super.onResume();
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
 
-
-    // endregion
-
-    // region decorators
-    public class DayDecorator implements DayViewDecorator {
-        private final CalendarDay today;
-        private final Drawable todayBackgroundDrawable;
-
-        public DayDecorator() {
-            today = CalendarDay.today();
-            todayBackgroundDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.today_circle_background);
-        }
-
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return today.equals(day);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            view.setBackgroundDrawable(todayBackgroundDrawable);
-        }
-    }
-
-    public static class LowStressDecorator implements DayViewDecorator {
-        private final Drawable lowBackgroundDrawable;
-        private static HashSet<CalendarDay> lowStressCalendarDays;
-
-        public LowStressDecorator(Drawable stressLevelDrawable) {
-            this.lowBackgroundDrawable = stressLevelDrawable;
-            if (lowStressCalendarDays == null)
-                lowStressCalendarDays = new HashSet<>();
-        }
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return !materialCalendarView.getSelectedDate().equals(day) && lowStressCalendarDays.contains(day);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            view.setBackgroundDrawable(lowBackgroundDrawable);
-        }
-
-        public static void clearLowStressCalendarDays() {
-            lowStressCalendarDays.clear();
-        }
-
-        public static void addLowStressCalendarDay(CalendarDay day) {
-            lowStressCalendarDays.add(day);
-        }
-    }
-
-    public static class LittleHighStressDecorator implements DayViewDecorator {
-        private final Drawable littleHighBackgroundDrawable;
-        private static HashSet<CalendarDay> littleHighStressCalendarDays;
-
-        public LittleHighStressDecorator(Drawable stressLevelDrawable) {
-            this.littleHighBackgroundDrawable = stressLevelDrawable;
-            if (littleHighStressCalendarDays == null)
-                littleHighStressCalendarDays = new HashSet<>();
-        }
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return !materialCalendarView.getSelectedDate().equals(day) && littleHighStressCalendarDays.contains(day);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            view.setBackgroundDrawable(littleHighBackgroundDrawable);
-        }
-
-        public static void clearLittleHighStressCalendarDays() {
-            littleHighStressCalendarDays.clear();
-        }
-
-        public static void addLittleHighStressCalendarDay(CalendarDay day) {
-            littleHighStressCalendarDays.add(day);
-        }
-    }
-
-    public static class HighStressDecorator implements DayViewDecorator {
-        private final Drawable highBackgroundDrawable;
-        private static HashSet<CalendarDay> highStressCalendarDays;
-
-        public HighStressDecorator(Drawable stressLevelDrawable) {
-            this.highBackgroundDrawable = stressLevelDrawable;
-            if (highStressCalendarDays == null)
-                highStressCalendarDays = new HashSet<>();
-        }
-
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return !materialCalendarView.getSelectedDate().equals(day) && highStressCalendarDays.contains(day);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            view.setBackgroundDrawable(highBackgroundDrawable);
-        }
-
-        public static void clearHighStressCalendarDays() {
-            highStressCalendarDays.clear();
-        }
-
-        public static void addHighStressCalendarDay(CalendarDay day) {
-            highStressCalendarDays.add(day);
-        }
-    }
-    // endregion
-
-    // region utility functions
-    public static ReportFragmentStep2 newInstance() {
-        ReportFragmentStep2 fragment = new ReportFragmentStep2();
-        return fragment;
-    }
-
     public long getJoinTime() {
         long firstDayTimestamp = 0;
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
 
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
             EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
@@ -693,14 +578,14 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 firstDayTimestamp = joinTimestamp;
             }
             channel.shutdown();
-        }else{
+        } else {
             Toast.makeText(requireContext(), requireContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
         }
         return firstDayTimestamp;
     }
 
     public void loadAllPoints() {
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
@@ -737,7 +622,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     public void loadDailyPoints(CalendarDay day) {
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
@@ -780,9 +665,119 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
 
     }
+    // endregion
+
+    public void loadAllStressLevels(Context context) throws IOException {
+        FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader bufferedReader = new BufferedReader(isr);
+        String predictionLine;
+
+        FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
+        InputStreamReader isr2 = new InputStreamReader(fis2);
+        BufferedReader bufferedReader2 = new BufferedReader(isr2);
+        String selfStressReportLine;
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, 1);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        long tillTimestamp = c.getTimeInMillis();
+        c.setTimeInMillis(joinTimestamp);
+        long fromTimestamp = c.getTimeInMillis();
+
+        stressLevels.clear();
+
+        predictionArray = new ArrayList<>();
+        selfReportArray = new ArrayList<>();
+
+        //region load stress prediction
+        while ((predictionLine = bufferedReader.readLine()) != null) {
+            Log.i(TAG, "readStressReport test: " + predictionLine);
+            String[] predictionTokens = predictionLine.split(",");
+            long timestamp = Long.parseLong(predictionTokens[0]);
+
+            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
+                predictionArray.add(predictionLine);
+            }
+        }
+        //endregion
+
+        //region load self stress report
+        while ((selfStressReportLine = bufferedReader2.readLine()) != null) {
+            Log.i(TAG, "readStressReport test: " + selfStressReportLine);
+            String[] selfReportTokens = selfStressReportLine.split(",");
+            long timestamp = Long.parseLong(selfReportTokens[0]);
+
+            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
+                selfReportArray.add(selfStressReportLine);
+            }
+        }
+        //endregion
+
+
+//        for (int n = 0; n < selfReportArray.size(); n++) {
+//            String value = selfReportArray.get(n);
+//            long timestamp = 0;
+//            int emaOrder = -1;
+//            int stressLevel = 0;
+//            // self-report
+//            String[] cells = value.split(",");
+//            if (cells.length != 5)
+//                continue;
+//            emaOrder = Integer.parseInt(cells[SELF_REPORT_ORDER_INDEX]);
+//            timestamp = fixTimestamp(Long.parseLong(cells[SELF_REPORT_TIMESTAMP_INDEX]), emaOrder);
+//            stressLevel = Integer.parseInt(cells[SELF_REPORT_ANSWER_INDEX]);
+//            if (stressLevel < 3) {
+//                c.setTimeInMillis(timestamp);
+//                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
+//                c.set(Calendar.MILLISECOND, 0);
+//                timestamp = c.getTimeInMillis();
+//                if (!stressLevels.containsKey(timestamp))
+//                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+//            }
+//        }
+//
+//        for (int n = 0; n < predictionArray.size(); n++) {
+//            String value = predictionArray.get(n);
+//            long timestamp = 0;
+//            int emaOrder = -1;
+//            int stressLevel = 0;
+
+//            // prediction
+//            try {
+//                JSONObject cells = new JSONObject(value);
+//                timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
+//                c.setTimeInMillis(timestamp);
+//                timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+//
+//                Iterator<String> keys = cells.keys();
+//                do {
+//                    String key = keys.next();
+//                    if (cells.getJSONObject(key).getBoolean("model_tag"))
+//                        stressLevel = Integer.parseInt(key);
+//                }
+//                while (keys.hasNext());
+//            } catch (JSONException e) {
+//                continue;
+//            }
+//
+//            if (stressLevel < 3) {
+//                c.setTimeInMillis(timestamp);
+//                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
+//                c.set(Calendar.MILLISECOND, 0);
+//                timestamp = c.getTimeInMillis();
+//
+//                if (!stressLevels.containsKey(timestamp))
+//                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+//            }
+//        }
+
+
+    }
 
     public void loadAllStressLevelsFromServer() {
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             // [Kevin] load stress levels (submissions & predictions) from gRPC server
             new Thread(() -> {
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
@@ -864,7 +859,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 applyStressLevelUI();
             }).start();
         }
-
     }
 
     private int getEmaOrderHour(int emaOrder) {
@@ -915,11 +909,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             for (Triple<Long, Integer, Integer> tsEmaOrderStressLvlTriple : cluster)
                 sum += tsEmaOrderStressLvlTriple.getRight() + 1;
             float avgStress = (float) (sum / cluster.size());
-            if(avgStress < 1.5){
+            if (avgStress < 1.5) {
                 dailyAverageStressLevels.put(day, STRESS_LV1);
-            }else if(avgStress < 2.5){
+            } else if (avgStress < 2.5) {
                 dailyAverageStressLevels.put(day, STRESS_LV2);
-            }else{
+            } else {
                 dailyAverageStressLevels.put(day, STRESS_LV3);
             }
         }
@@ -930,11 +924,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         HighStressDecorator.clearHighStressCalendarDays();
         for (CalendarDay day : dailyAverageStressLevels.keySet()) {
             int stressLevel = dailyAverageStressLevels.get(day);
-            if (stressLevel == 1)
+            if (stressLevel == STRESS_LV1)
                 LowStressDecorator.addLowStressCalendarDay(day);
-            else if (stressLevel == 2)
+            else if (stressLevel == STRESS_LV2)
                 LittleHighStressDecorator.addLittleHighStressCalendarDay(day);
-            else if (stressLevel == 3)
+            else if (stressLevel == STRESS_LV3)
                 HighStressDecorator.addHighStressCalendarDay(day);
         }
 
@@ -949,39 +943,38 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         return stressLevels.get(timestamp).first != -1;
     }
 
-    public void hiddenViewUpdate(String feature_ids, int stressLevl){
+    public void hiddenViewUpdate(String feature_ids, int stressLevl) {
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();
         ArrayList<String> socialReason = new ArrayList<>();
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
-        if(feature_ids.equals("")){
+        if (feature_ids.equals("")) {
             Log.i(TAG, "feature_ids is empty");
-        }
-        else{
+        } else {
             String[] featureArray = feature_ids.split(" ");
 
-            for(int i = 0; i < featureArray.length; i++ ){
+            for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
                 String packName = requireContext().getPackageName();
                 int resId = getResources().getIdentifier(strID, "string", packName);
 
-                if(category <= 5){
+                if (category <= 5) {
                     activityReason.add(getResources().getString(resId));
-                }else if(category <= 11){
+                } else if (category <= 11) {
                     socialReason.add(getResources().getString(resId));
-                }else if(category <= 16){
+                } else if (category <= 16) {
                     locationReason.add(getResources().getString(resId));
-                }else if(category <= 28){
+                } else if (category <= 28) {
                     phoneReason.add(getResources().getString(resId));
-                }else{
+                } else {
                     sleepReason.add(getResources().getString(resId));
                 }
 
-                if(i == 4) // maximun number of showing feature is five
+                if (i == 4) // maximun number of showing feature is five
                     break;
             }
         }
@@ -1011,42 +1004,42 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         locationListView.setAdapter(locationAdapter);
         sleepListView.setAdapter(sleepAdapter);
 
-        if(phoneReason.isEmpty())
+        if (phoneReason.isEmpty())
             phoneContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(phoneListView);
             phoneContainer.setVisibility(View.VISIBLE);
         }
 
-        if(activityReason.isEmpty())
+        if (activityReason.isEmpty())
             activityContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(activityListView);
             activityContainer.setVisibility(View.VISIBLE);
         }
 
-        if(socialReason.isEmpty())
+        if (socialReason.isEmpty())
             socialContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(socialListView);
             socialContainer.setVisibility(View.VISIBLE);
         }
 
-        if(locationReason.isEmpty())
+        if (locationReason.isEmpty())
             locationContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(locationListView);
             locationContainer.setVisibility(View.VISIBLE);
         }
 
-        if(sleepReason.isEmpty())
+        if (sleepReason.isEmpty())
             sleepContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(sleepListView);
             sleepContainer.setVisibility(View.VISIBLE);
         }
 
-        switch (stressLevl){
+        switch (stressLevl) {
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
@@ -1064,6 +1057,115 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 break;
         }
 
+    }
+
+    public static class LowStressDecorator implements DayViewDecorator {
+        private static HashSet<CalendarDay> lowStressCalendarDays;
+        private final Drawable lowBackgroundDrawable;
+
+        public LowStressDecorator(Drawable stressLevelDrawable) {
+            this.lowBackgroundDrawable = stressLevelDrawable;
+            if (lowStressCalendarDays == null)
+                lowStressCalendarDays = new HashSet<>();
+        }
+
+        public static void clearLowStressCalendarDays() {
+            lowStressCalendarDays.clear();
+        }
+
+        public static void addLowStressCalendarDay(CalendarDay day) {
+            lowStressCalendarDays.add(day);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return !materialCalendarView.getSelectedDate().equals(day) && lowStressCalendarDays.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(lowBackgroundDrawable);
+        }
+    }
+
+    public static class LittleHighStressDecorator implements DayViewDecorator {
+        private static HashSet<CalendarDay> littleHighStressCalendarDays;
+        private final Drawable littleHighBackgroundDrawable;
+
+        public LittleHighStressDecorator(Drawable stressLevelDrawable) {
+            this.littleHighBackgroundDrawable = stressLevelDrawable;
+            if (littleHighStressCalendarDays == null)
+                littleHighStressCalendarDays = new HashSet<>();
+        }
+
+        public static void clearLittleHighStressCalendarDays() {
+            littleHighStressCalendarDays.clear();
+        }
+
+        public static void addLittleHighStressCalendarDay(CalendarDay day) {
+            littleHighStressCalendarDays.add(day);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return !materialCalendarView.getSelectedDate().equals(day) && littleHighStressCalendarDays.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(littleHighBackgroundDrawable);
+        }
+    }
+
+    public static class HighStressDecorator implements DayViewDecorator {
+        private static HashSet<CalendarDay> highStressCalendarDays;
+        private final Drawable highBackgroundDrawable;
+
+        public HighStressDecorator(Drawable stressLevelDrawable) {
+            this.highBackgroundDrawable = stressLevelDrawable;
+            if (highStressCalendarDays == null)
+                highStressCalendarDays = new HashSet<>();
+        }
+
+        public static void clearHighStressCalendarDays() {
+            highStressCalendarDays.clear();
+        }
+
+        public static void addHighStressCalendarDay(CalendarDay day) {
+            highStressCalendarDays.add(day);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return !materialCalendarView.getSelectedDate().equals(day) && highStressCalendarDays.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(highBackgroundDrawable);
+        }
+    }
+
+    // region decorators
+    public class DayDecorator implements DayViewDecorator {
+        private final CalendarDay today;
+        private final Drawable todayBackgroundDrawable;
+
+        public DayDecorator() {
+            today = CalendarDay.today();
+            todayBackgroundDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.today_circle_background);
+        }
+
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return today.equals(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(todayBackgroundDrawable);
+        }
     }
     // endregion
 }

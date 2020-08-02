@@ -182,6 +182,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/frg_me_date_container"
+            app:layout_constraintBottom_toTopOf="@id/txt_reason"
             android:textAlignment="center"
             android:textSize="@dimen/my_text_size14"
             android:fontFamily="@font/notosanscjkkrregular"

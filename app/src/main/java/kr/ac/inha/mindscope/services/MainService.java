@@ -1,5 +1,6 @@
 package kr.ac.inha.mindscope.services;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -54,8 +55,12 @@ import kr.ac.inha.mindscope.receivers.ActivityTransitionsReceiver;
 import kr.ac.inha.mindscope.receivers.CallReceiver;
 import kr.ac.inha.mindscope.receivers.DateChangeReceiver;
 import kr.ac.inha.mindscope.receivers.ScreenAndUnlockReceiver;
+import kr.ac.inha.mindscope.receivers.UndeadReceiver;
 
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
 import static kr.ac.inha.mindscope.receivers.CallReceiver.AudioRunningForCall;
 
 public class MainService extends Service {
@@ -153,10 +158,14 @@ public class MainService extends Service {
                 stepEditor.putInt("stepCheck", 1);
                 stepEditor.apply();
             }
-            else if(curTimestamp - joinTimestamp >= STEP1_EXPIRE_TIMESTAMP_VALUE){
+            else if(diff >= STEP1_EXPIRE_TIMESTAMP_VALUE){
                 // step2
                 SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
                 stepEditor.putInt("stepCheck", 2);
+                if(diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60*60*11*1000){
+                    stepEditor.putBoolean("first_start_care_step2_check", true);
+                    stepEditor.putBoolean("first_start_step2_check", true);
+                }
                 stepEditor.apply();
             }
             //endregion
@@ -418,6 +427,8 @@ public class MainService extends Service {
 
 
 
+
+
         mainHandler.post(mainRunnable);
         appUsageSaveHandler.post(appUsageSaveRunnable);
         dataSubmissionHandler.post(dataSubmitRunnable);
@@ -468,11 +479,34 @@ public class MainService extends Service {
         stopForeground(false);
         mNotificationManager.cancel(ID_SERVICE);
         mNotificationManager.cancel(PERMISSION_REQUEST_NOTIFICATION_ID);
+
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.SECOND, 3);
+        Intent intent = new Intent(this, UndeadReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
+
         //endregion
 
         Tools.sleep(5000);
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.SECOND, 3);
+        Intent intent = new Intent(this, UndeadReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
     }
 
     public List<ActivityTransition> getActivityTransitions() {
@@ -587,13 +621,29 @@ public class MainService extends Service {
             builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
             builder.setContentTitle(this.getString(R.string.app_name))
                     .setTimeoutAfter(1000 * REPORT_RESPONSE_EXPIRE_TIME)
-                    .setContentText(this.getString(R.string.daily_notif_report_text))
                     .setTicker("New Message Alert!")
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(Notification.DEFAULT_ALL);
+            SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+            int stressLv = stressReportPrefs.getInt("reportAnswer", 0);
+            switch (stressLv){
+                case STRESS_LV1:
+                    builder.setContentText(this.getString(R.string.daily_notif_report_low_text));
+                    break;
+                case STRESS_LV2:
+                    builder.setContentText(this.getString(R.string.daily_notif_report_littlehigh_text));
+                    break;
+                case STRESS_LV3:
+                    builder.setContentText(this.getString(R.string.daily_notif_report_high_text));
+                    break;
+                default:
+                    builder.setContentText(this.getString(R.string.daily_notif_report_text));
+                    break;
+            }
+
         }
 
 

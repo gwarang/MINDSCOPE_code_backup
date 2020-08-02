@@ -40,6 +40,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -48,7 +50,9 @@ import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.dialog.PointCustomDialog;
 import kr.ac.inha.mindscope.receivers.AppUseNotifierReceiver;
 import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
+import kr.ac.inha.mindscope.receivers.StressReportReceiver;
 import kr.ac.inha.mindscope.services.MainService;
+import kr.ac.inha.mindscope.services.StressReportDownloader;
 
 import static kr.ac.inha.mindscope.services.MainService.HEARTBEAT_PERIOD;
 import static kr.ac.inha.mindscope.services.MainService.PERMISSION_REQUEST_NOTIFICATION_ID;
@@ -251,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         heartBeatHandler.post(heartBeatSendRunnable);
 
         cancelPreviousAppUseNotification();
+        setUpDownloadStressReport();
     }
 
     @Override
@@ -321,6 +326,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         updateStats();
+
+        SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+        SharedPreferences.Editor stressReportPrefsEditor = stressReportPrefs.edit();
+        stressReportPrefsEditor.putBoolean("fromMain", true);
+        stressReportPrefsEditor.apply();
+        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(StressReportDownloader.class).build();
+        WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
     }
 
     @Override
@@ -434,6 +446,28 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+    }
+
+    private void setUpDownloadStressReport(){
+        Intent intent = new Intent(this, StressReportReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 506, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        if(calendar.get(Calendar.MINUTE) > 55){
+            calendar.add(Calendar.HOUR_OF_DAY, 1);
+        }
+        calendar.set(Calendar.MINUTE, 55);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Log.e(TAG, "알람 등록 함수" + dateFormat.format(calendar.getTimeInMillis()));
+
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
+
     }
 
     public void updateStats() {

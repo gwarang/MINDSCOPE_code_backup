@@ -50,6 +50,9 @@
     <string name="notif_channel_id">StressSensor_notif_chanel</string>
     <string name="daily_notif_text">Hey there! Please, fill in the questionnaire :)</string>
     <string name="daily_notif_report_text">Hey there! Please, check your stress level :)</string>
+    <string name="daily_notif_report_low_text">Stress prediction is \'LOW\'.\nPlease, check your stress level</string>
+    <string name="daily_notif_report_littlehigh_text">Stress prediction is \'LITTLE HIGH\'.\nPlease, check your stress level</string>
+    <string name="daily_notif_report_high_text">Stress prediction is \'HIGH\'.\nPlease, check your stress level</string>
     <string name="smartphone">smartphone</string>
     <string name="smartwatch">smartwatch</string>
     <string name="submit_to_server">Submit to Server</string>
@@ -260,7 +263,7 @@
     <string name="feature_2low">평소에 비해 움직임이 적었어요 (뛰기)</string>
     <string name="feature_3low">평소에 비해 움직임이 적었어요 (자전거)</string>
     <string name="feature_4low">평소에 비해 움직임이 적었어요 (걷기)</string>
-    <string name="feature_5low">평소에 비해 차량 이동이 적었어요 많았어요</string>
+    <string name="feature_5low">평소에 비해 차량 이동이 적었어요</string>
     <string name="feature_6low">평소에 비해 주변이 조용했던 것 같아요</string>
     <string name="feature_7low">평소에 비해 통화량이 적었어요</string>
     <string name="feature_8low">평소에 비해 통화량이 적었어요</string>

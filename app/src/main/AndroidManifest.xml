@@ -33,14 +33,6 @@
         <activity
             android:name=".FirstStartActivity"
             android:theme="@style/AppThemeNoActionBar" />
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/.
-        -->
         <activity
             android:name=".SplashActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
@@ -56,6 +48,14 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme" />
@@ -73,10 +73,18 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <receiver
+            android:name=".receivers.UndeadReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <receiver
+            android:name=".receivers.StressReportReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
             android:name=".receivers.DateChangeReceiver"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true" />
         <receiver
             android:name=".receivers.AppUseNotifierReceiver"
             android:enabled="true">
