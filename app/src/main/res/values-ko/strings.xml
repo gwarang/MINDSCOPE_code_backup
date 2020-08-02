@@ -319,6 +319,7 @@
 
     <string name="string_before_start_step2_title">마인드스코프가\n케어 방법을 찾는 중입니다.</string>
     <string name="string_before_start_step2_text">오늘 하루의 스트레스를 분석, 기록하고\n스트레스 해소방안을 찾아보아요!</string>
+    <string name="string_when_no_prediction">아직 스트레스를 분석중이에요!.\n분석 결과를 기다려주세요!</string>
 
     <string name="string_permission_txt1">마인드스코프가 당신의 스트레스를 예측하기\n위해서는 다양한 활동 정보가 필요해요!</string>
     <string name="string_permission_txt2">전화: 통화시간과 횟수 측정\n마이크: 주변 소음 크기 감지\n위치: 이동량 측정</string>

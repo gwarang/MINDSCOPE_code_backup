@@ -21,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,6 +42,11 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.Tools.PREDICTION_DAYNUM_INDEX;
+import static kr.ac.inha.mindscope.Tools.PREDICTION_FEATUREIDS_INDEX;
+import static kr.ac.inha.mindscope.Tools.PREDICTION_ORDER_INDEX;
+import static kr.ac.inha.mindscope.Tools.PREDICTION_STRESSLV_INDEX;
+import static kr.ac.inha.mindscope.Tools.PREDICTION_TIMESTAMP_INDEX;
 import static kr.ac.inha.mindscope.fragment.MeFragmentStep2.TIMESTAMP_ONE_DAY;
 import static kr.ac.inha.mindscope.services.MainService.STRESS_REPORT_NOTIFI_ID;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -83,11 +87,14 @@ public class StressReportFragment1 extends Fragment {
                 if(stressLevel != reportAnswer){
                     for(String result : predictionArray){
                         String[] splitResult = result.split(",");
-                        if(Integer.parseInt(splitResult[1]) == reportAnswer){
-                            reportTimestamp = Long.parseLong(splitResult[0]);
-                            day_num = Integer.parseInt(splitResult[2]);
-                            order = Integer.parseInt(splitResult[3]);
-                            feature_ids = splitResult[5];
+                        if(Integer.parseInt(splitResult[PREDICTION_STRESSLV_INDEX]) == reportAnswer){
+                            reportTimestamp = Long.parseLong(splitResult[PREDICTION_TIMESTAMP_INDEX]);
+                            day_num = Integer.parseInt(splitResult[PREDICTION_DAYNUM_INDEX]);
+                            if(day_num == 0){
+                                day_num = getDayNum();
+                            }
+                            order = Integer.parseInt(splitResult[PREDICTION_ORDER_INDEX]);
+                            feature_ids = splitResult[PREDICTION_FEATUREIDS_INDEX];
                             boolean model_tag = Boolean.parseBoolean(splitResult[6]);
                         }
                     }
@@ -347,29 +354,19 @@ public class StressReportFragment1 extends Fragment {
     }
 
     //region old function
-    public long getDayNum() {
-        long dayNum = 0;
-        SharedPreferences a = getActivity().getSharedPreferences("firstDate", Context.MODE_PRIVATE);
+    public int getDayNum() {
+        int dayNum = 0;
+        SharedPreferences a = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        long joinTimestamp = a.getLong("join_timestamp", 0);
         String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date firstDate = format.parse(firstTimeStr);
-            Date currentDate = Calendar.getInstance().getTime();
-            Log.i(TAG, "first, current: " + firstDate + ", " + currentDate);
+        Calendar cal = Calendar.getInstance();
+        long caldate = joinTimestamp - cal.getTimeInMillis();
 
-            long caldate = firstDate.getTime() - currentDate.getTime();
+        dayNum = (int) (caldate / (24 * 60 * 60 * 1000));
 
-            dayNum = caldate / (24 * 60 * 60 * 1000);
-
-            dayNum = Math.abs(dayNum);
-
-            Log.i(TAG, "Day num: " + dayNum);
-
-            return dayNum;
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Log.i(TAG, "Day num: " + dayNum);
 
         return dayNum;
     }

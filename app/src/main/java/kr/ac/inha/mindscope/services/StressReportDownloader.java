@@ -24,6 +24,8 @@ import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 
+import static kr.ac.inha.mindscope.Tools.PREDICTION_ORDER_INDEX;
+
 public class StressReportDownloader extends Worker {
 
     private static final String TAG = "SRDownloader";
@@ -98,9 +100,12 @@ public class StressReportDownloader extends Worker {
                                             eachLevelJSON.getString("feature_ids"),
                                             eachLevelJSON.getBoolean("model_tag"));
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
-                                    FileOutputStream fileOutputStream = context.openFileOutput(STRESS_PREDICTION_RESULT, Context.MODE_APPEND);
-                                    fileOutputStream.write(oneReportWithTimestamp.getBytes());
-                                    fileOutputStream.close();
+                                    String[] split = oneReportWithTimestamp.split(",");
+                                    if(Integer.parseInt(split[PREDICTION_ORDER_INDEX]) != 0){
+                                        FileOutputStream fileOutputStream = context.openFileOutput(STRESS_PREDICTION_RESULT, Context.MODE_APPEND);
+                                        fileOutputStream.write(oneReportWithTimestamp.getBytes());
+                                        fileOutputStream.close();
+                                    }
                                     Log.e(TAG, oneReportWithTimestamp);
                                     if(eachLevelJSON.getBoolean("model_tag")){
                                         stressReportPrefsEditor.putInt("reportAnswer", stressLv);

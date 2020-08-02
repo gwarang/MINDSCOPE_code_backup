@@ -813,6 +813,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         List<Long> timestamps = responseMessage.getTimestampList();
                         for (int n = 0; n < values.size(); n++) {
                             String value = values.get(n);
+                            int dayNum = 0;
                             long timestamp = 0;
                             int emaOrder = -1;
                             int stressLevel = 0;
@@ -820,6 +821,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                 // self-report
                                 String[] cells = value.split(" ");
                                 if (cells.length != 5)
+                                    continue;
+                                dayNum = Integer.parseInt(cells[1]);
+                                if(dayNum == 0)
                                     continue;
                                 emaOrder = Integer.parseInt(cells[2]);
                                 timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
