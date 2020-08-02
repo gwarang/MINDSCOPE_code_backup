@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.RemoteViews;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -647,34 +648,22 @@ public class Tools {
                 3, stressRelIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Action nextTimeAction =
-                new NotificationCompat.Action.Builder(
-                        R.mipmap.ic_launcher_low_foreground,
-                        con.getString(R.string.next_time),
-                        nextTimePI).build();
-        NotificationCompat.Action muteTodayAction =
-                new NotificationCompat.Action.Builder(
-                        R.mipmap.ic_launcher_low_foreground,
-                        con.getString(R.string.mute_today),
-                        muteTodayPI).build();
-        NotificationCompat.Action stressRelAction =
-                new NotificationCompat.Action.Builder(
-                        R.mipmap.ic_launcher_low_foreground,
-                        con.getString(R.string.do_intervention),
-                        stressRelPI).build();
+        RemoteViews notificationLayout = new RemoteViews(con.getPackageName(), R.layout.notification_intervention);
+        notificationLayout.setTextViewText(R.id.textIntervention, curIntervention);
+        notificationLayout.setOnClickPendingIntent(R.id.btnNextTime, nextTimePI);
+        notificationLayout.setOnClickPendingIntent(R.id.btnMuteToday, muteTodayPI);
+        notificationLayout.setOnClickPendingIntent(R.id.btnStressRel, stressRelPI);
 
         String channelId = con.getString(R.string.notif_channel_id);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 con.getApplicationContext(), channelId);
         builder.setContentTitle(con.getString(R.string.app_name))
                 .setTimeoutAfter(1000 * EMA_RESPONSE_EXPIRE_TIME)
-                .setContentText(curIntervention)
-                .setTicker("New Message Alert!")
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setContent(notificationLayout)
+                .setCustomContentView(notificationLayout)
                 .setAutoCancel(true)
                 .setCategory(CATEGORY_ALARM)
-                .addAction(nextTimeAction)
-                .addAction(muteTodayAction)
-                .addAction(stressRelAction)
                 .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 

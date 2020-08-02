@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/notification_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textIntervention"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Compat.Notification.Title"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notification_main"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical">
+        <TextView android:id="@+id/btnNextTime"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/next_time"
+            style="@style/Widget.AppCompat.ActionButton"/>
+        <TextView
+            android:id="@+id/btnMuteToday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mute_today"
+            style="@style/Widget.AppCompat.ActionButton"/>
+        <TextView
+            android:id="@+id/btnStressRel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/do_intervention"
+            style="@style/Widget.AppCompat.ActionButton"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:paddingRight="3.5dp"
+        android:paddingTop="8dp"
+        />
+
+</RelativeLayout>
