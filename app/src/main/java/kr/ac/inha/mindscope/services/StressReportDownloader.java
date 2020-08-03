@@ -53,6 +53,7 @@ public class StressReportDownloader extends Worker {
         if (stressReportPrefs.getBoolean("fromMain", false) || validHours.contains(cal.get(Calendar.HOUR_OF_DAY))) {
             SharedPreferences.Editor stressReportPrefsEditor = stressReportPrefs.edit();
             stressReportPrefsEditor.putBoolean("fromMain", false);
+            stressReportPrefsEditor.apply();
             long fromTimestamp = stressReportPrefs.getLong("lastDownloadTime", 0);
             long tillTimestamp = cal.getTimeInMillis();
 
@@ -61,7 +62,6 @@ public class StressReportDownloader extends Worker {
 
             if (Tools.isNetworkAvailable()) {
                 String stressReportStr;
-                long reportTimestamp;
                 SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 SharedPreferences configPrefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
@@ -117,12 +117,14 @@ public class StressReportDownloader extends Worker {
                                 e.printStackTrace();
                             }
                         }
-                        stressReportPrefsEditor.putLong("lastDownloadTime", tillTimestamp);
+                        stressReportPrefsEditor.putLong("lastDownloadTime", valuesTimestamp.get(valuesTimestamp.size()-1));
                         stressReportPrefsEditor.apply();
                     } else {
                         Log.e(TAG, "values empty");
                     }
                 }
+
+                fromTimestamp = stressReportPrefs.getLong("lastSelfReportDownload", 0);
                 if(fromTimestamp == 0){
                     EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage2 = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
@@ -137,6 +139,7 @@ public class StressReportDownloader extends Worker {
                     final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage2 = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage2);
                     if (responseMessage2.getDoneSuccessfully()) {
                         List<String> values = responseMessage2.getValueList();
+                        List<Long> timestampvalue = responseMessage2.getTimestampList();
                         if(!values.isEmpty()){
                             FileOutputStream fileOutputStream = null;
                             try {
@@ -150,6 +153,8 @@ public class StressReportDownloader extends Worker {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            stressReportPrefsEditor.putLong("lastSelfReportDownload", timestampvalue.get(timestampvalue.size()-1));
+                            stressReportPrefsEditor.apply();
                         }
                     }
                 }
