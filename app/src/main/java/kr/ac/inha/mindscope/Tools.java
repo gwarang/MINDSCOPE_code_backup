@@ -621,84 +621,86 @@ public class Tools {
         SharedPreferences prefs = con.getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
 
-        // Create and send stress intervention notification
+        if (!curIntervention.equals("")) {
+            // Create and send stress intervention notification
 
-        final NotificationManager notificationManager = (NotificationManager)
-                con.getSystemService(Context.NOTIFICATION_SERVICE);
+            final NotificationManager notificationManager = (NotificationManager)
+                    con.getSystemService(Context.NOTIFICATION_SERVICE);
 
 //        Intent notificationIntent = new Intent(MainService.this, EMAActivity.class);
-        Intent nextTimeIntent = new Intent(con, InterventionService.class);
-        // TODO: Save to server : 다음에 하기 (STRESS_NEXT_TIME)
-        nextTimeIntent.putExtra("stress_next_time", true); // STRESS_NEXT_TIME 다음에 하기 1
-        nextTimeIntent.putExtra("path", 1); // path is 1 (notification)
+            Intent nextTimeIntent = new Intent(con, InterventionService.class);
+            // TODO: Save to server : 다음에 하기 (STRESS_NEXT_TIME)
+            nextTimeIntent.putExtra("stress_next_time", true); // STRESS_NEXT_TIME 다음에 하기 1
+            nextTimeIntent.putExtra("path", 1); // path is 1 (notification)
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_NEXT_TIME, PATH_NOTIFICATION);
 
-        Intent muteTodayIntent = new Intent(con, InterventionService.class);
-        muteTodayIntent.putExtra("stress_mute_today", true); // STRESS_MUTE_TODAY 오늘의 알림 끄기 2
-        muteTodayIntent.putExtra("path", 1); // path is 1 (notification)
-        // TODO: Save to server : 오늘의 알림 끄기 (STRESS_MUTE_TODAY)
-        //  Change muteToday to true
+            Intent muteTodayIntent = new Intent(con, InterventionService.class);
+            muteTodayIntent.putExtra("stress_mute_today", true); // STRESS_MUTE_TODAY 오늘의 알림 끄기 2
+            muteTodayIntent.putExtra("path", 1); // path is 1 (notification)
+            // TODO: Save to server : 오늘의 알림 끄기 (STRESS_MUTE_TODAY)
+            //  Change muteToday to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_MUTE_TODAY, PATH_NOTIFICATION);
 //        SharedPreferences.Editor editor = prefs.edit();
 //        editor.putBoolean("muteToday", true);
 //        editor.apply();
 
-        Intent stressRelIntent = new Intent(con, InterventionService.class);
-        stressRelIntent.putExtra("stress_do_intervention", true); // STRESS_DO_INTERVENTION 스트레스 해소하기 4
-        stressRelIntent.putExtra("path", 1); // path is 1 (notification)
-        // TODO: Save to server : 스트레스 해소하기 (STRESS_DO_INTERVENTION)
-        //  Go to 스트레스 해소하기 화면 (to be determined)
-        //  Change didIntervention to true
+            Intent stressRelIntent = new Intent(con, InterventionService.class);
+            stressRelIntent.putExtra("stress_do_intervention", true); // STRESS_DO_INTERVENTION 스트레스 해소하기 4
+            stressRelIntent.putExtra("path", 1); // path is 1 (notification)
+            // TODO: Save to server : 스트레스 해소하기 (STRESS_DO_INTERVENTION)
+            //  Go to 스트레스 해소하기 화면 (to be determined)
+            //  Change didIntervention to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_DO_INTERVENTION, PATH_NOTIFICATION);
 //        SharedPreferences.Editor editor = prefs.edit();
 //        editor.putBoolean("didIntervention", true);
 //        editor.apply();
 
-        PendingIntent nextTimePI = PendingIntent.getService(con,
-                1, nextTimeIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent muteTodayPI = PendingIntent.getService(con,
-                2, muteTodayIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent stressRelPI = PendingIntent.getService(con,
-                3, stressRelIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent nextTimePI = PendingIntent.getService(con,
+                    1, nextTimeIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent muteTodayPI = PendingIntent.getService(con,
+                    2, muteTodayIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent stressRelPI = PendingIntent.getService(con,
+                    3, stressRelIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
 
-        RemoteViews notificationLayout = new RemoteViews(con.getPackageName(), R.layout.notification_intervention);
-        notificationLayout.setTextViewText(R.id.textIntervention, curIntervention);
-        notificationLayout.setOnClickPendingIntent(R.id.btnNextTime, nextTimePI);
-        notificationLayout.setOnClickPendingIntent(R.id.btnMuteToday, muteTodayPI);
-        notificationLayout.setOnClickPendingIntent(R.id.btnStressRel, stressRelPI);
+            RemoteViews notificationLayout = new RemoteViews(con.getPackageName(), R.layout.notification_intervention);
+            notificationLayout.setTextViewText(R.id.textIntervention, curIntervention);
+            notificationLayout.setOnClickPendingIntent(R.id.btnNextTime, nextTimePI);
+            notificationLayout.setOnClickPendingIntent(R.id.btnMuteToday, muteTodayPI);
+            notificationLayout.setOnClickPendingIntent(R.id.btnStressRel, stressRelPI);
 
-        String channelId = con.getString(R.string.notif_channel_id);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(
-                con.getApplicationContext(), channelId);
-        builder.setContentTitle(con.getString(R.string.app_name))
-                .setTimeoutAfter(1000 * EMA_RESPONSE_EXPIRE_TIME)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                .setContent(notificationLayout)
-                .setCustomContentView(notificationLayout)
-                .setAutoCancel(true)
-                .setCategory(CATEGORY_ALARM)
-                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
-                .setPriority(NotificationCompat.PRIORITY_MAX);
+            String channelId = con.getString(R.string.notif_channel_id);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                    con.getApplicationContext(), channelId);
+            builder.setContentTitle(con.getString(R.string.app_name))
+                    .setTimeoutAfter(1000 * EMA_RESPONSE_EXPIRE_TIME)
+                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                    .setContent(notificationLayout)
+                    .setCustomContentView(notificationLayout)
+                    .setAutoCancel(true)
+                    .setCategory(CATEGORY_ALARM)
+                    .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
+                    .setPriority(NotificationCompat.PRIORITY_MAX);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    con.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(channelId,
+                        con.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+                if (notificationManager != null) {
+                    notificationManager.createNotificationChannel(channel);
+                }
             }
-        }
 
-        final Notification notification = builder.build();
-        if (notificationManager != null) {
-            notificationManager.notify(ZATURI_NOTIFICATION_ID, notification);
-            saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
-                    STRESS_PUSH_NOTI_SENT, PATH_NOTIFICATION);
+            final Notification notification = builder.build();
+            if (notificationManager != null) {
+                notificationManager.notify(ZATURI_NOTIFICATION_ID, notification);
+                saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
+                        STRESS_PUSH_NOTI_SENT, PATH_NOTIFICATION);
+            }
         }
     }
 
