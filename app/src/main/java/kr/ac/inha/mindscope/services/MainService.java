@@ -50,6 +50,7 @@ import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.SplashActivity;
 import kr.ac.inha.mindscope.StressReportActivity;
 import kr.ac.inha.mindscope.Tools;
+import kr.ac.inha.mindscope.Utils;
 import kr.ac.inha.mindscope.receivers.ActivityRecognitionReceiver;
 import kr.ac.inha.mindscope.receivers.ActivityTransitionsReceiver;
 import kr.ac.inha.mindscope.receivers.CallReceiver;
@@ -123,7 +124,7 @@ public class MainService extends Service {
     private Runnable mainRunnable = new Runnable() {
         @Override
         public void run() {
-
+            Utils.logThreadSignature(TAG + " mainRunnable");
             //permissions granted or not. If not grant first
             if (!Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS) && !permissionNotificationPosted) {
                 permissionNotificationPosted = true;
@@ -273,6 +274,7 @@ public class MainService extends Service {
         @Override
         public void run() {
             new Thread(() -> {
+                Utils.logThreadSignature(TAG + " dataSubmitRunnable");
                 if (Tools.isNetworkAvailable()) {
                     Cursor cursor = DbMgr.getSensorData();
                     if (cursor.moveToFirst()) {
@@ -328,6 +330,7 @@ public class MainService extends Service {
             final long app_usage_time_end = System.currentTimeMillis();
             final long app_usage_time_start = (app_usage_time_end - APP_USAGE_SUBMIT_PERIOD * 1000) + 1000; // add one second to start time
             new Thread(() -> {
+                Utils.logThreadSignature(TAG + " appUsageSubmitRunnable");
                 SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
                 assert dataSourceId != -1;
@@ -356,6 +359,7 @@ public class MainService extends Service {
     private Handler appUsageSaveHandler = new Handler();
     private Runnable appUsageSaveRunnable = new Runnable() {
         public void run() {
+            Utils.logThreadSignature(TAG + "appUsageSaveRunnable");
             try {
                 Tools.checkAndSendUsageAccessStats(getApplicationContext());
             } catch (IOException e) {

@@ -107,6 +107,7 @@ public class AuthenticationActivity extends Activity {
                     final int userId = data.getIntExtra("userId", -1);
 
                     new Thread(() -> {
+                        Utils.logThreadSignature(TAG + " onActivityResult");
                         ManagedChannel channel = ManagedChannelBuilder.forAddress(
                                 getString(R.string.grpc_host),
                                 Integer.parseInt(getString(R.string.grpc_port))

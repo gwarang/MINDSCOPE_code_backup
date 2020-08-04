@@ -39,6 +39,7 @@ import kr.ac.inha.mindscope.EMAActivity;
 import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
+import kr.ac.inha.mindscope.Utils;
 import kr.ac.inha.mindscope.services.MainService;
 
 public class MeFragmentStep1 extends Fragment {
@@ -208,6 +209,7 @@ public class MeFragmentStep1 extends Fragment {
     public void updateStats() {
         if (Tools.isNetworkAvailable())
             new Thread(() -> {
+                Utils.logThreadSignature(TAG + " updateStats");
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 Calendar fromCal = Calendar.getInstance();

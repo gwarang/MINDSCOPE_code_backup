@@ -58,6 +58,7 @@ import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
+import kr.ac.inha.mindscope.Utils;
 
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
@@ -454,6 +455,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // region (3) daily comment
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
+                Utils.logThreadSignature(TAG + " loda daily comment");
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);

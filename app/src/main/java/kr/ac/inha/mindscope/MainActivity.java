@@ -473,6 +473,7 @@ public class MainActivity extends AppCompatActivity {
     public void updateStats() {
         if (Tools.isNetworkAvailable())
             new Thread(() -> {
+                Utils.logThreadSignature(TAG + " updateStats()");
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
@@ -498,42 +499,9 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-//                Calendar fromCal = Calendar.getInstance();
-//                fromCal.set(Calendar.HOUR_OF_DAY, 0);
-//                fromCal.set(Calendar.MINUTE, 0);
-//                fromCal.set(Calendar.SECOND, 0);
-//                fromCal.set(Calendar.MILLISECOND, 0);
-//                Calendar tillCal = (Calendar) fromCal.clone();
-//                tillCal.set(Calendar.HOUR_OF_DAY, 23);
-//                tillCal.set(Calendar.MINUTE, 59);
-//                tillCal.set(Calendar.SECOND, 59);
-//                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-//                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-//                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-//                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-//                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-//                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
-//                        .setFromTimestamp(fromCal.getTimeInMillis())
-//                        .setTillTimestamp(tillCal.getTimeInMillis())
-//                        .build();
-//                try {
-//                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
-//                    if (responseMessage.getDoneSuccessfully()) {
-//                        runOnUiThread(() -> updateEmaResponseView(responseMessage.getValueList()));
-//                    } else {
-//                        runOnUiThread(() -> initUserStats(true, 0, 0, null));
-//                    }
-//                } catch (StatusRuntimeException e) {
-//                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
-//                    e.printStackTrace();
-//                    runOnUiThread(() -> updateEmaResponseView(null));
-//
-//                } finally {
                 channel.shutdown();
-//                }
             }).start();
         else {
-//            Toast.makeText(MainActivity.this, "Please connect to Internet!", Toast.LENGTH_SHORT).show();
             runOnUiThread(() -> initUserStats(true, 0, 0, null));
         }
     }

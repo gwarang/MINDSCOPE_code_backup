@@ -457,7 +457,7 @@ public class MeFragmentStep2 extends Fragment {
                 tillCalendar.setTimeInMillis(tillTimestampYesterday);
             } else {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
             }
         }
         fromCalendar.set(Calendar.MINUTE, 0);

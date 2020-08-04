@@ -13,6 +13,7 @@ import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.SilenceDetector;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import kr.ac.inha.mindscope.DbMgr;
+import kr.ac.inha.mindscope.Utils;
 
 class AudioFeatureRecorder {
     // region Constants
@@ -29,6 +30,7 @@ class AudioFeatureRecorder {
     // endregion
 
     AudioFeatureRecorder(final Context con) {
+        Utils.logThreadSignature(TAG + " AudioFeatureRecorder constructor");
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(SAMPLING_RATE, AUDIO_BUFFER_SIZE, 512);
         final SilenceDetector silenceDetector = new SilenceDetector(SILENCE_THRESHOLD, false);
 
@@ -36,10 +38,12 @@ class AudioFeatureRecorder {
 
             @Override
             public void processingFinished() {
+                Utils.logThreadSignature(TAG + " AudioFeatureRecorder processingFinished()");
             }
 
             @Override
             public boolean process(AudioEvent audioEvent) {
+                Utils.logThreadSignature(TAG + " AudioFeatureRecorder process");
                 if (silenceDetector.currentSPL() >= -110.0D) {
                     SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                     if (DbMgr.getDB() == null)

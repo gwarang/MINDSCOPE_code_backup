@@ -33,6 +33,7 @@ import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
+import kr.ac.inha.mindscope.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.Tools.STRESS_DO_INTERVENTION;
@@ -303,6 +304,7 @@ public class CareChildFragment2 extends Fragment {
     public void loadTodayPerformedIntervention() {
         if(Tools.isNetworkAvailable()){
             new Thread(() -> {
+                Utils.logThreadSignature(TAG + " loadTodayPerformedIntervention");
                 todayPerformedInterventions = new ArrayList<>();
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);

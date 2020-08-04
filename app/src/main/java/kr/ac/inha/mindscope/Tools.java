@@ -358,6 +358,7 @@ public class Tools {
     public static boolean isNetworkAvailable() {
         try {
             Thread thread = new Thread(() -> {
+                Utils.logThreadSignature(TAG + " isNetworkAvailable");
                 try {
                     InetAddress address = InetAddress.getByName("www.google.com");
                     isReachable = !address.toString().equals("");
@@ -404,7 +405,7 @@ public class Tools {
                 @Override
                 public void run() {
                     super.run();
-
+                    Utils.logThreadSignature(TAG + "heartbeatNotSent");
                     ManagedChannel channel = ManagedChannelBuilder.forAddress(
                             con.getString(R.string.grpc_host),
                             Integer.parseInt(con.getString(R.string.grpc_port))
@@ -545,6 +546,7 @@ public class Tools {
         Thread forceUploadThread = new Thread(){
             @Override
             public void run() {
+                Utils.logThreadSignature(TAG + " forceUploadThread");
                 if (Tools.isNetworkAvailable()) {
                     Cursor cursor = DbMgr.getSensorData();
                     if (cursor.moveToFirst()) {
@@ -872,3 +874,4 @@ class GeofenceHelper {
     }
 
 }
+

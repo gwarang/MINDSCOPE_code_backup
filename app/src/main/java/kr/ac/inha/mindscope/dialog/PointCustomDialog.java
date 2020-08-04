@@ -18,6 +18,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
+import kr.ac.inha.mindscope.Utils;
 
 public class PointCustomDialog extends Dialog {
 
@@ -59,44 +60,11 @@ public class PointCustomDialog extends Dialog {
     }
 
     public void retrievePointFromServer(){
-        // all points
-//        new Thread(() -> {
-//            SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-//            int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-//            String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-//            int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
-//            final int REWARD_POINTS = 58;
-//
-//            ManagedChannel channel = ManagedChannelBuilder.forAddress(getContext().getString(R.string.grpc_host), Integer.parseInt(getContext().getString(R.string.grpc_port))).usePlaintext().build();
-//            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-//            Calendar c = Calendar.getInstance();
-//            EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-//                    .setUserId(userId)
-//                    .setEmail(email)
-//                    .setTargetEmail(email)
-//                    .setTargetCampaignId(campaignId)
-//                    .setTargetDataSourceId(REWARD_POINTS)
-//                    .setFromTimestamp(0)
-//                    .setTillTimestamp(c.getTimeInMillis())
-//                    .build();
-//            EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-//            int points = 0;
-//            if (responseMessage.getDoneSuccessfully())
-//                for (String value : responseMessage.getValueList()) {
-//                    String[] cells = value.split(" ");
-//                    if (cells.length != 3)
-//                        continue;
-//                    points += Integer.parseInt(cells[2]);
-//                }
-//            sumPoints = points;
-//            channel.shutdown();
-////            Objects.requireNonNull(getOwnerActivity()).runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
-//        }).start();
 
-        // points
         Thread retrievePointThread = new Thread(){
             @Override
             public void run() {
+                Utils.logThreadSignature(TAG + " retrievePointThread");
                 SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
