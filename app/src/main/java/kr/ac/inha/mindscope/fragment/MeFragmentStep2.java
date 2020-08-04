@@ -128,7 +128,8 @@ public class MeFragmentStep2 extends Fragment {
         init(view);
         try {
             stressResult = getStressResult(context);
-            updateUi(view, stressResult);
+            if(stressResult != null)
+                updateUi(view, stressResult);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -447,7 +448,7 @@ public class MeFragmentStep2 extends Fragment {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
         } else {
-            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
+            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
                 tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
                 long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;

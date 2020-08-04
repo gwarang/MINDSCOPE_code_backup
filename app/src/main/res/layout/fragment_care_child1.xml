@@ -2,352 +2,386 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.CareChildFragment1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/child1_container1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
+        android:layout_height="0dp"
+        android:visibility="visible"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="20dp"
             android:id="@+id/child1_img"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.25"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/icon_low"
-            app:layout_constraintBottom_toTopOf="@id/child1_date"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/child1_linear1"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_marginTop="15dp"
-            android:id="@+id/child1_date"
+        <LinearLayout
+            android:id="@+id/child1_linear1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/child1_stress_level"
-            android:textAlignment="center"
-            android:textSize="@dimen/my_text_size14"
-            android:fontFamily="@font/notosanscjkkrlight"
-            android:includeFontPadding="false"
-            android:textColor="@color/textColor_default"
-            android:text="child1 date"/>
+            app:layout_constraintTop_toBottomOf="@id/child1_img"
+            app:layout_constraintBottom_toTopOf="@id/child1_report_result1"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:id="@+id/child1_stress_level"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:textAlignment="center"
-            android:textSize="@dimen/my_text_size16"
-            android:fontFamily="@font/notosanscjkkrregular"
-            android:includeFontPadding="false"
-            android:textColor="@color/textColor_default"
-            android:text="child1 stress level"/>
+            <TextView
+                android:id="@+id/child1_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="child1 date"
+                android:textAlignment="center"
+                android:textColor="@color/textColor_default"
+                android:textSize="@dimen/my_text_size14"
+                app:layout_constraintTop_toBottomOf="@id/child1_img"
+                app:layout_constraintBottom_toTopOf="@id/child1_stress_level" />
+
+            <TextView
+                android:id="@+id/child1_stress_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:text="child1 stress level"
+                android:textAlignment="center"
+                android:textColor="@color/textColor_default"
+                android:textSize="@dimen/my_text_size16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </LinearLayout>
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_marginTop="48dp"
-            android:paddingVertical="7dp"
             android:id="@+id/child1_report_result1"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/child1_stress_level"
+            android:layout_marginTop="48dp"
+            android:background="@drawable/view_top_bottom_border"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/view_top_bottom_border">
+            app:layout_constraintTop_toBottomOf="@id/child1_linear1">
 
             <CheckBox
                 android:id="@+id/child1_ch_report1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:clickable="false"
+                app:layout_constraintEnd_toStartOf="@id/child1_txt_report_time1"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:clickable="false"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/child1_arrow_result1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#00000000"
+                android:src="@drawable/ic_arrow"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/child1_img_report_result1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="13dp"
+                android:src="@drawable/icon_low"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time1"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/child1_txt_report_result1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/string_low"
+                android:textSize="@dimen/my_text_size14"
+                android:textAlignment="center"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@id/child1_arrow_result1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_img_report_result1"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/child1_txt_report_time1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/time_step2_duration1"
+                android:textSize="@dimen/my_text_size14"
+                app:layout_constraintEnd_toStartOf="@id/child1_img_report_result1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report1"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:layout_marginStart="10dp"
-                android:textSize="@dimen/my_text_size16"
-                android:text="@string/time_step2_duration1"/>
-
-            <ImageView
-                android:id="@+id/child1_img_report_result1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time1"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/icon_low"
-                android:visibility="invisible"/>
-
-            <TextView
-                android:id="@+id/child1_txt_report_result1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_img_report_result1"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="@string/string_low"
-                android:visibility="invisible"/>
-
-            <ImageButton
-                android:id="@+id/child1_arrow_result1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow"
-                android:background="#00000000"
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:paddingVertical="7dp"
             android:id="@+id/child1_report_result2"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/child1_report_result1"
+            android:background="@drawable/view_bottom_border"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/view_bottom_border">
+            app:layout_constraintTop_toBottomOf="@id/child1_report_result1">
 
             <CheckBox
                 android:id="@+id/child1_ch_report2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:clickable="false"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:clickable="false"/>
+                app:layout_constraintEnd_toStartOf="@id/child1_txt_report_time2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/child1_arrow_result2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#00000000"
+                android:src="@drawable/ic_arrow"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/child1_img_report_result2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="13dp"
+                android:src="@drawable/icon_littlehigh"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/child1_txt_report_result2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/string_littlehigh"
+                android:textSize="@dimen/my_text_size14"
+                android:textAlignment="center"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@id/child1_arrow_result2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_img_report_result2"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/child1_txt_report_time2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_ch_report2"
+                android:layout_marginStart="10dp"
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
-                android:layout_marginStart="10dp"
-                android:textSize="@dimen/my_text_size16"
-                android:text="@string/time_step2_duration2"/>
-
-            <ImageView
-                android:id="@+id/child1_img_report_result2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time2"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/icon_littlehigh"
-                android:visibility="invisible"/>
-
-            <TextView
-                android:id="@+id/child1_txt_report_result2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_img_report_result2"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:text="@string/time_step2_duration2"
                 android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="@string/string_littlehigh"
-                android:visibility="invisible"/>
-
-            <ImageButton
-                android:id="@+id/child1_arrow_result2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow"
-                android:background="#00000000"
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                />
+                app:layout_constraintEnd_toStartOf="@id/child1_img_report_result2"
+                app:layout_constraintStart_toEndOf="@id/child1_ch_report2"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:paddingVertical="7dp"
             android:id="@+id/child1_report_result3"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/child1_report_result2"
+            android:background="@drawable/view_bottom_border"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/view_bottom_border">
+            app:layout_constraintTop_toBottomOf="@id/child1_report_result2">
 
             <CheckBox
                 android:id="@+id/child1_ch_report3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:clickable="false"
+                app:layout_constraintEnd_toStartOf="@id/child1_txt_report_time3"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:clickable="false"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/child1_arrow_result3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#00000000"
+                android:src="@drawable/ic_arrow"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/child1_img_report_result3"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="13dp"
+                android:src="@drawable/icon_high"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/child1_txt_report_result3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/string_high"
+                android:textSize="@dimen/my_text_size14"
+                android:textAlignment="center"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/child1_arrow_result3"
+                app:layout_constraintStart_toEndOf="@id/child1_img_report_result3"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/child1_txt_report_time3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/time_step2_duration3"
+                android:textSize="@dimen/my_text_size14"
+                app:layout_constraintEnd_toStartOf="@id/child1_img_report_result3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report3"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:layout_marginStart="10dp"
-                android:textSize="@dimen/my_text_size16"
-                android:text="@string/time_step2_duration3"/>
-
-            <ImageView
-                android:id="@+id/child1_img_report_result3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time3"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/icon_high"
-                android:visibility="invisible"/>
-
-            <TextView
-                android:id="@+id/child1_txt_report_result3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_img_report_result3"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="@string/string_high"
-                android:visibility="invisible"/>
-
-            <ImageButton
-                android:id="@+id/child1_arrow_result3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow"
-                android:background="#00000000"
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:paddingVertical="7dp"
             android:id="@+id/child1_report_result4"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/child1_report_result3"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/view_bottom_border">
+            android:background="@drawable/view_bottom_border"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            app:layout_constraintTop_toBottomOf="@id/child1_report_result3">
 
             <CheckBox
                 android:id="@+id/child1_ch_report4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:clickable="false"
+                app:layout_constraintEnd_toStartOf="@id/child1_txt_report_time4"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:clickable="false"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/child1_arrow_result4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#00000000"
+                android:src="@drawable/ic_arrow"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/child1_img_report_result4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="13dp"
+                android:src="@drawable/icon_low"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/child1_txt_report_result4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/string_low"
+                android:textSize="@dimen/my_text_size14"
+
+                android:textAlignment="center"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@id/child1_arrow_result4"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/child1_img_report_result4"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/child1_txt_report_time4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/time_step2_duration4"
+                android:textSize="@dimen/my_text_size14"
+                app:layout_constraintEnd_toStartOf="@id/child1_img_report_result4"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report4"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:layout_marginStart="10dp"
-                android:textSize="@dimen/my_text_size16"
-                android:text="@string/time_step2_duration4"/>
-
-            <ImageView
-                android:id="@+id/child1_img_report_result4"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_txt_report_time4"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/icon_low"
-                android:visibility="invisible"/>
-
-            <TextView
-                android:id="@+id/child1_txt_report_result4"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/child1_img_report_result4"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="@string/string_low"
-                android:visibility="invisible"/>
-
-            <ImageButton
-                android:id="@+id/child1_arrow_result4"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow"
-                android:background="#00000000"
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -374,7 +408,10 @@
             android:layout_marginTop="60dp"
             android:id="@+id/child1_step2_img1"
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.25"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
             android:src="@drawable/icon_low"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -446,9 +483,11 @@
             app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/child1_stress_reason_container"
             android:layout_width="match_parent"
-            android:layout_height="230dp"
+            android:layout_height="0dp"
             android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/child1_txt_reason"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="60dp"
             android:background="@color/color_low_bg">
 
             <LinearLayout

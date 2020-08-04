@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,89 +8,104 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/frg_report_app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/bg_toolbar"
-            android:elevation="10dp">
+            android:elevation="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_gravity="center_vertical"
-                android:elevation="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/stress_report_title"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:includeFontPadding="false"
-                    android:fontFamily="@font/notosanscjkkrregular"
-                    android:textSize="@dimen/my_text_size20"/>
-
+                android:elevation="10dp"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/toolbar_report_btn2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="확인"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:textSize="@dimen/my_text_size16"
+                    android:background="#00000000"
                     android:fontFamily="@font/notosanscjkkrmedium"
                     android:includeFontPadding="false"
+                    android:text="확인"
                     android:textColor="@color/textColor_blue"
-                    android:background="#00000000"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    android:textSize="@dimen/my_text_size16"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:text="@string/stress_report_title"
+                    android:textSize="@dimen/my_text_size20"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/txt_yes_no"
+        <LinearLayout
+            android:id="@+id/stress_report_step2_txt_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="19dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/frg_report_app_bar"
-            android:layout_marginTop="20dp"
-            android:textAlignment="center"
-            android:fontFamily="@font/notosanscjkkrregular"
-            android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size16"
-            android:text="test"/>
+            app:layout_constraintBottom_toTopOf="@id/frg_report_step2_img">
 
-        <TextView
-            android:textAlignment="center"
-            android:id="@+id/prediction_acc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="acc test"
-            android:fontFamily="@font/notosanscjkkrlight"
-            android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size14"
-            app:layout_constraintTop_toBottomOf="@id/txt_yes_no"/>
+            <TextView
+                android:id="@+id/txt_yes_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:text="test"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size16" />
+
+            <TextView
+                android:id="@+id/prediction_acc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="acc test"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size14" />
+        </LinearLayout>
+
+
 
         <ImageView
             android:layout_marginTop="20dp"
             android:id="@+id/frg_report_step2_img"
-            android:layout_width="70dp"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.23"
             android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
             android:adjustViewBounds="true"
             android:src="@drawable/icon_low"
-            app:layout_constraintTop_toBottomOf="@id/prediction_acc"
+            app:layout_constraintTop_toBottomOf="@id/stress_report_step2_txt_container"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/txt_stress_level"/>
 
         <TextView
             android:textAlignment="center"
@@ -101,41 +117,33 @@
             android:textSize="@dimen/my_text_size14"
             android:text="stress level txt"
             android:layout_marginTop="3dp"
-            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img"/>
+            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img"
+            app:layout_constraintBottom_toTopOf="@id/scrollveiw_container"/>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/scrollveiw_container"
-            app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
-            app:layout_constraintBottom_toTopOf="@id/btn_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAlignment="center"
-                android:id="@+id/txt_reason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/string_stress_why"
-                android:textSize="@dimen/my_text_size16"
-                android:fontFamily="@font/notosanscjkkrregular"
-                android:includeFontPadding="false"
-                android:layout_marginTop="15dp"
-                app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
-                app:layout_constraintBottom_toTopOf="@id/stress_report_reason_container"/>
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintVertical_weight="1"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/btn_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_stress_level">
 
             <ScrollView
-                android:layout_marginHorizontal="14dp"
-                android:orientation="vertical"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
                 android:id="@+id/stress_report_reason_container"
                 android:layout_width="match_parent"
-                android:layout_height="230dp"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="14dp"
+                android:background="@color/color_low_bg"
                 android:fillViewport="true"
-                app:layout_constraintTop_toBottomOf="@id/txt_reason"
-                app:layout_constraintBottom_toTopOf="@id/btn_container"
-                android:background="@color/color_low_bg">
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_reason">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -149,33 +157,34 @@
                         android:orientation="vertical">
 
                         <LinearLayout
-                            android:paddingVertical="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/view_bottom_border"
                             android:orientation="horizontal"
-                            android:background="@drawable/view_bottom_border">
+                            android:paddingVertical="5dp">
 
                             <ImageView
-                                android:layout_marginHorizontal="6dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_f_phoneusage"
-                                android:layout_gravity="center" />
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="6dp"
+                                android:src="@drawable/ic_f_phoneusage" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="휴대폰 사용"
-                                android:textSize="@dimen/my_text_size16"
+                                android:layout_gravity="center"
                                 android:fontFamily="@font/notosanscjkkrregular"
                                 android:includeFontPadding="false"
-                                android:layout_gravity="center"/>
+                                android:text="휴대폰 사용"
+                                android:textSize="@dimen/my_text_size16" />
 
                         </LinearLayout>
 
                         <ListView
                             android:id="@+id/listview_phone"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content" />
 
                     </LinearLayout>
 
@@ -192,19 +201,20 @@
                             android:background="@drawable/view_bottom_border">
 
                             <ImageView
-                                android:layout_marginHorizontal="6dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_f_activity"
-                                android:layout_gravity="center"/>
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="6dp"
+                                android:src="@drawable/ic_f_activity" />
+
                             <TextView
-                                android:paddingVertical="3dp"
-                                android:textSize="@dimen/my_text_size16"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:fontFamily="@font/notosanscjkkrregular"
                                 android:includeFontPadding="false"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="신체 활동"/>
+                                android:paddingVertical="3dp"
+                                android:text="신체 활동"
+                                android:textSize="@dimen/my_text_size16" />
 
                         </LinearLayout>
 
@@ -212,7 +222,7 @@
                         <ListView
                             android:id="@+id/listview_activity"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content" />
 
                     </LinearLayout>
 
@@ -228,19 +238,20 @@
                             android:background="@drawable/view_bottom_border">
 
                             <ImageView
-                                android:layout_marginHorizontal="6dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_f_location"
-                                android:layout_gravity="center"/>
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="6dp"
+                                android:src="@drawable/ic_f_location" />
+
                             <TextView
-                                android:paddingVertical="3dp"
-                                android:textSize="@dimen/my_text_size16"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:fontFamily="@font/notosanscjkkrregular"
                                 android:includeFontPadding="false"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="활동 반경"/>
+                                android:paddingVertical="3dp"
+                                android:text="활동 반경"
+                                android:textSize="@dimen/my_text_size16" />
 
                         </LinearLayout>
 
@@ -248,7 +259,7 @@
                         <ListView
                             android:id="@+id/listview_location"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -263,26 +274,27 @@
                             android:background="@drawable/view_bottom_border">
 
                             <ImageView
-                                android:layout_marginHorizontal="6dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_f_social"
-                                android:layout_gravity="center"/>
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="6dp"
+                                android:src="@drawable/ic_f_social" />
+
                             <TextView
-                                android:paddingVertical="3dp"
-                                android:textSize="@dimen/my_text_size16"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:fontFamily="@font/notosanscjkkrregular"
                                 android:includeFontPadding="false"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="소셜"/>
+                                android:paddingVertical="3dp"
+                                android:text="소셜"
+                                android:textSize="@dimen/my_text_size16" />
 
                         </LinearLayout>
 
                         <ListView
                             android:id="@+id/listview_social"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content" />
 
                     </LinearLayout>
 
@@ -298,81 +310,102 @@
                             android:background="@drawable/view_bottom_border">
 
                             <ImageView
-                                android:layout_marginHorizontal="6dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_f_sleep"
-                                android:layout_gravity="center"/>
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="6dp"
+                                android:src="@drawable/ic_f_sleep" />
+
                             <TextView
-                                android:paddingVertical="3dp"
-                                android:textSize="@dimen/my_text_size16"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:fontFamily="@font/notosanscjkkrregular"
                                 android:includeFontPadding="false"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="수면"/>
+                                android:paddingVertical="3dp"
+                                android:text="수면"
+                                android:textSize="@dimen/my_text_size16" />
                         </LinearLayout>
 
                         <ListView
                             android:id="@+id/listview_sleep"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content" />
 
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>
-        </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_reason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:text="@string/string_stress_why"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size16"
+                app:layout_constraintBottom_toTopOf="@id/stress_report_reason_container"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_container"
-            android:paddingHorizontal="111dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/scrollveiw_container"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:textAlignment="center"
-                android:id="@+id/question_analysis"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/my_text_size14"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/string_am_i_right"/>
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/scrollveiw_container">
 
             <Button
+                app:layout_constraintHorizontal_chainStyle="packed"
                 android:id="@+id/btn_correct"
-                android:layout_marginTop="7dp"
                 android:layout_width="66dp"
                 android:layout_height="30dp"
+                android:layout_marginVertical="5dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/btn_check_selected"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:stateListAnimator="@null"
-                app:layout_constraintTop_toBottomOf="@id/question_analysis"
+                android:text="@string/yes"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btn_incorrect"
-                android:background="@drawable/btn_check_selected"
-                android:layout_marginVertical="5dp"
-                android:text="@string/yes"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/question_analysis"
+                android:layout_marginEnd="10dp"/>
 
             <Button
                 android:id="@+id/btn_incorrect"
-                android:layout_marginTop="7dp"
                 android:layout_width="66dp"
                 android:layout_height="30dp"
+                android:layout_marginVertical="5dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/btn_check_selected"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
-                android:layout_marginVertical="5dp"
-                app:layout_constraintTop_toBottomOf="@id/question_analysis"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:stateListAnimator="@null"
+                android:text="@string/no"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_correct"
-                android:text="@string/no"
-                android:background="@drawable/btn_check_selected"/>
+                app:layout_constraintTop_toBottomOf="@id/question_analysis"
+                android:layout_marginStart="10dp"/>
+
+            <TextView
+                android:id="@+id/question_analysis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/string_am_i_right"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

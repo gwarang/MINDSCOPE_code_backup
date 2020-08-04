@@ -335,13 +335,13 @@ public class StressReportFragment2 extends Fragment {
                     editor.putBoolean("today_last_report", true);
                     editor.apply();
 
-                    SharedPreferences emaSubmitCheckPrefs = context.getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
+                    SharedPreferences reportSubmitCheckPrefs = context.getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor reportSubmitEditor = reportSubmitCheckPrefs.edit();
                     String reportSubmit = "self_report_submit_check_" + order;
                     Calendar cal = Calendar.getInstance();
-                    emaSubmitEditor.putBoolean(reportSubmit, true);
-                    emaSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
-                    emaSubmitEditor.apply();
+                    reportSubmitEditor.putBoolean(reportSubmit, true);
+                    reportSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
+                    reportSubmitEditor.apply();
 
                     long timestamp = System.currentTimeMillis();
 
@@ -351,7 +351,7 @@ public class StressReportFragment2 extends Fragment {
                     Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
 
-                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d,%s\n",
+                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
                             order,
@@ -415,7 +415,7 @@ public class StressReportFragment2 extends Fragment {
                     assert dataSourceId != -1;
                     Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
-                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d,%s\n",
+                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
                             order,

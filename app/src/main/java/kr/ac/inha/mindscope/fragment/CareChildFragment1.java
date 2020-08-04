@@ -66,52 +66,45 @@ public class CareChildFragment1 extends Fragment {
     private static final int ORDER2 = 2;
     private static final int ORDER3 = 3;
     private static final int ORDER4 = 4;
-
+    static String feature_ids1 = "";
+    static String feature_ids2 = "";
+    static String feature_ids3 = "";
+    static String feature_ids4 = "";
     ArrayList<String> predictionArray;
     ArrayList<String> selfReportArray;
     int[] stressLvArray;
-
     long timestamp;
-
     //region variable
     ImageView stressAvgImg;
     TextView dateTextView;
     TextView stressAvgTextview;
-
     CheckBox checkBox1;
     CheckBox checkBox2;
     CheckBox checkBox3;
     CheckBox checkBox4;
-
     ImageView stressImg1;
     ImageView stressImg2;
     ImageView stressImg3;
     ImageView stressImg4;
-
     TextView stressTextview1;
     TextView stressTextview2;
     TextView stressTextview3;
     TextView stressTextview4;
-
     ImageButton arrowBtn1;
     ImageButton arrowBtn2;
     ImageButton arrowBtn3;
     ImageButton arrowBtn4;
     ImageButton backArrow;
-
     List<String> stressReports;
     List<String> selfStressReports;
-
     ConstraintLayout defaultContainer;
     ConstraintLayout hiddenContainer;
     RelativeLayout beforeStartStep2Container;
     TextView beforeStartStep2TextView;
-
     ImageView hiddenStressImg;
     TextView hiddenDateView;
     TextView hiddenTimeView;
     TextView hiddenStressLevelView;
-
     ListView phoneListView;
     ListView activityListView;
     ListView socialListView;
@@ -123,16 +116,10 @@ public class CareChildFragment1 extends Fragment {
     LinearLayout locationContainer;
     LinearLayout sleepContainer;
     ScrollView reasonContainer;
-
-    static String feature_ids1 = "";
-    static String feature_ids2 = "";
-    static String feature_ids3 = "";
-    static String feature_ids4 = "";
     int order1StressLevel;
     int order2StressLevel;
     int order3StressLevel;
     int order4StressLevel;
-
 
 
     ArrayList<JSONObject[]> stressReportsJsonArray;
@@ -182,11 +169,11 @@ public class CareChildFragment1 extends Fragment {
 //        }
 
         selfStressReportWithOrderIndex = new int[]{NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV};
-        if(selfReportArray != null && !selfReportArray.isEmpty()){
-            for(String selfReportStr : selfReportArray){
+        if (selfReportArray != null && !selfReportArray.isEmpty()) {
+            for (String selfReportStr : selfReportArray) {
                 String[] result = selfReportStr.split(",");
                 // result[0] : timestamp, result[1] : day num, result[2] : report order(ema_order), result[3] : Analysis correct, result[4] self stress report answer
-                if(Integer.parseInt(result[SELF_REPORT_ORDER_INDEX]) > 0 && Integer.parseInt(result[SELF_REPORT_DAYNUM_INDEX]) != 0)
+                if (Integer.parseInt(result[SELF_REPORT_ORDER_INDEX]) > 0 && Integer.parseInt(result[SELF_REPORT_DAYNUM_INDEX]) != 0)
                     selfStressReportWithOrderIndex[Integer.parseInt(result[2]) - 1] = Integer.parseInt(result[4]);
             }
         }
@@ -199,51 +186,51 @@ public class CareChildFragment1 extends Fragment {
         }
         Log.e(TAG, "avg stress: " + avgStress);
 
-        if(avgStress < 1.5){
+        if (avgStress < 1.5) {
             stressAvgImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
             stressAvgTextview.setText(Html.fromHtml(getString(R.string.string_stress_level_low)));
-        }else if(avgStress < 2.5){
+        } else if (avgStress < 2.5) {
             stressAvgImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
             stressAvgTextview.setText(Html.fromHtml(getString(R.string.string_stress_level_littlehigh)));
-        }else{
+        } else {
             stressAvgImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
             stressAvgTextview.setText(Html.fromHtml(getString(R.string.string_stress_level_high)));
         }
 
-        // checkbox UI update
-        for(short i = 0; i < selfStressReportWithOrderIndex.length; i++){
-            if(selfStressReportWithOrderIndex[i] != NON_SELF_STRESS_LV){
-                switch (i+1){
-                    case ORDER1:
-                        checkBox1.setChecked(true);
-                        break;
-                    case ORDER2:
-                        checkBox2.setChecked(true);
-                        break;
-                    case ORDER3:
-                        checkBox3.setChecked(true);
-                        break;
-                    case ORDER4:
-                        checkBox4.setChecked(true);
-                        break;
-                }
-            }else{
-                switch (i+1){
-                    case ORDER1:
-                        checkBox1.setChecked(false);
-                        break;
-                    case ORDER2:
-                        checkBox2.setChecked(false);
-                        break;
-                    case ORDER3:
-                        checkBox3.setChecked(false);
-                        break;
-                    case ORDER4:
-                        checkBox4.setChecked(false);
-                        break;
-                }
-            }
-        }
+//        // checkbox UI update
+//        for(short i = 0; i < selfStressReportWithOrderIndex.length; i++){
+//            if(selfStressReportWithOrderIndex[i] != NON_SELF_STRESS_LV){
+//                switch (i+1){
+//                    case ORDER1:
+//                        checkBox1.setChecked(true);
+//                        break;
+//                    case ORDER2:
+//                        checkBox2.setChecked(true);
+//                        break;
+//                    case ORDER3:
+//                        checkBox3.setChecked(true);
+//                        break;
+//                    case ORDER4:
+//                        checkBox4.setChecked(true);
+//                        break;
+//                }
+//            }else{
+//                switch (i+1){
+//                    case ORDER1:
+//                        checkBox1.setChecked(false);
+//                        break;
+//                    case ORDER2:
+//                        checkBox2.setChecked(false);
+//                        break;
+//                    case ORDER3:
+//                        checkBox3.setChecked(false);
+//                        break;
+//                    case ORDER4:
+//                        checkBox4.setChecked(false);
+//                        break;
+//                }
+//            }
+//        }
 
         updateUI();
 
@@ -292,7 +279,7 @@ public class CareChildFragment1 extends Fragment {
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
 
-    public void init(View view){
+    public void init(View view) {
         Context context = MainActivity.getInstance();
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         Calendar cal = Calendar.getInstance();
@@ -302,12 +289,11 @@ public class CareChildFragment1 extends Fragment {
         beforeStartStep2Container = view.findViewById(R.id.before_start_step2_container);
         beforeStartStep2TextView = view.findViewById(R.id.before_start_step2_text);
 
-        if(!firstStartCareStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
+        if (!firstStartCareStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11) {
             defaultContainer.setVisibility(View.INVISIBLE);
             beforeStartStep2Container.setVisibility(View.VISIBLE);
-        }
-        else{
-            if(!firstStartCareStep2Check){
+        } else {
+            if (!firstStartCareStep2Check) {
                 SharedPreferences.Editor editor = stepChangePrefs.edit();
                 editor.putBoolean("first_start_care_step2_check", true);
                 editor.apply();
@@ -315,7 +301,7 @@ public class CareChildFragment1 extends Fragment {
         }
         stressAvgImg = view.findViewById(R.id.child1_img);
         dateTextView = view.findViewById(R.id.child1_date);
-        stressAvgTextview= view.findViewById(R.id.child1_stress_level);
+        stressAvgTextview = view.findViewById(R.id.child1_stress_level);
 
         checkBox1 = view.findViewById(R.id.child1_ch_report1);
         checkBox2 = view.findViewById(R.id.child1_ch_report2);
@@ -361,7 +347,7 @@ public class CareChildFragment1 extends Fragment {
 
     }
 
-    public void getTodayPredictionAndSelfReport(Context context) throws IOException{
+    public void getTodayPredictionAndSelfReport(Context context) throws IOException {
         FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
         InputStreamReader isr = new InputStreamReader(fis);
         BufferedReader bufferedReader = new BufferedReader(isr);
@@ -372,7 +358,7 @@ public class CareChildFragment1 extends Fragment {
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
         // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
-        if(fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11){
+        if (fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11) {
             // today
             fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
             fromCalendar.set(Calendar.MINUTE, 0);
@@ -380,7 +366,7 @@ public class CareChildFragment1 extends Fragment {
             tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
-        }else{
+        } else {
             // yesterday
             fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
             fromCalendar.set(Calendar.MINUTE, 0);
@@ -410,7 +396,7 @@ public class CareChildFragment1 extends Fragment {
         //region self stress
         selfReportArray = new ArrayList<>();
         int selfStressLv = 5;
-        try{
+        try {
             FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
             InputStreamReader isr2 = new InputStreamReader(fis2);
             BufferedReader bufferedReader2 = new BufferedReader(isr2);
@@ -426,7 +412,7 @@ public class CareChildFragment1 extends Fragment {
                     selfReportArray.add(line2);
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, "load serf report error");
         }
@@ -434,10 +420,10 @@ public class CareChildFragment1 extends Fragment {
 
     }
 
-    public void updateUI(){
+    public void updateUI() {
 
 
-        if(predictionArray == null){
+        if (predictionArray == null) {
             Calendar calendar = Calendar.getInstance();
             String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());
             defaultContainer.setVisibility(View.INVISIBLE);
@@ -452,17 +438,17 @@ public class CareChildFragment1 extends Fragment {
         hiddenDateView.setText(date_text);
 
         // each stress level view update
-        if(predictionArray != null){
-            for(short order = 0; order < 4; order++){
-                for(String prediction : predictionArray){
+        if (predictionArray != null) {
+            for (short order = 0; order < 4; order++) {
+                for (String prediction : predictionArray) {
                     String[] predictionTokens = prediction.split(",");
-                    if(order + 1 == Integer.parseInt(predictionTokens[PREDICTION_ORDER_INDEX])
-                            && stressLvArray[order] == Integer.parseInt(predictionTokens[PREDICTION_STRESSLV_INDEX])){
+                    if (order + 1 == Integer.parseInt(predictionTokens[PREDICTION_ORDER_INDEX])
+                            && stressLvArray[order] == Integer.parseInt(predictionTokens[PREDICTION_STRESSLV_INDEX])) {
                         int stressLevel = stressLvArray[order];
                         String featre_ids_result = predictionTokens[PREDICTION_FEATUREIDS_INDEX];
-                        switch (stressLevel){
+                        switch (stressLevel) {
                             case STRESS_LV1:
-                                switch (order+1){
+                                switch (order + 1) {
                                     case ORDER1:
                                         stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                                         stressTextview1.setText(getResources().getString(R.string.string_low));
@@ -506,7 +492,7 @@ public class CareChildFragment1 extends Fragment {
                                 }
                                 break;
                             case STRESS_LV2:
-                                switch (order+1){
+                                switch (order + 1) {
                                     case ORDER1:
                                         stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                                         stressTextview1.setText(getResources().getString(R.string.string_littlehigh));
@@ -550,7 +536,7 @@ public class CareChildFragment1 extends Fragment {
                                 }
                                 break;
                             case STRESS_LV3:
-                                switch (order+1){
+                                switch (order + 1) {
                                     case ORDER1:
                                         stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                                         stressTextview1.setText(getResources().getString(R.string.string_high));
@@ -594,6 +580,40 @@ public class CareChildFragment1 extends Fragment {
                                 }
                                 break;
                         }
+                        // checkbox UI update
+
+                        if (selfStressReportWithOrderIndex[order] != NON_SELF_STRESS_LV) {
+                            switch (order + 1) {
+                                case ORDER1:
+                                    checkBox1.setChecked(true);
+                                    break;
+                                case ORDER2:
+                                    checkBox2.setChecked(true);
+                                    break;
+                                case ORDER3:
+                                    checkBox3.setChecked(true);
+                                    break;
+                                case ORDER4:
+                                    checkBox4.setChecked(true);
+                                    break;
+                            }
+                        } else {
+                            switch (order + 1) {
+                                case ORDER1:
+                                    checkBox1.setChecked(false);
+                                    break;
+                                case ORDER2:
+                                    checkBox2.setChecked(false);
+                                    break;
+                                case ORDER3:
+                                    checkBox3.setChecked(false);
+                                    break;
+                                case ORDER4:
+                                    checkBox4.setChecked(false);
+                                    break;
+                            }
+                        }
+
                     }
                 }
             }
@@ -871,7 +891,7 @@ public class CareChildFragment1 extends Fragment {
 //        }
     }
 
-    public float getAvgStress(Context context) throws IOException{
+    public float getAvgStress(Context context) throws IOException {
         int sumStress = 0;
 
         FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
@@ -879,18 +899,18 @@ public class CareChildFragment1 extends Fragment {
         BufferedReader bufferedReader = new BufferedReader(isr);
         String predictionLine;
 
-        stressLvArray = new int[]{NON_SELF_STRESS_LV,NON_SELF_STRESS_LV,NON_SELF_STRESS_LV,NON_SELF_STRESS_LV};
+        stressLvArray = new int[]{NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV};
 
-        for(String prediction : predictionArray){
+        for (String prediction : predictionArray) {
             String[] predictionTokens = prediction.split(",");
             boolean predictionModelTag = Boolean.parseBoolean(predictionTokens[PREDICTION_MODELTAG_INDEX]);
             int predictionOrder = Integer.parseInt(predictionTokens[PREDICTION_ORDER_INDEX]);
             int predictionStressLv = Integer.parseInt(predictionTokens[PREDICTION_STRESSLV_INDEX]);
-            if(predictionModelTag && predictionOrder != 0){
-                if(selfStressReportWithOrderIndex[predictionOrder - 1] != NON_SELF_STRESS_LV
-                        && selfStressReportWithOrderIndex[predictionOrder - 1] != predictionStressLv){
+            if (predictionModelTag && predictionOrder != 0) {
+                if (selfStressReportWithOrderIndex[predictionOrder - 1] != NON_SELF_STRESS_LV
+                        && selfStressReportWithOrderIndex[predictionOrder - 1] != predictionStressLv) {
                     stressLvArray[predictionOrder - 1] = selfStressReportWithOrderIndex[predictionOrder - 1];
-                }else{
+                } else {
                     stressLvArray[predictionOrder - 1] = predictionStressLv;
                 }
             }
@@ -912,8 +932,8 @@ public class CareChildFragment1 extends Fragment {
 //        }
 
         int count = 0;
-        for(int i : stressLvArray){
-            if(i != NON_SELF_STRESS_LV){
+        for (int i : stressLvArray) {
+            if (i != NON_SELF_STRESS_LV) {
                 sumStress += (i + 1);
                 count++;
             }
@@ -941,44 +961,43 @@ public class CareChildFragment1 extends Fragment {
 //                }
 //            }
 //        }
-        float avg = (float)sumStress / count;
+        float avg = (float) sumStress / count;
         return avg;
 //        return (float)sumStress / stressReportsJsonArray.size();
     }
 
-    public void hiddenViewUpdate(String feature_ids, int stressLevl){
+    public void hiddenViewUpdate(String feature_ids, int stressLevl) {
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();
         ArrayList<String> socialReason = new ArrayList<>();
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
-        if(feature_ids.equals("")){
+        if (feature_ids.equals("")) {
             Log.i(TAG, "feature_ids is empty");
-        }
-        else{
+        } else {
             String[] featureArray = feature_ids.split(" ");
 
-            for(int i = 0; i < featureArray.length; i++ ){
+            for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
                 String packName = requireContext().getPackageName();
                 int resId = getResources().getIdentifier(strID, "string", packName);
 
-                if(category <= 5){
+                if (category <= 5) {
                     activityReason.add(getResources().getString(resId));
-                }else if(category <= 11){
+                } else if (category <= 11) {
                     socialReason.add(getResources().getString(resId));
-                }else if(category <= 16){
+                } else if (category <= 16) {
                     locationReason.add(getResources().getString(resId));
-                }else if(category <= 28){
+                } else if (category <= 28) {
                     phoneReason.add(getResources().getString(resId));
-                }else{
+                } else {
                     sleepReason.add(getResources().getString(resId));
                 }
 
-                if(i == 4) // maximun number of showing feature is five
+                if (i == 4) // maximun number of showing feature is five
                     break;
             }
         }
@@ -1009,42 +1028,42 @@ public class CareChildFragment1 extends Fragment {
         sleepListView.setAdapter(sleepAdapter);
 
 
-        if(phoneReason.isEmpty())
+        if (phoneReason.isEmpty())
             phoneContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(phoneListView);
             phoneContainer.setVisibility(View.VISIBLE);
         }
 
-        if(activityReason.isEmpty())
+        if (activityReason.isEmpty())
             activityContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(activityListView);
             activityContainer.setVisibility(View.VISIBLE);
         }
 
-        if(socialReason.isEmpty())
+        if (socialReason.isEmpty())
             socialContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(socialListView);
             socialContainer.setVisibility(View.VISIBLE);
         }
 
-        if(locationReason.isEmpty())
+        if (locationReason.isEmpty())
             locationContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(locationListView);
             locationContainer.setVisibility(View.VISIBLE);
         }
 
-        if(sleepReason.isEmpty())
+        if (sleepReason.isEmpty())
             sleepContainer.setVisibility(View.GONE);
-        else{
+        else {
             setListViewHeightBasedOnChildren(sleepListView);
             sleepContainer.setVisibility(View.VISIBLE);
         }
 
-        switch (stressLevl){
+        switch (stressLevl) {
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
@@ -1064,7 +1083,7 @@ public class CareChildFragment1 extends Fragment {
     }
 
     //region old fuction
-    public void getStressReportDataFromGRPC(){
+    public void getStressReportDataFromGRPC() {
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
@@ -1072,7 +1091,7 @@ public class CareChildFragment1 extends Fragment {
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
         // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
-        if(fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11){
+        if (fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11) {
             // today
             fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
             fromCalendar.set(Calendar.MINUTE, 0);
@@ -1080,7 +1099,7 @@ public class CareChildFragment1 extends Fragment {
             tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
-        }else{
+        } else {
             // yesterday
             fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
             fromCalendar.set(Calendar.MINUTE, 0);
@@ -1122,12 +1141,12 @@ public class CareChildFragment1 extends Fragment {
         if (responseMessage.getDoneSuccessfully()) {
             List<String> values = responseMessage.getValueList();
             List<Long> timestampValues = responseMessage.getTimestampList();
-            if(!values.isEmpty()){
-                for(String report : values){
+            if (!values.isEmpty()) {
+                for (String report : values) {
                     stressReports = values;
                     Log.i(TAG, report);
                 }
-            }else{
+            } else {
                 Log.d(TAG, "values empty");
             }
 
@@ -1135,7 +1154,7 @@ public class CareChildFragment1 extends Fragment {
         channel.shutdown();
     }
 
-    public void getSelfStressReportDataFromGRPC(){
+    public void getSelfStressReportDataFromGRPC() {
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
@@ -1144,7 +1163,7 @@ public class CareChildFragment1 extends Fragment {
         Calendar tillCalendar = Calendar.getInstance();
 
         // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
-        if(fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11){
+        if (fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11) {
             // today
             fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
             fromCalendar.set(Calendar.MINUTE, 0);
@@ -1152,7 +1171,7 @@ public class CareChildFragment1 extends Fragment {
             tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
-        }else{
+        } else {
             // yesterday
             fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
             fromCalendar.set(Calendar.MINUTE, 0);
@@ -1192,12 +1211,12 @@ public class CareChildFragment1 extends Fragment {
         final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
         if (responseMessage.getDoneSuccessfully()) {
             List<String> values = responseMessage.getValueList();
-            if(!values.isEmpty()){
-                for(String report : values){
+            if (!values.isEmpty()) {
+                for (String report : values) {
                     selfStressReports = values;
                     Log.i(TAG, "selfreport " + report);
                 }
-            }else{
+            } else {
                 Log.d(TAG, "values empty");
             }
 

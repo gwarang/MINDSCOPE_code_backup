@@ -335,4 +335,6 @@
     <string name="string_permission_txt3">*연구 외의 목적으로 사용, 저장되지 않습니다.</string>
     <string name="string_permission_txt4">스마트폰 데이터 연동을\n허용해주시겠어요?</string>
 
+    <string name="string_no_stress_report">데이터가 부족하여\n스트레스 리포트가 작성되지 않았습니다.\n\n다음 스트레스 리포트를 기다려주세요!</string>
+
 </resources>

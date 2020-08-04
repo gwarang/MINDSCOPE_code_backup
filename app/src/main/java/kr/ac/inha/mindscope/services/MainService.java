@@ -172,6 +172,8 @@ public class MainService extends Service {
 
             if (stepCheck == 1 && ema_order != 0 && canSendNotif) {
                 Log.e(TAG, "EMA order 1: " + ema_order);
+                String temp = String.format("ema_order_is_%d", ema_order);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, "MAKE_STRESS_REPORT_NOTI", temp);
                 sendNotification(ema_order, KINDS_NOTI_EMA);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                 SharedPreferences.Editor editor = loginPrefs.edit();
@@ -191,6 +193,8 @@ public class MainService extends Service {
 
             if (stepCheck == 2 && report_order != 0 && canSendNotifReport) {
                 Log.e(TAG, "REPORT order 1: " + report_order);
+                String temp = String.format("report_order_is_%d", report_order);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, "MAKE_STRESS_REPORT_NOTI", temp);
                 sendNotification(report_order, KINDS_NOTI_REPORT);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                 SharedPreferences.Editor editor = loginPrefs.edit();
@@ -628,7 +632,7 @@ public class MainService extends Service {
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(Notification.DEFAULT_ALL);
             SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-            int stressLv = stressReportPrefs.getInt("reportAnswer", 0);
+            int stressLv = stressReportPrefs.getInt("reportAnswer", 3);
             switch (stressLv){
                 case STRESS_LV1:
                     builder.setContentText(this.getString(R.string.daily_notif_report_low_text));
@@ -656,10 +660,14 @@ public class MainService extends Service {
 
         final Notification notification = builder.build();
         if (notificationManager != null) {
-            if (kinds_ema_or_report == KINDS_NOTI_EMA)
+            if (kinds_ema_or_report == KINDS_NOTI_EMA){
                 notificationManager.notify(EMA_NOTI_ID, notification);
-            else
+                Tools.saveApplicationLog(getApplicationContext(), TAG, "NOTIFY_EMA");
+            }
+            else{
                 notificationManager.notify(STRESS_REPORT_NOTIFI_ID, notification);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, "NOTIFY_STRESS_REPORT");
+            }
         }
     }
 

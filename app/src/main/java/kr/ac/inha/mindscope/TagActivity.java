@@ -100,6 +100,8 @@ public class TagActivity extends AppCompatActivity {
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (DbMgr.getDB() == null)
+                DbMgr.init(getApplicationContext());
 
             loadingLayout.setVisibility(View.VISIBLE);
             tagBtn.setText(DONE);
@@ -123,7 +125,9 @@ public class TagActivity extends AppCompatActivity {
             Log.i(TAG, "REPORT_TAGS dataSourceId: " + dataSourceId);
             for(String tag : tags){
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EACH_EMA_TAG_IN_LOCAL");
             }
+
 
             String answers = String.format(Locale.US, "%d %d %d %d %d",
                     answer1,
@@ -137,8 +141,9 @@ public class TagActivity extends AppCompatActivity {
             int dataSourceId2 = prefs.getInt("SURVEY_EMA", -1);
             assert dataSourceId2 != -1;
             Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId2);
-            if (getIntent().getIntExtra("ema_order", (short) -1) != -1) {
+            if (emaOrder != 0) {
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
+                Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EMA_IN_LOCAL");
             }
 
             SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);

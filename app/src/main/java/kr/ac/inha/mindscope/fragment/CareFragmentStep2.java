@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,12 @@ public class CareFragmentStep2 extends Fragment {
             todayLastReportDialog = new Dialog(requireContext(), android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
             todayLastReportDialog.setContentView(view);
             todayLastReportLayout = view.findViewById(R.id.today_last_report_layout);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    todayLastReportDialog.dismiss();
+                }
+            }, 2000);
             todayLastReportLayout.setOnClickListener(view1 -> {
                 if(todayLastReportDialog != null)
                     todayLastReportDialog.dismiss();

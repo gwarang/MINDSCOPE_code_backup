@@ -26,7 +26,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 
 import com.google.android.gms.location.Geofence;
@@ -50,6 +49,7 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import inha.nsl.easytrack.ETServiceGrpc;
@@ -193,7 +193,7 @@ public class Tools {
         final Dialog dialog = new Dialog(activity, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
         dialog.setContentView(view);
         dialog.setCancelable(false);
-        RelativeLayout permissionLayout = view.findViewById(R.id.permission_dialog_layout);
+        ConstraintLayout permissionLayout = view.findViewById(R.id.permission_dialog_layout);
         Button permissionBtn = view.findViewById(R.id.permission_btn);
         permissionBtn.setOnClickListener(new View.OnClickListener() {
             @Override

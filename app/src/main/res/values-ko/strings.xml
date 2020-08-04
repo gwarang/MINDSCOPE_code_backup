@@ -49,8 +49,8 @@
     <string name="daily_notif_text">스트레스 지수 측정시간 입니다! 한 시간 안에 응답해주세요</string>
     <string name="daily_notif_report_text">스트레스 측정에 문제가 있었어요…</string>
     <string name="daily_notif_report_low_text">스트레스 단계는 \'낮음\'입니다.\n한 시간 안에 확인해주세요</string>
-    <string name="daily_notif_report_littlehigh_text">스트레스 단계는 \'낮음\'입니다.\n한 시간 안에 확인해주세요</string>
-    <string name="daily_notif_report_high_text">스트레스 단계는 \'낮음\'입니다.\n한 시간 안에 확인해주세요</string>
+    <string name="daily_notif_report_littlehigh_text">스트레스 단계는 \'조금 높음\'입니다.\n한 시간 안에 확인해주세요</string>
+    <string name="daily_notif_report_high_text">스트레스 단계는 \'높음\'입니다.\n한 시간 안에 확인해주세요</string>
     <string name="smartphone">smartphone</string>
     <string name="smartwatch">smartwatch</string>
     <string name="submit_to_server">Submit to Server</string>
@@ -325,5 +325,7 @@
     <string name="string_permission_txt2">전화: 통화시간과 횟수 측정\n마이크: 주변 소음 크기 감지\n위치: 이동량 측정</string>
     <string name="string_permission_txt3">*연구 외의 목적으로 사용, 저장되지 않습니다.</string>
     <string name="string_permission_txt4">스마트폰 데이터 연동을\n허용해주시겠어요?</string>
+
+    <string name="string_no_stress_report">데이터가 부족하여\n스트레스 리포트가 작성되지 않았습니다.\n\n다음 스트레스 리포트를 기다려주세요!</string>
 
 </resources>
