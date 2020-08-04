@@ -1,5 +1,6 @@
 package kr.ac.inha.mindscope.receivers;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ public class ActivityTransitionsReceiver extends BroadcastReceiver {
     static long start_time_ON_BICYCLE = 0;
     static long start_time_IN_VEHICLE = 0;
 
+    @SuppressLint("Assert")
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {
@@ -62,7 +64,7 @@ public class ActivityTransitionsReceiver extends BroadcastReceiver {
                             SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                             int dataSourceId = prefs.getInt("ACTIVITY_RECOGNITION", -1);
                             assert dataSourceId != -1;
-                            DbMgr.saveMixedData(dataSourceId, start_timestamp, 1, activityType, start_timestamp);
+                            DbMgr.saveMixedData(dataSourceId, start_timestamp, 1.0f, activityType, start_timestamp);
                         } else if (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT) {
                             long activity_end_time = System.currentTimeMillis();
                             long activity_start_time = 0;
