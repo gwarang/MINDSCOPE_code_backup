@@ -219,10 +219,10 @@
     <!--Zaturi end-->
 
     <string name="feature_0high">한 자리에 오래 머무른 시간이 길어요</string>
-    <string name="feature_1high">평소에 비해 움직임이 많았어요 (걷기)</string>
-    <string name="feature_2high">평소에 비해 움직임이 많았어요 (뛰기)</string>
-    <string name="feature_3high">평소에 비해 움직임이 많았어요 (자전거)</string>
-    <string name="feature_4high">평소에 비해 움직임이 많았어요 (걷기)</string>
+    <string name="feature_1high">평소에 비해 움직임이 많았어요</string>
+    <string name="feature_2high">평소에 비해 움직임이 많았어요</string>
+    <string name="feature_3high">평소에 비해 움직임이 많았어요</string>
+    <string name="feature_4high">평소에 비해 움직임이 많았어요</string>
     <string name="feature_5high">평소에 비해 차량 이동이 많았어요</string>
     <string name="feature_6high">평소에 비해 주변이 시끄러웠던 것 같아요</string>
     <string name="feature_7high">평소에 비해 통화량이 많았어요</string>
@@ -249,16 +249,16 @@
     <string name="feature_28high">평소에 비해 Food 앱\n사용(배달, 요리)이 많았어요</string>
     <string name="feature_29high">평소에 비해 수면 시간이 많았어요</string>
 
-     <string name="feature_0low">한 자리에 오래 머무른 시간이 적어요</string>
-     <string name="feature_1low">평소에 비해 움직임이 적었어요 (걷기)</string>
-     <string name="feature_2low">평소에 비해 움직임이 적었어요 (뛰기)</string>
-     <string name="feature_3low">평소에 비해 움직임이 적었어요 (자전거)</string>
-     <string name="feature_4low">평소에 비해 움직임이 적었어요 (걷기)</string>
-     <string name="feature_5low">평소에 비해 차량 이동이 적었어요</string>
-     <string name="feature_6low">평소에 비해 주변이 조용했던 것 같아요</string>
-     <string name="feature_7low">평소에 비해 통화량이 적었어요</string>
-     <string name="feature_8low">평소에 비해 통화량이 적었어요</string>
-     <string name="feature_9low">평소에 비해 통화량이 적었어요</string>
+    <string name="feature_0low">한 자리에 오래 머무른 시간이 적어요</string>
+    <string name="feature_1low">평소에 비해 움직임이 적었어요</string>
+    <string name="feature_2low">평소에 비해 움직임이 적었어요</string>
+    <string name="feature_3low">평소에 비해 움직임이 적었어요</string>
+    <string name="feature_4low">평소에 비해 움직임이 적었어요</string>
+    <string name="feature_5low">평소에 비해 차량 이동이 적었어요</string>
+    <string name="feature_6low">평소에 비해 주변이 조용했던 것 같아요</string>
+    <string name="feature_7low">평소에 비해 통화량이 적었어요</string>
+    <string name="feature_8low">평소에 비해 통화량이 적었어요</string>
+    <string name="feature_9low">평소에 비해 통화량이 적었어요</string>
     <string name="feature_10low">평소에 비해 통화 중 대화량이 적었어요</string>
     <string name="feature_11low">평소에 비해 SNS 앱 사용이 적었어요</string>
     <string name="feature_12low">평소에 비해 적게 이동했어요</string>
