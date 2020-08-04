@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
 
@@ -13,13 +14,12 @@
 
     <dimen  name="guide_text_size">10sp</dimen>
 
-
-    <dimen  name="my_text_size14">14sp</dimen>
-    <dimen  name="my_text_size15">15sp</dimen>
-    <dimen  name="my_text_size16">16sp</dimen>
-    <dimen  name="my_text_size18">18sp</dimen>
-    <dimen  name="my_text_size20">20sp</dimen>
-    <dimen  name="my_text_size30">30sp</dimen>
+    <dimen  name="my_text_size1">14dp</dimen>
+    <dimen  name="my_text_size2">15dp</dimen>
+    <dimen  name="my_text_size3">16dp</dimen>
+    <dimen  name="my_text_size4">18dp</dimen>
+    <dimen  name="my_text_size5">20dp</dimen>
+    <dimen  name="my_text_size6">30dp</dimen>
 
 
 </resources>

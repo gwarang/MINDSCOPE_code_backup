@@ -38,7 +38,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:includeFontPadding="false"
                     android:fontFamily="@font/notosanscjkkrregular"
-                    android:textSize="@dimen/my_text_size20"/>
+                    android:textSize="@dimen/my_text_size5"/>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

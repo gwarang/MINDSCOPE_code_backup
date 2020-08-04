@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/string_point_dialog_title"
         android:textAlignment="center"
-        android:textSize="@dimen/my_text_size20"
+        android:textSize="@dimen/my_text_size5"
         android:fontFamily="@font/notosanscjkkrmedium"
         android:includeFontPadding="false"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/string_today_point"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrmedium"
             android:includeFontPadding="false"
             android:paddingRight="10dp"
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="point"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/string_sum_point"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -102,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrmedium"
             android:includeFontPadding="false"
             android:paddingRight="10dp"
@@ -116,7 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="point"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -136,7 +136,7 @@
         android:stateListAnimator="@null"
         android:fontFamily="@font/notosanscjkkrregular"
         android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size16"
+        android:textSize="@dimen/my_text_size3"
         android:background="@drawable/btn_start_enable"/>
 
 

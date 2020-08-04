@@ -36,7 +36,7 @@
                     android:includeFontPadding="false"
                     android:text="확인"
                     android:textColor="@color/textColor_blue"
-                    android:textSize="@dimen/my_text_size16"
+                    android:textSize="@dimen/my_text_size3"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -47,7 +47,7 @@
                     android:fontFamily="@font/notosanscjkkrregular"
                     android:includeFontPadding="false"
                     android:text="@string/stress_report_title"
-                    android:textSize="@dimen/my_text_size20"
+                    android:textSize="@dimen/my_text_size5"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -77,7 +77,7 @@
                 android:includeFontPadding="false"
                 android:text="test"
                 android:textAlignment="center"
-                android:textSize="@dimen/my_text_size16" />
+                android:textSize="@dimen/my_text_size3" />
 
             <TextView
                 android:id="@+id/prediction_acc"
@@ -87,7 +87,7 @@
                 android:includeFontPadding="false"
                 android:text="acc test"
                 android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14" />
+                android:textSize="@dimen/my_text_size1" />
         </LinearLayout>
 
 
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size14"
+            android:textSize="@dimen/my_text_size1"
             android:text="stress level txt"
             android:layout_marginTop="3dp"
             app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img"
@@ -177,7 +177,7 @@
                                 android:fontFamily="@font/notosanscjkkrregular"
                                 android:includeFontPadding="false"
                                 android:text="휴대폰 사용"
-                                android:textSize="@dimen/my_text_size16" />
+                                android:textSize="@dimen/my_text_size3" />
 
                         </LinearLayout>
 
@@ -214,7 +214,7 @@
                                 android:includeFontPadding="false"
                                 android:paddingVertical="3dp"
                                 android:text="신체 활동"
-                                android:textSize="@dimen/my_text_size16" />
+                                android:textSize="@dimen/my_text_size3" />
 
                         </LinearLayout>
 
@@ -251,7 +251,7 @@
                                 android:includeFontPadding="false"
                                 android:paddingVertical="3dp"
                                 android:text="활동 반경"
-                                android:textSize="@dimen/my_text_size16" />
+                                android:textSize="@dimen/my_text_size3" />
 
                         </LinearLayout>
 
@@ -287,7 +287,7 @@
                                 android:includeFontPadding="false"
                                 android:paddingVertical="3dp"
                                 android:text="소셜"
-                                android:textSize="@dimen/my_text_size16" />
+                                android:textSize="@dimen/my_text_size3" />
 
                         </LinearLayout>
 
@@ -323,7 +323,7 @@
                                 android:includeFontPadding="false"
                                 android:paddingVertical="3dp"
                                 android:text="수면"
-                                android:textSize="@dimen/my_text_size16" />
+                                android:textSize="@dimen/my_text_size3" />
                         </LinearLayout>
 
                         <ListView
@@ -343,7 +343,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/string_stress_why"
                 android:textAlignment="center"
-                android:textSize="@dimen/my_text_size16"
+                android:textSize="@dimen/my_text_size3"
                 app:layout_constraintBottom_toTopOf="@id/stress_report_reason_container"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -402,7 +402,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/string_am_i_right"
                 android:textAlignment="center"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -21,11 +21,11 @@
         <item name="android:background">@color/toolbar_background</item>
         <item name="actionMenuTextColor">@color/textColor_blue</item>
         <item name="android:fontFamily">@font/notosanscjkkrmedium</item>
-        <item name="android:textSize">@dimen/my_text_size16</item>
+        <item name="android:textSize">@dimen/my_text_size3</item>
     </style>
 
     <style name="tab_text" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">@dimen/my_text_size16</item>
+        <item name="android:textSize">@dimen/my_text_size3</item>
         <item name="android:fontFamily">@font/notosanscjkkrregular</item>
         <item name="android:includeFontPadding">false</item>
     </style>

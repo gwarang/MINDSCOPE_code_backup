@@ -22,7 +22,7 @@
         android:text="@string/string_last_stress_report"
         android:textAlignment="center"
         android:fontFamily="@font/notosanscjkkrmedium"
-        android:textSize="@dimen/my_text_size20"
+        android:textSize="@dimen/my_text_size5"
         android:textColor="@color/color_white" />
 
 

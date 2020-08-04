@@ -28,7 +28,7 @@
                 android:includeFontPadding="false"
                 android:text="이 장소 저장하기"
                 android:textColor="@color/textColor_blue"
-                android:textSize="@dimen/my_text_size16"
+                android:textSize="@dimen/my_text_size3"
                 app:layout_constraintBottom_toTopOf="@+id/map_explain"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -48,7 +48,7 @@
                 android:text="child1 date"
                 android:textAlignment="center"
                 android:textColor="@color/textColor_default"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintTop_toBottomOf="@id/child1_img"
                 app:layout_constraintBottom_toTopOf="@id/child1_stress_level" />
 
@@ -62,7 +62,7 @@
                 android:text="child1 stress level"
                 android:textAlignment="center"
                 android:textColor="@color/textColor_default"
-                android:textSize="@dimen/my_text_size16"
+                android:textSize="@dimen/my_text_size3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -125,7 +125,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/string_low"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 android:textAlignment="center"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toStartOf="@id/child1_arrow_result1"
@@ -141,7 +141,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/time_step2_duration1"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintEnd_toStartOf="@id/child1_img_report_result1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report1"
@@ -204,7 +204,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/string_littlehigh"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 android:textAlignment="center"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toStartOf="@id/child1_arrow_result2"
@@ -220,7 +220,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/time_step2_duration2"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/child1_img_report_result2"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report2"
@@ -283,7 +283,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/string_high"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 android:textAlignment="center"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -299,7 +299,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/time_step2_duration3"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintEnd_toStartOf="@id/child1_img_report_result3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report3"
@@ -360,7 +360,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/string_low"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
 
                 android:textAlignment="center"
                 android:visibility="invisible"
@@ -377,7 +377,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="@string/time_step2_duration4"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintEnd_toStartOf="@id/child1_img_report_result4"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/child1_ch_report4"
@@ -407,7 +407,7 @@
         <ImageView
             android:layout_marginTop="60dp"
             android:id="@+id/child1_step2_img1"
-            android:layout_width="100dp"
+            android:layout_width="0dp"
             app:layout_constraintWidth_default="percent"
             app:layout_constraintWidth_percent="0.25"
             android:layout_height="0dp"
@@ -430,7 +430,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="date"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 app:layout_constraintTop_toTopOf="parent"
@@ -444,7 +444,7 @@
                 android:fontFamily="@font/notosanscjkkrlight"
                 android:includeFontPadding="false"
                 android:text="time"
-                android:textSize="@dimen/my_text_size14"
+                android:textSize="@dimen/my_text_size1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/child1_step2_date1" />
@@ -456,7 +456,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/child1_date_container"
             android:textAlignment="center"
-            android:textSize="@dimen/my_text_size14"
+            android:textSize="@dimen/my_text_size1"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:textColor="@color/textColor_default"
@@ -470,7 +470,7 @@
             app:layout_constraintBottom_toTopOf="@id/child1_stress_reason_container"
             android:textAlignment="center"
             android:layout_marginTop="24dp"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:textColor="@color/textColor_default"
@@ -487,13 +487,14 @@
             android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/child1_txt_reason"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="20dp"
             android:background="@color/color_low_bg">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:descendantFocusability="blocksDescendants">
 
 
                 <LinearLayout
@@ -519,7 +520,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="휴대폰 사용"
-                            android:textSize="@dimen/my_text_size16"
+                            android:textSize="@dimen/my_text_size3"
                             android:fontFamily="@font/notosanscjkkrregular"
                             android:includeFontPadding="false"
                             android:layout_gravity="center"/>
@@ -554,7 +555,7 @@
                             android:layout_gravity="center"/>
                         <TextView
                             android:paddingVertical="3dp"
-                            android:textSize="@dimen/my_text_size16"
+                            android:textSize="@dimen/my_text_size3"
                             android:fontFamily="@font/notosanscjkkrregular"
                             android:includeFontPadding="false"
                             android:layout_width="wrap_content"
@@ -591,7 +592,7 @@
                             android:layout_gravity="center"/>
                         <TextView
                             android:paddingVertical="3dp"
-                            android:textSize="@dimen/my_text_size16"
+                            android:textSize="@dimen/my_text_size3"
                             android:fontFamily="@font/notosanscjkkrregular"
                             android:includeFontPadding="false"
                             android:layout_width="wrap_content"
@@ -628,7 +629,7 @@
                             android:layout_gravity="center"/>
                         <TextView
                             android:paddingVertical="3dp"
-                            android:textSize="@dimen/my_text_size16"
+                            android:textSize="@dimen/my_text_size3"
                             android:fontFamily="@font/notosanscjkkrregular"
                             android:includeFontPadding="false"
                             android:layout_width="wrap_content"
@@ -666,7 +667,7 @@
                             android:layout_gravity="center"/>
                         <TextView
                             android:paddingVertical="3dp"
-                            android:textSize="@dimen/my_text_size16"
+                            android:textSize="@dimen/my_text_size3"
                             android:fontFamily="@font/notosanscjkkrregular"
                             android:includeFontPadding="false"
                             android:layout_width="wrap_content"
@@ -709,7 +710,7 @@
             android:textAlignment="center"
             android:fontFamily="@font/notosanscjkkrmedium"
             android:includeFontPadding="true"
-            android:textSize="@dimen/my_text_size20"
+            android:textSize="@dimen/my_text_size5"
             android:textColor="@color/textColor_blue"/>
 
         <TextView
@@ -719,7 +720,7 @@
             android:text="@string/string_before_start_step2_text"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="true"
-            android:textSize="@dimen/my_text_size14"
+            android:textSize="@dimen/my_text_size1"
             android:textAlignment="center"
             android:layout_below="@id/before_start_step2_title"
             android:layout_marginTop="15dp"/>

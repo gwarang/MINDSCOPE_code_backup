@@ -7,30 +7,36 @@
     tools:context=".fragment.CareChildFragment3">
 
     <TextView
+        android:layout_marginTop="30dp"
         android:id="@+id/child3_txt1"
-        app:layout_constraintBottom_toTopOf="@id/child3_txt2"
-        android:layout_marginBottom="10dp"
-        android:paddingHorizontal="26dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/my_text_size16"
+        android:layout_marginBottom="10dp"
         android:fontFamily="@font/notosanscjkkrregular"
         android:includeFontPadding="false"
+        android:paddingHorizontal="26dp"
+        android:text="@string/string_child3_txt1"
         android:textColor="@color/textColor_default"
-        android:text="@string/string_child3_txt1"/>
+        android:textSize="@dimen/my_text_size3"
+        app:layout_constraintBottom_toTopOf="@id/child3_txt2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/child3_txt2"
-        app:layout_constraintBottom_toTopOf="@id/child3_comment"
-        android:layout_marginBottom="30dp"
-        android:paddingHorizontal="26dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/my_text_size14"
+        android:layout_marginBottom="30dp"
         android:fontFamily="@font/notosanscjkkrregular"
         android:includeFontPadding="false"
+        android:paddingHorizontal="26dp"
+        android:text="@string/string_child3_txt2"
         android:textColor="@color/textColor_default_light"
-        android:text="@string/string_child3_txt2"/>
+        android:textSize="@dimen/my_text_size1"
+        app:layout_constraintTop_toBottomOf="@id/child3_txt1"
+        app:layout_constraintBottom_toTopOf="@id/child3_comment"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/child3_comment"
@@ -48,7 +54,7 @@
         android:inputType="textMultiLine|textNoSuggestions"
         android:padding="10dp"
         android:textColor="@color/textColor_default"
-        android:textSize="@dimen/my_text_size14"
+        android:textSize="@dimen/my_text_size1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -84,7 +90,7 @@
             android:id="@+id/child3_txt3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/my_text_size14"
+            android:textSize="@dimen/my_text_size1"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:textColor="@color/textColor_default"
@@ -94,7 +100,7 @@
             android:id="@+id/child3_txt4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/my_text_size14"
+            android:textSize="@dimen/my_text_size1"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:textColor="@color/textColor_light"

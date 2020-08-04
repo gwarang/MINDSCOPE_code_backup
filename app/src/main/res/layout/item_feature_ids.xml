@@ -5,7 +5,7 @@
     android:id="@+id/txt_phone_reason1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="@dimen/my_text_size14"
+    android:textSize="@dimen/my_text_size1"
     android:textAlignment="center"
     android:text="@string/feature_26low"
     android:fontFamily="@font/notosanscjkkrlight"

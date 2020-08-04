@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textAlignment="center"
-        android:textSize="@dimen/my_text_size16"
+        android:textSize="@dimen/my_text_size3"
         android:textColor="@color/color_fsv_contents"
         android:fontFamily="@font/notosanscjkkrregular"
         android:includeFontPadding="false"

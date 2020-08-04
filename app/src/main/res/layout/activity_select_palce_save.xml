@@ -58,7 +58,7 @@
             android:text="Current Place Name"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size16"/>
+            android:textSize="@dimen/my_text_size3"/>
 
     </LinearLayout>
 
@@ -85,7 +85,7 @@
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:text="Current Place Adress"
-            android:textSize="@dimen/my_text_size16"/>
+            android:textSize="@dimen/my_text_size3"/>
 
     </LinearLayout>
 
@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size16"
+            android:textSize="@dimen/my_text_size3"
             android:textColorHint="@color/hintColor"
             android:hint="저장하시려는 장소에 이름을 붙여주세요"/>
 
@@ -124,7 +124,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/notosanscjkkrlight"
         android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size14"
+        android:textSize="@dimen/my_text_size1"
         android:text="@string/string_first_home_setting"
         android:paddingHorizontal="20dp"
         android:textAlignment="center"
