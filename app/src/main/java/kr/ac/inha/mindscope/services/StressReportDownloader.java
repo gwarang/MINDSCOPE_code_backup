@@ -37,6 +37,7 @@ public class StressReportDownloader extends Worker {
         super(context, params);
     }
 
+
     @NonNull
     @Override
     public Result doWork() {

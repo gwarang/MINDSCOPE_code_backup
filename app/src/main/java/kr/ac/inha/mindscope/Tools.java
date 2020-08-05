@@ -21,6 +21,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -84,7 +87,8 @@ public class Tools {
             Manifest.permission.PROCESS_OUTGOING_CALLS,
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
     };
 
     /* Zaturi start */
@@ -213,6 +217,22 @@ public class Tools {
                 break;
             }
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            PowerManager powerManager = (PowerManager) activity.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+            Intent i = new Intent();
+            if (powerManager.isIgnoringBatteryOptimizations(activity.getPackageName())){
+                i.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            } else {
+                i.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                i.setData(Uri.parse("package:" + activity.getPackageName()));
+            }
+
+//            if(!powerManager.isIgnoringBatteryOptimizations(activity.getPackageName())){
+//
+//
+//                activity.startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS));
+//            }
+        }
         if (!isAppUsageAccessGranted(activity.getApplicationContext()))
             activity.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         if (!isGPSLocationOn(activity.getApplicationContext()))
