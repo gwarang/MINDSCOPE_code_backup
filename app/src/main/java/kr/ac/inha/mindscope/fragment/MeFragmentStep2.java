@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -75,7 +76,7 @@ public class MeFragmentStep2 extends Fragment {
     private static final String LAST_NAV_FRG3 = "report";
     private static final int DAYS_UNITL_STEP_STARTS = 4; // TODO change 15 for study
     public static JSONObject[] jsonObjects;
-    public static View view;
+    public View view;
     static int lastReportHours;
     public int stressLevel;
     int day_num;
@@ -89,6 +90,8 @@ public class MeFragmentStep2 extends Fragment {
     long reportTimestamp;
     List<String> selfStressReports;
     boolean notSubmit = false;
+    String stressResult;
+    SharedPreferences lastPagePrefs;
     private String stressReportStr;
     private ImageButton btnMap;
     private Button stepTestBtn;
@@ -99,8 +102,6 @@ public class MeFragmentStep2 extends Fragment {
     private TextView versionNameTextView;
     private Button reportBtn;
     private String feature_ids;
-    String stressResult;
-    SharedPreferences lastPagePrefs;
     final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -128,7 +129,7 @@ public class MeFragmentStep2 extends Fragment {
         init(view);
         try {
             stressResult = getStressResult(context);
-            if(stressResult != null)
+            if (stressResult != null)
                 updateUi(view, stressResult);
         } catch (IOException e) {
             e.printStackTrace();
@@ -148,15 +149,14 @@ public class MeFragmentStep2 extends Fragment {
         NavController navController = Navigation.findNavController(view);
         Log.e(TAG, "navController : " + navController.getCurrentDestination().getId());
 
-        if(stressReportPrefs.getBoolean("today_last_report", false)){
+        if (stressReportPrefs.getBoolean("today_last_report", false)) {
 //            SharedPreferences.Editor editor = stressReportPrefs.edit();
 //            editor.putBoolean("today_last_report", false);
 //            editor.apply();
             navController.navigate(R.id.action_me_to_care_step2);
-        }
-        else {
+        } else {
             String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
-            switch (last_frg){
+            switch (last_frg) {
                 case LAST_NAV_FRG1:
                     // nothing
                     break;
@@ -175,7 +175,7 @@ public class MeFragmentStep2 extends Fragment {
     }
 
 
-    public void init(View view){
+    public void init(View view) {
         Context context = MainActivity.getInstance();
         allContainer = view.findViewById(R.id.frg_me_step2_container);
         stressLvView = view.findViewById(R.id.txt_stress_level);
@@ -201,7 +201,7 @@ public class MeFragmentStep2 extends Fragment {
         versionNameTextView.setText(getVersionInfo(requireContext()));
     }
 
-    public void updateUi(View view, String stressResult){
+    public void updateUi(View view, String stressResult) {
         Context context = MainActivity.getInstance();
 
         String[] splitResult = stressResult.split(",");
@@ -218,7 +218,7 @@ public class MeFragmentStep2 extends Fragment {
         Calendar cal = Calendar.getInstance();
         boolean firstStartStep2Check = stepChangePrefs.getBoolean("first_start_step2_check", false);
         boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
-        if(!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
+        if (!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11) {
             Calendar step2Cal = Calendar.getInstance();
             step2Cal.setTimeInMillis(stepChangePrefs.getLong("join_timestamp", 0));
             step2Cal.add(Calendar.DATE, DAYS_UNITL_STEP_STARTS);
@@ -226,9 +226,8 @@ public class MeFragmentStep2 extends Fragment {
             before11hoursTextView.setText(stepDateStr + context.getResources().getString(R.string.string_frg_me_stpe2_before_txt1));
             firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
             allContainer.setVisibility(View.INVISIBLE);
-        }
-        else{
-            if(!firstStartStep2Check){
+        } else {
+            if (!firstStartStep2Check) {
                 SharedPreferences.Editor editor = stepChangePrefs.edit();
                 editor.putBoolean("first_start_step2_check", true);
                 editor.apply();
@@ -314,7 +313,7 @@ public class MeFragmentStep2 extends Fragment {
 //                startActivity(intent);
 //            });
         }
-        if(isFirstStartStep2DialogShowing)
+        if (isFirstStartStep2DialogShowing)
             startStressReportActivityWhenNotSubmitted();
     }
 
@@ -334,21 +333,47 @@ public class MeFragmentStep2 extends Fragment {
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
+                String applicationName = "";
+
+                if (category == 11 || (category >= 19 && category <= 28)) {
+                    String packageName = "kr.ac.inha.mindscope"; // TODO change packageName from featrue_ids
+                    final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                    ApplicationInfo ai;
+                    try {
+                        ai = pm.getApplicationInfo(packageName, 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        ai = null;
+                        e.printStackTrace();
+                    }
+                    applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "");
+                }
+
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
-                if (category <= 5) {
-                    activityReason.add(context.getResources().getString(resId));
-                } else if (category <= 11) {
-                    socialReason.add(context.getResources().getString(resId));
-                } else if (category <= 16) {
-                    locationReason.add(context.getResources().getString(resId));
-                } else if (category <= 28) {
-                    phoneReason.add(context.getResources().getString(resId));
+                if (applicationName.equals("")) {
+                    if (category <= 5) {
+                        activityReason.add(context.getResources().getString(resId));
+                    } else if (category <= 11) {
+                        socialReason.add(context.getResources().getString(resId));
+                    } else if (category <= 16) {
+                        locationReason.add(context.getResources().getString(resId));
+                    } else if (category <= 28) {
+                        phoneReason.add(context.getResources().getString(resId));
+                    } else {
+                        sleepReason.add(context.getResources().getString(resId));
+                    }
                 } else {
-                    sleepReason.add(context.getResources().getString(resId));
+                    if(category == 11){
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        socialReason.add(text);
+                    }else{
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        phoneReason.add(text);
+                    }
                 }
+
 
                 if (i == 4) // maximun number of showing feature is five
                     break;
@@ -480,7 +505,7 @@ public class MeFragmentStep2 extends Fragment {
 
         //region self stress
         int selfStressLv = 5;
-        try{
+        try {
             FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
             InputStreamReader isr2 = new InputStreamReader(fis2);
             BufferedReader bufferedReader2 = new BufferedReader(isr2);
@@ -496,23 +521,23 @@ public class MeFragmentStep2 extends Fragment {
                     selfStressLv = Integer.parseInt(tokens[4]);
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         //endregion
 
-        if(selfStressLv != 5){
-            for(String result : predictionArray){
+        if (selfStressLv != 5) {
+            for (String result : predictionArray) {
                 String[] splitResult = result.split(",");
-                if(Integer.parseInt(splitResult[1]) == selfStressLv){
+                if (Integer.parseInt(splitResult[1]) == selfStressLv) {
                     stressResult = result;
                     break;
                 }
             }
-        }else{
-            for(String result : predictionArray){
+        } else {
+            for (String result : predictionArray) {
                 String[] splitResult = result.split(",");
-                if(Boolean.parseBoolean(splitResult[6])){
+                if (Boolean.parseBoolean(splitResult[6])) {
                     stressResult = result;
                     break;
                 }
@@ -551,11 +576,11 @@ public class MeFragmentStep2 extends Fragment {
         }
     }
 
-    public String getVersionInfo(Context context){
+    public String getVersionInfo(Context context) {
         String version = "Unknown";
         PackageInfo packageInfo;
 
-        if(context == null){
+        if (context == null) {
             return version;
         }
         try {
@@ -600,7 +625,7 @@ public class MeFragmentStep2 extends Fragment {
         tillCalendar.set(Calendar.MINUTE, 59);
         tillCalendar.set(Calendar.SECOND, 59);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
@@ -613,7 +638,7 @@ public class MeFragmentStep2 extends Fragment {
 
 //        long fillMillis = 1593583201000l;
 //        long tillTime = 1593597601000l;
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -657,7 +682,7 @@ public class MeFragmentStep2 extends Fragment {
                 tillCalendar2.set(Calendar.HOUR_OF_DAY, 23);
                 tillCalendar2.set(Calendar.MINUTE, 59);
                 tillCalendar2.set(Calendar.SECOND, 59);
-                SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                 Log.i(TAG, "initialize fromCalendar: " + dateFormat2.format(fromCalendar2.getTime()));
                 Log.i(TAG, "initialize tillCalendar: " + dateFormat2.format(tillCalendar2.getTime()));
 
@@ -740,13 +765,14 @@ public class MeFragmentStep2 extends Fragment {
                 Message msg = handler.obtainMessage();
                 handler.sendMessage(msg);
             }).start();
-        } else{
+        } else {
             Toast.makeText(context, context.getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
         }
 
 
         //end getting data from gRPC
     }
+
     public void getSelfStressReportDataFromGRPC() {
         SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
@@ -760,7 +786,7 @@ public class MeFragmentStep2 extends Fragment {
         tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
         tillCalendar.set(Calendar.MINUTE, 59);
         tillCalendar.set(Calendar.SECOND, 59);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
@@ -801,6 +827,7 @@ public class MeFragmentStep2 extends Fragment {
         }).start();
 
     }
+
     public void applyUi(View view) {
 //        SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
         Context context = MainActivity.getInstance();
@@ -810,7 +837,7 @@ public class MeFragmentStep2 extends Fragment {
         Calendar cal = Calendar.getInstance();
         boolean firstStartStep2Check = stepChangePrefs.getBoolean("first_start_step2_check", false);
         boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
-        if(!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11){
+        if (!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11) {
 
             Calendar step2Cal = Calendar.getInstance();
             step2Cal.setTimeInMillis(stepChangePrefs.getLong("join_timestamp", 0));
@@ -819,9 +846,8 @@ public class MeFragmentStep2 extends Fragment {
             before11hoursTextView.setText(stepDateStr + context.getResources().getString(R.string.string_frg_me_stpe2_before_txt1));
             firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
             allContainer.setVisibility(View.INVISIBLE);
-        }
-        else{
-            if(!firstStartStep2Check){
+        } else {
+            if (!firstStartStep2Check) {
                 SharedPreferences.Editor editor = stepChangePrefs.edit();
                 editor.putBoolean("first_start_step2_check", true);
                 editor.apply();
@@ -908,7 +934,7 @@ public class MeFragmentStep2 extends Fragment {
 //                startActivity(intent);
 //            });
         }
-        if(isFirstStartStep2DialogShowing)
+        if (isFirstStartStep2DialogShowing)
             startStressReportActivityWhenNotSubmitted();
     }
     //endregion

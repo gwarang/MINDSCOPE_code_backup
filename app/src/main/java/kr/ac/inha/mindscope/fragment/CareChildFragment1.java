@@ -2,6 +2,8 @@ package kr.ac.inha.mindscope.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -646,21 +648,6 @@ public class CareChildFragment1 extends Fragment {
             }
         }
 
-//        while((predictionLine = bufferedReader.readLine()) != null){
-//            String[] predictionTokens = predictionLine.split(",");
-//            boolean predictionModelTag = Boolean.parseBoolean(predictionTokens[PREDICTION_MODELTAG_INDEX]);
-//            int predictionOrder = Integer.parseInt(predictionTokens[PREDICTION_ORDER_INDEX]);
-//            int predictionStressLv = Integer.parseInt(predictionTokens[PREDICTION_STRESSLV_INDEX]);
-//            if(predictionModelTag){
-//                if(selfStressReportWithOrderIndex[predictionOrder - 1] != NON_SELF_STRESS_LV
-//                        && selfStressReportWithOrderIndex[predictionOrder - 1] != predictionStressLv){
-//                    stressLvArray[predictionOrder - 1] = selfStressReportWithOrderIndex[predictionOrder - 1];
-//                }else{
-//                    stressLvArray[predictionOrder - 1] = predictionStressLv;
-//                }
-//            }
-//        }
-
         int count = 0;
         for (int i : stressLvArray) {
             if (i != NON_SELF_STRESS_LV) {
@@ -669,39 +656,19 @@ public class CareChildFragment1 extends Fragment {
             }
         }
 
-//        for(int order = 1; order <= selfStressReportWithOrderIndex.length; order++){
-//            if(selfStressReportWithOrderIndex[order -1] != NON_SELF_STRESS_LV){
-//                sumStress += selfStressReportWithOrderIndex[order - 1] + 1;
-//            }
-//            else{
-//                for(JSONObject[] resultSet : stressReportsJsonArray){
-//                    if(resultSet != null){
-//                        try {
-//                            if(resultSet[0].getInt("ema_order") == order){
-//                                for(short stressLevel = 0; stressLevel < resultSet.length; stressLevel++){
-//                                    if(resultSet[stressLevel].getBoolean("model_tag")){
-//                                        sumStress += stressLevel + 1;
-//                                    }
-//                                }
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        }
         float avg = (float) sumStress / count;
         return avg;
-//        return (float)sumStress / stressReportsJsonArray.size();
     }
 
     public void hiddenViewUpdate(String feature_ids, int stressLevl) {
+        Context context = requireContext();
+
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();
         ArrayList<String> socialReason = new ArrayList<>();
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
+
 
         if (feature_ids.equals("")) {
             Log.i(TAG, "feature_ids is empty");
@@ -711,21 +678,47 @@ public class CareChildFragment1 extends Fragment {
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
-                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
-                String packName = requireContext().getPackageName();
-                int resId = getResources().getIdentifier(strID, "string", packName);
+                String applicationName = "";
 
-                if (category <= 5) {
-                    activityReason.add(getResources().getString(resId));
-                } else if (category <= 11) {
-                    socialReason.add(getResources().getString(resId));
-                } else if (category <= 16) {
-                    locationReason.add(getResources().getString(resId));
-                } else if (category <= 28) {
-                    phoneReason.add(getResources().getString(resId));
-                } else {
-                    sleepReason.add(getResources().getString(resId));
+                if (category == 11 || (category >= 19 && category <= 28)) {
+                    String packageName = "kr.ac.inha.mindscope"; // TODO change packageName from featrue_ids
+                    final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                    ApplicationInfo ai;
+                    try {
+                        ai = pm.getApplicationInfo(packageName, 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        ai = null;
+                        e.printStackTrace();
+                    }
+                    applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "");
                 }
+
+                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String packName = MainActivity.getInstance().getPackageName();
+                int resId = context.getResources().getIdentifier(strID, "string", packName);
+
+                if (applicationName.equals("")) {
+                    if (category <= 5) {
+                        activityReason.add(context.getResources().getString(resId));
+                    } else if (category <= 11) {
+                        socialReason.add(context.getResources().getString(resId));
+                    } else if (category <= 16) {
+                        locationReason.add(context.getResources().getString(resId));
+                    } else if (category <= 28) {
+                        phoneReason.add(context.getResources().getString(resId));
+                    } else {
+                        sleepReason.add(context.getResources().getString(resId));
+                    }
+                } else {
+                    if(category == 11){
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        socialReason.add(text);
+                    }else{
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        phoneReason.add(text);
+                    }
+                }
+
 
                 if (i == 4) // maximun number of showing feature is five
                     break;
@@ -844,13 +837,13 @@ public class CareChildFragment1 extends Fragment {
         }
         timestamp = fromCalendar.getTimeInMillis();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // for test 2020/07/01 00:00:00 ~ 23:59:59
-        long fromtimestamp = 1593561600000l;
-        long tilltimestamp = 1593647999000l;
+        long fromtimestamp = 1593561600000L;
+        long tilltimestamp = 1593647999000L;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -915,13 +908,13 @@ public class CareChildFragment1 extends Fragment {
             tillCalendar.setTimeInMillis(tillTimestampYesterday);
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
         Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // for test 2020/07/018 04:19:00 ~ 04:28:00
-        long fromtimestamp = 1595013540000l;
-        long tilltimestamp = 1595014080000l;
+        long fromtimestamp = 1595013540000L;
+        long tilltimestamp = 1595014080000L;
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 

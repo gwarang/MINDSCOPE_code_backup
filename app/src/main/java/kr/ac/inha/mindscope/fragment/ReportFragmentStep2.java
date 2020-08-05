@@ -3,6 +3,8 @@ package kr.ac.inha.mindscope.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,6 +58,7 @@ import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import kr.ac.inha.mindscope.AuthenticationActivity;
+import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 import kr.ac.inha.mindscope.Utils;
@@ -142,8 +145,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     // region utility functions
     public static ReportFragmentStep2 newInstance() {
-        ReportFragmentStep2 fragment = new ReportFragmentStep2();
-        return fragment;
+        return new ReportFragmentStep2();
     }
 
     // region override
@@ -459,7 +461,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-                int campaignId = Integer.parseInt(getContext().getString(R.string.stress_campaign_id));
+                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
                 final int DAILY_COMMENT = 84;
 
                 Calendar cal = Calendar.getInstance();
@@ -576,8 +578,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     .build();
             EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
             if (responseMessage.getDoneSuccessfully()) {
-                long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
-                firstDayTimestamp = joinTimestamp;
+                firstDayTimestamp = responseMessage.getCampaignJoinTimestamp();
             }
             channel.shutdown();
         } else {
@@ -950,11 +951,14 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     public void hiddenViewUpdate(String feature_ids, int stressLevl) {
+        Context context = requireContext();
+
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();
         ArrayList<String> socialReason = new ArrayList<>();
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
+
 
         if (feature_ids.equals("")) {
             Log.i(TAG, "feature_ids is empty");
@@ -964,21 +968,47 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
-                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
-                String packName = requireContext().getPackageName();
-                int resId = getResources().getIdentifier(strID, "string", packName);
+                String applicationName = "";
 
-                if (category <= 5) {
-                    activityReason.add(getResources().getString(resId));
-                } else if (category <= 11) {
-                    socialReason.add(getResources().getString(resId));
-                } else if (category <= 16) {
-                    locationReason.add(getResources().getString(resId));
-                } else if (category <= 28) {
-                    phoneReason.add(getResources().getString(resId));
-                } else {
-                    sleepReason.add(getResources().getString(resId));
+                if (category == 11 || (category >= 19 && category <= 28)) {
+                    String packageName = "kr.ac.inha.mindscope"; // TODO change packageName from featrue_ids
+                    final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                    ApplicationInfo ai;
+                    try {
+                        ai = pm.getApplicationInfo(packageName, 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        ai = null;
+                        e.printStackTrace();
+                    }
+                    applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "");
                 }
+
+                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String packName = MainActivity.getInstance().getPackageName();
+                int resId = context.getResources().getIdentifier(strID, "string", packName);
+
+                if (applicationName.equals("")) {
+                    if (category <= 5) {
+                        activityReason.add(context.getResources().getString(resId));
+                    } else if (category <= 11) {
+                        socialReason.add(context.getResources().getString(resId));
+                    } else if (category <= 16) {
+                        locationReason.add(context.getResources().getString(resId));
+                    } else if (category <= 28) {
+                        phoneReason.add(context.getResources().getString(resId));
+                    } else {
+                        sleepReason.add(context.getResources().getString(resId));
+                    }
+                } else {
+                    if(category == 11){
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        socialReason.add(text);
+                    }else{
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        phoneReason.add(text);
+                    }
+                }
+
 
                 if (i == 4) // maximun number of showing feature is five
                     break;

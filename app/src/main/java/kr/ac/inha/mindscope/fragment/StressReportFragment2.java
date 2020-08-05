@@ -4,6 +4,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
@@ -189,7 +191,7 @@ public class StressReportFragment2 extends Fragment {
     }
 
     public void featureViewUpdate(String feature_ids, View view) {
-        String[] featureArray = feature_ids.split(" ");
+        Context context = requireContext();
 
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();
@@ -198,27 +200,59 @@ public class StressReportFragment2 extends Fragment {
         ArrayList<String> sleepReason = new ArrayList<>();
 
 
-        for (int i = 0; i < featureArray.length; i++) {
-            String[] splitArray = featureArray[i].split("-");
-            int category = Integer.parseInt(splitArray[0]);
-            String strID = "@string/feature_" + splitArray[0] + splitArray[1];
-            String packName = requireActivity().getPackageName();
-            int resId = getResources().getIdentifier(strID, "string", packName);
+        if (feature_ids.equals("")) {
+            Log.i(TAG, "feature_ids is empty");
+        } else {
+            String[] featureArray = feature_ids.split(" ");
 
-            if (category <= 5) {
-                activityReason.add(getResources().getString(resId));
-            } else if (category <= 11) {
-                socialReason.add(getResources().getString(resId));
-            } else if (category <= 16) {
-                locationReason.add(getResources().getString(resId));
-            } else if (category <= 28) {
-                phoneReason.add(getResources().getString(resId));
-            } else {
-                sleepReason.add(getResources().getString(resId));
+            for (int i = 0; i < featureArray.length; i++) {
+                String[] splitArray = featureArray[i].split("-");
+                int category = Integer.parseInt(splitArray[0]);
+                String applicationName = "";
+
+                if (category == 11 || (category >= 19 && category <= 28)) {
+                    String packageName = "kr.ac.inha.mindscope"; // TODO change packageName from featrue_ids
+                    final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                    ApplicationInfo ai;
+                    try {
+                        ai = pm.getApplicationInfo(packageName, 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        ai = null;
+                        e.printStackTrace();
+                    }
+                    applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "");
+                }
+
+                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String packName = MainActivity.getInstance().getPackageName();
+                int resId = context.getResources().getIdentifier(strID, "string", packName);
+
+                if (applicationName.equals("")) {
+                    if (category <= 5) {
+                        activityReason.add(context.getResources().getString(resId));
+                    } else if (category <= 11) {
+                        socialReason.add(context.getResources().getString(resId));
+                    } else if (category <= 16) {
+                        locationReason.add(context.getResources().getString(resId));
+                    } else if (category <= 28) {
+                        phoneReason.add(context.getResources().getString(resId));
+                    } else {
+                        sleepReason.add(context.getResources().getString(resId));
+                    }
+                } else {
+                    if(category == 11){
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        socialReason.add(text);
+                    }else{
+                        String text = String.format(context.getResources().getString(resId), applicationName);
+                        phoneReason.add(text);
+                    }
+                }
+
+
+                if (i == 4) // maximun number of showing feature is five
+                    break;
             }
-
-            if (i == 4) // maximum number of showing feature is five
-                break;
         }
 
         Log.d(TAG, "phoneReason" + phoneReason.toString());

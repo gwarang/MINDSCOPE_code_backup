@@ -128,10 +128,10 @@
     <string name="map_help_contents">마인드스코프에서 정확하게 스트레스를 측정할 수 있도록 자주 가는 위치를 설정해주세요\n\n첫 장소 설정은 집을 선택해주세요!</string>
 
 
-    <string name="time_duration1">07:00 - 11:00</string>
-    <string name="time_duration2">11:00 - 03:00</string>
-    <string name="time_duration3">03:00 - 07:00</string>
-    <string name="time_duration4">07:00 - 11:00</string>
+    <string name="time_duration1">07:00 &#8211; 11:00</string>
+    <string name="time_duration2">11:00 &#8211; 03:00</string>
+    <string name="time_duration3">03:00 &#8211; 07:00</string>
+    <string name="time_duration4">07:00 &#8211; 11:00</string>
     <string name="time_step2_duration1">07:00 AM - 11:00 AM</string>
     <string name="time_step2_duration2">11:00 AM - 03:00 PM</string>
     <string name="time_step2_duration3">03:00 PM - 07:00 PM</string>
@@ -204,8 +204,6 @@
     <string name="tab_title1_care_step2">스트레스 분석</string>
     <string name="tab_title2_care_step2">스트레스 해소</string>
     <string name="tab_title3_care_step2">오늘의 코멘트</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="string_child3_txt1">어떤 하루였나요?</string>
     <string name="string_child3_txt2">오늘 하루에 대해 조금 더 자세히 기록해보세요</string>
@@ -228,17 +226,17 @@
 
 
     <string name="feature_0high">한 자리에 오래 머무른 시간이 길어요</string>
-    <string name="feature_1high">평소에 비해 움직임이 많았어요</string>
-    <string name="feature_2high">평소에 비해 움직임이 많았어요</string>
-    <string name="feature_3high">평소에 비해 움직임이 많았어요</string>
-    <string name="feature_4high">평소에 비해 움직임이 많았어요</string>
+    <string name="feature_1high">평소에 비해 많이 걸었어요</string>
+    <string name="feature_2high">평소에 비해 많이 뛰었어요</string>
+    <string name="feature_3high">평소에 비해 자전거를 많이 탔어요</string>
+    <string name="feature_4high">평소에 비해 많이 걸었어요</string>
     <string name="feature_5high">평소에 비해 차량 이동이 많았어요</string>
     <string name="feature_6high">평소에 비해 주변이 시끄러웠던 것 같아요</string>
     <string name="feature_7high">평소에 비해 통화량이 많았어요</string>
     <string name="feature_8high">평소에 비해 통화량이 많았어요</string>
     <string name="feature_9high">평소에 비해 통화량이 많았어요</string>
     <string name="feature_10high">평소에 비해 통화중 대화량이 많았어요</string>
-    <string name="feature_11high">평소에 비해 SNS 앱 사용이 많았어요</string>
+    <string name="feature_11high">평소에 비해 SNS 앱 사용%1$s이 많았어요</string>
     <string name="feature_12high">평소에 비해 많이 이동했어요</string>
     <string name="feature_13high">평소에 비해 방문했던 장소가 많았어요</string>
     <string name="feature_14high">평소에 비해 멀리 나갔어요</string>
@@ -246,30 +244,30 @@
     <string name="feature_16high">평소에 비해 집에 오래 머물렀어요</string>
     <string name="feature_17high">평소에 비해 집에서 휴대폰 사용이 많았어요</string>
     <string name="feature_18high">평소에 비해 휴대폰 사용이 많았어요</string>
-    <string name="feature_19high">평소에 비해 Entertainment &amp; Music 앱\n사용이 많았어요</string>
-    <string name="feature_20high">평소에 비해 Utility 앱\n사용(멤버십, 문서도구)이 많았어요</string>
-    <string name="feature_21high">평소에 비해 Shopping 앱\n사용(결제, 쇼핑몰)이 많았어요</string>
-    <string name="feature_22high">평소에 비해 게임 앱 사용이 많았어요</string>
-    <string name="feature_23high">평소에 비해 Health 앱\n사용(다이어트, 뷰티)이 많았어요</string>
-    <string name="feature_24high">평소에 비해 Education 앱\n사용(이북)이 많았어요</string>
-    <string name="feature_25high">평소에 비해 Travel 앱\n사용(교통, 여행)이 많았어요</string>
-    <string name="feature_26high">평소에 비해 Art &amp; Photo 앱\n사용(카메라, 그리기도구)이 많았어요</string>
-    <string name="feature_27high">평소에 비해 News 앱\n사용(뉴스, 매거진)이 많았어요</string>
-    <string name="feature_28high">평소에 비해 Food 앱\n사용(배달, 요리)이 많았어요</string>
+    <string name="feature_19high">평소에 비해 Entertainment &amp; Music 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_20high">평소에 비해 Utility 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_21high">평소에 비해 Shopping 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_22high">평소에 비해 게임 앱 사용%1$s이 많았어요</string>
+    <string name="feature_23high">평소에 비해 Health 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_24high">평소에 비해 Education 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_25high">평소에 비해 Travel 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_26high">평소에 비해 Art &amp; Photo 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_27high">평소에 비해 News 앱\n사용%1$s이 많았어요</string>
+    <string name="feature_28high">평소에 비해 Food 앱\n사용%1$s이 많았어요</string>
     <string name="feature_29high">평소에 비해 수면 시간이 많았어요</string>
 
     <string name="feature_0low">한 자리에 오래 머무른 시간이 적어요</string>
-    <string name="feature_1low">평소에 비해 움직임이 적었어요</string>
-    <string name="feature_2low">평소에 비해 움직임이 적었어요</string>
-    <string name="feature_3low">평소에 비해 움직임이 적었어요</string>
-    <string name="feature_4low">평소에 비해 움직임이 적었어요</string>
+    <string name="feature_1low">평소에 비해 조금 걸었어요</string>
+    <string name="feature_2low">평소에 비해 조금 뛰었어요</string>
+    <string name="feature_3low">평소에 비해 자전거를 조금 탔어요</string>
+    <string name="feature_4low">평소에 비해 조금 걸었어요</string>
     <string name="feature_5low">평소에 비해 차량 이동이 적었어요</string>
     <string name="feature_6low">평소에 비해 주변이 조용했던 것 같아요</string>
     <string name="feature_7low">평소에 비해 통화량이 적었어요</string>
     <string name="feature_8low">평소에 비해 통화량이 적었어요</string>
     <string name="feature_9low">평소에 비해 통화량이 적었어요</string>
     <string name="feature_10low">평소에 비해 통화 중 대화량이 적었어요</string>
-    <string name="feature_11low">평소에 비해 SNS 앱 사용이 적었어요</string>
+    <string name="feature_11low">평소에 비해 SNS 앱 사용%1$s이 적었어요</string>
     <string name="feature_12low">평소에 비해 적게 이동했어요</string>
     <string name="feature_13low">평소에 비해 방문했던 장소가 적었어요</string>
     <string name="feature_14low">평소에 비해 멀리 나가지 않았어요</string>
@@ -277,16 +275,16 @@
     <string name="feature_16low">평소에 비해 집에 적게 머물렀어요</string>
     <string name="feature_17low">평소에 비해 집에서 휴대폰 사용이 적었어요</string>
     <string name="feature_18low">평소에 비해 휴대폰 사용이 적었어요</string>
-    <string name="feature_19low">평소에 비해 Entertainment &amp; Music 앱\n사용이 적었어요</string>
-    <string name="feature_20low">평소에 비해 Utility 앱\n사용(멤버십, 문서도구)이 적었어요</string>
-    <string name="feature_21low">평소에 비해 Shopping 앱\n사용(결제, 쇼핑몰)이 적었어요</string>
-    <string name="feature_22low">평소에 비해 게임 앱 사용이 적었어요</string>
-    <string name="feature_23low">평소에 비해 Health 앱\n사용(다이어트, 뷰티)이 적었어요</string>
-    <string name="feature_24low">평소에 비해 Education\n앱 사용(이북)이 적었어요</string>
-    <string name="feature_25low">평소에 비해 Travel 앱\n사용(교통, 여행)이 적었어요</string>
-    <string name="feature_26low">평소에 비해 Art &amp; Photo 앱\n사용(카메라, 그리기도구)이 적었어요</string>
-    <string name="feature_27low">평소에 비해 News 앱\n사용(뉴스, 매거진)이 적었어요</string>
-    <string name="feature_28low">평소에 비해 Food 앱\n사용(배달, 요리)이 적었어요</string>
+    <string name="feature_19low">평소에 비해 Entertainment &amp; Music 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_20low">평소에 비해 Utility 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_21low">평소에 비해 Shopping 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_22low">평소에 비해 게임 앱 사용%1$s이 적었어요</string>
+    <string name="feature_23low">평소에 비해 Health 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_24low">평소에 비해 Education\n앱 사용%1$s이 적었어요</string>
+    <string name="feature_25low">평소에 비해 Travel 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_26low">평소에 비해 Art &amp; Photo 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_27low">평소에 비해 News 앱\n사용%1$s이 적었어요</string>
+    <string name="feature_28low">평소에 비해 Food 앱\n사용%1$s이 적었어요</string>
     <string name="feature_29low">평소에 비해 수면 시간이 적었어요</string>
 
     <string name="feature_0general_0">일반적으로 활동량이 많을 때,\n스트레스가 낮아요</string>
