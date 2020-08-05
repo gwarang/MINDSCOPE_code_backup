@@ -971,42 +971,42 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 String applicationName = "";
 
                 if (category == 11 || (category >= 19 && category <= 28)) {
-                    String packageName = "kr.ac.inha.mindscope"; // TODO change packageName from featrue_ids
-                    final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
-                    ApplicationInfo ai;
-                    try {
-                        ai = pm.getApplicationInfo(packageName, 0);
-                    } catch (PackageManager.NameNotFoundException e) {
-                        ai = null;
-                        e.printStackTrace();
+                    String[] packageSplit = splitArray[1].split("&");
+                    splitArray[1] = packageSplit[0];
+                    if (packageSplit.length > 1) {
+                        String packageName = packageSplit[1];
+                        final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                        ApplicationInfo ai;
+                        try {
+                            ai = pm.getApplicationInfo(packageName, 0);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            ai = null;
+                            e.printStackTrace();
+                        }
+                        applicationName = (String) (ai != null ? "(" + pm.getApplicationLabel(ai) + ")" : "");
                     }
-                    applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "");
                 }
 
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
-                if (applicationName.equals("")) {
-                    if (category <= 5) {
-                        activityReason.add(context.getResources().getString(resId));
-                    } else if (category <= 11) {
-                        socialReason.add(context.getResources().getString(resId));
-                    } else if (category <= 16) {
-                        locationReason.add(context.getResources().getString(resId));
-                    } else if (category <= 28) {
-                        phoneReason.add(context.getResources().getString(resId));
-                    } else {
-                        sleepReason.add(context.getResources().getString(resId));
-                    }
+                if (category <= 5) {
+                    activityReason.add(context.getResources().getString(resId));
+                } else if (category <= 10) {
+                    socialReason.add(context.getResources().getString(resId));
+                } else if (category == 11) {
+                    String text = String.format(context.getResources().getString(resId), applicationName);
+                    socialReason.add(text);
+                } else if (category <= 16) {
+                    locationReason.add(context.getResources().getString(resId));
+                } else if (category <= 18) {
+                    phoneReason.add(context.getResources().getString(resId));
+                } else if (category <= 28) {
+                    String text = String.format(context.getResources().getString(resId), applicationName);
+                    phoneReason.add(text);
                 } else {
-                    if(category == 11){
-                        String text = String.format(context.getResources().getString(resId), applicationName);
-                        socialReason.add(text);
-                    }else{
-                        String text = String.format(context.getResources().getString(resId), applicationName);
-                        phoneReason.add(text);
-                    }
+                    sleepReason.add(context.getResources().getString(resId));
                 }
 
 

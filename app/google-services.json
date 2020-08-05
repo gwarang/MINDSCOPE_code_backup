@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "985858047696",
+    "firebase_url": "https://mindscope-68614.firebaseio.com",
+    "project_id": "mindscope-68614",
+    "storage_bucket": "mindscope-68614.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985858047696:android:65ff0a693b73c29f84e8d5",
+        "android_client_info": {
+          "package_name": "kr.ac.inha.mindscope"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "985858047696-9kogpc9t4lm3s97edjb713me6lue77fg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCngiQuaEOV1GNKqAwWVqfb8VXJbNWD6Rg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "985858047696-9kogpc9t4lm3s97edjb713me6lue77fg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

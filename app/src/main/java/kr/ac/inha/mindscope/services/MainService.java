@@ -140,16 +140,15 @@ public class MainService extends Service {
             long curTimestamp = System.currentTimeMillis();
             Calendar curCal = Calendar.getInstance();
 
-            //region Sending Notification and some statistics periodically - EMA
-            int ema_order = Tools.getEMAOrderAtExactTime(curCal);
 
             // TODO step 조건 추가할것
             //region step check
             SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
 
             long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
-            if(joinTimestamp == 0)
+            if(joinTimestamp == 0) {
                 joinTimestamp = getJoinTime();
+            }
             int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
             long diff = curTimestamp - joinTimestamp;
@@ -171,11 +170,13 @@ public class MainService extends Service {
             }
             //endregion
 
+            //region Sending Notification and some statistics periodically - EMA
+            int ema_order = Tools.getEMAOrderAtExactTime(curCal);
             if (stepCheck == 1 && ema_order != 0 && canSendNotif) {
                 Log.e(TAG, "EMA order 1: " + ema_order);
                 String temp = String.format("ema_order_is_%d", ema_order);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "MAKE_STRESS_REPORT_NOTI", temp);
-                sendNotification(ema_order, KINDS_NOTI_EMA);
+//                sendNotification(ema_order, KINDS_NOTI_EMA);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                 SharedPreferences.Editor editor = loginPrefs.edit();
                 editor.putBoolean("ema_btn_make_visible", true);
@@ -196,7 +197,7 @@ public class MainService extends Service {
                 Log.e(TAG, "REPORT order 1: " + report_order);
                 String temp = String.format("report_order_is_%d", report_order);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "MAKE_STRESS_REPORT_NOTI", temp);
-                sendNotification(report_order, KINDS_NOTI_REPORT);
+//                sendNotification(report_order, KINDS_NOTI_REPORT);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                 SharedPreferences.Editor editor = loginPrefs.edit();
 //                editor.putBoolean("ema_btn_make_visible", true);

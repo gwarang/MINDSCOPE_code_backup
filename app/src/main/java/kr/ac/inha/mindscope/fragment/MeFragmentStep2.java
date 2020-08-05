@@ -76,8 +76,8 @@ public class MeFragmentStep2 extends Fragment {
     private static final String LAST_NAV_FRG3 = "report";
     private static final int DAYS_UNITL_STEP_STARTS = 4; // TODO change 15 for study
     public static JSONObject[] jsonObjects;
-    public View view;
     static int lastReportHours;
+    public View view;
     public int stressLevel;
     int day_num;
     int order;
@@ -336,42 +336,42 @@ public class MeFragmentStep2 extends Fragment {
                 String applicationName = "";
 
                 if (category == 11 || (category >= 19 && category <= 28)) {
-                    String packageName = "kr.ac.inha.mindscope"; // TODO change packageName from featrue_ids
-                    final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
-                    ApplicationInfo ai;
-                    try {
-                        ai = pm.getApplicationInfo(packageName, 0);
-                    } catch (PackageManager.NameNotFoundException e) {
-                        ai = null;
-                        e.printStackTrace();
+                    String[] packageSplit = splitArray[1].split("&");
+                    splitArray[1] = packageSplit[0];
+                    if (packageSplit.length > 1) {
+                        String packageName = packageSplit[1]; // TODO change packageName from feature_ids
+                        final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                        ApplicationInfo ai;
+                        try {
+                            ai = pm.getApplicationInfo(packageName, 0);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            ai = null;
+                            e.printStackTrace();
+                        }
+                        applicationName = (String) (ai != null ? "(" + pm.getApplicationLabel(ai) + ")" : "");
                     }
-                    applicationName = (String) (ai != null ? pm.getApplicationLabel(ai) : "");
                 }
 
                 String strID = "@string/feature_" + splitArray[0] + splitArray[1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
-                if (applicationName.equals("")) {
-                    if (category <= 5) {
-                        activityReason.add(context.getResources().getString(resId));
-                    } else if (category <= 11) {
-                        socialReason.add(context.getResources().getString(resId));
-                    } else if (category <= 16) {
-                        locationReason.add(context.getResources().getString(resId));
-                    } else if (category <= 28) {
-                        phoneReason.add(context.getResources().getString(resId));
-                    } else {
-                        sleepReason.add(context.getResources().getString(resId));
-                    }
+                if (category <= 5) {
+                    activityReason.add(context.getResources().getString(resId));
+                } else if (category <= 10) {
+                    socialReason.add(context.getResources().getString(resId));
+                } else if (category == 11) {
+                    String text = String.format(context.getResources().getString(resId), applicationName);
+                    socialReason.add(text);
+                } else if (category <= 16) {
+                    locationReason.add(context.getResources().getString(resId));
+                } else if (category <= 18) {
+                    phoneReason.add(context.getResources().getString(resId));
+                } else if (category <= 28) {
+                    String text = String.format(context.getResources().getString(resId), applicationName);
+                    phoneReason.add(text);
                 } else {
-                    if(category == 11){
-                        String text = String.format(context.getResources().getString(resId), applicationName);
-                        socialReason.add(text);
-                    }else{
-                        String text = String.format(context.getResources().getString(resId), applicationName);
-                        phoneReason.add(text);
-                    }
+                    sleepReason.add(context.getResources().getString(resId));
                 }
 
 
