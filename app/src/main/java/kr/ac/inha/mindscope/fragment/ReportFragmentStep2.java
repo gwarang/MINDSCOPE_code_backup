@@ -826,7 +826,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                 if (cells.length != 5)
                                     continue;
                                 dayNum = Integer.parseInt(cells[1]);
-                                if(dayNum == 0)
+                                if (dayNum == 0)
                                     continue;
                                 emaOrder = Integer.parseInt(cells[2]);
                                 timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
@@ -970,7 +970,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int category = Integer.parseInt(splitArray[0]);
                 String applicationName = "";
 
-                if (category == 11 || (category >= 19 && category <= 28)) {
+                if (splitArray[1].contains("&") && (category == 11 || (category >= 19 && category <= 28))) {
                     String[] packageSplit = splitArray[1].split("&");
                     splitArray[1] = packageSplit[0];
                     if (packageSplit.length > 1) {
@@ -987,7 +987,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     }
                 }
 
-                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length-1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 

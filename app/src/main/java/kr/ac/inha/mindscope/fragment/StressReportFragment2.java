@@ -210,7 +210,7 @@ public class StressReportFragment2 extends Fragment {
                 int category = Integer.parseInt(splitArray[0]);
                 String applicationName = "";
 
-                if (category == 11 || (category >= 19 && category <= 28)) {
+                if (splitArray[1].contains("&") && (category == 11 || (category >= 19 && category <= 28))) {
                     String[] packageSplit = splitArray[1].split("&");
                     splitArray[1] = packageSplit[0];
                     if (packageSplit.length > 1) {
@@ -227,7 +227,7 @@ public class StressReportFragment2 extends Fragment {
                     }
                 }
 
-                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length-1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 

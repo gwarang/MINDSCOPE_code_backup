@@ -377,7 +377,11 @@ public class MeFragmentStep1 extends Fragment {
                     }
                 channel.shutdown();
                 final int finalPoints = points;
-                requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
+                try{
+                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
+                }catch (IllegalStateException e){
+                    e.printStackTrace();
+                }
             }).start();
         }
     }

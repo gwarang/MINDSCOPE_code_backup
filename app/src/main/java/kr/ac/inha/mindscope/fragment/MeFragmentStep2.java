@@ -32,10 +32,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -335,24 +337,30 @@ public class MeFragmentStep2 extends Fragment {
                 int category = Integer.parseInt(splitArray[0]);
                 String applicationName = "";
 
-                if (category == 11 || (category >= 19 && category <= 28)) {
+
+                if (splitArray[1].contains("&") && (category == 11 || (category >= 19 && category <= 28))) {
                     String[] packageSplit = splitArray[1].split("&");
                     splitArray[1] = packageSplit[0];
-                    if (packageSplit.length > 1) {
-                        String packageName = packageSplit[1]; // TODO change packageName from feature_ids
-                        final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
-                        ApplicationInfo ai;
-                        try {
-                            ai = pm.getApplicationInfo(packageName, 0);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            ai = null;
-                            e.printStackTrace();
+                    List<String> listNoApps = Arrays.asList(Tools.FEATURE_IDS_WITH_NO_APPS);
+                    if(!listNoApps.contains(packageSplit[1])){
+                        if (packageSplit.length > 1) {
+                            String packageName = packageSplit[1]; // TODO change packageName from feature_ids
+                            final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
+                            ApplicationInfo ai;
+                            try {
+                                ai = pm.getApplicationInfo(packageName, 0);
+                            } catch (PackageManager.NameNotFoundException e) {
+                                ai = null;
+                                e.printStackTrace();
+                            }
+                            applicationName = (String) (ai != null ? String.format("(%s)", pm.getApplicationLabel(ai)) : "");
                         }
-                        applicationName = (String) (ai != null ? "(" + pm.getApplicationLabel(ai) + ")" : "");
+                    } else {
+                        applicationName = String.format("(%s)", packageSplit[1].replace("_", " "));
                     }
                 }
 
-                String strID = "@string/feature_" + splitArray[0] + splitArray[1];
+                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length-1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
@@ -547,6 +555,7 @@ public class MeFragmentStep2 extends Fragment {
     }
 
     public void startStressReportActivityWhenNotSubmitted() {
+        updateStressReportSubmit();
         SharedPreferences selfReportSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         SharedPreferences.Editor reportSubmitEditor = selfReportSubmitCheckPrefs.edit();
         boolean[] submits = {
@@ -573,6 +582,48 @@ public class MeFragmentStep2 extends Fragment {
                     startActivity(intent);
                 }
             }
+        }
+    }
+
+    private void updateStressReportSubmit(){
+        SharedPreferences selfReportSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor reportSubmitEditor = selfReportSubmitCheckPrefs.edit();
+        Context context = requireContext();
+        FileInputStream fis = null;
+        try {
+            fis = context.openFileInput(SELF_STRESS_REPORT_RESULT);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader bufferedReader = new BufferedReader(isr);
+        String line;
+
+        Calendar startToday = Calendar.getInstance();
+        Calendar endToday = Calendar.getInstance();
+
+        startToday.set(Calendar.HOUR_OF_DAY, 0);
+        startToday.set(Calendar.MINUTE, 0);
+        startToday.set(Calendar.SECOND, 0);
+        endToday.set(Calendar.HOUR_OF_DAY, 23);
+        endToday.set(Calendar.MINUTE, 59);
+        endToday.set(Calendar.SECOND, 59);
+
+        long startTimestamp = startToday.getTimeInMillis();
+        long endTimestamp = endToday.getTimeInMillis();
+
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
+                Log.i(TAG, "readStressReport test: " + line);
+                String[] tokens = line.split(",");
+                long timestamp = Long.parseLong(tokens[0]);
+                if (startTimestamp <= timestamp && timestamp <= endTimestamp) {
+                    reportSubmitEditor.putBoolean("self_report_submit_check_" + tokens[2], true);
+                    reportSubmitEditor.apply();
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 

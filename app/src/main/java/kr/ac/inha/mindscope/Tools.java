@@ -91,6 +91,21 @@ public class Tools {
             Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
     };
 
+    public static String[] FEATURE_IDS_WITH_NO_APPS = {
+            "음악_및_영상",
+            "클라우드_및_문서도구",
+            "결제_및_쇼핑",
+            "게임_및_웹툰",
+            "비즈니스_도구(취업_및_화상미팅)",
+            "건강_관리_도구",
+            "SNS_및_메일",
+            "교육_관련_앱",
+            "교통_도구(지도)",
+            "사진 ",
+            "뉴스",
+            "배달_및_음식_관련_앱"
+    };
+
     /* Zaturi start */
     static String[] COMMUNICATION_APPS = {
             "com.kakao.talk",                       // KakaoTalk
