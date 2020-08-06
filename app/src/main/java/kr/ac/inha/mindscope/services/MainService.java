@@ -84,7 +84,7 @@ public class MainService extends Service {
     private static final int APP_USAGE_SUBMIT_PERIOD = 60; //in sec
     private static final int KINDS_NOTI_EMA = 1;
     private static final int KINDS_NOTI_REPORT = 2;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE =  60 * 60 * 24 * 1 * 1000;/*60 * 60 * 24 * 1 * 1000;*/  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000;/*60 * 60 * 24 * 1 * 1000;*/  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
     public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for two week
     //endregion
 
@@ -116,7 +116,7 @@ public class MainService extends Service {
     private boolean canSendNotifReport = true;
 
     public boolean getCanSendNotif(){
-        return this.canSendNotif;
+        return canSendNotif;
     }
 
     private Handler mainHandler = new Handler();
@@ -173,8 +173,8 @@ public class MainService extends Service {
             //region Sending Notification and some statistics periodically - EMA
             int ema_order = Tools.getEMAOrderAtExactTime(curCal);
             if (stepCheck == 1 && ema_order != 0 && canSendNotif) {
-                Log.e(TAG, "EMA order 1: " + ema_order);
-                String temp = String.format("ema_order_is_%d", ema_order);
+                Log.d(TAG, "EMA order 1: " + ema_order);
+                String temp = String.format(Locale.KOREA, "ema_order_is_%d", ema_order);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "MAKE_STRESS_REPORT_NOTI", temp);
 //                sendNotification(ema_order, KINDS_NOTI_EMA);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
@@ -194,8 +194,8 @@ public class MainService extends Service {
 
 
             if (stepCheck == 2 && report_order != 0 && canSendNotifReport) {
-                Log.e(TAG, "REPORT order 1: " + report_order);
-                String temp = String.format("report_order_is_%d", report_order);
+                Log.d(TAG, "REPORT order 1: " + report_order);
+                String temp = String.format(Locale.KOREA, "report_order_is_%d", report_order);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "MAKE_STRESS_REPORT_NOTI", temp);
 //                sendNotification(report_order, KINDS_NOTI_REPORT);
                 loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
@@ -309,7 +309,7 @@ public class MainService extends Service {
 
                             } while (cursor.moveToNext());
                         } catch (StatusRuntimeException e) {
-                            Log.e(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
+                            Log.d(TAG, "DataCollectorService.setUpDataSubmissionThread() exception: " + e.getMessage());
                             e.printStackTrace();
                         } finally {
                             channel.shutdown();
@@ -360,12 +360,8 @@ public class MainService extends Service {
     private Handler appUsageSaveHandler = new Handler();
     private Runnable appUsageSaveRunnable = new Runnable() {
         public void run() {
-            Utils.logThreadSignature(TAG + "appUsageSaveRunnable");
-            try {
-                Tools.checkAndSendUsageAccessStats(getApplicationContext());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Utils.logThreadSignature(TAG + " appUsageSaveRunnable");
+            Tools.checkAndSendUsageAccessStats(getApplicationContext());
 
             appUsageSaveHandler.postDelayed(this, APP_USAGE_SAVE_PERIOD * 1000);
         }
@@ -704,40 +700,6 @@ public class MainService extends Service {
         if (notificationManager != null) {
             notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
         }
-    }
-
-    //function to save some stats when the EMA button submit it clicked
-    private void saveSomeStats() {
-        Log.i(TAG, "called saveSomeStats");
-        // saving GPS statistics every notification time
-        startService(new Intent(MainService.this, SaveGPSStats.class));
-
-        final long app_usage_time_end = System.currentTimeMillis();
-        final long app_usage_time_start = (app_usage_time_end - SERVICE_START_X_MIN_BEFORE_EMA * 1000) + 1000; // add one second to start time
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-                int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
-                assert dataSourceId != -1;
-                Cursor cursor = AppUseDb.getAppUsage();
-                if (cursor.moveToFirst()) {
-                    do {
-                        String package_name = cursor.getString(1);
-                        long start_time = cursor.getLong(2);
-                        long end_time = cursor.getLong(3);
-                        if (Tools.inRange(start_time, app_usage_time_start, app_usage_time_end) && Tools.inRange(end_time, app_usage_time_start, app_usage_time_end))
-                            if (start_time < end_time) {
-                                //Log.e(TAG, "Inserting -> package: " + package_name + "; start: " + start_time + "; end: " + end_time);
-                                DbMgr.saveMixedData(dataSourceId, start_time, 1.0f, start_time, end_time, package_name);
-                            }
-                    }
-                    while (cursor.moveToNext());
-                }
-                cursor.close();
-            }
-        }).start();
-
     }
 
     public long getJoinTime() {

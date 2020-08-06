@@ -30,7 +30,7 @@ public class ActivityRecognitionReceiver extends BroadcastReceiver {
 
                 DetectedActivity detectedActivity = result.getMostProbableActivity();
                 float confidence = ((float) detectedActivity.getConfidence()) / 100;
-                Log.e(TAG, String.format("Activity: %s; confidence: %f", detectedActivity.getType(), confidence));
+                Log.d(TAG, String.format("Activity: %s; confidence: %f", detectedActivity.getType(), confidence));
 
                 //start the GPS location collection service after non-STILL activity with confidence of more than 0.95
                 if (detectedActivity.getType() != DetectedActivity.STILL && confidence > 0.95) {

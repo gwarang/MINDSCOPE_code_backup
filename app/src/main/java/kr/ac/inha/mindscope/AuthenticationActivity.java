@@ -89,9 +89,9 @@ public class AuthenticationActivity extends Activity {
                         Objects.requireNonNull(LocationsSettingActivity.getLocationData(getApplicationContext(), location)).getmId(),
                         Objects.requireNonNull(LocationsSettingActivity.getLocationData(getApplicationContext(), location)).getmLatLng(),
                         GEOFENCE_RADIUS_DEFAULT);
-                Log.e(TAG, "Geofences are reset");
+                Log.d(TAG, "Geofences are reset");
             } else
-                Log.e(TAG, "No Geofences in shared preferences");
+                Log.d(TAG, "No Geofences in shared preferences");
         }
     }
 
@@ -147,7 +147,7 @@ public class AuthenticationActivity extends Activity {
                                 });
                         } catch (StatusRuntimeException e) {
                             runOnUiThread(() -> Toast.makeText(AuthenticationActivity.this, "An error occurred when connecting to the EasyTrack campaign. Please try again later!", Toast.LENGTH_SHORT).show());
-                            Log.e(TAG, "onCreate: gRPC server unavailable");
+                            Log.d(TAG, "onCreate: gRPC server unavailable");
                         }
                         channel.shutdown();
                     }).start();

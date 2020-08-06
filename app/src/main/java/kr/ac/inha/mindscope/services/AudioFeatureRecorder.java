@@ -58,7 +58,7 @@ class AudioFeatureRecorder {
 
 
         if (dispatcher == null)
-            Log.e(TAG, "Dispatcher is NULL: ");
+            Log.d(TAG, "Dispatcher is NULL: ");
         dispatcher.addAudioProcessor(silenceDetector);
         dispatcher.addAudioProcessor(mainAudioProcessor);
     }

@@ -159,31 +159,6 @@ public class MeFragmentStep1 extends Fragment {
         });
 
 
-        // TODO 추후 step 시간으로 확인할때는 삭제할 부분
-//        stepTestBtn = root.findViewById(R.id.step_test_btn);
-//        stepTestBtn.setOnClickListener(view -> {
-//            SharedPreferences stepChange = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = stepChange.edit();
-//
-//            if (stepChange.getInt("stepCheck", 0) == 1) {
-//                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-//                stepTestBtn.setText("STEP 2");
-//                editor.putInt("stepCheck", 2);
-//                editor.apply();
-//            } else {
-//                Log.i(TAG, "STEP " + stepChange.getInt("stepCheck", 0));
-//                stepTestBtn.setText("STEP 1");
-//                editor.putInt("stepCheck", 1);
-//                editor.apply();
-//            }
-//        });
-
-//        emaTestBtn = root.findViewById(R.id.ema_test_btn);
-//        emaTestBtn.setOnClickListener(view -> {
-//            Intent intent = new Intent(getActivity(), EMAActivity.class);
-//            startActivity(intent);
-//        });
-
         return root;
     }
 
@@ -200,63 +175,9 @@ public class MeFragmentStep1 extends Fragment {
         boolean isFirstStartStep1DialogShowing = firstPref.getBoolean("firstStartStep1", false);
         if (firstviewshow == 1 && isFirstStartStep1DialogShowing)
             startEmaActivityWhenNotSubmitted();
-        updateStats();
         loadAllPoints();
         loadDailyPoints();
         updateEmaResponseView();
-    }
-
-    public void updateStats() {
-        if (Tools.isNetworkAvailable())
-            new Thread(() -> {
-                Utils.logThreadSignature(TAG + " updateStats");
-                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                Calendar fromCal = Calendar.getInstance();
-                fromCal.set(Calendar.HOUR_OF_DAY, 0);
-                fromCal.set(Calendar.MINUTE, 0);
-                fromCal.set(Calendar.SECOND, 0);
-                fromCal.set(Calendar.MILLISECOND, 0);
-                Calendar tillCal = (Calendar) fromCal.clone();
-                tillCal.set(Calendar.HOUR_OF_DAY, 23);
-                tillCal.set(Calendar.MINUTE, 59);
-                tillCal.set(Calendar.SECOND, 59);
-
-                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
-                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
-                        .setFromTimestamp(fromCal.getTimeInMillis())
-                        .setTillTimestamp(tillCal.getTimeInMillis())
-                        .build();
-                try {
-                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
-                    if (responseMessage.getDoneSuccessfully()) {
-//                        requireActivity().runOnUiThread(() -> updateEmaResponseView(responseMessage.getValueList()));
-                    } else {
-                        requireActivity().runOnUiThread(() -> {
-//                                    initUserStats(true, 0, 0, null);
-                        });
-                    }
-                } catch (StatusRuntimeException e) {
-                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
-                    e.printStackTrace();
-//                    requireActivity().runOnUiThread(() -> updateEmaResponseView(null));
-
-                } finally {
-                    channel.shutdown();
-                }
-            }).start();
-        else {
-            synchronized (this){
-                if(isNetworkToastMsgAbail){
-                    Toast.makeText(getContext(), getContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
-                    isNetworkToastMsgAbail = false;
-                }
-            }
-        }
     }
 
     private void updateEmaResponseView(/*List<String> values*/) {
@@ -488,7 +409,7 @@ public class MeFragmentStep1 extends Fragment {
         SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         emaStepCheckView.setText("STEP : " + stepChangePrefs.getInt("stepCheck", 0));
         Calendar cal = Calendar.getInstance();
-        emaOrderExactView.setText("ema order : " + String.valueOf(Tools.getEMAOrderAtExactTime(cal)));
+        emaOrderExactView.setText("ema order : " + Tools.getEMAOrderAtExactTime(cal));
         emaCanSendNotiView.setText("canSendNofi : " + MainService.canSendNotif);
     }
 }

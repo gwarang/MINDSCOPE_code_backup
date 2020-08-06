@@ -93,14 +93,10 @@ public class MainActivity extends AppCompatActivity {
     private Handler heartBeatHandler = new Handler();
     private Runnable heartBeatSendRunnable = new Runnable() {
         public void run() {
-            try {
-                if (Tools.heartbeatNotSent(MainActivity.this)) {
-                    Log.e(TAG, "Heartbeat not sent");
-                    /*Tools.perform_logout(CustomSensorsService.this);
-                    stopSelf();*/
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (Tools.heartbeatNotSent(MainActivity.this)) {
+                Log.e(TAG, "Heartbeat not sent");
+                /*Tools.perform_logout(CustomSensorsService.this);
+                stopSelf();*/
             }
             heartBeatHandler.postDelayed(this, HEARTBEAT_PERIOD * 1000);
         }
@@ -191,22 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
-            if (getIntent().getBooleanExtra("first_start_step1", false)) {
-                // step1 첫 시작시 dialog
-                Log.e(TAG, "first start step1:" + getIntent().getBooleanExtra("first_start_step1", false));
-//                View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
-//                firstStartStep1Dialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
-//                firstStartStep1Dialog.setContentView(view);
-//                firstStartStep1Layout = view.findViewById(R.id.first_start_step1_layout);
-//                firstStartStep1DialogBtn = view.findViewById(R.id.first_start_step1_btn);
-//                firstStartStep1DialogTitle = view.findViewById(R.id.first_start_step1_title);
-//                firstStartStep1DialogTitle.setText(getResources().getString(R.string.string_first_start_step1_title));
-//                firstStartStep1DialogTxt = view.findViewById(R.id.first_start_step1_txt);
-//                firstStartStep1DialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step1_txt)));
-//                getIntent().removeExtra("first_start_step1");
-//                firstStartStep1DialogBtn.setOnClickListener(firstStartStep1DialogListener);
-//                firstStartStep1Dialog.show();
-            }
             if (intent.getBooleanExtra("get_point", false)) {
                 updatePointAndShowDialog(intent);
             }
@@ -278,15 +258,11 @@ public class MainActivity extends AppCompatActivity {
             permissionDialog.show();
         }
 
-        try {
-            if (Tools.heartbeatNotSent(getApplicationContext())) {
-                Log.e(TAG, "Heartbeat not sent");
-                /*Tools.perform_logout(MainActivity.this);
-                stopService(customSensorsService);
-                finish();*/
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (Tools.heartbeatNotSent(getApplicationContext())) {
+            Log.e(TAG, "Heartbeat not sent");
+            /*Tools.perform_logout(MainActivity.this);
+            stopService(customSensorsService);
+            finish();*/
         }
 
         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
@@ -306,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         customSensorsService = new Intent(this, MainService.class);
-        initUserStats(true, 0, 0, null);
 
         if (Tools.isNetworkAvailable()) {
             loadCampaign();
@@ -332,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-        updateStats();
 
         SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", Context.MODE_PRIVATE);
         SharedPreferences.Editor stressReportPrefsEditor = stressReportPrefs.edit();
@@ -393,46 +367,6 @@ public class MainActivity extends AppCompatActivity {
         setUpNewAppUseNotification();
     }
 
-    public void initUserStats(boolean error, long joinedTimesamp, long hbPhone, String dataLoadedPhone) {
-//        if (Tools.isMainServiceRunning(MainActivity.this)) {
-//            tvServiceStatus.setTextColor(ContextCompat.getColor(this, R.color.green));
-//            tvServiceStatus.setText(getString(R.string.service_runnig));
-//        } else {
-//            tvServiceStatus.setTextColor(ContextCompat.getColor(this, R.color.red));
-//            tvServiceStatus.setText(getString(R.string.service_stopped));
-//        }
-        if (!error) {
-//            tvDayNum.setVisibility(View.VISIBLE);
-//            tvEmaNum.setVisibility(View.VISIBLE);
-//            tvDataLoadedPhone.setVisibility(View.VISIBLE);
-//            tvHBPhone.setVisibility(View.VISIBLE);
-//
-//            tvInternetStatus.setTextColor(ContextCompat.getColor(this, R.color.green));
-//
-//            tvInternetStatus.setText(getString(R.string.internet_on));
-
-            Calendar now = Calendar.getInstance();
-
-            float joinTimeDif = now.getTimeInMillis() - joinedTimesamp;
-            int dayNum = (int) Math.ceil(joinTimeDif / 1000 / 3600 / 24); // in days
-
-            float hbTimeDif = now.getTimeInMillis() - hbPhone;
-            int heart_beat = (int) Math.ceil(hbTimeDif / 1000 / 60); // in minutes
-
-//
-        } else {
-//            tvInternetStatus.setTextColor(ContextCompat.getColor(this, R.color.red));
-//            tvInternetStatus.setText(getString(R.string.internet_off));
-//            tvDayNum.setVisibility(View.GONE);
-//            tvEmaNum.setVisibility(View.GONE);
-//            tvDataLoadedPhone.setVisibility(View.GONE);
-//            tvHBPhone.setVisibility(View.GONE);
-//            ema_tv_1.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.unchecked_box, 0, 0);
-//            ema_tv_2.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.unchecked_box, 0, 0);
-//            ema_tv_3.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.unchecked_box, 0, 0);
-//            ema_tv_4.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.unchecked_box, 0, 0);
-        }
-    }
 
     private void cancelPreviousAppUseNotification() {
         Intent intent = new Intent(this, AppUseNotifierReceiver.class);
@@ -467,50 +401,14 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Log.e(TAG, "알람 등록 함수" + dateFormat.format(calendar.getTimeInMillis()));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Log.d(TAG, "알람 등록 함수" + dateFormat.format(calendar.getTimeInMillis()));
 
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
 
-    }
-
-    public void updateStats() {
-        if (Tools.isNetworkAvailable())
-            new Thread(() -> {
-                Utils.logThreadSignature(TAG + " updateStats()");
-                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
-                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                        .build();
-                try {
-                    EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-                    if (responseMessage.getDoneSuccessfully()) {
-                        final long join_timestamp = responseMessage.getCampaignJoinTimestamp();
-                        final long hb_phone = responseMessage.getLastHeartbeatTimestamp();
-                        final int samples_amount = responseMessage.getAmountOfSubmittedDataSamples();
-                        runOnUiThread(() -> initUserStats(false, join_timestamp, hb_phone, String.valueOf(samples_amount)));
-                    } else {
-                        runOnUiThread(() -> initUserStats(true, 0, 0, null));
-                    }
-                } catch (StatusRuntimeException e) {
-                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
-                    e.printStackTrace();
-                    runOnUiThread(() -> initUserStats(true, 0, 0, null));
-
-                }
-
-                channel.shutdown();
-            }).start();
-        else {
-            runOnUiThread(() -> initUserStats(true, 0, 0, null));
-        }
     }
 
     public long getJoinTime() {
@@ -548,13 +446,9 @@ public class MainActivity extends AppCompatActivity {
         if (item != null) {
             stopService(customSensorsService);
             if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-//                runOnUiThread(() -> dialog = Tools.requestPermissions(MainActivity.this));
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
-                        permissionDialog.show();
-                    }
+                runOnUiThread(() -> {
+                    permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
+                    permissionDialog.show();
                 });
             } else {
                 Log.e(TAG, "restartServiceClick: 3");
@@ -670,14 +564,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeNav() {
-
-        // TODO 추후에는 시작날로부터 2주후부터 stepChange 하도록 구현할것
         stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         int step = stepChangePrefs.getInt("stepCheck", 0);
-
-        long joinTimestamp = 0;
-        if ((joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0)) == 0)
-            joinTimestamp = getJoinTime();
 
         if (step == 1 && !stepChangePrefs.getBoolean("step1Done", false)) {
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
@@ -693,12 +581,10 @@ public class MainActivity extends AppCompatActivity {
             firstStartStepDialogTxt.setText(Html.fromHtml(getResources().getString(R.string.string_first_start_step1_txt)));
             firstStartStepDialogBtn.setOnClickListener(firstStartStep1DialogListener);
             firstStartStepDialog.show();
-
         }
 
         // step2
         if (step == 2 && !stepChangePrefs.getBoolean("step2Done", false)) {
-
             // step2 첫 시작시 dialog
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
             firstStartStepDialog = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
@@ -722,10 +608,8 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("step2Done", true);
             editor.apply();
 
-            Log.i(TAG, "step2 test " + stepChangePrefs.getInt("stepchange", 9));
+            Log.d(TAG, "step2 test " + stepChangePrefs.getInt("stepchange", 9));
         }
-
-
 
         // Bottom Navigation Bar
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -739,7 +623,7 @@ public class MainActivity extends AppCompatActivity {
                     R.id.navigation_me_step2, R.id.navigation_care, R.id.navigation_report).build();
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             navController.setGraph(R.navigation.mobile_navigation_stpe2);
-            Log.i(TAG, "nav2");
+            Log.d(TAG, "nav2");
 //            navController.getCurrentDestination()
 
         } else {
@@ -749,7 +633,7 @@ public class MainActivity extends AppCompatActivity {
             appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.navigation_me, R.id.navigation_care, R.id.navigation_report).build();
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-            Log.i(TAG, "nav1");
+            Log.d(TAG, "nav1");
         }
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
@@ -761,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updatePointAndShowDialog(Intent intent) {
         if (intent.getExtras() != null && intent.getExtras().getBoolean("get_point", false)) {
-            Log.i(TAG, "point dialog test");
+            Log.d(TAG, "point dialog test");
             pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
             pointCustomDialog.setCancelable(false);
             pointCustomDialog.show();
@@ -771,21 +655,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void getFirebaseToken(){
         FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if(!task.isSuccessful()){
-                            Log.w(TAG, "getInstanceId failed", task.getException());
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-
-                        // Log and toast
-//                        String ms = getString(R.string.msg_)
-                        Log.d("FCM Log", "FCM token: " + token);
+                .addOnCompleteListener(task -> {
+                    if(!task.isSuccessful()){
+                        Log.d(TAG, "getInstanceId failed", task.getException());
+                        return;
                     }
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+
+                    // Log and toast
+//                        String ms = getString(R.string.msg_)
+                    Log.d("FCM Log", "FCM token: " + token);
                 });
     }
 

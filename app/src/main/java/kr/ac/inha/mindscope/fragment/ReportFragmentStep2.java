@@ -159,7 +159,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
         joinTimestamp = getJoinTime();
-        Log.e(TAG, "join timestamp " + joinTimestamp);
+        Log.d(TAG, "join timestamp " + joinTimestamp);
 
         defaultContainer = root.findViewById(R.id.frg_report_step2_container1);
         dayDetailContainer = root.findViewById(R.id.frg_report_step2_date_container);
@@ -259,7 +259,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                    Log.e(TAG, feature_ids);
+                    Log.d(TAG, feature_ids);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -291,7 +291,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                    Log.e(TAG, feature_ids);
+                    Log.d(TAG, feature_ids);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -323,7 +323,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                    Log.e(TAG, feature_ids);
+                    Log.d(TAG, feature_ids);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -355,7 +355,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                    Log.e(TAG, feature_ids);
+                    Log.d(TAG, feature_ids);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -387,7 +387,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay day, boolean selected) {
         // [Kevin] 선택된 날짜의 stress 보고서 보여주기
         chooseDay = day;
-        Log.i(TAG, "Seleted Date: " + day);
+        Log.d(TAG, "Seleted Date: " + day);
         Calendar c = Calendar.getInstance();
         c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
         Date currentTime = c.getTime();
@@ -696,7 +696,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         //region load stress prediction
         while ((predictionLine = bufferedReader.readLine()) != null) {
-            Log.i(TAG, "readStressReport test: " + predictionLine);
+            Log.d(TAG, "readStressReport test: " + predictionLine);
             String[] predictionTokens = predictionLine.split(",");
             long timestamp = Long.parseLong(predictionTokens[0]);
 
@@ -708,7 +708,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         //region load self stress report
         while ((selfStressReportLine = bufferedReader2.readLine()) != null) {
-            Log.i(TAG, "readStressReport test: " + selfStressReportLine);
+            Log.d(TAG, "readStressReport test: " + selfStressReportLine);
             String[] selfReportTokens = selfStressReportLine.split(",");
             long timestamp = Long.parseLong(selfReportTokens[0]);
 
@@ -961,7 +961,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
 
         if (feature_ids.equals("")) {
-            Log.i(TAG, "feature_ids is empty");
+            Log.d(TAG, "feature_ids is empty");
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -1014,9 +1014,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     break;
             }
         }
-
-        Log.d(TAG, "phoneReason" + phoneReason.toString());
-        Log.d(TAG, "activityReason" + activityReason.toString());
 
         ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, phoneReason

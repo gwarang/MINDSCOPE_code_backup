@@ -136,7 +136,7 @@ public class StressReportFragment1 extends Fragment {
                         notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
                     }
 
-                    Log.i(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+                    Log.d(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
                     ((StressReportActivity) requireActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
 
                     Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, reportAnswer);
@@ -170,7 +170,7 @@ public class StressReportFragment1 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            Log.i(TAG, "stress level from StressReportActivity: " + stressLevel);
+            Log.d(TAG, "stress level from StressReportActivity: " + stressLevel);
         }
     }
 
@@ -182,6 +182,7 @@ public class StressReportFragment1 extends Fragment {
         Context context = getContext();
         String stressReportStr = null;
         try {
+            assert context != null;
             stressReportStr = getStressResult(context);
         } catch (IOException e) {
             e.printStackTrace();
@@ -269,7 +270,7 @@ public class StressReportFragment1 extends Fragment {
 
             reportAnswer = 5; // not selected
 
-            Log.i(TAG, "Stress Report Order: " + reportOrder);
+            Log.d(TAG, "Stress Report Order: " + reportOrder);
 
 
 
@@ -335,7 +336,7 @@ public class StressReportFragment1 extends Fragment {
 
         //region stress prediction
         while ((line = bufferedReader.readLine()) != null) {
-            Log.i(TAG, "readStressReport test: " + line);
+            Log.d(TAG, "readStressReport test: " + line);
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
 
@@ -356,18 +357,18 @@ public class StressReportFragment1 extends Fragment {
 
     //region old function
     public int getDayNum() {
-        int dayNum = 0;
+        int dayNum;
         SharedPreferences a = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         long joinTimestamp = a.getLong("join_timestamp", 0);
         String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Calendar cal = Calendar.getInstance();
         long caldate = joinTimestamp - cal.getTimeInMillis();
 
         dayNum = (int) (caldate / (24 * 60 * 60 * 1000));
 
-        Log.i(TAG, "Day num: " + dayNum);
+        Log.d(TAG, "Day num: " + dayNum);
 
         return dayNum;
     }
@@ -411,19 +412,9 @@ public class StressReportFragment1 extends Fragment {
             }
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
-        Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
-
-        // test
-//        long fillMillis = 1593554400000l;
-//        long tillTime = 1593568801000l;
-
-//        long fillMillis = 1593568801000l;
-//        long tillTime = 1593583201000l;
-
-        long fillMillis = 1593583201000l;
-        long tillTime = 1593597601000l;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Log.d(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
+        Log.d(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();

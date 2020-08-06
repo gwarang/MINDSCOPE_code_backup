@@ -21,11 +21,11 @@ public class ScreenAndUnlockReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Objects.equals(intent.getAction(), Intent.ACTION_USER_PRESENT)) {
-            Log.e(TAG, "Phone unlocked");
+            Log.d(TAG, "Phone unlocked");
             unlocked = true;
             phoneUnlockedDurationStart = System.currentTimeMillis();
         } else if (Objects.equals(intent.getAction(), Intent.ACTION_SCREEN_OFF)) {
-            Log.e(TAG, "Phone locked / Screen OFF");
+            Log.d(TAG, "Phone locked / Screen OFF");
             //region Handling phone locked state
             if (unlocked) {
                 unlocked = false;
@@ -51,7 +51,7 @@ public class ScreenAndUnlockReceiver extends BroadcastReceiver {
             //endregion
 
         } else if (Objects.equals(intent.getAction(), Intent.ACTION_SCREEN_ON)) {
-            Log.e(TAG, "Screen ON");
+            Log.d(TAG, "Screen ON");
             screenONStartTime = System.currentTimeMillis();
         }
     }

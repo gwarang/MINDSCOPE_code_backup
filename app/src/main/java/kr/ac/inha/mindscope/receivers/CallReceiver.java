@@ -14,7 +14,7 @@ public class CallReceiver extends PhonecallReceiver {
 
     @Override
     protected void onOutgoingCallEnded(Context ctx, String number, long start, long end) {
-        Log.e(TAG, "onOutgoingCallEnded -> " + "number: " + number + "; start date: " + start + "; end date: " + end);
+        Log.d(TAG, "onOutgoingCallEnded -> " + "number: " + number + "; start date: " + start + "; end date: " + end);
         long duration = (end - start) / 1000; // in seconds
         SharedPreferences prefs = ctx.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
         int dataSourceId = prefs.getInt("CALLS", -1);
@@ -26,7 +26,7 @@ public class CallReceiver extends PhonecallReceiver {
 
     @Override
     protected void onIncomingCallEnded(Context ctx, String number, long start, long end) {
-        Log.e(TAG, "onIncomingCallEnded -> " + "number: " + number + "; start date: " + start + "; end date: " + end);
+        Log.d(TAG, "onIncomingCallEnded -> " + "number: " + number + "; start date: " + start + "; end date: " + end);
         long duration = (end - start) / 1000; // in seconds
         SharedPreferences prefs = ctx.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
         int dataSourceId = prefs.getInt("CALLS", -1);
@@ -38,26 +38,26 @@ public class CallReceiver extends PhonecallReceiver {
 
     @Override
     protected void onIncomingCallReceived(Context ctx, String number, long start) {
-        Log.e(TAG, "onIncomingCallReceived -> " + "number: " + number + "; start date: " + start);
+        Log.d(TAG, "onIncomingCallReceived -> " + "number: " + number + "; start date: " + start);
         //start the audio
         AudioRunningForCall = true;
     }
 
     @Override
     protected void onIncomingCallAnswered(Context ctx, String number, long start) {
-        Log.e(TAG, "onIncomingCallAnswered -> " + "number: " + number + "; start date: " + start);
+        Log.d(TAG, "onIncomingCallAnswered -> " + "number: " + number + "; start date: " + start);
     }
 
     @Override
     protected void onOutgoingCallStarted(Context ctx, String number, long start) {
-        Log.e(TAG, "onOutgoingCallStarted -> " + "number: " + number + "; start date: " + start);
+        Log.d(TAG, "onOutgoingCallStarted -> " + "number: " + number + "; start date: " + start);
         //start the audio
         AudioRunningForCall = true;
     }
 
     @Override
     protected void onMissedCall(Context ctx, String number, long start) {
-        Log.e(TAG, "onMissedCall -> " + "number: " + number + "; start date: " + start);
+        Log.d(TAG, "onMissedCall -> " + "number: " + number + "; start date: " + start);
         //finish the audio
         AudioRunningForCall = false;
     }

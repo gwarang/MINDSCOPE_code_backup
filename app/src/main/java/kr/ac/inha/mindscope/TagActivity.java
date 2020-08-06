@@ -110,19 +110,19 @@ public class TagActivity extends AppCompatActivity {
             String patternst = "#[A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{1,30}";
             Pattern pattern = Pattern.compile(patternst);
             Matcher matcher = pattern.matcher(hashTagStr);
-            List<String> tags = new ArrayList<String>();
-            String forMyTags = "";
+            List<String> tags = new ArrayList<>();
+            StringBuilder forMyTags = new StringBuilder();
             int i = 0;
             while(matcher.find()){
                 tags.add(matcher.group());
-                forMyTags = forMyTags + matcher.group() + " ";
+                forMyTags.append(matcher.group()).append(" ");
             }
-            Log.i(TAG, forMyTags);
+            Log.d(TAG, forMyTags.toString());
 
             SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
             assert dataSourceId != -1;
-            Log.i(TAG, "REPORT_TAGS dataSourceId: " + dataSourceId);
+            Log.d(TAG, "REPORT_TAGS dataSourceId: " + dataSourceId);
             for(String tag : tags){
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EACH_EMA_TAG_IN_LOCAL");
@@ -136,11 +136,11 @@ public class TagActivity extends AppCompatActivity {
                     answer4,
                     answer5);
 
-            Log.i(TAG, "answer " + answers);
+            Log.d(TAG, "answer " + answers);
 
             int dataSourceId2 = prefs.getInt("SURVEY_EMA", -1);
             assert dataSourceId2 != -1;
-            Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId2);
+            Log.d(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId2);
             if (emaOrder != 0) {
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EMA_IN_LOCAL");
@@ -156,7 +156,7 @@ public class TagActivity extends AppCompatActivity {
 
             SharedPreferences hashtagsPrefs = getSharedPreferences("hashtags", MODE_PRIVATE);
             SharedPreferences.Editor editor = hashtagsPrefs.edit();
-            editor.putString("lasthashtags", forMyTags);
+            editor.putString("lasthashtags", forMyTags.toString());
             editor.apply();
 
             Context context = getApplicationContext();
@@ -177,10 +177,10 @@ public class TagActivity extends AppCompatActivity {
         @Override
         public void onFocusChange(View view, boolean b) {
             if(b){
-                Log.e(TAG, "focus true");
+                Log.d(TAG, "focus true");
                 String s = inputTag.getText().toString();
                 if(inputTag.getText().toString().equals("")){
-                    Log.e(TAG, "add first #");
+                    Log.d(TAG, "add first #");
                     inputTag.setText("#");
                     inputTag.setSelection(inputTag.getText().length());
                 }
@@ -198,7 +198,7 @@ public class TagActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            Log.e(TAG, "onTextChanged");
+            Log.d(TAG, "onTextChanged");
 
             if(inputTag.isFocusable()){
 //                if(charSequence.length() == 1 && charSequence.toString() != "#" && charSequence.toString() != " "){
@@ -208,7 +208,7 @@ public class TagActivity extends AppCompatActivity {
                 if(charSequence.length() > 0 && charSequence.charAt(charSequence.length()-1) == ' '){
                     inputTag.setText(inputTag.getText().toString().replace(' ', '#'));
                     inputTag.setSelection(inputTag.getText().length());
-                    Log.e(TAG, "add #");
+                    Log.d(TAG, "add #");
                 }
             }
 

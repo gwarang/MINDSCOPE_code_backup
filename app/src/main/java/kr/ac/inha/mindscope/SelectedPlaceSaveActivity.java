@@ -113,7 +113,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
 //                    Toast.makeText(this, "장소 저장", Toast.LENGTH_SHORT).show();
                     // setLocation
                     setLocation(editText.getText().toString(), selectedPlaceAddress, selectedLat, selectedLng);
-                    Log.i(TAG, "placeUserName, double lat lng, float lat lng: " + editText.getText().toString() + ", " + selectedLat + ", " + selectedLng + ", " + selectedLat.floatValue() + ", " + selectedLng.floatValue());
+                    Log.d(TAG, "placeUserName, double lat lng, float lat lng: " + editText.getText().toString() + ", " + selectedLat + ", " + selectedLng + ", " + selectedLat.floatValue() + ", " + selectedLng.floatValue());
                     finish();
                     Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_CLICK_SAVE_BUTTON);
                 }

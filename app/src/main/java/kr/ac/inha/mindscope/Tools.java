@@ -50,6 +50,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -196,11 +198,7 @@ public class Tools {
                 .setTitle(activity.getString(R.string.permissions))
                 .setMessage(activity.getString(R.string.grant_permissions))
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Tools.grantPermissions(activity, PERMISSIONS);
-                    }
-                })
+                .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> Tools.grantPermissions(activity, PERMISSIONS))
                 .setNegativeButton(android.R.string.cancel, null);
 
 
@@ -214,12 +212,9 @@ public class Tools {
         dialog.setCancelable(false);
         ConstraintLayout permissionLayout = view.findViewById(R.id.permission_dialog_layout);
         Button permissionBtn = view.findViewById(R.id.permission_btn);
-        permissionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Tools.grantPermissions(activity, PERMISSIONS);
-                dialog.dismiss();
-            }
+        permissionBtn.setOnClickListener(view1 -> {
+            Tools.grantPermissions(activity, PERMISSIONS);
+            dialog.dismiss();
         });
         return dialog;
     }
@@ -256,7 +251,7 @@ public class Tools {
             ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
     }
 
-    public static void checkAndSendUsageAccessStats(Context con) throws IOException {
+    public static void checkAndSendUsageAccessStats(Context con) {
         // Init AppUseDb if it's null
         if (AppUseDb.getDB() == null)
             AppUseDb.init(con);
@@ -276,7 +271,7 @@ public class Tools {
         PackageManager localPackageManager = con.getPackageManager();
         Intent intent = new Intent("android.intent.action.MAIN");
         intent.addCategory("android.intent.category.HOME");
-        String launcher_packageName = localPackageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName;
+        String launcher_packageName = Objects.requireNonNull(localPackageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)).activityInfo.packageName;
 
         UsageStatsManager usageStatsManager = (UsageStatsManager) con.getSystemService(Context.USAGE_STATS_SERVICE);
 
@@ -432,7 +427,7 @@ public class Tools {
         return false;
     }
 
-    public static synchronized boolean heartbeatNotSent(final Context con) throws InterruptedException {
+    public static synchronized boolean heartbeatNotSent(final Context con) {
         final SharedPreferences loginPrefs = con.getSharedPreferences("UserLogin", MODE_PRIVATE);
 
         if (Tools.isNetworkAvailable()) {
@@ -530,51 +525,20 @@ public class Tools {
     }
 
     public static void updatePoint(Context context) {
-        long calDateDays = 0;
+        long calDateDays;
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
         long timestamp = System.currentTimeMillis();
 
         long diffTimestamp = timestamp - joinTimestamp;
         calDateDays = Math.abs(diffTimestamp / (24 * 60 * 60 * 1000));
-//
-//        SharedPreferences a = context.getSharedPreferences("firstDate", MODE_PRIVATE);
-//        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//        try {
-//            Date firstDate = format.parse(firstTimeStr);
-//            Date currentDate = Calendar.getInstance().getTime();
-//            Log.i(TAG, "first, current: " + firstDate + ", " + currentDate);
-//            long caldate = firstDate.getTime() - currentDate.getTime();
-//            calDateDays = caldate / (24 * 60 * 60 * 1000);
-//            calDateDays = Math.abs(calDateDays);
-//            Log.i(TAG, "Day num: " + calDateDays);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
 
-//        SharedPreferences points = context.getSharedPreferences("points", MODE_PRIVATE);
-//        SharedPreferences.Editor pointsEditor = points.edit();
-//        long lastDayNum = points.getLong("daynum", 0);
-//
-//        if (lastDayNum < calDateDays) {
-//            // 날짜가 바뀌었으면 today points 초기화 및 day num 업데이트
-//            pointsEditor.putInt("todayPoints", 0);
-//            pointsEditor.putLong("daynum", calDateDays);
-//            pointsEditor.apply();
-//        }
-//
-//        int newTodayPoints = points.getInt("todayPoints", 0) + Tools.POINT_INCREASE_VALUE;
-//        int newSumPoints = points.getInt("sumPoints", 0) + Tools.POINT_INCREASE_VALUE;
-//        pointsEditor.putInt("todayPoints", newTodayPoints);
-//        pointsEditor.putInt("sumPoints", newSumPoints);
-//        pointsEditor.apply();
 
         SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
         SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", MODE_PRIVATE);
         int dataSourceId = prefs.getInt("REWARD_POINTS", -1);
         assert dataSourceId != -1;
-        Log.i(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
+        Log.d(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
         DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, calDateDays, Tools.POINT_INCREASE_VALUE);
 
         // force upload to server
@@ -784,12 +748,12 @@ public class Tools {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.MILLISECOND, 0);
             long timestamp = cal.getTimeInMillis();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String logDate = simpleDateFormat.format(cal.getTimeInMillis());
             SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("APPLICATION_LOG", -1);
             assert dataSourceId != -1;
-            if(uniqueTagForEachActivityOrEvent != null && action != null && sb != null)
+            if(uniqueTagForEachActivityOrEvent != null && action != null)
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action, sb.toString());
         }).start();
     }
@@ -833,19 +797,13 @@ class GeofenceHelper {
         GeofencingRequest geofencingRequest = getGeofenceRequest(createGeofence(location_id, position, radius));
         Log.e(TAG, "Setting location with ID: " + geofencingRequest.getGeofences().get(0).getRequestId());
         geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent(context))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Geofences added
-                        Log.e(TAG, "Geofence added");
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Geofences added
+                    Log.e(TAG, "Geofence added");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Failed to add geofences
-                        Log.e(TAG, "Geofence add failed: " + e.toString());
-                    }
+                .addOnFailureListener(e -> {
+                    // Failed to add geofences
+                    Log.e(TAG, "Geofence add failed: " + e.toString());
                 });
 
     }
@@ -886,19 +844,13 @@ class GeofenceHelper {
         ArrayList<String> reqIDs = new ArrayList<>();
         reqIDs.add(reqID);
         geofencingClient.removeGeofences(reqIDs)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Geofences removed
-                        Log.e(TAG, "Geofence removed");
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Geofences removed
+                    Log.e(TAG, "Geofence removed");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Failed to remove geofences
-                        Log.e(TAG, "Geofence not removed: " + e.toString());
-                    }
+                .addOnFailureListener(e -> {
+                    // Failed to remove geofences
+                    Log.e(TAG, "Geofence not removed: " + e.toString());
                 });
     }
 

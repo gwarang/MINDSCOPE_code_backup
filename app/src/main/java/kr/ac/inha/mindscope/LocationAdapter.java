@@ -79,19 +79,16 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
 
 
         editButton.setOnClickListener(view -> {
-            int pos = position;
-            MapsActivity.StoreLocation editStoreLocation = getItem(pos);
-            Log.i(TAG, editStoreLocation.getmId());
+            MapsActivity.StoreLocation editStoreLocation = getItem(position);
+            Log.d(TAG, editStoreLocation.getmId());
             if (mCallback == null)
-                Log.e(TAG, "mcallback is null");
+                Log.d(TAG, "mcallback is null");
             else
                 mCallback.onClick(editStoreLocation, EDIT_CODE);
             Tools.saveApplicationLog(getContext(), MapsActivity.TAG, ACTION_CLICK_EDIT_PLACE);
         });
 
         deleteButton.setOnClickListener(view -> {
-            int pos = position;
-            MapsActivity.StoreLocation deleteStoreLocation = getItem(pos);
             String locationId;
             if (placeUserNameView.getText().toString().equals("집")) {
                 locationId = ID_HOME;
@@ -140,7 +137,7 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
             Tools.saveApplicationLog(getContext(), MapsActivity.TAG, ACTION_CLICK_DELETE_PLACE);
 
             if (mCallback == null) {
-                Log.e(TAG, "mcallback is null");
+                Log.d(TAG, "mcallback is null");
             } else {
                 mCallback.onClick(null, DELETE_CODE);
             }

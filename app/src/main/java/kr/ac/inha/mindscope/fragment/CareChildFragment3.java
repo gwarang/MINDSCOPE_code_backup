@@ -34,7 +34,7 @@ public class CareChildFragment3 extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (DbMgr.getDB() == null)
-            DbMgr.init(getContext());
+            DbMgr.init(requireContext());
 
     }
 
@@ -56,30 +56,27 @@ public class CareChildFragment3 extends Fragment {
         if(!commentPrefs.getString("daily_comment", "").equals(""))
             commentEditTextView.setText(commentPrefs.getString("daily_comment", ""));
 
-        commentEditTextView.setOnFocusChangeListener(new View.OnFocusChangeListener(){
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_COMMENT);
-                if(!b){
-                    SharedPreferences commentPrefs = requireActivity().getSharedPreferences("comment", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = commentPrefs.edit();
-                    editor.putString("daily_comment", commentEditTextView.getText().toString());
+        commentEditTextView.setOnFocusChangeListener((view1, b) -> {
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_COMMENT);
+            if(!b){
+                SharedPreferences commentPrefs1 = requireActivity().getSharedPreferences("comment", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = commentPrefs1.edit();
+                editor.putString("daily_comment", commentEditTextView.getText().toString());
 
-                    Calendar cal = Calendar.getInstance();
-                    int date = cal.get(Calendar.DATE);
-                    editor.putInt("date_comment", date);
-                    editor.apply();
+                Calendar cal = Calendar.getInstance();
+                int date = cal.get(Calendar.DATE);
+                editor.putInt("date_comment", date);
+                editor.apply();
 
-                    String daily_comment = commentPrefs.getString("daily_comment", "");
+                String daily_comment = commentPrefs1.getString("daily_comment", "");
 
-                    if(!daily_comment.equals("")){
-                        long curTimestamp = System.currentTimeMillis();
-                        SharedPreferences prefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-                        int dataSourceId = prefs.getInt("DAILY_COMMENT", -1);
-                        assert dataSourceId != -1;
-                        Log.i(TAG, "DAILY_COMMENT dataSourceId: " + dataSourceId);
-                        DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment);
-                    }
+                if(!daily_comment.equals("")){
+                    long curTimestamp = System.currentTimeMillis();
+                    SharedPreferences prefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                    int dataSourceId = prefs.getInt("DAILY_COMMENT", -1);
+                    assert dataSourceId != -1;
+                    Log.d(TAG, "DAILY_COMMENT dataSourceId: " + dataSourceId);
+                    DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment);
                 }
             }
         });

@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -119,9 +121,9 @@ public class StressReportFragment2 extends Fragment {
             this.order = Tools.getReportOrderFromRangeAfterReport(cal);
             this.accuracy = getArguments().getDouble("accuracy");
             this.feature_ids = getArguments().getString("feature_ids"); //
-            Log.i(TAG, String.format("%d %d %d %d %d %.2f %s", reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+            Log.d(TAG, String.format("%d %d %d %d %d %.2f %s", reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
         } else {
-            Log.i(TAG, "getArguments null");
+            Log.d(TAG, "getArguments null");
         }
     }
 
@@ -158,7 +160,7 @@ public class StressReportFragment2 extends Fragment {
         }
 
         final String accTxt1 = "사실 저는 ";
-        final String accTxt2 = String.format("%.2f", (accuracy.floatValue()*100)) + "%";
+        final String accTxt2 = String.format("%.2f", (accuracy.floatValue()*100), Locale.getDefault()) + "%";
         final String accTxt3 = "의 확신을 가지고 있었어요.";
         String accTxtResult = accTxt1 + accTxt2 + accTxt3;
         Spannable spannable = new SpannableString(accTxtResult);
@@ -201,7 +203,7 @@ public class StressReportFragment2 extends Fragment {
 
 
         if (feature_ids.equals("")) {
-            Log.i(TAG, "feature_ids is empty");
+            Log.d(TAG, "feature_ids is empty");
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -354,7 +356,7 @@ public class StressReportFragment2 extends Fragment {
                 Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
             } else {
                 Context context = requireContext();
-                new Thread(() -> getActivity().runOnUiThread(() -> loadingLayout.setVisibility(View.VISIBLE))).start();
+                new Thread(() -> requireActivity().runOnUiThread(() -> loadingLayout.setVisibility(View.VISIBLE))).start();
 
                 Tools.updatePoint(context);
                 if (order == REPORTNUM4) {
@@ -382,17 +384,17 @@ public class StressReportFragment2 extends Fragment {
                     SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                     int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
                     assert dataSourceId != -1;
-                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                    Log.d(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
 
-                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d\n",
+                    String oneReportWithTimestamp = String.format(Locale.KOREA, "%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
                             order,
                             yesOrNo,
                             reportAnswer);
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
-                    FileOutputStream fileOutputStream = null;
+                    FileOutputStream fileOutputStream;
                     try {
                         fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
                         fileOutputStream.write(oneReportWithTimestamp.getBytes());
@@ -447,16 +449,16 @@ public class StressReportFragment2 extends Fragment {
                     SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                     int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
                     assert dataSourceId != -1;
-                    Log.i(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
+                    Log.d(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
-                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%d\n",
+                    String oneReportWithTimestamp = String.format(Locale.KOREA, "%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
                             order,
                             yesOrNo,
                             reportAnswer);
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
-                    FileOutputStream fileOutputStream = null;
+                    FileOutputStream fileOutputStream;
                     try {
                         fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
                         fileOutputStream.write(oneReportWithTimestamp.getBytes());

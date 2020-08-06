@@ -22,8 +22,9 @@ public class DateChangeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
 
+        assert action != null;
         if (action.equals(Intent.ACTION_TIME_TICK)) {
-            Log.e(TAG, "minute is changed");
+            Log.d(TAG, "minute is changed");
             Calendar curCal = Calendar.getInstance();
             int curDate = curCal.get(Calendar.DATE);
             SharedPreferences datePrefs = context.getSharedPreferences("DatePrefs", Context.MODE_PRIVATE);
@@ -32,14 +33,14 @@ public class DateChangeReceiver extends BroadcastReceiver {
                 SharedPreferences.Editor editor = datePrefs.edit();
                 editor.putInt("date", curDate);
                 editor.apply();
-                Log.e(TAG, "DATE IS CHANGED");
+                Log.d(TAG, "DATE IS CHANGED");
 
                 Intent intentService = new Intent(context, MainService.class);
                 context.stopService(intentService);
                 SharedPreferences configPrefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
                 if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
-                    Log.e(TAG, "RESTART SERVICE");
+                    Log.d(TAG, "RESTART SERVICE");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         context.startForegroundService(intentService);
                     } else {
@@ -50,26 +51,19 @@ public class DateChangeReceiver extends BroadcastReceiver {
             }
             for(int hour : restartHours){
                 if(curCal.get(Calendar.HOUR_OF_DAY) == hour && curCal.get(Calendar.MINUTE) == 0){
-                    Log.e(TAG, "restart at " + hour + " O'clock");
+                    Log.d(TAG, "restart at " + hour + " O'clock");
                     Intent intentService = new Intent(context, MainService.class);
                     context.stopService(intentService);
                     SharedPreferences configPrefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
                     if (configPrefs.getLong("startTimestamp", 0) <= System.currentTimeMillis()) {
-                        Log.e(TAG, "RESTART SERVICE");
+                        Log.d(TAG, "RESTART SERVICE");
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             context.startForegroundService(intentService);
                         } else {
                             context.startService(intentService);
                         }
                     }
-                }
-            }
-            for(int hour : retrieveStressReportHours){
-                if(curCal.get(Calendar.HOUR_OF_DAY) == hour && curCal.get(Calendar.MINUTE) == 55){
-                    Log.e(TAG, "time to take stress report");
-                    Intent intentService = new Intent(); // TODO new service
-
                 }
             }
         }

@@ -34,11 +34,6 @@ public class InterventionService extends Service {
         boolean action_do_intervention = intent.getBooleanExtra("stress_do_intervention", false);
         int path = intent.getIntExtra("path", -1);
 
-        Log.e(TAG, "next time: " + action_next_time);
-        Log.e(TAG, "mute today: " + action_mute_today);
-        Log.e(TAG, "do intervention: " + action_do_intervention);
-        Log.e(TAG, "path: " + path);
-
         SharedPreferences prefs = getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
 
@@ -50,7 +45,7 @@ public class InterventionService extends Service {
             saveStressIntervention(this, System.currentTimeMillis(), curIntervention, STRESS_MUTE_TODAY, PATH_NOTIFICATION);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("muteToday", true);
-            Log.e(TAG, "mute today is ture");
+            Log.d(TAG, "mute today is ture");
             editor.putInt("muteDate", cal.get(Calendar.DATE));
             editor.apply();
         }
@@ -83,6 +78,6 @@ public class InterventionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "intervention service destory");
+        Log.d(TAG, "intervention service destory");
     }
 }

@@ -35,7 +35,7 @@ public class SaveGPSStats extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
-            Log.i(TAG, "onHandleIntent called");
+            Log.d(TAG, "onHandleIntent called");
             long time_end = System.currentTimeMillis();
             long time_start = (time_end - SERVICE_START_X_MIN_BEFORE_EMA * 1000) + 1000; // add one second to start time
             try {
@@ -65,17 +65,17 @@ public class SaveGPSStats extends IntentService {
                     assert dataSourceId != -1;
                     DbMgr.saveMixedData(dataSourceId, time_start, 1.0f, time_start, time_end, NumOfDifPlaces());
 
-                    Log.e(TAG, "1) Total distance covered: " + getTotalDisCovered());
-                    Log.e(TAG, "2) Max dist from home: " + getMaxDistFromHome());
-                    Log.e(TAG, "3) Max dist btw two locations: " + getMaxDistBtwTwoLocations());
-                    Log.e(TAG, "4) Radius of gyration: " + getRadiusOfGyration());
-                    Log.e(TAG, "5) Std deviation of displacement: " + getStdDevOfDisplacement());
-                    Log.e(TAG, "6) Number of different places: " + NumOfDifPlaces());
+                    Log.d(TAG, "1) Total distance covered: " + getTotalDisCovered());
+                    Log.d(TAG, "2) Max dist from home: " + getMaxDistFromHome());
+                    Log.d(TAG, "3) Max dist btw two locations: " + getMaxDistBtwTwoLocations());
+                    Log.d(TAG, "4) Radius of gyration: " + getRadiusOfGyration());
+                    Log.d(TAG, "5) Std deviation of displacement: " + getStdDevOfDisplacement());
+                    Log.d(TAG, "6) Number of different places: " + NumOfDifPlaces());
                 } else
-                    Log.e(TAG, "No locations yet");
+                    Log.d(TAG, "No locations yet");
 
             } catch (Exception e) {
-                Log.e(TAG, "No such file exception");
+                Log.d(TAG, "No such file exception");
             }
         }
     }
@@ -86,7 +86,7 @@ public class SaveGPSStats extends IntentService {
         BufferedReader bufferedReader = new BufferedReader(isr);
         String line;
         while ((line = bufferedReader.readLine()) != null) {
-            Log.i(TAG, "readLocations test: " + line);
+            Log.d(TAG, "readLocations test: " + line);
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
             if (start <= timestamp && timestamp <= end) {
@@ -159,7 +159,7 @@ public class SaveGPSStats extends IntentService {
                 }
             }
         }
-        Log.i(TAG, "getMaxDistFromHome() is called: " + max_dist_from_home);
+        Log.d(TAG, "getMaxDistFromHome() is called: " + max_dist_from_home);
         return max_dist_from_home;
     }
 

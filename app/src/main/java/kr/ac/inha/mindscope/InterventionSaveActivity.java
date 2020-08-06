@@ -85,10 +85,10 @@ public class InterventionSaveActivity extends AppCompatActivity {
         @Override
         public void onFocusChange(View view, boolean b) {
             if(b){
-                Log.e(TAG, "focus true");
+                Log.d(TAG, "focus true");
                 String s = interventionEdit.getText().toString();
                 if(interventionEdit.getText().toString().equals("")){
-                    Log.e(TAG, "add first #");
+                    Log.d(TAG, "add first #");
                     interventionEdit.setText("#");
                     interventionEdit.setSelection(interventionEdit.getText().length());
                 }

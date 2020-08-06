@@ -15,12 +15,8 @@ public class StressReportReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Toast.makeText(context, "알람", Toast.LENGTH_SHORT).show();
-        Log.e("Alarm", "알람입니다");
-
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(StressReportDownloader.class).build();
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest);
-
     }
 
 }

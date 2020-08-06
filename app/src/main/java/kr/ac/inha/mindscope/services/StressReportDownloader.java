@@ -58,8 +58,6 @@ public class StressReportDownloader extends Worker {
             long fromTimestamp = stressReportPrefs.getLong("lastDownloadTime", 0);
             long tillTimestamp = cal.getTimeInMillis();
 
-            long fromTest = 1596289202000l;
-            long tillTest = 1596290282000l;
 
             if (Tools.isNetworkAvailable()) {
                 String stressReportStr;
@@ -107,7 +105,7 @@ public class StressReportDownloader extends Worker {
                                         fileOutputStream.write(oneReportWithTimestamp.getBytes());
                                         fileOutputStream.close();
                                     }
-                                    Log.e(TAG, oneReportWithTimestamp);
+                                    Log.d(TAG, oneReportWithTimestamp);
                                     if(eachLevelJSON.getBoolean("model_tag")){
                                         stressReportPrefsEditor.putInt("reportAnswer", stressLv);
                                         stressReportPrefsEditor.apply();
@@ -121,7 +119,7 @@ public class StressReportDownloader extends Worker {
                         stressReportPrefsEditor.putLong("lastDownloadTime", valuesTimestamp.get(valuesTimestamp.size()-1));
                         stressReportPrefsEditor.apply();
                     } else {
-                        Log.e(TAG, "values empty");
+                        Log.d(TAG, "values empty");
                     }
                 }
 

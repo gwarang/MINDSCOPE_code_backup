@@ -36,8 +36,7 @@ public class ConnectionMonitor extends ConnectivityManager.NetworkCallback {
     @Override
     public void onAvailable(Network network) {
         // Do what you need to do here
-        Log.e(TAG, "Internet Re-connected");
-        //TODO: do smth when internet is connected
+        Log.d(TAG, "Internet Re-connected");
     }
 
 }

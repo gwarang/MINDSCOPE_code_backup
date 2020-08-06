@@ -385,7 +385,7 @@ public class CareChildFragment1 extends Fragment {
 
         //region stress prediction
         while ((line = bufferedReader.readLine()) != null) {
-            Log.i(TAG, "readStressReport test: " + line);
+            Log.d(TAG, "readStressReport test: " + line);
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
 
@@ -404,7 +404,7 @@ public class CareChildFragment1 extends Fragment {
             BufferedReader bufferedReader2 = new BufferedReader(isr2);
             String line2;
             while ((line2 = bufferedReader2.readLine()) != null) {
-                Log.i(TAG, "readStressReport test: " + line2);
+                Log.d(TAG, "readStressReport test: " + line2);
                 String[] tokens = line2.split(",");
                 long timestamp = Long.parseLong(tokens[0]);
 
@@ -459,7 +459,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn1.setVisibility(View.VISIBLE);
                                         feature_ids1 = featre_ids_result;
                                         order1StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
+                                        Log.d(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
                                         break;
                                     case ORDER2:
                                         stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
@@ -469,7 +469,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn2.setVisibility(View.VISIBLE);
                                         feature_ids2 = featre_ids_result;
                                         order2StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV1 ORDER2 feature_ids2: " + feature_ids2);
+                                        Log.d(TAG, "STRESS_LV1 ORDER2 feature_ids2: " + feature_ids2);
                                         break;
                                     case ORDER3:
                                         stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
@@ -479,7 +479,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn3.setVisibility(View.VISIBLE);
                                         feature_ids3 = featre_ids_result;
                                         order3StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV1 ORDER3 feature_ids3: " + feature_ids3);
+                                        Log.d(TAG, "STRESS_LV1 ORDER3 feature_ids3: " + feature_ids3);
                                         break;
                                     case ORDER4:
                                         stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
@@ -489,7 +489,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn4.setVisibility(View.VISIBLE);
                                         feature_ids4 = featre_ids_result;
                                         order4StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV1 ORDER4 feature_ids4: " + feature_ids4);
+                                        Log.d(TAG, "STRESS_LV1 ORDER4 feature_ids4: " + feature_ids4);
                                         break;
                                 }
                                 break;
@@ -503,7 +503,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn1.setVisibility(View.VISIBLE);
                                         feature_ids1 = featre_ids_result;
                                         order1StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV2 ORDER1 feature_ids1: " + feature_ids1);
+                                        Log.d(TAG, "STRESS_LV2 ORDER1 feature_ids1: " + feature_ids1);
                                         break;
                                     case ORDER2:
                                         stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
@@ -513,7 +513,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn2.setVisibility(View.VISIBLE);
                                         feature_ids2 = featre_ids_result;
                                         order2StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV2 ORDER2 feature_ids2: " + feature_ids2);
+                                        Log.d(TAG, "STRESS_LV2 ORDER2 feature_ids2: " + feature_ids2);
                                         break;
                                     case ORDER3:
                                         stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
@@ -523,7 +523,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn3.setVisibility(View.VISIBLE);
                                         feature_ids3 = featre_ids_result;
                                         order3StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV2 ORDER3 feature_ids3: " + feature_ids3);
+                                        Log.d(TAG, "STRESS_LV2 ORDER3 feature_ids3: " + feature_ids3);
                                         break;
                                     case ORDER4:
                                         stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
@@ -533,7 +533,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn4.setVisibility(View.VISIBLE);
                                         feature_ids4 = featre_ids_result;
                                         order4StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV2 ORDER4 feature_ids4: " + feature_ids4);
+                                        Log.d(TAG, "STRESS_LV2 ORDER4 feature_ids4: " + feature_ids4);
                                         break;
                                 }
                                 break;
@@ -547,7 +547,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn1.setVisibility(View.VISIBLE);
                                         feature_ids1 = featre_ids_result;
                                         order1StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV3 ORDER1 feature_ids1: " + feature_ids1);
+                                        Log.d(TAG, "STRESS_LV3 ORDER1 feature_ids1: " + feature_ids1);
                                         break;
                                     case ORDER2:
                                         stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
@@ -557,7 +557,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn2.setVisibility(View.VISIBLE);
                                         feature_ids2 = featre_ids_result;
                                         order2StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV3 ORDER2 feature_ids2: " + feature_ids2);
+                                        Log.d(TAG, "STRESS_LV3 ORDER2 feature_ids2: " + feature_ids2);
                                         break;
                                     case ORDER3:
                                         stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
@@ -567,7 +567,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn3.setVisibility(View.VISIBLE);
                                         feature_ids3 = featre_ids_result;
                                         order3StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV3 ORDER3 feature_ids3: " + feature_ids3);
+                                        Log.d(TAG, "STRESS_LV3 ORDER3 feature_ids3: " + feature_ids3);
                                         break;
                                     case ORDER4:
                                         stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
@@ -577,7 +577,7 @@ public class CareChildFragment1 extends Fragment {
                                         arrowBtn4.setVisibility(View.VISIBLE);
                                         feature_ids4 = featre_ids_result;
                                         order4StressLevel = stressLevel;
-                                        Log.i(TAG, "STRESS_LV3 ORDER4 feature_ids4: " + feature_ids4);
+                                        Log.d(TAG, "STRESS_LV3 ORDER4 feature_ids4: " + feature_ids4);
                                         break;
                                 }
                                 break;
@@ -656,8 +656,7 @@ public class CareChildFragment1 extends Fragment {
             }
         }
 
-        float avg = (float) sumStress / count;
-        return avg;
+        return (float) sumStress / count;
     }
 
     public void hiddenViewUpdate(String feature_ids, int stressLevl) {
@@ -671,7 +670,7 @@ public class CareChildFragment1 extends Fragment {
 
 
         if (feature_ids.equals("")) {
-            Log.i(TAG, "feature_ids is empty");
+            Log.d(TAG, "feature_ids is empty");
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -839,8 +838,8 @@ public class CareChildFragment1 extends Fragment {
         timestamp = fromCalendar.getTimeInMillis();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
-        Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
+        Log.d(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
+        Log.d(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // for test 2020/07/01 00:00:00 ~ 23:59:59
         long fromtimestamp = 1593561600000L;
@@ -868,7 +867,7 @@ public class CareChildFragment1 extends Fragment {
             if (!values.isEmpty()) {
                 for (String report : values) {
                     stressReports = values;
-                    Log.i(TAG, report);
+                    Log.d(TAG, report);
                 }
             } else {
                 Log.d(TAG, "values empty");
@@ -910,8 +909,8 @@ public class CareChildFragment1 extends Fragment {
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        Log.i(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
-        Log.i(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
+        Log.d(TAG, "initialize fromCalendar: " + dateFormat.format(fromCalendar.getTime()));
+        Log.d(TAG, "initialize tillCalendar: " + dateFormat.format(tillCalendar.getTime()));
 
         // for test 2020/07/018 04:19:00 ~ 04:28:00
         long fromtimestamp = 1595013540000L;
@@ -938,7 +937,7 @@ public class CareChildFragment1 extends Fragment {
             if (!values.isEmpty()) {
                 for (String report : values) {
                     selfStressReports = values;
-                    Log.i(TAG, "selfreport " + report);
+                    Log.d(TAG, "selfreport " + report);
                 }
             } else {
                 Log.d(TAG, "values empty");

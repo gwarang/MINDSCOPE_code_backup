@@ -124,7 +124,7 @@ public class LocationsSettingActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.e(TAG, "onMapReady: ");
+        Log.d(TAG, "onMapReady: ");
 
         mMap = googleMap;
         mMap.clear();
@@ -161,7 +161,7 @@ public class LocationsSettingActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.e(TAG, "onLocationChanged: ");
+        Log.d(TAG, "onLocationChanged: ");
         loadingLayout.setVisibility(View.GONE);
         Tools.enable_touch(this);
 
@@ -343,27 +343,19 @@ public class LocationsSettingActivity extends AppCompatActivity implements OnMap
         final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.location_remove_confirmation));
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                GeofenceHelper.removeGeofence(getApplicationContext(), locationId);
-                SharedPreferences.Editor editor = locationPrefs.edit();
-                editor.remove(locationId + "_LAT");
-                editor.remove(locationId + "_LNG");
-                editor.remove(locationId + "_ENTERED_TIME");
-                editor.apply();
-                Toast.makeText(LocationsSettingActivity.this, getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
-                onMapReady(mMap);
-                drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
-            }
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            GeofenceHelper.removeGeofence(getApplicationContext(), locationId);
+            SharedPreferences.Editor editor = locationPrefs.edit();
+            editor.remove(locationId + "_LAT");
+            editor.remove(locationId + "_LNG");
+            editor.remove(locationId + "_ENTERED_TIME");
+            editor.apply();
+            Toast.makeText(LocationsSettingActivity.this, getString(R.string.location_removed), Toast.LENGTH_SHORT).show();
+            onMapReady(mMap);
+            drawGeofence(currentGeofenceMarker, GEOFENCE_RADIUS_DEFAULT);
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -407,19 +399,9 @@ public class LocationsSettingActivity extends AppCompatActivity implements OnMap
         /*final EditText radiusText = new EditText(this);
         radiusText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         builder.setView(radiusText);*/
-        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                setLocation(locationText, location);
-            }
-        });
+        builder.setPositiveButton(getString(R.string.yes), (dialog, which) -> setLocation(locationText, location));
 
-        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.cancel());
         builder.show();
     }
 }

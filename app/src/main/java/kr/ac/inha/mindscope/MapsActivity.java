@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -179,17 +180,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             firstMapStartDialog.setCancelable(false);
             firstMapStartDialog.show();
 
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setTitle(getResources().getString(R.string.map_help_contents1));
-//            builder.setMessage(getResources().getString(R.string.map_help_contents2));
-//            builder.setPositiveButton("확인", (dialogInterface, i) -> {
-//                // 다른 기능 필요하면 여기서 작업
-//                checkForFirstStartStep1 = true;
-//                checkForFirstHomeSetting = true;
-//            });
-//            AlertDialog alertDialog = builder.create();
-//            alertDialog.show();
-
             int infoFirst = 1;
             SharedPreferences a = getSharedPreferences("firstStartMap", MODE_PRIVATE);
             SharedPreferences.Editor editor = a.edit();
@@ -215,31 +205,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapSaveBtn = findViewById(R.id.map_save_btn);
         mapSaveBtn.setOnClickListener(mapSaveClickListener);
 
-
-//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-
-        currentLocationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getCurrentLocation();
-            }
-        });
-
-//        // GPS setting check
-//        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//            Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
-//            intent.addCategory(Intent.CATEGORY_DEFAULT);
-//            startActivity(intent);
-//            finish();
-//        }
+        currentLocationBtn.setOnClickListener(view -> getCurrentLocation());
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_map);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
 
 
         ScrollableMapFragment mapFragment = (ScrollableMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -267,6 +241,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         AutocompleteSupportFragment autocompleteSupportFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.frg_places_autocomplete);
 
+        assert autocompleteSupportFragment != null;
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG));
 
         autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -274,18 +249,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onPlaceSelected(@NonNull Place place) {
                 // TODO: Get info about the selected palce
 //                Toast.makeText(MapsActivity.this, place.getName() + ", " + place.getId(), Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getLatLng().latitude + ", " + place.getLatLng().longitude);
+                Log.d(TAG, "Place: " + place.getName() + ", " + place.getAddress() + ", " + Objects.requireNonNull(place.getLatLng()).latitude + ", " + place.getLatLng().longitude);
                 selectedLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
                 selectedAddress = place.getAddress();
                 selectedName = place.getName();
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(selectedLatLng));
-                Toast.makeText(getApplicationContext(), String.format("Lat, Lng: %.2f, %.2f", selectedLatLng.latitude, selectedLatLng.longitude), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(Locale.KOREA, "Lat, Lng: %.2f, %.2f", selectedLatLng.latitude, selectedLatLng.longitude), Toast.LENGTH_LONG).show();
                 Tools.saveApplicationLog(getApplicationContext(), TAG, ACTION_SELECT_PLACE);
             }
 
             @Override
             public void onError(@NonNull Status status) {
-                Log.i(TAG, "An error occurred: " + status);
+                Log.d(TAG, "An error occurred: " + status);
             }
         });
 
@@ -306,7 +281,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationList = getLocationListFromServer();
         }
         String[] locations = locationList.split(" ");
-        Log.e(TAG, "locationList " + locations);
+        Log.d(TAG, "locationList " + Arrays.toString(locations));
         for (String location : locations) {
             if (getLocationData(getApplicationContext(), location) != null) {
 //                addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
@@ -419,7 +394,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
         }
 
-        Log.e(TAG, "onMapClick" + selectedLatLng.toString());
+        Log.d(TAG, "onMapClick" + selectedLatLng.toString());
 
     }
 
@@ -512,32 +487,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addLocationMarker(StoreLocation location) {
         Drawable iconDrawable;
         String location_title;
-        switch (location.getmId()) {
-//            case ID_HOME:
-//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.home);
-//                location_title = TITLE_HOME;
-//                break;
-//            case ID_DORM:
-//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.dormitory);
-//                location_title = TITLE_DORM;
-//                break;
-//            case ID_UNIV:
-//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.university);
-//                location_title = TITLE_UNIV;
-//                break;
-//            case ID_LIBRARY:
-//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.library);
-//                location_title = TITLE_LIBRARY;
-//                break;
-//            case ID_ADDITIONAL:
-//                iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
-//                location_title = TITLE_ADDITIONAL;
-//                break;
-            default:
-                iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
-                location_title = location.getmId();
-                break;
-        }
+        iconDrawable = ContextCompat.getDrawable(this, R.drawable.additional);
+        location_title = location.getmId();
 
         assert iconDrawable != null;
         Bitmap iconBmp = ((BitmapDrawable) iconDrawable).getBitmap();
@@ -573,7 +524,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             intent.putExtra("editcode", EDIT_CODE);
             startActivity(intent);
         } else {
-            Log.e(TAG, String.format("code %d", code));
+            Log.d(TAG, String.format("code %d", code));
         }
         updateListView();
 
@@ -586,16 +537,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.toolbar_map_current_save_btn:
-//                Toast.makeText(this, "장소 저장 액티비티 실행", Toast.LENGTH_SHORT).show();
-                // Call 장소 저장 액티비티
-                Intent intent = new Intent(MapsActivity.this, MainActivity.class);
-                intent.putExtra("first_start_step1", checkForFirstStartStep1);
-                Log.e(TAG, "first start stpe1 : " + checkForFirstStartStep1);
-                finish();
-                startActivity(intent);
-                return true;
+        if (item.getItemId() == R.id.toolbar_map_current_save_btn) {
+            // Call 장소 저장 액티비티
+            Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+            intent.putExtra("first_start_step1", checkForFirstStartStep1);
+            Log.d(TAG, "first start stpe1 : " + checkForFirstStartStep1);
+            finish();
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -635,7 +584,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
                     SharedPreferences.Editor editor = locationPrefs.edit();
                     for (String value : values) {
-                        Log.e(TAG, "location list from server : " + value + " " + value.length());
+                        Log.d(TAG, "location list from server : " + value + " " + value.length());
                         String[] splitValue = value.split(" ");
                         if (splitValue.length == 5) {
                             String placeUserName = splitValue[0];
@@ -664,7 +613,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     locationList = locationPrefs.getString("locationList", "");
                 }
             } catch (StatusRuntimeException e) {
-                Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
+                Log.d("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
                 e.printStackTrace();
             } finally {
                 channel.shutdown();
@@ -689,41 +638,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
         fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        onLocationChanged(location);
+                .addOnSuccessListener(location -> {
+                    onLocationChanged(location);
 
-                        LatLng latLng = selectedLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        // reverse geocoding
-                        final Geocoder geocoder = new Geocoder(getApplicationContext());
-                        List<Address> addressesList = null;
-                        try {
-                            addressesList = geocoder.getFromLocation(selectedLatLng.latitude, selectedLatLng.longitude, 1);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if (addressesList != null) {
-                            if (addressesList.size() == 0) {
-                                Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
-                            } else {
-                                selectedAddress = addressesList.get(0).getAddressLine(0);
-                                selectedName = addressesList.get(0).getFeatureName();
-                            }
-                        }
-
-                        MarkerOptions optionsMarker = new MarkerOptions()
-                                .position(latLng);
-
-                        if (mMap != null) {
-                            if (currentGeofenceMarker != null) {
-                                currentGeofenceMarker.remove();
-                            }
-                            currentGeofenceMarker = mMap.addMarker(optionsMarker);
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
-                        }
-
+                    LatLng latLng = selectedLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    // reverse geocoding
+                    final Geocoder geocoder = new Geocoder(getApplicationContext());
+                    List<Address> addressesList = null;
+                    try {
+                        addressesList = geocoder.getFromLocation(selectedLatLng.latitude, selectedLatLng.longitude, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    if (addressesList != null) {
+                        if (addressesList.size() == 0) {
+                            Toast.makeText(getApplicationContext(), "현재 장소와 매치되는 주소를 찾지 못했습니다.", Toast.LENGTH_LONG).show();
+                        } else {
+                            selectedAddress = addressesList.get(0).getAddressLine(0);
+                            selectedName = addressesList.get(0).getFeatureName();
+                        }
+                    }
+
+                    MarkerOptions optionsMarker = new MarkerOptions()
+                            .position(latLng);
+
+                    if (mMap != null) {
+                        if (currentGeofenceMarker != null) {
+                            currentGeofenceMarker.remove();
+                        }
+                        currentGeofenceMarker = mMap.addMarker(optionsMarker);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVLE));
+                    }
+
                 });
     }
 

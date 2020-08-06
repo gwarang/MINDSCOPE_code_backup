@@ -52,7 +52,7 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.e(TAG, "Reporting location");
+        Log.d(TAG, "Reporting location");
         /*
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(location.getTime());

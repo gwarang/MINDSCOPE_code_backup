@@ -60,7 +60,7 @@ public class StationaryDetector extends Service implements SensorEventListener {
                         int dataSourceId = prefs.getInt("DATA_SRC_STATIONARY_DUR", -1);
                         assert dataSourceId != -1;
                         DbMgr.saveMixedData(dataSourceId, start_time, 1.0f, start_time, end_time, duration);
-                        Log.i(TAG, "DATA_SRC_STATIONARY_DUR dataSourceId: " + dataSourceId);
+                        Log.d(TAG, "DATA_SRC_STATIONARY_DUR dataSourceId: " + dataSourceId);
                         stationaryDetectStartTime = curTimestamp;
                     }
                 }

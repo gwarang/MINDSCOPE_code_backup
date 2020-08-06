@@ -121,14 +121,14 @@ public class EMAActivity extends AppCompatActivity {
     }
 
     public int getDayNum() {
-        long dayNum = 0;
+        long dayNum;
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
         Calendar cal = Calendar.getInstance();
         long caldate = joinTimestamp - cal.getTimeInMillis();
         dayNum = caldate / (24 * 60 * 60 * 1000);
         dayNum = Math.abs(dayNum);
-        Log.i(TAG, "Day num: " + dayNum);
+        Log.d(TAG, "Day num: " + dayNum);
         return (int)dayNum;
     }
 
@@ -341,23 +341,6 @@ public class EMAActivity extends AppCompatActivity {
             return;
         }
 
-//        String answers = String.format(Locale.US, "%d %d %d %d %d",
-//                answer1,
-//                answer2,
-//                answer3,
-//                answer4,
-//                answer5);
-//
-//        Log.i(TAG, "answer " + answers);
-//
-//        SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-//        int dataSourceId = prefs.getInt("SURVEY_EMA", -1);
-//        assert dataSourceId != -1;
-//        Log.i(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId);
-//        if (getIntent().getIntExtra("ema_order", (short) -1) != -1) {
-//            DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
-//        }
-
         //go to tag activity
         Intent intent = new Intent(this, TagActivity.class);
         intent.putExtra("timestamp", timestamp);
@@ -390,7 +373,7 @@ public class EMAActivity extends AppCompatActivity {
 
     public void clickSubmit(View view) {
         long timestamp = System.currentTimeMillis();
-        Log.i(TAG, "timestamp: " + timestamp);
+        Log.d(TAG, "timestamp: " + timestamp);
 
         String answers = String.format(Locale.US, "%d %d %d %d",
                 answer1,
@@ -398,7 +381,7 @@ public class EMAActivity extends AppCompatActivity {
                 answer3,
                 answer4);
 
-        Log.i(TAG, "answer " + answers + " " + answer5);
+        Log.d(TAG, "answer " + answers + " " + answer5);
 
         SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
         int dataSourceId = prefs.getInt("SURVEY_EMA", -1);

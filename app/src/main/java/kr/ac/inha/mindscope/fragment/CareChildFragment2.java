@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -194,7 +195,7 @@ public class CareChildFragment2 extends Fragment {
 //                intent.putExtra("path", 0);
 //                requireActivity().startService(intent);
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
                 String newPerformed = doneInterventionText.getText() + String.format("%s에 %s을/를 수행하였습니다.\n",dateFormat.format(System.currentTimeMillis()), currentIntervention.getText());
                 doneInterventionText.setText(newPerformed);
                 doneInterventionText.setVisibility(View.VISIBLE);
@@ -241,13 +242,13 @@ public class CareChildFragment2 extends Fragment {
         SharedPreferences.Editor editor = prefs.edit();
         Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_MUTE_TODAY_INTERVENTION);
         if (isChecked) {
-            Log.i(TAG, "오늘의 알림 받기 설정");
+            Log.d(TAG, "오늘의 알림 받기 설정");
             editor.putBoolean("muteToday", false);
             Calendar cal = Calendar.getInstance();
             String curIntervention = prefs.getString("curIntervention", "");
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_UNMUTE_TODAY,0);
         } else {
-            Log.i(TAG, "오늘의 알림 받기 설정 해제");
+            Log.d(TAG, "오늘의 알림 받기 설정 해제");
             editor.putBoolean("muteToday", true);
             Calendar cal = Calendar.getInstance();
             String curIntervention = prefs.getString("curIntervention", "");
@@ -276,11 +277,6 @@ public class CareChildFragment2 extends Fragment {
                 e.printStackTrace();
             }
         }
-
-//            if (interventionSplit != null)
-//                for(String intervention : interventionSplit)
-//                    Log.e(TAG, intervention);
-
 
         String packName = requireContext().getPackageName();
         Random random = new Random();
@@ -320,9 +316,9 @@ public class CareChildFragment2 extends Fragment {
                 tillCalendar.set(Calendar.MINUTE, 59);
                 tillCalendar.set(Calendar.SECOND, 59);
 
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Log.i(TAG, "initialize fromCalendar: " + format.format(fromCalendar.getTime()));
-                Log.i(TAG, "initialize tillCalendar: " + format.format(tillCalendar.getTime()));
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                Log.d(TAG, "initialize fromCalendar: " + format.format(fromCalendar.getTime()));
+                Log.d(TAG, "initialize tillCalendar: " + format.format(tillCalendar.getTime()));
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -346,10 +342,10 @@ public class CareChildFragment2 extends Fragment {
                         for (String value : values) {
                             String[] splitValue = value.split(" ");
                             if (splitValue[1] != null && !splitValue[1].equals("") && splitValue[1].charAt(0) == '#' && Integer.parseInt(splitValue[2]) == STRESS_DO_INTERVENTION) {
-                                Log.e(TAG, "intervention is : " + splitValue[1]);
+                                Log.d(TAG, "intervention is : " + splitValue[1]);
                                 todayPerformedInterventions.add(splitValue);
                             } else
-                                Log.e(TAG, "no intervention");
+                                Log.d(TAG, "no intervention");
                         }
                     } else {
                         Log.d(TAG, "values empty");
@@ -357,7 +353,7 @@ public class CareChildFragment2 extends Fragment {
                 }
 
                 requireActivity().runOnUiThread(() -> {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
                     StringBuilder didInterventionStr = new StringBuilder();
                     SharedPreferences interventionPrefs = requireContext().getSharedPreferences("intervention", MODE_PRIVATE);
                     String performedIntervention = interventionPrefs.getString("performedIntervention", null);
@@ -365,7 +361,7 @@ public class CareChildFragment2 extends Fragment {
 
                     for (String[] s : todayPerformedInterventions) {
                         String timeText = dateFormat.format(Long.parseLong(s[0]));
-                        didInterventionStr.append(String.format("%s에 \'%s\'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));
+                        didInterventionStr.append(String.format("%s에 '%s'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));
                     }
                     if (!didInterventionStr.toString().equals("")) {
                         doneInterventionText.setText(didInterventionStr.toString());

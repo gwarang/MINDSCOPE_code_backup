@@ -19,8 +19,5 @@ public class RebootReceiver extends BroadcastReceiver {
             intentService.putExtra("fromReboot", true);
             context.startActivity(intentService);
         }
-        else {
-            Log.e(TAG, "Received unexpected intent " + intent.toString());
-        }
     }
 }
