@@ -281,8 +281,13 @@ public class MeFragmentStep2 extends Fragment {
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
-        if (feature_ids.equals("")) {
+        Log.e(TAG, "feature_ids: " + feature_ids);
+
+        boolean noFeatures = false; // TODO update NO_FEATURES
+
+        if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
             Log.d(TAG, "feature_ids is empty");
+            noFeatures = true;
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -340,9 +345,6 @@ public class MeFragmentStep2 extends Fragment {
             }
         }
 
-        Log.d(TAG, "phoneReason" + phoneReason.toString());
-        Log.d(TAG, "activityReason" + activityReason.toString());
-
         ListView phoneListView = view.findViewById(R.id.me_listview_phone);
         ListView activityListView = view.findViewById(R.id.me_listview_activity);
         ListView socialListView = view.findViewById(R.id.me_listview_social);
@@ -354,6 +356,7 @@ public class MeFragmentStep2 extends Fragment {
         LinearLayout locationContainer = view.findViewById(R.id.me_listview_location_container);
         LinearLayout sleepContainer = view.findViewById(R.id.me_listview_sleep_container);
 
+        TextView noFeatureTextview = view.findViewById(R.id.frg_me_step2_no_features);
 
         ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
                 context, R.layout.item_feature_ids, phoneReason
@@ -371,46 +374,53 @@ public class MeFragmentStep2 extends Fragment {
                 context, R.layout.item_feature_ids, sleepReason
         );
 
-        phoneListView.setAdapter(phoneAdapter);
-        activityListView.setAdapter(activityAdapter);
-        socialListView.setAdapter(socialAdapter);
-        locationListView.setAdapter(locationAdapter);
-        sleepListView.setAdapter(sleepAdapter);
-
-
-        if (phoneReason.isEmpty())
+        if (noFeatures) {
             phoneContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(phoneListView);
-            phoneContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (activityReason.isEmpty())
             activityContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(activityListView);
-            activityContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (socialReason.isEmpty())
             socialContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(socialListView);
-            socialContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (locationReason.isEmpty())
             locationContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(locationListView);
-            locationContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (sleepReason.isEmpty())
             sleepContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(sleepListView);
-            sleepContainer.setVisibility(View.VISIBLE);
+            noFeatureTextview.setVisibility(View.VISIBLE);
+        } else {
+            phoneListView.setAdapter(phoneAdapter);
+            activityListView.setAdapter(activityAdapter);
+            socialListView.setAdapter(socialAdapter);
+            locationListView.setAdapter(locationAdapter);
+            sleepListView.setAdapter(sleepAdapter);
+
+            if (phoneReason.isEmpty())
+                phoneContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(phoneListView);
+                phoneContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (activityReason.isEmpty())
+                activityContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(activityListView);
+                activityContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (socialReason.isEmpty())
+                socialContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(socialListView);
+                socialContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (locationReason.isEmpty())
+                locationContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(locationListView);
+                locationContainer.setVisibility(View.VISIBLE);
+            }
+            if (sleepReason.isEmpty())
+                sleepContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(sleepListView);
+                sleepContainer.setVisibility(View.VISIBLE);
+            }
         }
 
     }

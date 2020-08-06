@@ -169,7 +169,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
                 <LinearLayout
                     android:id="@+id/me_listview_phone_container"
                     android:layout_width="match_parent"
@@ -367,6 +366,22 @@
 
 
         </ScrollView>
+
+        <TextView
+            android:id="@+id/frg_me_step2_no_features"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_features"
+            android:fontFamily="@font/notosanscjkkrmedium"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/my_text_size1"
+            app:layout_constraintTop_toTopOf="@id/stress_reason_container"
+            app:layout_constraintBottom_toBottomOf="@id/stress_reason_container"
+            app:layout_constraintStart_toStartOf="@id/stress_reason_container"
+            app:layout_constraintEnd_toEndOf="@id/stress_reason_container"/>
+
 
         <TextView
             android:id="@+id/txt_reason"
