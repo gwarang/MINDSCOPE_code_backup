@@ -89,12 +89,15 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
         });
 
         deleteButton.setOnClickListener(view -> {
-            String locationId;
-            if (placeUserNameView.getText().toString().equals("집")) {
+            String locationId = placeUserNameView.getText().toString();
+            if(locationId.equalsIgnoreCase("home") || locationId.equals("집")){
                 locationId = ID_HOME;
-            } else {
-                locationId = placeUserNameView.getText().toString();
             }
+//            if (placeUserNameView.getText().toString().equals("집") ) {
+//                locationId = ID_HOME;
+//            } else {
+//                locationId = placeUserNameView.getText().toString();
+//            }
             displayRemoveDialog(locationId);
         });
 
@@ -127,6 +130,7 @@ public class LocationAdapter extends ArrayAdapter<MapsActivity.StoreLocation> {
             int dataSourceId_LocationsList = confPrefs.getInt("LOCATIONS_LIST", -1);
             assert dataSourceId_LocationsList != -1;
             long nowTime = System.currentTimeMillis();
+
             DbMgr.saveMixedData(dataSourceId_LocationsList, nowTime, 1.0f,
                     locationId,
                     locationPrefs.getString(locationId+"_ADDRESS", "").replace(' ', '_'),

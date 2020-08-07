@@ -70,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
     Dialog permissionDialog;
 
 
+    private static final String LAST_NAV_FRG1 = "me";
+    private static final String LAST_NAV_FRG2 = "care";
+    private static final String LAST_NAV_FRG3 = "report";
+
     private SharedPreferences loginPrefs;
     SharedPreferences configPrefs;
     SharedPreferences firstPref;
@@ -248,9 +252,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        Log.d(TAG, "onResume - test onCreate ");
 
         changeNav();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
+        Log.d(TAG, " test onCreate " + last_frg);
+        switch (last_frg) {
+            case LAST_NAV_FRG1:
+                // nothing
+                break;
+            case LAST_NAV_FRG2:
+                navController.navigate(R.id.action_me_to_care_step2);
+                break;
+            case LAST_NAV_FRG3:
+                navController.navigate(R.id.action_me_to_report_step2);
+                break;
+            default:
+                // nothing
+                break;
+        }
 
         if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
 //            dialog = Tools.requestPermissions(MainActivity.this);
@@ -314,6 +335,10 @@ public class MainActivity extends AppCompatActivity {
         stressReportPrefsEditor.apply();
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(StressReportDownloader.class).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
+
+
+
+
     }
 
     @Override
@@ -323,9 +348,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop");
         SharedPreferences.Editor editor = loginPrefs.edit();
         editor.putLong("lastUsageTimestamp", Calendar.getInstance().getTimeInMillis());
         editor.apply();
+
+        int curFrgId = navController.getCurrentDestination().getId();
+        if(curFrgId == R.id.navigation_me_step2)
+            Log.d(TAG, "navController test");
 
         super.onStop();
 //        loadingPanel.setVisibility(View.GONE);
@@ -334,11 +364,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "onStop");
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
         }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -356,13 +388,10 @@ public class MainActivity extends AppCompatActivity {
 
         heartBeatHandler.removeCallbacks(heartBeatSendRunnable);
 
-//        int step = stepChangePrefs.getInt("stepCheck", 0);
-//
-//        if(step == 2){
-//            SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
-//            lastPagePrefsEditor.putString("last_open_nav_frg", "me");
-//            lastPagePrefsEditor.apply();
-//        }
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putString("last_open_nav_frg", "me");
+        lastPagePrefsEditor.putInt("last_open_tab_position", 0);
+        lastPagePrefsEditor.apply();
 
         setUpNewAppUseNotification();
     }
@@ -623,8 +652,6 @@ public class MainActivity extends AppCompatActivity {
                     R.id.navigation_me_step2, R.id.navigation_care, R.id.navigation_report).build();
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             navController.setGraph(R.navigation.mobile_navigation_stpe2);
-            Log.d(TAG, "nav2");
-//            navController.getCurrentDestination()
 
         } else {
             // STEP 1 -- stepCheck == 0 or 1

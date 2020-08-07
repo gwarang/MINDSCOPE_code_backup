@@ -140,8 +140,6 @@ public class MainService extends Service {
             long curTimestamp = System.currentTimeMillis();
             Calendar curCal = Calendar.getInstance();
 
-
-            // TODO step 조건 추가할것
             //region step check
             SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
 
@@ -219,17 +217,19 @@ public class MainService extends Service {
             //endregion
 
 
-            // TODO need to fix
+
             //region Registering Audio recorder periodically
             boolean canStartAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_PERIOD * 1000) || AudioRunningForCall;
             boolean stopAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_DURATION * 1000);
             if (canStartAudioRecord) {
-                if (audioFeatureRecorder == null)
+                if (audioFeatureRecorder == null){
                     audioFeatureRecorder = new AudioFeatureRecorder(MainService.this);
-                audioFeatureRecorder.start();
-                prevAudioRecordStartTime = curTimestamp;
-            } else if (stopAudioRecord) {
+                    audioFeatureRecorder.start();
+                    prevAudioRecordStartTime = curTimestamp;
+                }
+            } else if (stopAudioRecord && !AudioRunningForCall) {
                 if (audioFeatureRecorder != null) {
+                    Log.d(TAG, "call audioFeatureRecorder.stop()");
                     audioFeatureRecorder.stop();
                     audioFeatureRecorder = null;
                 }

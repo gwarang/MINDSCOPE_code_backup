@@ -247,8 +247,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                // TODO: Get info about the selected palce
-//                Toast.makeText(MapsActivity.this, place.getName() + ", " + place.getId(), Toast.LENGTH_SHORT).show();
+
                 Log.d(TAG, "Place: " + place.getName() + ", " + place.getAddress() + ", " + Objects.requireNonNull(place.getLatLng()).latitude + ", " + place.getLatLng().longitude);
                 selectedLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
                 selectedAddress = place.getAddress();
@@ -334,8 +333,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         mMap.clear();
         mMap.setOnMapClickListener(this);
-
-        // TODO: come here
 
         locationArrayList = new ArrayList<>();
 
@@ -587,6 +584,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Log.d(TAG, "location list from server : " + value + " " + value.length());
                         String[] splitValue = value.split(" ");
                         if (splitValue.length == 5) {
+
                             String placeUserName = splitValue[0];
                             editor.putString(placeUserName + "_ADDRESS", splitValue[1].replace('_', ' '));
                             editor.putFloat(placeUserName + "_LAT", Float.parseFloat(splitValue[2]));

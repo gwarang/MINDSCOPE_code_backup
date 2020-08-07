@@ -359,7 +359,6 @@ public class EMAActivity extends AppCompatActivity {
             notificationManager.cancel(EMA_NOTI_ID);
         }
 
-        // TODO 동기화 후에 삭제하러 올것
         SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
         String emaSubmit = "ema_submit_check_" + emaOrder;

@@ -81,7 +81,6 @@ public class StressReportFragment2 extends Fragment {
     private int yesOrNo = 2;
 
 
-
     public StressReportFragment2() {
         // Required empty public constructor
     }
@@ -94,17 +93,15 @@ public class StressReportFragment2 extends Fragment {
         bundle.putInt("reportAnswer", reportAnswer);
         bundle.putInt("day_num", day_num);
         bundle.putInt("order", order);
-        try{
+        try {
             bundle.putDouble("accuracy", accuracy);
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         bundle.putString("feature_ids", feature_ids);
         fragment2.setArguments(bundle);
         return fragment2;
     }
-
 
 
     @Override
@@ -150,7 +147,7 @@ public class StressReportFragment2 extends Fragment {
         reportBtn = view.findViewById(R.id.toolbar_report_btn2);
         reasonContainer = view.findViewById(R.id.stress_report_reason_container);
 
-        if(feature_ids != null)
+        if (feature_ids != null)
             featureViewUpdate(feature_ids, view);
 
         if (stressLevel == reportAnswer) {
@@ -160,7 +157,7 @@ public class StressReportFragment2 extends Fragment {
         }
 
         final String accTxt1 = "사실 저는 ";
-        final String accTxt2 = String.format("%.2f", (accuracy.floatValue()*100), Locale.getDefault()) + "%";
+        final String accTxt2 = String.format("%.2f", (accuracy.floatValue() * 100), Locale.getDefault()) + "%";
         final String accTxt3 = "의 확신을 가지고 있었어요.";
         String accTxtResult = accTxt1 + accTxt2 + accTxt3;
         Spannable spannable = new SpannableString(accTxtResult);
@@ -201,9 +198,11 @@ public class StressReportFragment2 extends Fragment {
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
+        boolean noFeatures = false;
 
-        if (feature_ids.equals("")) {
+        if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
             Log.d(TAG, "feature_ids is empty");
+            noFeatures = true;
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -229,7 +228,7 @@ public class StressReportFragment2 extends Fragment {
                     }
                 }
 
-                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length-1];
+                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length - 1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
@@ -257,8 +256,6 @@ public class StressReportFragment2 extends Fragment {
             }
         }
 
-        Log.d(TAG, "phoneReason" + phoneReason.toString());
-        Log.d(TAG, "activityReason" + activityReason.toString());
 
         ListView phoneListView = view.findViewById(R.id.listview_phone);
         ListView activityListView = view.findViewById(R.id.listview_activity);
@@ -271,6 +268,7 @@ public class StressReportFragment2 extends Fragment {
         LinearLayout locationContainer = view.findViewById(R.id.listview_location_container);
         LinearLayout sleepContainer = view.findViewById(R.id.listview_sleep_container);
 
+        TextView noFeatureTextview = view.findViewById(R.id.stress_report_no_features);
 
         ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
                 requireContext(), R.layout.item_feature_ids, phoneReason
@@ -288,47 +286,57 @@ public class StressReportFragment2 extends Fragment {
                 requireContext(), R.layout.item_feature_ids, sleepReason
         );
 
-        phoneListView.setAdapter(phoneAdapter);
-        activityListView.setAdapter(activityAdapter);
-        socialListView.setAdapter(socialAdapter);
-        locationListView.setAdapter(locationAdapter);
-        sleepListView.setAdapter(sleepAdapter);
-
-
-        if (phoneReason.isEmpty())
+        if (noFeatures) {
             phoneContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(phoneListView);
-            phoneContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (activityReason.isEmpty())
             activityContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(activityListView);
-            activityContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (socialReason.isEmpty())
             socialContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(socialListView);
-            socialContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (locationReason.isEmpty())
             locationContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(locationListView);
-            locationContainer.setVisibility(View.VISIBLE);
+            sleepContainer.setVisibility(View.GONE);
+            noFeatureTextview.setVisibility(View.VISIBLE);
+        } else {
+            phoneListView.setAdapter(phoneAdapter);
+            activityListView.setAdapter(activityAdapter);
+            socialListView.setAdapter(socialAdapter);
+            locationListView.setAdapter(locationAdapter);
+            sleepListView.setAdapter(sleepAdapter);
+
+
+            if (phoneReason.isEmpty())
+                phoneContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(phoneListView);
+                phoneContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (activityReason.isEmpty())
+                activityContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(activityListView);
+                activityContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (socialReason.isEmpty())
+                socialContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(socialListView);
+                socialContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (locationReason.isEmpty())
+                locationContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(locationListView);
+                locationContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (sleepReason.isEmpty())
+                sleepContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(sleepListView);
+                sleepContainer.setVisibility(View.VISIBLE);
+            }
         }
 
-        if (sleepReason.isEmpty())
-            sleepContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(sleepListView);
-            sleepContainer.setVisibility(View.VISIBLE);
-        }
 
     }
 

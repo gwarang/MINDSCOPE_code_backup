@@ -118,6 +118,7 @@ public class CareChildFragment1 extends Fragment {
     LinearLayout locationContainer;
     LinearLayout sleepContainer;
     ScrollView reasonContainer;
+    TextView noFeatureTextview;
     int order1StressLevel;
     int order2StressLevel;
     int order3StressLevel;
@@ -279,7 +280,12 @@ public class CareChildFragment1 extends Fragment {
     public void onResume() {
         super.onResume();
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+        SharedPreferences lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putInt("last_open_tab_position", 0);
+        lastPagePrefsEditor.apply();
     }
+
 
     public void init(View view) {
         Context context = MainActivity.getInstance();
@@ -346,6 +352,8 @@ public class CareChildFragment1 extends Fragment {
 
         reasonContainer = view.findViewById(R.id.child1_stress_reason_container);
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+
+        noFeatureTextview = view.findViewById(R.id.child1_no_features);
 
     }
 
@@ -669,8 +677,11 @@ public class CareChildFragment1 extends Fragment {
         ArrayList<String> sleepReason = new ArrayList<>();
 
 
-        if (feature_ids.equals("")) {
+        boolean noFeatures = false;
+
+        if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
             Log.d(TAG, "feature_ids is empty");
+            noFeatures = true;
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -683,7 +694,7 @@ public class CareChildFragment1 extends Fragment {
                     String[] packageSplit = splitArray[1].split("&");
                     splitArray[1] = packageSplit[0];
                     if (packageSplit.length > 1) {
-                        String packageName = packageSplit[1]; // TODO change packageName from feature_ids
+                        String packageName = packageSplit[1];
                         final PackageManager pm = requireActivity().getApplicationContext().getPackageManager();
                         ApplicationInfo ai;
                         try {
@@ -725,8 +736,7 @@ public class CareChildFragment1 extends Fragment {
             }
         }
 
-        Log.d(TAG, "phoneReason" + phoneReason.toString());
-        Log.d(TAG, "activityReason" + activityReason.toString());
+
 
         ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
                 requireActivity(), R.layout.item_feature_ids, phoneReason
@@ -744,48 +754,57 @@ public class CareChildFragment1 extends Fragment {
                 requireActivity(), R.layout.item_feature_ids, sleepReason
         );
 
-        phoneListView.setAdapter(phoneAdapter);
-        activityListView.setAdapter(activityAdapter);
-        socialListView.setAdapter(socialAdapter);
-        locationListView.setAdapter(locationAdapter);
-        sleepListView.setAdapter(sleepAdapter);
-
-
-        if (phoneReason.isEmpty())
+        if(noFeatures){
             phoneContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(phoneListView);
-            phoneContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (activityReason.isEmpty())
             activityContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(activityListView);
-            activityContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (socialReason.isEmpty())
             socialContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(socialListView);
-            socialContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (locationReason.isEmpty())
             locationContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(locationListView);
-            locationContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (sleepReason.isEmpty())
             sleepContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(sleepListView);
-            sleepContainer.setVisibility(View.VISIBLE);
-        }
+            noFeatureTextview.setVisibility(View.VISIBLE);
+        }else{
+            phoneListView.setAdapter(phoneAdapter);
+            activityListView.setAdapter(activityAdapter);
+            socialListView.setAdapter(socialAdapter);
+            locationListView.setAdapter(locationAdapter);
+            sleepListView.setAdapter(sleepAdapter);
 
+
+            if (phoneReason.isEmpty())
+                phoneContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(phoneListView);
+                phoneContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (activityReason.isEmpty())
+                activityContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(activityListView);
+                activityContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (socialReason.isEmpty())
+                socialContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(socialListView);
+                socialContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (locationReason.isEmpty())
+                locationContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(locationListView);
+                locationContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (sleepReason.isEmpty())
+                sleepContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(sleepListView);
+                sleepContainer.setVisibility(View.VISIBLE);
+            }
+
+        }
         switch (stressLevl) {
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
@@ -803,6 +822,7 @@ public class CareChildFragment1 extends Fragment {
                 reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
                 break;
         }
+
     }
 
     //region old fuction
@@ -855,8 +875,8 @@ public class CareChildFragment1 extends Fragment {
                 .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                 .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                 .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
-                .setFromTimestamp(fromCalendar.getTimeInMillis()) // TODO change fromCalendar.getTimeInMillis()
-                .setTillTimestamp(tillCalendar.getTimeInMillis()) // TODO change tillCalendar.getTimeInMillis()
+                .setFromTimestamp(fromCalendar.getTimeInMillis())
+                .setTillTimestamp(tillCalendar.getTimeInMillis())
                 .build();
 
 

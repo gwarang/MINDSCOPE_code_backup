@@ -137,6 +137,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private long joinTimestamp;
     private CalendarDay selectedDay;
     private CalendarDay chooseDay;
+    SharedPreferences lastPagePrefs;
+    TextView noFeatureTextview;
     // endregion
 
     public ReportFragmentStep2() {
@@ -152,6 +154,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -213,6 +216,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         reasonContainer = root.findViewById(R.id.frg_report_step2_stress_reason_container);
 
+        noFeatureTextview = root.findViewById(R.id.frg_report_step2_no_features);
+
         txtStressLevel = root.findViewById(R.id.txt_stress_level);
         txtStressLevel.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
 
@@ -253,7 +258,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration1));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
-            // TODO HR
+
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
             if (object != null) {
@@ -285,7 +290,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration2));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
-            // TODO HR
+
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
             if (object != null) {
@@ -317,7 +322,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration3));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
-            // TODO HR
+
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
             if (object != null) {
@@ -349,7 +354,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration4));
 
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
-            // TODO HR
+
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
             if (object != null) {
@@ -554,6 +559,14 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         return -1;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putString("last_open_nav_frg", "report");
+        lastPagePrefsEditor.apply();
+    }
 
     // endregion
 
@@ -959,9 +972,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
+        boolean noFeatures = false;
 
-        if (feature_ids.equals("")) {
+        if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
             Log.d(TAG, "feature_ids is empty");
+            noFeatures = true;
         } else {
             String[] featureArray = feature_ids.split(" ");
 
@@ -987,7 +1002,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     }
                 }
 
-                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length-1];
+                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length - 1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
@@ -1031,46 +1046,56 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 requireContext(), R.layout.item_feature_ids, sleepReason
         );
 
-        phoneListView.setAdapter(phoneAdapter);
-        activityListView.setAdapter(activityAdapter);
-        socialListView.setAdapter(socialAdapter);
-        locationListView.setAdapter(locationAdapter);
-        sleepListView.setAdapter(sleepAdapter);
-
-        if (phoneReason.isEmpty())
+        if (noFeatures) {
             phoneContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(phoneListView);
-            phoneContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (activityReason.isEmpty())
             activityContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(activityListView);
-            activityContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (socialReason.isEmpty())
             socialContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(socialListView);
-            socialContainer.setVisibility(View.VISIBLE);
-        }
-
-        if (locationReason.isEmpty())
             locationContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(locationListView);
-            locationContainer.setVisibility(View.VISIBLE);
+            sleepContainer.setVisibility(View.GONE);
+            noFeatureTextview.setVisibility(View.VISIBLE);
+        } else {
+            phoneListView.setAdapter(phoneAdapter);
+            activityListView.setAdapter(activityAdapter);
+            socialListView.setAdapter(socialAdapter);
+            locationListView.setAdapter(locationAdapter);
+            sleepListView.setAdapter(sleepAdapter);
+
+            if (phoneReason.isEmpty())
+                phoneContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(phoneListView);
+                phoneContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (activityReason.isEmpty())
+                activityContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(activityListView);
+                activityContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (socialReason.isEmpty())
+                socialContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(socialListView);
+                socialContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (locationReason.isEmpty())
+                locationContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(locationListView);
+                locationContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (sleepReason.isEmpty())
+                sleepContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(sleepListView);
+                sleepContainer.setVisibility(View.VISIBLE);
+            }
         }
 
-        if (sleepReason.isEmpty())
-            sleepContainer.setVisibility(View.GONE);
-        else {
-            setListViewHeightBasedOnChildren(sleepListView);
-            sleepContainer.setVisibility(View.VISIBLE);
-        }
 
         switch (stressLevl) {
             case STRESS_LV1:

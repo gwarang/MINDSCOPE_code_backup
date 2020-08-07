@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ public class CareFragmentStep2 extends Fragment {
     ImageView todayLastReportImg;
     TextView todayLastReportText;
 
+    SharedPreferences lastPagePrefs;
+
     ViewPager2 viewPager;
     TabLayout tabLayout;
     private static final String[] tabTitleKo = {"스트레스 분석", "스트레스 해소", "오늘의 코멘트"};
@@ -43,20 +46,16 @@ public class CareFragmentStep2 extends Fragment {
     }
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
         SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
-
-
-        if(stressReportPrefs.getBoolean("today_last_report", false)){
+        if (stressReportPrefs.getBoolean("today_last_report", false)) {
             SharedPreferences.Editor editor = stressReportPrefs.edit();
             editor.putBoolean("today_last_report", false);
             editor.apply();
@@ -72,14 +71,30 @@ public class CareFragmentStep2 extends Fragment {
                 }
             }, 2000);
             todayLastReportLayout.setOnClickListener(view1 -> {
-                if(todayLastReportDialog != null)
+                if (todayLastReportDialog != null)
                     todayLastReportDialog.dismiss();
             });
             todayLastReportImg = view.findViewById(R.id.today_last_report_img);
             todayLastReportText = view.findViewById(R.id.today_last_report_txt);
             todayLastReportDialog.show();
         }
+
+        SharedPreferences lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        int curPosition = lastPagePrefs.getInt("last_open_tab_position", 0);
+        viewPager.postDelayed(() -> requireActivity().runOnUiThread(() -> viewPager.setCurrentItem(curPosition)), 100);
+
+
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putString("last_open_nav_frg", "care");
+        lastPagePrefsEditor.apply();
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,9 +111,9 @@ public class CareFragmentStep2 extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                if(language.equals("ko")){
+                if (language.equals("ko")) {
                     tab.setText(tabTitleKo[position]);
-                }else{
+                } else {
                     tab.setText(tabTitle[position]);
                 }
 
@@ -106,12 +121,11 @@ public class CareFragmentStep2 extends Fragment {
         }).attach();
 
 
-
         return view;
     }
 
 
-    private CareViewPagerAdapter createAapter(){
+    private CareViewPagerAdapter createAapter() {
         CareViewPagerAdapter adapter = new CareViewPagerAdapter(requireActivity());
         return adapter;
     }

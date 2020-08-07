@@ -50,7 +50,9 @@ class AudioFeatureRecorder {
                         DbMgr.init(con);
                     int dataSourceId = prefs.getInt("AUDIO_LOUDNESS", -1);
                     assert dataSourceId != -1;
-                    DbMgr.saveMixedData(dataSourceId, System.currentTimeMillis(), 1.0f, System.currentTimeMillis(), silenceDetector.currentSPL());
+                    long curTimestamp = System.currentTimeMillis();
+                    DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, silenceDetector.currentSPL());
+                    Log.d(TAG, curTimestamp + " " + silenceDetector.currentSPL() + "");
                 }
                 return true;
             }
@@ -70,8 +72,9 @@ class AudioFeatureRecorder {
     }
 
     void stop() {
-        Log.d(TAG, "Stopped: AudioFeatureRecorder");
+        Log.d(TAG, "Stopped: AudioFeatureRecorder, started: " + started);
         if (started) {
+            Log.d(TAG, "call dispatcher.stop()");
             dispatcher.stop();
             started = false;
         }

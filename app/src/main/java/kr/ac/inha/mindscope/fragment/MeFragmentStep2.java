@@ -67,9 +67,6 @@ public class MeFragmentStep2 extends Fragment {
     public static final long TIMESTAMP_ONE_DAY = 60 * 60 * 24 * 1000;
 
     private static final String TAG = "MeFragmentStep2";
-    private static final String LAST_NAV_FRG1 = "me";
-    private static final String LAST_NAV_FRG2 = "care";
-    private static final String LAST_NAV_FRG3 = "report";
     private static final int DAYS_UNITL_STEP_STARTS = 4; // TODO change 15 for study
     static int lastReportHours;
     public View view;
@@ -97,7 +94,8 @@ public class MeFragmentStep2 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        Log.d(TAG, "test onCreate");
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -115,7 +113,6 @@ public class MeFragmentStep2 extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        gettingStressReportFromGRPC(view); // get Stress Report Result from gRPC server;
 
         return view;
     }
@@ -135,24 +132,17 @@ public class MeFragmentStep2 extends Fragment {
 //            editor.putBoolean("today_last_report", false);
 //            editor.apply();
             navController.navigate(R.id.action_me_to_care_step2);
-        } else {
-            String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
-            switch (last_frg) {
-                case LAST_NAV_FRG1:
-                    // nothing
-                    break;
-                case LAST_NAV_FRG2:
-                    Navigation.findNavController(view).navigate(R.id.action_me_to_care_step2);
-                    break;
-                case LAST_NAV_FRG3:
-                    Navigation.findNavController(view).navigate(R.id.action_me_to_report_step2);
-                    break;
-                default:
-                    // nothing
-                    break;
-            }
         }
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+        lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putString("last_open_nav_frg", "me");
+        lastPagePrefsEditor.apply();
     }
 
 
@@ -281,9 +271,11 @@ public class MeFragmentStep2 extends Fragment {
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
+
         Log.e(TAG, "feature_ids: " + feature_ids);
 
-        boolean noFeatures = false; // TODO update NO_FEATURES
+
+        boolean noFeatures = false;
 
         if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
             Log.d(TAG, "feature_ids is empty");
@@ -439,19 +431,20 @@ public class MeFragmentStep2 extends Fragment {
         Calendar tillCalendar = Calendar.getInstance();
 
         // initialize calendar time
+        // 10:00:00~11:59:59, 14:00:00~15:59:59, 18:00:00~19:59:59, 22:00:00~23:59:59
         if (reportOrder < 4) {
-            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
         } else {
             if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
-                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
                 long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
                 long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
                 fromCalendar.setTimeInMillis(fromTimestampYesterday);
                 tillCalendar.setTimeInMillis(tillTimestampYesterday);
             } else {
-                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
                 tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
             }
         }

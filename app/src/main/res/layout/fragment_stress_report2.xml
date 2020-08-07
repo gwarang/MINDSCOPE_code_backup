@@ -10,64 +10,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/frg_report_app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/bg_toolbar"
-            android:elevation="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:elevation="10dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/toolbar_report_btn2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#00000000"
-                    android:fontFamily="@font/notosanscjkkrmedium"
-                    android:includeFontPadding="false"
-                    android:text="확인"
-                    android:textColor="@color/textColor_blue"
-                    android:textSize="@dimen/my_text_size3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/notosanscjkkrregular"
-                    android:includeFontPadding="false"
-                    android:text="@string/stress_report_title"
-                    android:textSize="@dimen/my_text_size5"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
+        <ImageView
+            android:id="@+id/frg_report_step2_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/icon_low"
+            app:layout_constraintBottom_toTopOf="@id/txt_stress_level"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stress_report_step2_txt_container"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.23" />
 
         <LinearLayout
             android:id="@+id/stress_report_step2_txt_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginTop="19dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/frg_report_step2_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frg_report_app_bar"
-            app:layout_constraintBottom_toTopOf="@id/frg_report_step2_img">
+            app:layout_constraintTop_toBottomOf="@id/frg_report_app_bar">
 
             <TextView
                 android:id="@+id/txt_yes_no"
@@ -91,46 +58,122 @@
         </LinearLayout>
 
 
-
-        <ImageView
-            android:layout_marginTop="20dp"
-            android:id="@+id/frg_report_step2_img"
-            android:layout_width="0dp"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.23"
-            android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1:1"
-            android:adjustViewBounds="true"
-            android:src="@drawable/icon_low"
-            app:layout_constraintTop_toBottomOf="@id/stress_report_step2_txt_container"
+        <LinearLayout
+            android:id="@+id/loading_frame_stress_report"
+            android:layout_width="250dp"
+            android:layout_height="180dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="50dp"
+            android:background="#80000000"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/txt_stress_level"/>
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Please, wait!"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
 
         <TextView
-            android:textAlignment="center"
             android:id="@+id/txt_stress_level"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size1"
             android:text="stress level txt"
-            android:layout_marginTop="3dp"
-            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img"
-            app:layout_constraintBottom_toTopOf="@id/scrollveiw_container"/>
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size1"
+            app:layout_constraintBottom_toTopOf="@id/scrollveiw_container"
+            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btn_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/scrollveiw_container">
+
+            <Button
+                android:id="@+id/btn_correct"
+                android:layout_width="66dp"
+                android:layout_height="30dp"
+                android:layout_marginVertical="5dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/btn_check_selected"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:stateListAnimator="@null"
+                android:text="@string/yes"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_incorrect"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/question_analysis" />
+
+            <Button
+                android:id="@+id/btn_incorrect"
+                android:layout_width="66dp"
+                android:layout_height="30dp"
+                android:layout_marginVertical="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/btn_check_selected"
+                android:fontFamily="@font/notosanscjkkrregular"
+                android:includeFontPadding="false"
+                android:stateListAnimator="@null"
+                android:text="@string/no"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_correct"
+                app:layout_constraintTop_toBottomOf="@id/question_analysis" />
+
+            <TextView
+                android:id="@+id/question_analysis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:includeFontPadding="false"
+                android:text="@string/string_am_i_right"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/scrollveiw_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
-            app:layout_constraintVertical_weight="1"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@id/btn_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_stress_level">
+            app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
+            app:layout_constraintVertical_weight="1">
 
             <ScrollView
                 android:id="@+id/stress_report_reason_container"
@@ -336,6 +379,22 @@
             </ScrollView>
 
             <TextView
+                android:id="@+id/stress_report_no_features"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrmedium"
+                android:includeFontPadding="false"
+                android:text="@string/no_features"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size1"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/stress_report_reason_container"
+                app:layout_constraintEnd_toEndOf="@id/stress_report_reason_container"
+                app:layout_constraintStart_toStartOf="@id/stress_report_reason_container"
+                app:layout_constraintTop_toTopOf="@id/stress_report_reason_container" />
+
+
+            <TextView
                 android:id="@+id/txt_reason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -348,97 +407,53 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/btn_container"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/frg_report_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/bg_toolbar"
+            android:elevation="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/scrollveiw_container">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <Button
-                app:layout_constraintHorizontal_chainStyle="packed"
-                android:id="@+id/btn_correct"
-                android:layout_width="66dp"
-                android:layout_height="30dp"
-                android:layout_marginVertical="5dp"
-                android:layout_marginTop="7dp"
-                android:background="@drawable/btn_check_selected"
-                android:fontFamily="@font/notosanscjkkrregular"
-                android:includeFontPadding="false"
-                android:stateListAnimator="@null"
-                android:text="@string/yes"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btn_incorrect"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/question_analysis"
-                android:layout_marginEnd="10dp"/>
-
-            <Button
-                android:id="@+id/btn_incorrect"
-                android:layout_width="66dp"
-                android:layout_height="30dp"
-                android:layout_marginVertical="5dp"
-                android:layout_marginTop="7dp"
-                android:background="@drawable/btn_check_selected"
-                android:fontFamily="@font/notosanscjkkrregular"
-                android:includeFontPadding="false"
-                android:stateListAnimator="@null"
-                android:text="@string/no"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btn_correct"
-                app:layout_constraintTop_toBottomOf="@id/question_analysis"
-                android:layout_marginStart="10dp"/>
-
-            <TextView
-                android:id="@+id/question_analysis"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="@string/string_am_i_right"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:elevation="10dp"
+                android:orientation="horizontal">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/toolbar_report_btn2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:text="확인"
+                    android:textColor="@color/textColor_blue"
+                    android:textSize="@dimen/my_text_size3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/loading_frame_stress_report"
-            android:layout_width="250dp"
-            android:layout_height="180dp"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="50dp"
-            android:gravity="center"
-            android:background="#80000000"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loading..."
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textSize="20sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:text="@string/stress_report_title"
+                    android:textSize="@dimen/my_text_size5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Please, wait!"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-        </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

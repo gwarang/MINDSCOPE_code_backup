@@ -42,6 +42,10 @@ public class CareChildFragment3 extends Fragment {
     public void onResume() {
         super.onResume();
         Tools.saveApplicationLog(requireContext(), TAG, Tools.ACTION_OPEN_PAGE);
+        SharedPreferences lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putInt("last_open_tab_position", 2);
+        lastPagePrefsEditor.apply();
     }
 
     @Override

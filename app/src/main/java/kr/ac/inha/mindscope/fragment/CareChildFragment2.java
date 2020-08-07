@@ -137,7 +137,12 @@ public class CareChildFragment2 extends Fragment {
         super.onResume();
         loadTodayPerformedIntervention();
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
+        SharedPreferences lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putInt("last_open_tab_position", 1);
+        lastPagePrefsEditor.apply();
     }
+
 
     public void init(View view) {
         currentInterventionContainer = view.findViewById(R.id.intervention_container);
@@ -167,10 +172,6 @@ public class CareChildFragment2 extends Fragment {
 
         updateRecommendInterventions();
         loadTodayPerformedIntervention();
-
-
-
-
     }
 
     View.OnClickListener clickEditBtn = new View.OnClickListener() {

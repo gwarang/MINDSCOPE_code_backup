@@ -156,7 +156,8 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         }
 
         String location_id;
-        if (placeUserName.equals("집") || placeUserName.equals("Home")) {
+        placeUserName = placeUserName.replace(" ", "");
+        if (placeUserName.equals("집") || placeUserName.equalsIgnoreCase("home")) {
             editor.putFloat(ID_HOME + "_LAT", lat.floatValue());
             editor.putFloat(ID_HOME + "_LNG", lng.floatValue());
             editor.putString(ID_HOME + "_ADDRESS", placeAddress);
