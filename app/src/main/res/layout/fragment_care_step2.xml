@@ -9,36 +9,36 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/care_step2_app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/color_white"
+            android:elevation="10dp"
             android:paddingHorizontal="20dp"
-            android:elevation="10dp">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_gravity="center_vertical"
-                android:elevation="10dp">
+                android:elevation="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/care_step2_title"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:includeFontPadding="false"
                     android:fontFamily="@font/notosanscjkkrregular"
-                    android:textSize="@dimen/my_text_size5"/>
+                    android:includeFontPadding="false"
+                    android:text="@string/care_step2_title"
+                    android:textSize="@dimen/my_text_size5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -49,18 +49,22 @@
             android:id="@+id/care_step2_tab"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
+            android:theme="@style/AppThemeNoActionBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/care_step2_app_bar"
-            app:tabTextAppearance="@style/tab_text"
             app:tabIndicatorFullWidth="false"
-            android:theme="@style/AppThemeNoActionBar"/>
+            app:tabTextAppearance="@style/tab_text" />
 
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/care_step2_container"
-            app:layout_constraintTop_toBottomOf="@id/care_step2_tab"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/care_step2_tab" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

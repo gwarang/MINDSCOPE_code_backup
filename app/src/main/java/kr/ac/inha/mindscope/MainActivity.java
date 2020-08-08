@@ -69,15 +69,12 @@ public class MainActivity extends AppCompatActivity {
     ConnectionMonitor connectionMonitor;
     Dialog permissionDialog;
 
-
     private static final String LAST_NAV_FRG1 = "me";
     private static final String LAST_NAV_FRG2 = "care";
     private static final String LAST_NAV_FRG3 = "report";
 
     private SharedPreferences loginPrefs;
     SharedPreferences configPrefs;
-    SharedPreferences firstPref;
-    SharedPreferences prefPermission;
     Dialog firstStartStepDialog;
     Button firstStartStepDialogBtn;
     TextView firstStartStepDialogTitle;
@@ -85,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout firstStartStepLayout;
     AppBarConfiguration appBarConfiguration;
     private Intent customSensorsService;
-    private Intent checkIntent;
 
     private AlertDialog dialog;
     private PointCustomDialog pointCustomDialog;
@@ -112,12 +108,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
     private View.OnClickListener firstStartStep1DialogListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -151,36 +141,6 @@ public class MainActivity extends AppCompatActivity {
         return mContext;
     }
 
-    private void sendNotificationForPermissionSetting() {
-        final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        String channelId = "StressSensor_permission_notif";
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.getApplicationContext(), channelId);
-        builder.setContentTitle(this.getString(R.string.app_name))
-                .setContentText(this.getString(R.string.grant_permissions))
-                .setTicker("New Message Alert!")
-                .setOngoing(true)
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_ALL);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, this.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-        final Notification notification = builder.build();
-        if (notificationManager != null) {
-            notificationManager.notify(PERMISSION_REQUEST_NOTIFICATION_ID, notification);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                 updatePointAndShowDialog(intent);
             }
         }
-
 
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             // only for gingerbread and newer versions
@@ -237,11 +196,9 @@ public class MainActivity extends AppCompatActivity {
 
             createSharedPrefPoints();
 
-
             Intent intentFirst = new Intent(MainActivity.this, FirstStartActivity.class);
             startActivity(intentFirst);
         }
-
 
         heartBeatHandler.post(heartBeatSendRunnable);
 
@@ -289,19 +246,6 @@ public class MainActivity extends AppCompatActivity {
         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
         configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
 
-//        int ema_order = Tools.getEMAOrderFromRangeAfterEMA(Calendar.getInstance());
-//        if (ema_order == 0) {
-//            btnEMA.setVisibility(View.GONE);
-//        } else {
-//            boolean ema_btn_visible = loginPrefs.getBoolean("ema_btn_make_visible", true);
-//            if (!ema_btn_visible) {
-//                btnEMA.setVisibility(View.GONE);
-//            } else {
-//                btnEMA.setVisibility(View.VISIBLE);
-//            }
-//        }
-
-
         customSensorsService = new Intent(this, MainService.class);
 
         if (Tools.isNetworkAvailable()) {
@@ -336,9 +280,6 @@ public class MainActivity extends AppCompatActivity {
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(StressReportDownloader.class).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
 
-
-
-
     }
 
     @Override
@@ -358,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "navController test");
 
         super.onStop();
-//        loadingPanel.setVisibility(View.GONE);
     }
 
     @Override
@@ -376,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        // loadingPanel.setVisibility(View.GONE);
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
@@ -392,6 +331,8 @@ public class MainActivity extends AppCompatActivity {
         lastPagePrefsEditor.putString("last_open_nav_frg", "me");
         lastPagePrefsEditor.putInt("last_open_tab_position", 0);
         lastPagePrefsEditor.apply();
+
+        Log.d(TAG, String.format("onDestroy - frg : %s, tab : %d", lastPagePrefs.getString("last_open_nav_frg", ""), lastPagePrefs.getInt("last_open_tab_position", 55)));
 
         setUpNewAppUseNotification();
     }
@@ -512,7 +453,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
 
     private void loadCampaign() {
@@ -555,7 +495,6 @@ public class MainActivity extends AppCompatActivity {
                 channel.shutdown();
             }
         }).start();
-
     }
 
     private void setUpCampaignConfigurations(String name, String notes, String creatorEmail, String configJson, long startTimestamp, long endTimestamp, int participantCount) throws JSONException {

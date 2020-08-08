@@ -335,6 +335,6 @@
 
     <string name="string_no_stress_report">데이터가 부족하여\n스트레스 리포트가 작성되지 않았습니다.\n\n다음 스트레스 리포트를 기다려주세요!</string>
 
-    <string name="no_features">이런... 마인드스코프가\n정확한 이유를 파악하지 못했습니다.</string>
+    <string name="no_features">이런… 마인드스코프가\n정확한 이유를 파악하지 못했습니다.</string>
 
 </resources>

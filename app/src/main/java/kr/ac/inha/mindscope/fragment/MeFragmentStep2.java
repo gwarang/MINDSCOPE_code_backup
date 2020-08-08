@@ -379,6 +379,7 @@ public class MeFragmentStep2 extends Fragment {
             socialListView.setAdapter(socialAdapter);
             locationListView.setAdapter(locationAdapter);
             sleepListView.setAdapter(sleepAdapter);
+            noFeatureTextview.setVisibility(View.GONE);
 
             if (phoneReason.isEmpty())
                 phoneContainer.setVisibility(View.GONE);

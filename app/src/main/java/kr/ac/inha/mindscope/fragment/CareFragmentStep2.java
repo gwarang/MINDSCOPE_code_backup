@@ -69,7 +69,7 @@ public class CareFragmentStep2 extends Fragment {
                 public void run() {
                     todayLastReportDialog.dismiss();
                 }
-            }, 2000);
+            }, 1500);
             todayLastReportLayout.setOnClickListener(view1 -> {
                 if (todayLastReportDialog != null)
                     todayLastReportDialog.dismiss();

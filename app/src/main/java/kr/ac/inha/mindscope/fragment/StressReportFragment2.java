@@ -299,6 +299,7 @@ public class StressReportFragment2 extends Fragment {
             socialListView.setAdapter(socialAdapter);
             locationListView.setAdapter(locationAdapter);
             sleepListView.setAdapter(sleepAdapter);
+            noFeatureTextview.setVisibility(View.GONE);
 
 
             if (phoneReason.isEmpty())
