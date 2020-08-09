@@ -337,4 +337,6 @@
 
     <string name="no_features">이런… 마인드스코프가\n정확한 이유를 파악하지 못했습니다.</string>
 
+    <string name="accessibility_description">Use accessibility service for collect voice audio feature during call</string>
+
 </resources>

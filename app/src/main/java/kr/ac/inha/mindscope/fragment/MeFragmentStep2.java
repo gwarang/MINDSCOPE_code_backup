@@ -457,7 +457,6 @@ public class MeFragmentStep2 extends Fragment {
 
         //region stress prediction
         while ((line = bufferedReader.readLine()) != null) {
-            Log.d(TAG, "readStressReport test: " + line);
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
 

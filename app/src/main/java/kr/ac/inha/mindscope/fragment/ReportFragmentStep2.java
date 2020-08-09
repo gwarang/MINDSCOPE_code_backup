@@ -462,7 +462,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // region (3) daily comment
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
-                Utils.logThreadSignature(TAG + " loda daily comment");
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
@@ -709,7 +708,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         //region load stress prediction
         while ((predictionLine = bufferedReader.readLine()) != null) {
-            Log.d(TAG, "readStressReport test: " + predictionLine);
             String[] predictionTokens = predictionLine.split(",");
             long timestamp = Long.parseLong(predictionTokens[0]);
 
@@ -721,7 +719,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         //region load self stress report
         while ((selfStressReportLine = bufferedReader2.readLine()) != null) {
-            Log.d(TAG, "readStressReport test: " + selfStressReportLine);
             String[] selfReportTokens = selfStressReportLine.split(",");
             long timestamp = Long.parseLong(selfReportTokens[0]);
 

@@ -64,7 +64,6 @@ public class PointCustomDialog extends Dialog {
         Thread retrievePointThread = new Thread(){
             @Override
             public void run() {
-                Utils.logThreadSignature(TAG + " retrievePointThread");
                 SharedPreferences loginPrefs = getContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);

@@ -58,16 +58,11 @@ public class StressReportFragment1 extends Fragment {
 
     public static final int REPORT_DURATION = 4;
     private static final String TAG = "StressReportFragment1";
-    private static final int TIMESTAMP_END_INDEX = 12;
-    private static final int RESULTS_START_INDEX = 14;
-    private static final int RESULTS_INDICATOR_INDEX = 4;
-    public static JSONObject[] jsonObjects;
     public static int reportAnswer;
     static int currentHours;
     public int stressLevel;
     TextView dateView;
     TextView timeView;
-    TextView stressLvView;
     ImageButton lowBtn;
     ImageButton littleHighBtn;
     ImageButton highBtn;
@@ -121,16 +116,6 @@ public class StressReportFragment1 extends Fragment {
                             }
                         }
                     }
-//                if (jsonObjects != null) {
-//                    try {
-//                        day_num = jsonObjects[reportAnswer].getInt("day_num");
-//                        order = jsonObjects[reportAnswer].getInt("ema_order");
-//                        accuracy = jsonObjects[stressLevel].getDouble("accuracy");
-//                        feature_ids = jsonObjects[reportAnswer].getString("feature_ids");
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
                     final NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                     if (notificationManager != null) {
                         notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
@@ -145,8 +130,6 @@ public class StressReportFragment1 extends Fragment {
         }
 
     };
-    private int reportOrder;
-    private long reportDay;
 
     public StressReportFragment1() {
         // Required empty public constructor
@@ -270,10 +253,6 @@ public class StressReportFragment1 extends Fragment {
 
             reportAnswer = 5; // not selected
 
-            Log.d(TAG, "Stress Report Order: " + reportOrder);
-
-
-
             lowBtn.setOnClickListener(view13 -> {
                 lowBtn.setSelected(true);
                 littleHighBtn.setSelected(false);
@@ -336,7 +315,6 @@ public class StressReportFragment1 extends Fragment {
 
         //region stress prediction
         while ((line = bufferedReader.readLine()) != null) {
-            Log.d(TAG, "readStressReport test: " + line);
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
 

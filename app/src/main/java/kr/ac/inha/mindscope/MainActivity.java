@@ -1,6 +1,8 @@
 package kr.ac.inha.mindscope;
 
 import android.Manifest;
+import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,15 +11,18 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +40,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -144,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         mContext = this;
         setContentView(R.layout.activity_main);
 
@@ -204,17 +211,18 @@ public class MainActivity extends AppCompatActivity {
 
         cancelPreviousAppUseNotification();
         setUpDownloadStressReport();
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume - test onCreate ");
+        Log.d(TAG, "onResume");
 
         changeNav();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
-        Log.d(TAG, " test onCreate " + last_frg);
         switch (last_frg) {
             case LAST_NAV_FRG1:
                 // nothing
@@ -234,6 +242,11 @@ public class MainActivity extends AppCompatActivity {
 //            dialog = Tools.requestPermissions(MainActivity.this);
             permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
             permissionDialog.show();
+        }
+
+        // test for accessibility service
+        if(!checkAccessibilityPermissions()){
+            setAccessiblilityPermissions();
         }
 
         if (Tools.heartbeatNotSent(getApplicationContext())) {
@@ -304,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onStop");
+        Log.d(TAG, "onPause");
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
@@ -634,6 +647,36 @@ public class MainActivity extends AppCompatActivity {
 //                        String ms = getString(R.string.msg_)
                     Log.d("FCM Log", "FCM token: " + token);
                 });
+    }
+
+
+    public boolean checkAccessibilityPermissions(){
+        AccessibilityManager accessibilityManager = (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+        List<AccessibilityServiceInfo> list = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.DEFAULT);
+
+        for (int i = 0; i < list.size(); i++){
+            AccessibilityServiceInfo info = list.get(i);
+
+            // 접근성 권한을 가진 앱의 패키지 네임과 패키지 네임이 같으면 현재앱이 접근성 권한을 가지고 있다고 판단함
+            if (info.getResolveInfo().serviceInfo.packageName.equals(getApplication().getPackageName())) {
+                return true;
+            }
+        }
+        return  false;
+    }
+
+    public void setAccessiblilityPermissions(){
+        AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
+        gsDialog.setTitle("접근성 권한 설정");
+        gsDialog.setMessage("접근성 권한을 필요로 합니다");
+        gsDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                return;
+            }
+        }).create().show();
     }
 
 }

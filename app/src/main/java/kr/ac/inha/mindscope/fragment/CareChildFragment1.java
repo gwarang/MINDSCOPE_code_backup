@@ -393,7 +393,6 @@ public class CareChildFragment1 extends Fragment {
 
         //region stress prediction
         while ((line = bufferedReader.readLine()) != null) {
-            Log.d(TAG, "readStressReport test: " + line);
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
 
@@ -412,7 +411,6 @@ public class CareChildFragment1 extends Fragment {
             BufferedReader bufferedReader2 = new BufferedReader(isr2);
             String line2;
             while ((line2 = bufferedReader2.readLine()) != null) {
-                Log.d(TAG, "readStressReport test: " + line2);
                 String[] tokens = line2.split(",");
                 long timestamp = Long.parseLong(tokens[0]);
 

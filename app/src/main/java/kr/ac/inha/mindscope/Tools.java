@@ -237,12 +237,6 @@ public class Tools {
                 i.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 i.setData(Uri.parse("package:" + activity.getPackageName()));
             }
-
-//            if(!powerManager.isIgnoringBatteryOptimizations(activity.getPackageName())){
-//
-//
-//                activity.startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS));
-//            }
         }
         if (!isAppUsageAccessGranted(activity.getApplicationContext()))
             activity.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
@@ -250,6 +244,7 @@ public class Tools {
             activity.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         if (!simple_permissions_granted)
             ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
+
     }
 
     public static void checkAndSendUsageAccessStats(Context con) {
@@ -389,7 +384,6 @@ public class Tools {
     public static boolean isNetworkAvailable() {
         try {
             Thread thread = new Thread(() -> {
-                Utils.logThreadSignature(TAG + " isNetworkAvailable");
                 try {
                     InetAddress address = InetAddress.getByName("www.google.com");
                     isReachable = !address.toString().equals("");
@@ -436,7 +430,6 @@ public class Tools {
                 @Override
                 public void run() {
                     super.run();
-                    Utils.logThreadSignature(TAG + "heartbeatNotSent");
                     ManagedChannel channel = ManagedChannelBuilder.forAddress(
                             con.getString(R.string.grpc_host),
                             Integer.parseInt(con.getString(R.string.grpc_port))
@@ -675,7 +668,6 @@ public class Tools {
         Thread fastUploadThread = new Thread(){
             @Override
             public void run() {
-                Utils.logThreadSignature(TAG + " forceUploadThread");
                 if (Tools.isNetworkAvailable()) {
                     Cursor cursor = DbMgr.getSensorData();
                     if (cursor.moveToFirst()) {

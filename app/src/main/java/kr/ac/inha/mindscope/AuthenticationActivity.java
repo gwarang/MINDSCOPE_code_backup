@@ -45,6 +45,7 @@ public class AuthenticationActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_authentication);
 
         context = getApplicationContext();
@@ -175,6 +176,7 @@ public class AuthenticationActivity extends Activity {
     }
 
     private void startMainActivity() {
+        Log.d(TAG, "startMainActivity");
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(0);
         startActivityForResult(intent, RC_OPEN_MAIN_ACTIVITY);

@@ -43,7 +43,7 @@ class AudioFeatureRecorder {
 
             @Override
             public boolean process(AudioEvent audioEvent) {
-                Utils.logThreadSignature(TAG + " AudioFeatureRecorder process");
+//                Utils.logThreadSignature(TAG + " AudioFeatureRecorder process");
                 if (silenceDetector.currentSPL() >= -110.0D) {
                     SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                     if (DbMgr.getDB() == null)

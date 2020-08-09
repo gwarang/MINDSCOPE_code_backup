@@ -296,7 +296,6 @@ public class CareChildFragment2 extends Fragment {
     public void loadTodayPerformedIntervention() {
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
-                Utils.logThreadSignature(TAG + " loadTodayPerformedIntervention");
                 todayPerformedInterventions = new ArrayList<>();
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);

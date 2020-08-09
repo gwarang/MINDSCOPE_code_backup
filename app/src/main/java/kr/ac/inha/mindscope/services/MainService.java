@@ -124,7 +124,6 @@ public class MainService extends Service {
     private Runnable mainRunnable = new Runnable() {
         @Override
         public void run() {
-            Utils.logThreadSignature(TAG + " mainRunnable");
             //permissions granted or not. If not grant first
             if (!Tools.hasPermissions(getApplicationContext(), Tools.PERMISSIONS) && !permissionNotificationPosted) {
                 permissionNotificationPosted = true;
@@ -219,7 +218,7 @@ public class MainService extends Service {
 
 
             //region Registering Audio recorder periodically
-            boolean canStartAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_PERIOD * 1000) || AudioRunningForCall;
+            boolean canStartAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_PERIOD * 1000); // || AudioRunningForCall;
             boolean stopAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_DURATION * 1000);
             if (canStartAudioRecord) {
                 if (audioFeatureRecorder == null){
@@ -276,7 +275,6 @@ public class MainService extends Service {
         @Override
         public void run() {
             new Thread(() -> {
-                Utils.logThreadSignature(TAG + " dataSubmitRunnable");
                 if (Tools.isNetworkAvailable()) {
                     Cursor cursor = DbMgr.getSensorData();
                     if (cursor.moveToFirst()) {
@@ -332,7 +330,6 @@ public class MainService extends Service {
             final long app_usage_time_end = System.currentTimeMillis();
             final long app_usage_time_start = (app_usage_time_end - APP_USAGE_SUBMIT_PERIOD * 1000) + 1000; // add one second to start time
             new Thread(() -> {
-                Utils.logThreadSignature(TAG + " appUsageSubmitRunnable");
                 SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
                 assert dataSourceId != -1;
@@ -361,7 +358,6 @@ public class MainService extends Service {
     private Handler appUsageSaveHandler = new Handler();
     private Runnable appUsageSaveRunnable = new Runnable() {
         public void run() {
-            Utils.logThreadSignature(TAG + " appUsageSaveRunnable");
             Tools.checkAndSendUsageAccessStats(getApplicationContext());
 
             appUsageSaveHandler.postDelayed(this, APP_USAGE_SAVE_PERIOD * 1000);
