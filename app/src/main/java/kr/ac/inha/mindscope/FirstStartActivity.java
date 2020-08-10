@@ -129,6 +129,7 @@ public class FirstStartActivity extends AppCompatActivity {
             editor.apply();
             Tools.saveApplicationLog(getApplicationContext(), TAG, START_BUTTON_CLCIK);
             Intent intent = new Intent(FirstStartActivity.this, MapsActivity.class);
+            Tools.stepCheck(getApplicationContext());
             startActivity(intent);
         });
 

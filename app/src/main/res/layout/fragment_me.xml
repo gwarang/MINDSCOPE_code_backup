@@ -99,38 +99,8 @@
         android:includeFontPadding="false"
         android:textSize="@dimen/my_text_size3"/>
 
-    <TextView
-        android:layout_marginHorizontal="24dp"
-        android:id="@+id/ema_step_check"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/today_survey_attd"
-        android:text="ema stepCheck"
-        android:fontFamily="@font/notosanscjkkrregular"
-        android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size1"/>
 
-    <TextView
-        android:layout_marginHorizontal="24dp"
-        android:id="@+id/ema_order_exact_time_check"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ema_step_check"
-        android:text="ema order check"
-        android:fontFamily="@font/notosanscjkkrregular"
-        android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size1"/>
 
-    <TextView
-        android:layout_marginHorizontal="24dp"
-        android:id="@+id/ema_can_send_noti_check"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ema_order_exact_time_check"
-        android:text="ema can send noti"
-        android:fontFamily="@font/notosanscjkkrregular"
-        android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size1"/>
 
     <TextView
         android:id="@+id/frg_me_before_11hours"

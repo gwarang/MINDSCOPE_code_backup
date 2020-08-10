@@ -57,6 +57,12 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_ACTIVITY_END_INDEX;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_ENTERTAIN_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
@@ -289,7 +295,8 @@ public class MeFragmentStep2 extends Fragment {
                 String applicationName = "";
 
 
-                if (splitArray[1].contains("&") && (category == 11 || (category >= 19 && category <= 28))) {
+                if (splitArray[1].contains("&") && (category == CATEGORY_SNS_APP_USAGE
+                        || (category >= CATEGORY_ENTERTAIN_APP_USAGE && category <= CATEGORY_FOOD_APP_USAGE))) {
                     String[] packageSplit = splitArray[1].split("&");
                     splitArray[1] = packageSplit[0];
                     List<String> listNoApps = Arrays.asList(Tools.FEATURE_IDS_WITH_NO_APPS);
@@ -313,22 +320,23 @@ public class MeFragmentStep2 extends Fragment {
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
-                if (category <= 5) {
+                if (category <= CATEGORY_ACTIVITY_END_INDEX) {
                     activityReason.add(context.getResources().getString(resId));
-                } else if (category <= 10) {
+                } else if (category <= CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE) {
                     socialReason.add(context.getResources().getString(resId));
-                } else if (category == 11) {
+                } else if (category == CATEGORY_SNS_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
                     socialReason.add(text);
-                } else if (category <= 16) {
+                } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     locationReason.add(context.getResources().getString(resId));
-                } else if (category <= 18) {
+                } else if (category <= CATEGORY_ENTERTAIN_APP_USAGE) {
                     phoneReason.add(context.getResources().getString(resId));
-                } else if (category <= 28) {
+                } else if (category <= CATEGORY_FOOD_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
                     phoneReason.add(text);
                 } else {
-                    sleepReason.add(context.getResources().getString(resId));
+                    if(Integer.parseInt(splitArray[0]) == 28)
+                        sleepReason.add(context.getResources().getString(resId));
                 }
 
 

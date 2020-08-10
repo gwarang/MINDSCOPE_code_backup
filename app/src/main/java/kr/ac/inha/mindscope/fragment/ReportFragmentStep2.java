@@ -57,6 +57,7 @@ import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
@@ -66,6 +67,12 @@ import kr.ac.inha.mindscope.Utils;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_ACTIVITY_END_INDEX;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_ENTERTAIN_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -161,7 +168,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
-        joinTimestamp = getJoinTime();
+        try{
+            joinTimestamp = getJoinTime();
+        }catch (StatusRuntimeException e){
+            e.printStackTrace();
+        }
         Log.d(TAG, "join timestamp " + joinTimestamp);
 
         defaultContainer = root.findViewById(R.id.frg_report_step2_container1);
@@ -982,7 +993,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int category = Integer.parseInt(splitArray[0]);
                 String applicationName = "";
 
-                if (splitArray[1].contains("&") && (category == 11 || (category >= 19 && category <= 28))) {
+                if (splitArray[1].contains("&") && (category == CATEGORY_SNS_APP_USAGE
+                        || (category >= CATEGORY_ENTERTAIN_APP_USAGE && category <= CATEGORY_FOOD_APP_USAGE))) {
                     String[] packageSplit = splitArray[1].split("&");
                     splitArray[1] = packageSplit[0];
                     if (packageSplit.length > 1) {
@@ -1003,18 +1015,18 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
-                if (category <= 5) {
+                if (category <= CATEGORY_ACTIVITY_END_INDEX) {
                     activityReason.add(context.getResources().getString(resId));
-                } else if (category <= 10) {
+                } else if (category <= CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE) {
                     socialReason.add(context.getResources().getString(resId));
-                } else if (category == 11) {
+                } else if (category == CATEGORY_SNS_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
                     socialReason.add(text);
-                } else if (category <= 16) {
+                } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     locationReason.add(context.getResources().getString(resId));
-                } else if (category <= 18) {
+                } else if (category <= CATEGORY_ENTERTAIN_APP_USAGE) {
                     phoneReason.add(context.getResources().getString(resId));
-                } else if (category <= 28) {
+                } else if (category <= CATEGORY_FOOD_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
                     phoneReason.add(text);
                 } else {

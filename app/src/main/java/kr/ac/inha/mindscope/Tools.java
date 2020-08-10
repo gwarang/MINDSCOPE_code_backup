@@ -75,6 +75,8 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
+import static kr.ac.inha.mindscope.services.MainService.STEP0_EXPIRE_TIMESTAMP_VALUE;
+import static kr.ac.inha.mindscope.services.MainService.STEP1_EXPIRE_TIMESTAMP_VALUE;
 
 public class Tools {
 
@@ -83,6 +85,12 @@ public class Tools {
     public static final String ACTION_CLICK_SAVE_BUTTON = "CLICK_SAVE_BUTTON";
     public static final String ACTION_CLICK_COMPLETE_BUTTON = "CLICK_COMPLETE_BUTTON";
     public static final String DATA_SOURCE_SEPARATOR = " ";
+    public static final int CATEGORY_ACTIVITY_END_INDEX = 5;
+    public static final int CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE = 9;
+    public static final int CATEGORY_LOCATION_END_INDEX = 15;
+    public static final int CATEGORY_SNS_APP_USAGE = 10;
+    public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
+    public static final int CATEGORY_FOOD_APP_USAGE = 27;
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
     public static String[] PERMISSIONS = {
@@ -769,6 +777,72 @@ public class Tools {
         } else /*if(REPORT_NOTIF_HOURS[3] == curHour)*/ {
             return 4;
         }
+    }
+
+    public static void stepCheck(Context context){
+        //region step check
+        Calendar curCal = Calendar.getInstance();
+        long curTimestamp = curCal.getTimeInMillis();
+
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
+
+        long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
+        if(joinTimestamp == 0) {
+            joinTimestamp = getJoinTime(context);
+        }
+        int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
+
+        long diff = curTimestamp - joinTimestamp;
+        if(diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE){
+            // step1
+            SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
+            stepEditor.putInt("stepCheck", 1);
+            stepEditor.apply();
+        }
+        else if(diff >= STEP1_EXPIRE_TIMESTAMP_VALUE){
+            // step2
+            SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
+            stepEditor.putInt("stepCheck", 2);
+            if(diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60*60*11*1000){
+                stepEditor.putBoolean("first_start_care_step2_check", true);
+                stepEditor.putBoolean("first_start_step2_check", true);
+            }
+            stepEditor.apply();
+        }
+        //endregion
+    }
+
+    public static long getJoinTime(Context context) {
+        long firstDayTimestamp = 0;
+        SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+        SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
+        SharedPreferences.Editor editor = stepChangePrefs.edit();
+
+        if(Tools.isNetworkAvailable()){
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(context.getString(R.string.grpc_host), Integer.parseInt(context.getString(R.string.grpc_port))).usePlaintext().build();
+            ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+            EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+                    .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setTargetCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
+                    .build();
+            EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+            if (responseMessage.getDoneSuccessfully()) {
+                long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(joinTimestamp);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                editor.putLong("join_timestamp", cal.getTimeInMillis());
+                editor.apply();
+                firstDayTimestamp = cal.getTimeInMillis();
+            }
+            channel.shutdown();
+        }
+        return firstDayTimestamp;
     }
 
 }

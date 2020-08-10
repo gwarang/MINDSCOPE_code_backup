@@ -77,10 +77,7 @@ public class MeFragmentStep1 extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_me, container, false);
         Context context = requireContext();
-//        final TextView textView = root.findViewById(R.id.text_me);
         TextView date = root.findViewById(R.id.frg_me_date);
-
-        updateEmaNotiCheckVariable(root);
 
         isNetworkToastMsgAbail = true;
 
@@ -134,15 +131,6 @@ public class MeFragmentStep1 extends Fragment {
         time3Btn = root.findViewById(R.id.time3_btn);
         time4Btn = root.findViewById(R.id.time4_btn);
 
-//        if(cal.get(Calendar.HOUR_OF_DAY) < 3){
-//            long curTimestmamp = cal.getTimeInMillis();
-//            long yesterdayCalTimestamp = curTimestmamp - 60 * 60 * 24 * 1000;
-//            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(yesterdayCalTimestamp);
-//            date.setText(date_text);
-//        }else{
-//            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(cal.getTimeInMillis());
-//            date.setText(date_text);
-//        }
 
         Date currentTime = Calendar.getInstance().getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
@@ -401,15 +389,5 @@ public class MeFragmentStep1 extends Fragment {
         return version;
     }
 
-    public void updateEmaNotiCheckVariable(View view){
-        TextView emaStepCheckView = view.findViewById(R.id.ema_step_check);
-        TextView emaOrderExactView = view.findViewById(R.id.ema_order_exact_time_check);
-        TextView emaCanSendNotiView = view.findViewById(R.id.ema_can_send_noti_check);
 
-        SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-        emaStepCheckView.setText("STEP : " + stepChangePrefs.getInt("stepCheck", 0));
-        Calendar cal = Calendar.getInstance();
-        emaOrderExactView.setText("ema order : " + Tools.getEMAOrderAtExactTime(cal));
-        emaCanSendNotiView.setText("canSendNofi : " + MainService.canSendNotif);
-    }
 }

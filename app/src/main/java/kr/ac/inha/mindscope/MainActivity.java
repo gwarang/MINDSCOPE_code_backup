@@ -244,10 +244,6 @@ public class MainActivity extends AppCompatActivity {
             permissionDialog.show();
         }
 
-        // test for accessibility service
-        if(!checkAccessibilityPermissions()){
-            setAccessiblilityPermissions();
-        }
 
         if (Tools.heartbeatNotSent(getApplicationContext())) {
             Log.e(TAG, "Heartbeat not sent");
@@ -324,7 +320,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -349,7 +344,6 @@ public class MainActivity extends AppCompatActivity {
 
         setUpNewAppUseNotification();
     }
-
 
     private void cancelPreviousAppUseNotification() {
         Intent intent = new Intent(this, AppUseNotifierReceiver.class);
@@ -392,36 +386,6 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.cancel(pendingIntent);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
 
-    }
-
-    public long getJoinTime() {
-        long firstDayTimestamp = 0;
-        SharedPreferences loginPrefs = getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = stepChangePrefs.edit();
-
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-        EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
-                .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
-                .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                .build();
-        EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-        if (responseMessage.getDoneSuccessfully()) {
-            long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(joinTimestamp);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            editor.putLong("join_timestamp", cal.getTimeInMillis());
-            editor.apply();
-            firstDayTimestamp = cal.getTimeInMillis();
-        }
-        channel.shutdown();
-        return firstDayTimestamp;
     }
 
     public void restartServiceClick(MenuItem item) {
@@ -633,50 +597,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFirebaseToken(){
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(task -> {
-                    if(!task.isSuccessful()){
-                        Log.d(TAG, "getInstanceId failed", task.getException());
-                        return;
-                    }
 
-                    // Get new Instance ID token
-                    String token = task.getResult().getToken();
+        SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+        int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
+        if(stepCheck != 0){
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(task -> {
+                        if(!task.isSuccessful()){
+                            Log.d(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
 
-                    // Log and toast
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+
+                        // Log and toast
 //                        String ms = getString(R.string.msg_)
-                    Log.d("FCM Log", "FCM token: " + token);
-                });
-    }
-
-
-    public boolean checkAccessibilityPermissions(){
-        AccessibilityManager accessibilityManager = (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
-
-        List<AccessibilityServiceInfo> list = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.DEFAULT);
-
-        for (int i = 0; i < list.size(); i++){
-            AccessibilityServiceInfo info = list.get(i);
-
-            // 접근성 권한을 가진 앱의 패키지 네임과 패키지 네임이 같으면 현재앱이 접근성 권한을 가지고 있다고 판단함
-            if (info.getResolveInfo().serviceInfo.packageName.equals(getApplication().getPackageName())) {
-                return true;
-            }
+                        Log.d("FCM Log", "FCM token: " + token);
+                    });
         }
-        return  false;
     }
 
-    public void setAccessiblilityPermissions(){
-        AlertDialog.Builder gsDialog = new AlertDialog.Builder(this);
-        gsDialog.setTitle("접근성 권한 설정");
-        gsDialog.setMessage("접근성 권한을 필요로 합니다");
-        gsDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                return;
-            }
-        }).create().show();
-    }
 
 }
