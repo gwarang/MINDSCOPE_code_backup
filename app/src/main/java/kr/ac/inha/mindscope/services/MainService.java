@@ -84,9 +84,7 @@ public class MainService extends Service {
     private static final int APP_USAGE_SUBMIT_PERIOD = 60; //in sec
     private static final int KINDS_NOTI_EMA = 1;
     private static final int KINDS_NOTI_REPORT = 2;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000;  // TODO change 60 * 60 * 24 * 1 * 1000  for real test
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for real test
-    //endregion
+   //endregion
 
     private DateChangeReceiver dateChangeReceiver;
 

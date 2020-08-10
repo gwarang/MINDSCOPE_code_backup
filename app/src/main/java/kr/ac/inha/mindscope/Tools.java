@@ -14,7 +14,6 @@ import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -36,13 +35,10 @@ import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,11 +49,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -75,8 +69,6 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
-import static kr.ac.inha.mindscope.services.MainService.STEP0_EXPIRE_TIMESTAMP_VALUE;
-import static kr.ac.inha.mindscope.services.MainService.STEP1_EXPIRE_TIMESTAMP_VALUE;
 
 public class Tools {
 
@@ -91,6 +83,9 @@ public class Tools {
     public static final int CATEGORY_SNS_APP_USAGE = 10;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000;  // TODO change 60 * 60 * 24 * 1 * 1000  for real test
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for real test
+
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
     public static String[] PERMISSIONS = {
@@ -214,7 +209,7 @@ public class Tools {
         return alertDialog.show();
     }
 
-    static Dialog requestPermissionsWithCustomDialog(final Activity activity){
+    static Dialog requestPermissionsWithCustomDialog(final Activity activity) {
         View view = activity.getLayoutInflater().inflate(R.layout.permission_dialog, null);
         final Dialog dialog = new Dialog(activity, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
         dialog.setContentView(view);
@@ -236,10 +231,10 @@ public class Tools {
                 break;
             }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager powerManager = (PowerManager) activity.getApplicationContext().getSystemService(Context.POWER_SERVICE);
             Intent i = new Intent();
-            if (powerManager.isIgnoringBatteryOptimizations(activity.getPackageName())){
+            if (powerManager.isIgnoringBatteryOptimizations(activity.getPackageName())) {
                 i.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
             } else {
                 i.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
@@ -669,11 +664,11 @@ public class Tools {
     }
     /* Zaturi end */
 
-    private static void fastUploadToServer(Context context){
+    private static void fastUploadToServer(Context context) {
         SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", MODE_PRIVATE);
 
         // upload to server
-        Thread fastUploadThread = new Thread(){
+        Thread fastUploadThread = new Thread() {
             @Override
             public void run() {
                 if (Tools.isNetworkAvailable()) {
@@ -754,7 +749,7 @@ public class Tools {
             SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("APPLICATION_LOG", -1);
             assert dataSourceId != -1;
-            if(uniqueTagForEachActivityOrEvent != null && action != null)
+            if (uniqueTagForEachActivityOrEvent != null && action != null)
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action, sb.toString());
         }).start();
     }
@@ -779,7 +774,7 @@ public class Tools {
         }
     }
 
-    public static void stepCheck(Context context){
+    public static void stepCheck(Context context) {
         //region step check
         Calendar curCal = Calendar.getInstance();
         long curTimestamp = curCal.getTimeInMillis();
@@ -787,23 +782,22 @@ public class Tools {
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
 
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
-        if(joinTimestamp == 0) {
+        if (joinTimestamp == 0) {
             joinTimestamp = getJoinTime(context);
         }
         int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
         long diff = curTimestamp - joinTimestamp;
-        if(diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE){
+        if (diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE) {
             // step1
             SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
             stepEditor.putInt("stepCheck", 1);
             stepEditor.apply();
-        }
-        else if(diff >= STEP1_EXPIRE_TIMESTAMP_VALUE){
+        } else if (diff >= STEP1_EXPIRE_TIMESTAMP_VALUE) {
             // step2
             SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
             stepEditor.putInt("stepCheck", 2);
-            if(diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60*60*11*1000){
+            if (diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60 * 60 * 11 * 1000) {
                 stepEditor.putBoolean("first_start_care_step2_check", true);
                 stepEditor.putBoolean("first_start_step2_check", true);
             }
@@ -818,7 +812,7 @@ public class Tools {
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
         SharedPreferences.Editor editor = stepChangePrefs.edit();
 
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(context.getString(R.string.grpc_host), Integer.parseInt(context.getString(R.string.grpc_port))).usePlaintext().build();
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
             EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()

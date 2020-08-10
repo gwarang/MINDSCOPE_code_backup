@@ -142,7 +142,7 @@ public class TagActivity extends AppCompatActivity {
             assert dataSourceId2 != -1;
             Log.d(TAG, "SURVEY_EMA dataSourceId: " + dataSourceId2);
             if (emaOrder != 0) {
-                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
+                DbMgr.saveMixedData(dataSourceId2, timestamp, 1.0f, timestamp, emaOrder, answers);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EMA_IN_LOCAL");
             }
 

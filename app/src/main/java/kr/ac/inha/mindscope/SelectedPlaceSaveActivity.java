@@ -142,7 +142,7 @@ public class SelectedPlaceSaveActivity extends AppCompatActivity {
         assert dataSourceId_LocationsList != -1;
         long nowTime = System.currentTimeMillis();
 
-        if (oldPlaceUserName != placeUserName) {
+        if (oldPlaceUserName != placeUserName && oldPlaceUserName != null) {
             DbMgr.saveMixedData(dataSourceId_LocationsList, nowTime, 1.0f, oldPlaceUserName, placeAddress.replace(' ', '_'), lat.floatValue(), lng.floatValue(), true);
             editor.remove(oldPlaceUserName + "_LAT");
             editor.remove(oldPlaceUserName + "_LNG");
