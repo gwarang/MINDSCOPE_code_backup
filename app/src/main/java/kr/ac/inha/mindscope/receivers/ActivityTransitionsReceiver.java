@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
@@ -64,6 +65,7 @@ public class ActivityTransitionsReceiver extends BroadcastReceiver {
                             SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                             int dataSourceId = prefs.getInt("ACTIVITY_RECOGNITION", -1);
                             assert dataSourceId != -1;
+                            Log.d("ACTIVITY_RECOGNITION", String.format("%s %d", activityType, start_timestamp));
                             DbMgr.saveMixedData(dataSourceId, start_timestamp, 1.0f, activityType, start_timestamp);
                         } else if (event.getTransitionType() == ActivityTransition.ACTIVITY_TRANSITION_EXIT) {
                             long activity_end_time = System.currentTimeMillis();
@@ -98,6 +100,7 @@ public class ActivityTransitionsReceiver extends BroadcastReceiver {
                                 SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                                 int dataSourceId = prefs.getInt("ACTIVITY_TRANSITION", -1);
                                 assert dataSourceId != -1;
+                                Log.d("ACTIVITY_TRANSITION", String.format("%s %d %d %d", activity_name, activity_start_time, activity_end_time, duration));
                                 DbMgr.saveMixedData(dataSourceId, activity_start_time, 1.0f, activity_start_time, activity_end_time, activity_name, duration);
                             }
                         }

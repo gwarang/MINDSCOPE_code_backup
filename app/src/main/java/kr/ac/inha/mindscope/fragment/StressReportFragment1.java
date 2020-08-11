@@ -35,6 +35,7 @@ import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
@@ -409,23 +410,26 @@ public class StressReportFragment1 extends Fragment {
                     .setTillTimestamp(tillCalendar.getTimeInMillis())
                     .build();
 
-
-            final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
-            if (responseMessage.getDoneSuccessfully()) {
-                List<String> values = responseMessage.getValueList();
-                List<Long> valuesTimestamp = responseMessage.getTimestampList();
-                if (!values.isEmpty()) {
-                    stresReportStr = values.get(0);
-                    Log.d(TAG, "stressReportStr: " + stresReportStr);
-                } else {
-                    Log.d(TAG, "values empty");
+            try {
+                final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                if (responseMessage.getDoneSuccessfully()) {
+                    List<String> values = responseMessage.getValueList();
+                    List<Long> valuesTimestamp = responseMessage.getTimestampList();
+                    if (!values.isEmpty()) {
+                        stresReportStr = values.get(0);
+                        Log.d(TAG, "stressReportStr: " + stresReportStr);
+                    } else {
+                        Log.d(TAG, "values empty");
+                    }
+                    if (!valuesTimestamp.isEmpty()) {
+                        reportTimestamp = valuesTimestamp.get(0);
+                        Log.d(TAG, "report timestamp from gRPC is " + reportTimestamp);
+                    } else {
+                        Log.d(TAG, "report timestamp from gRPC is empty");
+                    }
                 }
-                if (!valuesTimestamp.isEmpty()) {
-                    reportTimestamp = valuesTimestamp.get(0);
-                    Log.d(TAG, "report timestamp from gRPC is " + reportTimestamp);
-                } else {
-                    Log.d(TAG, "report timestamp from gRPC is empty");
-                }
+            }catch (StatusRuntimeException e){
+                e.printStackTrace();
             }
 
             channel.shutdown();

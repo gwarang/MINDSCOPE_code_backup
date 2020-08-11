@@ -168,9 +168,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
-        try{
+        try {
             joinTimestamp = getJoinTime();
-        }catch (StatusRuntimeException e){
+        } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }
         Log.d(TAG, "join timestamp " + joinTimestamp);
@@ -514,20 +514,24 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         .setFromTimestamp(fromTimestamp)
                         .setTillTimestamp(tillTimestamp)
                         .build();
-                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                 long lastTimestamp = Long.MIN_VALUE;
                 String lastComment = "";
-                if (responseMessage.getDoneSuccessfully())
-                    for (String value : responseMessage.getValueList()) {
-                        String[] cells = value.split(" ");
-                        long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
-                        String comment = value.substring(value.indexOf(' ') + 1);
+                try {
+                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getDoneSuccessfully())
+                        for (String value : responseMessage.getValueList()) {
+                            String[] cells = value.split(" ");
+                            long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
+                            String comment = value.substring(value.indexOf(' ') + 1);
 
-                        if (timestamp > lastTimestamp) {
-                            lastTimestamp = timestamp;
-                            lastComment = comment;
+                            if (timestamp > lastTimestamp) {
+                                lastTimestamp = timestamp;
+                                lastComment = comment;
+                            }
                         }
-                    }
+                } catch (StatusRuntimeException e) {
+                    e.printStackTrace();
+                }
                 channel.shutdown();
 
                 final String finalComment = lastComment;
@@ -599,9 +603,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                     .build();
-            EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-            if (responseMessage.getDoneSuccessfully()) {
-                firstDayTimestamp = responseMessage.getCampaignJoinTimestamp();
+            try {
+                EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+                if (responseMessage.getDoneSuccessfully()) {
+                    firstDayTimestamp = responseMessage.getCampaignJoinTimestamp();
+                }
+            } catch (StatusRuntimeException e) {
+                e.printStackTrace();
             }
             channel.shutdown();
         } else {
@@ -631,15 +639,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         .setFromTimestamp(0)
                         .setTillTimestamp(c.getTimeInMillis())
                         .build();
-                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                 int points = 0;
-                if (responseMessage.getDoneSuccessfully())
-                    for (String value : responseMessage.getValueList()) {
-                        String[] cells = value.split(" ");
-                        if (cells.length != 3)
-                            continue;
-                        points += Integer.parseInt(cells[2]);
-                    }
+                try {
+                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getDoneSuccessfully())
+                        for (String value : responseMessage.getValueList()) {
+                            String[] cells = value.split(" ");
+                            if (cells.length != 3)
+                                continue;
+                            points += Integer.parseInt(cells[2]);
+                        }
+                } catch (StatusRuntimeException e) {
+                    e.printStackTrace();
+                }
                 channel.shutdown();
                 final int finalPoints = points;
                 requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
@@ -674,15 +686,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         .setFromTimestamp(fromTimestamp)
                         .setTillTimestamp(tillTimestamp)
                         .build();
-                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                 int dailyPoints = 0;
-                if (responseMessage.getDoneSuccessfully())
-                    for (String value : responseMessage.getValueList()) {
-                        String[] cells = value.split(" ");
-                        if (cells.length != 3)
-                            continue;
-                        dailyPoints += Integer.parseInt(cells[2]);
-                    }
+                try {
+                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getDoneSuccessfully())
+                        for (String value : responseMessage.getValueList()) {
+                            String[] cells = value.split(" ");
+                            if (cells.length != 3)
+                                continue;
+                            dailyPoints += Integer.parseInt(cells[2]);
+                        }
+                } catch (StatusRuntimeException e) {
+                    e.printStackTrace();
+                }
                 channel.shutdown();
                 final int finalDailyPoints = dailyPoints;
                 requireActivity().runOnUiThread(() -> dailyPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
@@ -831,56 +847,60 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             .setFromTimestamp(fromTimestamp)
                             .setTillTimestamp(tillTimestamp)
                             .build();
-                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getDoneSuccessfully()) {
-                        List<String> values = responseMessage.getValueList();
-                        List<Long> timestamps = responseMessage.getTimestampList();
-                        for (int n = 0; n < values.size(); n++) {
-                            String value = values.get(n);
-                            int dayNum = 0;
-                            long timestamp = 0;
-                            int emaOrder = -1;
-                            int stressLevel = 0;
-                            if (dataSourceId == SUBMITTED) {
-                                // self-report
-                                String[] cells = value.split(" ");
-                                if (cells.length != 5)
-                                    continue;
-                                dayNum = Integer.parseInt(cells[1]);
-                                if (dayNum == 0)
-                                    continue;
-                                emaOrder = Integer.parseInt(cells[2]);
-                                timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
-                                stressLevel = Integer.parseInt(cells[4]);
-                            } else {
-                                // prediction
-                                try {
-                                    JSONObject cells = new JSONObject(value);
-                                    timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
-                                    c.setTimeInMillis(timestamp);
-                                    timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+                    try {
+                        EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                        if (responseMessage.getDoneSuccessfully()) {
+                            List<String> values = responseMessage.getValueList();
+                            List<Long> timestamps = responseMessage.getTimestampList();
+                            for (int n = 0; n < values.size(); n++) {
+                                String value = values.get(n);
+                                int dayNum = 0;
+                                long timestamp = 0;
+                                int emaOrder = -1;
+                                int stressLevel = 0;
+                                if (dataSourceId == SUBMITTED) {
+                                    // self-report
+                                    String[] cells = value.split(" ");
+                                    if (cells.length != 5)
+                                        continue;
+                                    dayNum = Integer.parseInt(cells[1]);
+                                    if (dayNum == 0)
+                                        continue;
+                                    emaOrder = Integer.parseInt(cells[2]);
+                                    timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
+                                    stressLevel = Integer.parseInt(cells[4]);
+                                } else {
+                                    // prediction
+                                    try {
+                                        JSONObject cells = new JSONObject(value);
+                                        timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
+                                        c.setTimeInMillis(timestamp);
+                                        timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
 
-                                    Iterator<String> keys = cells.keys();
-                                    do {
-                                        String key = keys.next();
-                                        if (cells.getJSONObject(key).getBoolean("model_tag"))
-                                            stressLevel = Integer.parseInt(key);
+                                        Iterator<String> keys = cells.keys();
+                                        do {
+                                            String key = keys.next();
+                                            if (cells.getJSONObject(key).getBoolean("model_tag"))
+                                                stressLevel = Integer.parseInt(key);
+                                        }
+                                        while (keys.hasNext());
+                                    } catch (JSONException e) {
+                                        continue;
                                     }
-                                    while (keys.hasNext());
-                                } catch (JSONException e) {
-                                    continue;
+                                }
+                                if (stressLevel < 3) {
+                                    c.setTimeInMillis(timestamp);
+                                    c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
+                                    c.set(Calendar.MILLISECOND, 0);
+                                    timestamp = c.getTimeInMillis();
+
+                                    if (!stressLevels.containsKey(timestamp))
+                                        stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
                                 }
                             }
-                            if (stressLevel < 3) {
-                                c.setTimeInMillis(timestamp);
-                                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
-                                c.set(Calendar.MILLISECOND, 0);
-                                timestamp = c.getTimeInMillis();
-
-                                if (!stressLevels.containsKey(timestamp))
-                                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
-                            }
                         }
+                    } catch (StatusRuntimeException e) {
+                        e.printStackTrace();
                     }
                 }
                 channel.shutdown();

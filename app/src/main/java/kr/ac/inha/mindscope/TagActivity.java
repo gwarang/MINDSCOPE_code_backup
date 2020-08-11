@@ -41,7 +41,7 @@ public class TagActivity extends AppCompatActivity {
     LinearLayout loadingLayout;
 
     long timestamp;
-    int dayNum;
+    long dayNum;
     int emaOrder;
     int answer1, answer2, answer3, answer4, answer5;
 
@@ -54,7 +54,7 @@ public class TagActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         timestamp = intent.getLongExtra("timestamp", 0);
-        dayNum = intent.getIntExtra("daynum", 0);
+        dayNum = intent.getLongExtra("daynum", 0);
         emaOrder = intent.getIntExtra("emaorder", 0);
         answer1 = intent.getIntExtra("answer1", 5);
         answer2 = intent.getIntExtra("answer2", 5);
@@ -122,7 +122,6 @@ public class TagActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
             assert dataSourceId != -1;
-            Log.d(TAG, "REPORT_TAGS dataSourceId: " + dataSourceId);
             for(String tag : tags){
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EACH_EMA_TAG_IN_LOCAL");

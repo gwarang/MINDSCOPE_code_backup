@@ -80,7 +80,7 @@ public class CareChildFragment3 extends Fragment {
                     int dataSourceId = prefs.getInt("DAILY_COMMENT", -1);
                     assert dataSourceId != -1;
                     Log.d(TAG, "DAILY_COMMENT dataSourceId: " + dataSourceId);
-                    DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment);
+                    DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, daily_comment.replace(" ", "_"));
                 }
             }
         });

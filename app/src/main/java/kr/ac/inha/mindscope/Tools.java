@@ -821,18 +821,22 @@ public class Tools {
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                     .build();
-            EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-            if (responseMessage.getDoneSuccessfully()) {
-                long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(joinTimestamp);
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                editor.putLong("join_timestamp", cal.getTimeInMillis());
-                editor.apply();
-                firstDayTimestamp = cal.getTimeInMillis();
+            try {
+                EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
+                if (responseMessage.getDoneSuccessfully()) {
+                    long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(joinTimestamp);
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    editor.putLong("join_timestamp", cal.getTimeInMillis());
+                    editor.apply();
+                    firstDayTimestamp = cal.getTimeInMillis();
+                }
+            }catch (StatusRuntimeException e){
+                e.printStackTrace();
             }
             channel.shutdown();
         }

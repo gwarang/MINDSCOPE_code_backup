@@ -30,6 +30,7 @@ import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
@@ -319,6 +320,7 @@ public class CareChildFragment2 extends Fragment {
 
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
+
                 EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -329,23 +331,28 @@ public class CareChildFragment2 extends Fragment {
                         .setTillTimestamp(tillCalendar.getTimeInMillis())
                         .build();
 
-                final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
-                if (responseMessage.getDoneSuccessfully()) {
-                    List<String> values = responseMessage.getValueList();
-                    if (!values.isEmpty()) {
-                        Log.d(TAG, "intervention list " + values);
-                        for (String value : values) {
-                            String[] splitValue = value.split(" ");
-                            if (splitValue[1] != null && !splitValue[1].equals("") && splitValue[1].charAt(0) == '#' && Integer.parseInt(splitValue[2]) == STRESS_DO_INTERVENTION) {
-                                Log.d(TAG, "intervention is : " + splitValue[1]);
-                                todayPerformedInterventions.add(splitValue);
-                            } else
-                                Log.d(TAG, "no intervention");
+                try {
+                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        List<String> values = responseMessage.getValueList();
+                        if (!values.isEmpty()) {
+                            Log.d(TAG, "intervention list " + values);
+                            for (String value : values) {
+                                String[] splitValue = value.split(" ");
+                                if (splitValue[1] != null && !splitValue[1].equals("") && splitValue[1].charAt(0) == '#' && Integer.parseInt(splitValue[2]) == STRESS_DO_INTERVENTION) {
+                                    Log.d(TAG, "intervention is : " + splitValue[1]);
+                                    todayPerformedInterventions.add(splitValue);
+                                } else
+                                    Log.d(TAG, "no intervention");
+                            }
+                        } else {
+                            Log.d(TAG, "values empty");
                         }
-                    } else {
-                        Log.d(TAG, "values empty");
                     }
+                }catch (StatusRuntimeException e){
+                    e.printStackTrace();
                 }
+
 
                 requireActivity().runOnUiThread(() -> {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());

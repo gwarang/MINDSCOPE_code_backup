@@ -78,16 +78,16 @@ public class StressReportDownloader extends Worker {
                         .setFromTimestamp(fromTimestamp) //  fromTimestamp
                         .setTillTimestamp(tillTimestamp)
                         .build();
+                try {
+                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                    if (responseMessage.getDoneSuccessfully()) {
+                        List<String> values = responseMessage.getValueList();
+                        List<Long> valuesTimestamp = responseMessage.getTimestampList();
+                        if (!values.isEmpty()) {
+                            for (int i = 0; i < values.size(); i++) {
+                                stressReportStr = values.get(i);
+                                long timestamp = valuesTimestamp.get(i);
 
-                final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
-                if (responseMessage.getDoneSuccessfully()) {
-                    List<String> values = responseMessage.getValueList();
-                    List<Long> valuesTimestamp = responseMessage.getTimestampList();
-                    if (!values.isEmpty()) {
-                        for (int i = 0; i < values.size(); i++) {
-                            stressReportStr = values.get(i);
-                            long timestamp = valuesTimestamp.get(i);
-                            try {
                                 JSONObject stressReportJSON = new JSONObject(stressReportStr);
                                 for (short stressLv = 0; stressLv < 3; stressLv++) {
                                     JSONObject eachLevelJSON = new JSONObject(stressReportJSON.getString(String.valueOf(stressLv)));
@@ -101,31 +101,32 @@ public class StressReportDownloader extends Worker {
                                             eachLevelJSON.getBoolean("model_tag"));
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
                                     String[] split = oneReportWithTimestamp.split(",");
-                                    if(Integer.parseInt(split[PREDICTION_ORDER_INDEX]) != 0){
+                                    if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) != 0) {
                                         FileOutputStream fileOutputStream = context.openFileOutput(STRESS_PREDICTION_RESULT, Context.MODE_APPEND);
                                         fileOutputStream.write(oneReportWithTimestamp.getBytes());
                                         fileOutputStream.close();
                                     }
                                     Log.d(TAG, oneReportWithTimestamp);
-                                    if(eachLevelJSON.getBoolean("model_tag")){
+                                    if (eachLevelJSON.getBoolean("model_tag")) {
                                         stressReportPrefsEditor.putInt("reportAnswer", stressLv);
                                         stressReportPrefsEditor.apply();
                                     }
 
                                 }
-                            } catch (JSONException | IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        stressReportPrefsEditor.putLong("lastDownloadTime", valuesTimestamp.get(valuesTimestamp.size()-1));
-                        stressReportPrefsEditor.apply();
-                    } else {
-                        Log.d(TAG, "values empty");
-                    }
-                }
 
+                            }
+                            stressReportPrefsEditor.putLong("lastDownloadTime", valuesTimestamp.get(valuesTimestamp.size() - 1));
+                            stressReportPrefsEditor.apply();
+                        } else {
+                            Log.d(TAG, "values empty");
+                        }
+                    }
+                } catch (JSONException | IOException | StatusRuntimeException e) {
+                    e.printStackTrace();
+                    return Result.failure();
+                }
                 fromTimestamp = stressReportPrefs.getLong("lastSelfReportDownload", 0);
-                if(fromTimestamp == 0){
+                if (fromTimestamp == 0) {
                     EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage2 = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                             .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -136,26 +137,31 @@ public class StressReportDownloader extends Worker {
                             .setTillTimestamp(tillTimestamp)
                             .build();
 
-                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage2 = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage2);
-                    if (responseMessage2.getDoneSuccessfully()) {
-                        List<String> values = responseMessage2.getValueList();
-                        List<Long> timestampvalue = responseMessage2.getTimestampList();
-                        if(!values.isEmpty()){
-                            FileOutputStream fileOutputStream = null;
-                            try {
-                                fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
-                                for(String value : values){
-                                    String selfReport = value.replace(" ", ",");
-                                    selfReport += '\n';
-                                    fileOutputStream.write(selfReport.getBytes());
+                    try{
+                        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage2 = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage2);
+                        if (responseMessage2.getDoneSuccessfully()) {
+                            List<String> values = responseMessage2.getValueList();
+                            List<Long> timestampvalue = responseMessage2.getTimestampList();
+                            if (!values.isEmpty()) {
+                                FileOutputStream fileOutputStream = null;
+                                try {
+                                    fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
+                                    for (String value : values) {
+                                        String selfReport = value.replace(" ", ",");
+                                        selfReport += '\n';
+                                        fileOutputStream.write(selfReport.getBytes());
+                                    }
+                                    fileOutputStream.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                fileOutputStream.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                                stressReportPrefsEditor.putLong("lastSelfReportDownload", timestampvalue.get(timestampvalue.size() - 1));
+                                stressReportPrefsEditor.apply();
                             }
-                            stressReportPrefsEditor.putLong("lastSelfReportDownload", timestampvalue.get(timestampvalue.size()-1));
-                            stressReportPrefsEditor.apply();
                         }
+                    } catch (StatusRuntimeException e){
+                        e.printStackTrace();
+                        return Result.failure();
                     }
                 }
                 channel.shutdown();

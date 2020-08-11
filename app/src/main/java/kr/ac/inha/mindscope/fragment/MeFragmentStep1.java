@@ -227,7 +227,6 @@ public class MeFragmentStep1 extends Fragment {
                         }
                     }
                 } catch (StatusRuntimeException e) {
-                    Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
                     e.printStackTrace();
                 } finally {
                     channel.shutdown();
@@ -275,6 +274,7 @@ public class MeFragmentStep1 extends Fragment {
                         .setFromTimestamp(0)
                         .setTillTimestamp(c.getTimeInMillis())
                         .build();
+                try{
                 EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                 int points = 0;
                 if (responseMessage.getDoneSuccessfully())
@@ -284,13 +284,13 @@ public class MeFragmentStep1 extends Fragment {
                             continue;
                         points += Integer.parseInt(cells[2]);
                     }
-                channel.shutdown();
                 final int finalPoints = points;
-                try{
+
                     requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
-                }catch (IllegalStateException e){
+                }catch (IllegalStateException | StatusRuntimeException e){
                     e.printStackTrace();
                 }
+                channel.shutdown();
             }).start();
         }
     }
@@ -326,18 +326,22 @@ public class MeFragmentStep1 extends Fragment {
                         .setFromTimestamp(fromCal.getTimeInMillis())
                         .setTillTimestamp(tillCal.getTimeInMillis())
                         .build();
-                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                int dailyPoints = 0;
-                if (responseMessage.getDoneSuccessfully())
-                    for (String value : responseMessage.getValueList()) {
-                        String[] cells = value.split(" ");
-                        if (cells.length != 3)
-                            continue;
-                        dailyPoints += Integer.parseInt(cells[2]);
-                    }
+                try {
+                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    int dailyPoints = 0;
+                    if (responseMessage.getDoneSuccessfully())
+                        for (String value : responseMessage.getValueList()) {
+                            String[] cells = value.split(" ");
+                            if (cells.length != 3)
+                                continue;
+                            dailyPoints += Integer.parseInt(cells[2]);
+                        }
+                    final int finalDailyPoints = dailyPoints;
+                    requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
+                }catch (StatusRuntimeException e){
+                    e.printStackTrace();
+                }
                 channel.shutdown();
-                final int finalDailyPoints = dailyPoints;
-                requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
             }).start();
         }
     }

@@ -251,6 +251,7 @@ public class MainService extends Service {
         @Override
         public void run() {
             new Thread(() -> {
+                Log.e(TAG, "data submit");
                 if (Tools.isNetworkAvailable()) {
                     Cursor cursor = DbMgr.getSensorData();
                     if (cursor.moveToFirst()) {
