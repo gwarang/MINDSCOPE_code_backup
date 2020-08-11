@@ -143,7 +143,7 @@ public class AuthenticationActivity extends Activity {
                                 runOnUiThread(() -> {
                                     Calendar cal = Calendar.getInstance();
                                     cal.setTimeInMillis(responseMessage.getCampaignStartTimestamp());
-                                    String txt = String.format(Locale.getDefault(), "EasyTrack campaign hasn't started. Campaign start time is: %s",
+                                    String txt = String.format(Locale.getDefault(), "MindScope campaign hasn't started. Campaign start time is: %s",
                                             SimpleDateFormat.getDateTimeInstance().format(cal.getTime()));
                                     Toast.makeText(AuthenticationActivity.this, txt, Toast.LENGTH_SHORT).show();
                                 });

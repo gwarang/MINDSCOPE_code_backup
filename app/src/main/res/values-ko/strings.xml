@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MINDSCOPE</string>
-    <string name="grpc_host">165.246.21.202</string>
-    <string name="grpc_port">50051</string>
     <string name="url_user_register">http://%1$s/user/register</string>
     <string name="url_user_login">http://%1$s/user/login</string>
     <string name="url_heartbeat">http://%1$s/user/heartbeat_smartphone</string>
@@ -16,8 +14,6 @@
 
     <string name="install_easy_track_msg">EasyTrack Authenticator를 설치하고 다시 실행해주세요!</string>
     <string name="success_auth_and_connect_campaign_msg">EasyTrack 캠페인에 인증 및 연결을 성공했습니다!</string>
-
-    <string name="stress_campaign_id">18</string>
 
     <string name="ConnectionEstablishedMsg">Connection established</string>
     <string name="ConnectionTerminateddMsg">Connection terminated</string>
