@@ -69,7 +69,7 @@ public class StressReportDownloader extends Worker {
 
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
-                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -79,8 +79,8 @@ public class StressReportDownloader extends Worker {
                         .setTillTimestamp(tillTimestamp)
                         .build();
                 try {
-                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
-                    if (responseMessage.getDoneSuccessfully()) {
+                    final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                    if (responseMessage.getSuccess()) {
                         List<String> values = responseMessage.getValueList();
                         List<Long> valuesTimestamp = responseMessage.getTimestampList();
                         if (!values.isEmpty()) {
@@ -127,7 +127,7 @@ public class StressReportDownloader extends Worker {
                 }
                 fromTimestamp = stressReportPrefs.getLong("lastSelfReportDownload", 0);
                 if (fromTimestamp == 0) {
-                    EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage2 = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                    EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage2 = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                             .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                             .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -138,8 +138,8 @@ public class StressReportDownloader extends Worker {
                             .build();
 
                     try{
-                        final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage2 = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage2);
-                        if (responseMessage2.getDoneSuccessfully()) {
+                        final EtService.RetrieveFilteredDataRecords.Response responseMessage2 = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage2);
+                        if (responseMessage2.getSuccess()) {
                             List<String> values = responseMessage2.getValueList();
                             List<Long> timestampvalue = responseMessage2.getTimestampList();
                             if (!values.isEmpty()) {

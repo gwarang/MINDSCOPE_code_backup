@@ -37,6 +37,7 @@ public class ScreenAndUnlockReceiver extends BroadcastReceiver {
 
                 int dataSourceId = prefs.getInt("UNLOCK_DURATION", -1);
                 assert dataSourceId != -1;
+                Log.d(TAG, "STORING DATA :" + dataSourceId + " " + phoneUnlockedDuration);
                 DbMgr.saveMixedData(dataSourceId, phoneUnlockedDurationStart, 1.0f, phoneUnlockedDurationStart, phoneUnlockedDurationEnd, phoneUnlockedDuration);
             }
             //endregion

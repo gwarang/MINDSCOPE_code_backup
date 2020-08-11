@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -115,15 +116,15 @@ public class AuthenticationActivity extends Activity {
                         ).usePlaintext().build();
 
                         ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                        EtService.BindUserToCampaignRequestMessage requestMessage = EtService.BindUserToCampaignRequestMessage.newBuilder()
+                        EtService.BindUserToCampaign.Request requestMessage = EtService.BindUserToCampaign.Request.newBuilder()
                                 .setUserId(userId)
                                 .setEmail(email)
                                 .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                                 .build();
 
                         try {
-                            final EtService.BindUserToCampaignResponseMessage responseMessage = stub.bindUserToCampaign(requestMessage);
-                            if (responseMessage.getDoneSuccessfully())
+                            final EtService.BindUserToCampaign.Response responseMessage = stub.bindUserToCampaign(requestMessage);
+                            if (responseMessage.getSuccess())
                                 runOnUiThread(() -> {
                                     Toast.makeText(AuthenticationActivity.this, context.getResources().getString(R.string.success_auth_and_connect_campaign_msg), Toast.LENGTH_SHORT).show();
                                     loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);

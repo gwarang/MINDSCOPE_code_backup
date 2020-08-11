@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -84,7 +85,7 @@ public class MainService extends Service {
     private static final int APP_USAGE_SUBMIT_PERIOD = 60; //in sec
     private static final int KINDS_NOTI_EMA = 1;
     private static final int KINDS_NOTI_REPORT = 2;
-   //endregion
+    //endregion
 
     private DateChangeReceiver dateChangeReceiver;
 
@@ -113,7 +114,7 @@ public class MainService extends Service {
     public static boolean canSendNotif = true;
     private boolean canSendNotifReport = true;
 
-    public boolean getCanSendNotif(){
+    public boolean getCanSendNotif() {
         return canSendNotif;
     }
 
@@ -192,12 +193,11 @@ public class MainService extends Service {
             //endregion
 
 
-
             //region Registering Audio recorder periodically
             boolean canStartAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_PERIOD * 1000); // || AudioRunningForCall;
             boolean stopAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_DURATION * 1000);
             if (canStartAudioRecord) {
-                if (audioFeatureRecorder == null){
+                if (audioFeatureRecorder == null) {
                     audioFeatureRecorder = new AudioFeatureRecorder(MainService.this);
                     audioFeatureRecorder.start();
                     prevAudioRecordStartTime = curTimestamp;
@@ -232,7 +232,7 @@ public class MainService extends Service {
 
             //region reset muteToday
             SharedPreferences interventionPrefs = getSharedPreferences("intervention", MODE_PRIVATE);
-            if(interventionPrefs.getInt("muteDate", -1) != cal.get(Calendar.DATE)){
+            if (interventionPrefs.getInt("muteDate", -1) != cal.get(Calendar.DATE)) {
                 SharedPreferences.Editor editor = interventionPrefs.edit();
                 editor.putInt("muteDate", cal.get(Calendar.DATE));
                 editor.putBoolean("muteToday", false);
@@ -267,20 +267,22 @@ public class MainService extends Service {
 
                         try {
                             do {
-                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
+                                EtService.SubmitDataRecord.Request submitDataRecordRequestMessage = EtService.SubmitDataRecord.Request.newBuilder()
                                         .setUserId(userId)
                                         .setEmail(email)
-                                        .setDataSource(cursor.getInt(1))
-                                        .setTimestamp(cursor.getLong(2))
-                                        .setValues(cursor.getString(4))
+                                        .setDataSource(cursor.getInt(cursor.getColumnIndex("dataSourceId")))
+                                        .setTimestamp(cursor.getLong(cursor.getColumnIndex("timestamp")))
+                                        .setValues(cursor.getString(cursor.getColumnIndex("data")))
                                         .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                                         .build();
 //                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);
 //                                Log.e("submitThread", "Submission: " + res);
-                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
+                                EtService.SubmitDataRecord.Response responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
 
-                                if (responseMessage.getDoneSuccessfully()) {
-                                    DbMgr.deleteRecord(cursor.getInt(0));
+                                if (responseMessage.getSuccess()) {
+                                    DbMgr.deleteRecord(cursor.getInt(cursor.getColumnIndex("id")));
+                                } else {
+                                    Log.e(TAG, "submit failed, data_source_id=" + cursor.getInt(cursor.getColumnIndex("dataSourceId")) + ", value=" + cursor.getString(cursor.getColumnIndex("data"))); // todo come back here
                                 }
 
                             } while (cursor.moveToNext());
@@ -309,6 +311,8 @@ public class MainService extends Service {
             new Thread(() -> {
                 SharedPreferences configPrefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 int dataSourceId = configPrefs.getInt("APPLICATION_USAGE", -1);
+                if (dataSourceId == -1)
+                    Log.e("ERROR DATA SOURCE", "app use = -1"); // todo come back here
                 assert dataSourceId != -1;
                 Cursor cursor = AppUseDb.getAppUsage();
                 if (cursor.moveToFirst()) {
@@ -318,7 +322,7 @@ public class MainService extends Service {
                         long end_time = cursor.getLong(3);
                         if (Tools.inRange(start_time, app_usage_time_start, app_usage_time_end) && Tools.inRange(end_time, app_usage_time_start, app_usage_time_end)) {
                             if (start_time < end_time) {
-                                Log.e(TAG, "saveMixedData -> package: " + package_name + "; start: " + start_time + "; end: " + end_time);
+                                // Log.e(TAG, "saveMixedData -> package: " + package_name + "; start: " + start_time + "; end: " + end_time);
                                 DbMgr.saveMixedData(dataSourceId, start_time, 1.0f, start_time, end_time, package_name);
                             }
                         }
@@ -403,9 +407,6 @@ public class MainService extends Service {
         intentFilter.addAction(Intent.EXTRA_PHONE_NUMBER);
         registerReceiver(mCallReceiver, intentFilter);
         //endregion
-
-
-
 
 
         mainHandler.post(mainRunnable);
@@ -608,7 +609,7 @@ public class MainService extends Service {
                     .setDefaults(Notification.DEFAULT_ALL);
             SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", Context.MODE_PRIVATE);
             int stressLv = stressReportPrefs.getInt("reportAnswer", 3);
-            switch (stressLv){
+            switch (stressLv) {
                 case STRESS_LV1:
                     builder.setContentText(this.getString(R.string.daily_notif_report_low_text));
                     break;
@@ -635,11 +636,10 @@ public class MainService extends Service {
 
         final Notification notification = builder.build();
         if (notificationManager != null) {
-            if (kinds_ema_or_report == KINDS_NOTI_EMA){
+            if (kinds_ema_or_report == KINDS_NOTI_EMA) {
                 notificationManager.notify(EMA_NOTI_ID, notification);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "NOTIFY_EMA");
-            }
-            else{
+            } else {
                 notificationManager.notify(STRESS_REPORT_NOTIFI_ID, notification);
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "NOTIFY_STRESS_REPORT");
             }

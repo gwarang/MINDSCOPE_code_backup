@@ -207,7 +207,7 @@ public class MeFragmentStep1 extends Fragment {
                 tillCal.set(Calendar.HOUR_OF_DAY, 23);
                 tillCal.set(Calendar.MINUTE, 59);
                 tillCal.set(Calendar.SECOND, 59);
-                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -217,8 +217,8 @@ public class MeFragmentStep1 extends Fragment {
                         .setTillTimestamp(tillCal.getTimeInMillis())
                         .build();
                 try {
-                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
-                    if (responseMessage.getDoneSuccessfully()) {
+                    final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                    if (responseMessage.getSuccess()) {
                         List<String> values = responseMessage.getValueList();
                         for(String value : values){
                             String[] splitValue = value.split(" ");
@@ -265,7 +265,7 @@ public class MeFragmentStep1 extends Fragment {
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 Calendar c = Calendar.getInstance();
-                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
                         .setEmail(email)
                         .setTargetEmail(email)
@@ -275,9 +275,9 @@ public class MeFragmentStep1 extends Fragment {
                         .setTillTimestamp(c.getTimeInMillis())
                         .build();
                 try{
-                EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                 int points = 0;
-                if (responseMessage.getDoneSuccessfully())
+                if (responseMessage.getSuccess())
                     for (String value : responseMessage.getValueList()) {
                         String[] cells = value.split(" ");
                         if (cells.length != 3)
@@ -317,7 +317,7 @@ public class MeFragmentStep1 extends Fragment {
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
                         .setEmail(email)
                         .setTargetEmail(email)
@@ -327,9 +327,9 @@ public class MeFragmentStep1 extends Fragment {
                         .setTillTimestamp(tillCal.getTimeInMillis())
                         .build();
                 try {
-                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                     int dailyPoints = 0;
-                    if (responseMessage.getDoneSuccessfully())
+                    if (responseMessage.getSuccess())
                         for (String value : responseMessage.getValueList()) {
                             String[] cells = value.split(" ");
                             if (cells.length != 3)

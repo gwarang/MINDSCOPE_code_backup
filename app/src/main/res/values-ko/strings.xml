@@ -17,7 +17,7 @@
     <string name="install_easy_track_msg">EasyTrack Authenticator를 설치하고 다시 실행해주세요!</string>
     <string name="success_auth_and_connect_campaign_msg">EasyTrack 캠페인에 인증 및 연결을 성공했습니다!</string>
 
-    <string name="stress_campaign_id">23</string>
+    <string name="stress_campaign_id">18</string>
 
     <string name="ConnectionEstablishedMsg">Connection established</string>
     <string name="ConnectionTerminateddMsg">Connection terminated</string>

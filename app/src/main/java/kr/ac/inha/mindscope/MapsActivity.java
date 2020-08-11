@@ -576,7 +576,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             Calendar tillCal = Calendar.getInstance();
 
-            EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+            EtService.RetrieveFilteredDataRecords.Request retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                     .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                     .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -586,8 +586,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .setTillTimestamp(tillCal.getTimeInMillis())
                     .build();
             try {
-                final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
-                if (responseMessage.getDoneSuccessfully()) {
+                final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                if (responseMessage.getSuccess()) {
                     List<String> values = responseMessage.getValueList();
                     final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
                     SharedPreferences.Editor editor = locationPrefs.edit();

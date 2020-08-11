@@ -3,6 +3,9 @@ package kr.ac.inha.mindscope;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import java.util.Locale;
 
 public class DbMgr {
     private static SQLiteDatabase db;
@@ -24,12 +27,13 @@ public class DbMgr {
 
     public static void saveMixedData(int sensorId, long timestamp, float accuracy, Object... params) {
         assert sensorId != 0;
+
         StringBuilder sb = new StringBuilder();
         for (Object value : params)
             sb.append(value).append(Tools.DATA_SOURCE_SEPARATOR);
         if (sb.length() > 0)
             sb.replace(sb.length() - 1, sb.length(), "");
-        if(sb.length() != 0)
+        if (sb.length() != 0)
             saveStringData(sensorId, timestamp, accuracy, sb.toString());
     }
 

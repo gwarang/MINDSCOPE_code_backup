@@ -52,6 +52,7 @@ import java.util.Objects;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -438,14 +439,14 @@ public class Tools {
                             Integer.parseInt(con.getString(R.string.grpc_port))
                     ).usePlaintext().build();
                     ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                    EtService.SubmitHeartbeatRequestMessage submitHeartbeatRequestMessage = EtService.SubmitHeartbeatRequestMessage.newBuilder()
+                    EtService.SubmitHeartbeat.Request submitHeartbeatRequestMessage = EtService.SubmitHeartbeat.Request.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                             .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                             .setCampaignId(Integer.parseInt(con.getString(R.string.stress_campaign_id)))
                             .build();
                     try {
                         @SuppressWarnings("unused")
-                        EtService.DefaultResponseMessage responseMessage = stub.submitHeartbeat(submitHeartbeatRequestMessage);
+                        EtService.SubmitHeartbeat.Response responseMessage = stub.submitHeartbeat(submitHeartbeatRequestMessage);
                     } catch (StatusRuntimeException e) {
                         Log.e("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
                         e.printStackTrace();
@@ -685,7 +686,7 @@ public class Tools {
 
                         try {
                             do {
-                                EtService.SubmitDataRecordRequestMessage submitDataRecordRequestMessage = EtService.SubmitDataRecordRequestMessage.newBuilder()
+                                EtService.SubmitDataRecord.Request submitDataRecordRequestMessage = EtService.SubmitDataRecord.Request.newBuilder()
                                         .setUserId(userId)
                                         .setEmail(email)
                                         .setDataSource(cursor.getInt(1))
@@ -693,9 +694,9 @@ public class Tools {
                                         .setValues(cursor.getString(4))
                                         .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                                         .build();
-                                EtService.DefaultResponseMessage responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
+                                EtService.SubmitDataRecord.Response responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);
 
-                                if (responseMessage.getDoneSuccessfully()) {
+                                if (responseMessage.getSuccess()) {
                                     DbMgr.deleteRecord(cursor.getInt(0));
                                 }
 
@@ -815,15 +816,15 @@ public class Tools {
         if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(context.getString(R.string.grpc_host), Integer.parseInt(context.getString(R.string.grpc_port))).usePlaintext().build();
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+            EtService.RetrieveParticipantStats.Request retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStats.Request.newBuilder()
                     .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                     .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                     .build();
             try {
-                EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-                if (responseMessage.getDoneSuccessfully()) {
+                EtService.RetrieveParticipantStats.Response responseMessage = stub.retrieveParticipantStats(retrieveParticipantStatisticsRequestMessage);
+                if (responseMessage.getSuccess()) {
                     long joinTimestamp = responseMessage.getCampaignJoinTimestamp();
                     Calendar cal = Calendar.getInstance();
                     cal.setTimeInMillis(joinTimestamp);
@@ -835,7 +836,7 @@ public class Tools {
                     editor.apply();
                     firstDayTimestamp = cal.getTimeInMillis();
                 }
-            }catch (StatusRuntimeException e){
+            } catch (StatusRuntimeException e) {
                 e.printStackTrace();
             }
             channel.shutdown();

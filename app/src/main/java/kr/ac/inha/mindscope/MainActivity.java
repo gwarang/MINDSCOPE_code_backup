@@ -53,6 +53,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
         if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
 //            dialog = Tools.requestPermissions(MainActivity.this);
             permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
-            permissionDialog.show();
+            // permissionDialog.show(); // todo come here --> remove comment
         }
 
 
@@ -304,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
 
         int curFrgId = navController.getCurrentDestination().getId();
-        if(curFrgId == R.id.navigation_me_step2)
+        if (curFrgId == R.id.navigation_me_step2)
             Log.d(TAG, "navController test");
 
         super.onStop();
@@ -328,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.dismiss();
             dialog = null;
         }
-        if (permissionDialog != null){
+        if (permissionDialog != null) {
             permissionDialog.dismiss();
             permissionDialog = null;
         }
@@ -366,12 +367,12 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
-    private void setUpDownloadStressReport(){
+    private void setUpDownloadStressReport() {
         Intent intent = new Intent(this, StressReportReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 506, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
-        if(calendar.get(Calendar.MINUTE) > 55){
+        if (calendar.get(Calendar.MINUTE) > 55) {
             calendar.add(Calendar.HOUR_OF_DAY, 1);
         }
         calendar.set(Calendar.MINUTE, 55);
@@ -437,14 +438,14 @@ public class MainActivity extends AppCompatActivity {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
             try {
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                EtService.RetrieveCampaignRequestMessage retrieveCampaignRequestMessage = EtService.RetrieveCampaignRequestMessage.newBuilder()
+                EtService.RetrieveCampaign.Request retrieveCampaignRequestMessage = EtService.RetrieveCampaign.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                         .build();
 
-                EtService.RetrieveCampaignResponseMessage retrieveCampaignResponseMessage = stub.retrieveCampaign(retrieveCampaignRequestMessage);
-                if (retrieveCampaignResponseMessage.getDoneSuccessfully()) {
+                EtService.RetrieveCampaign.Response retrieveCampaignResponseMessage = stub.retrieveCampaign(retrieveCampaignRequestMessage);
+                if (retrieveCampaignResponseMessage.getSuccess()) {
                     setUpCampaignConfigurations(
                             retrieveCampaignResponseMessage.getName(),
                             retrieveCampaignResponseMessage.getNotes(),
@@ -476,8 +477,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUpCampaignConfigurations(String name, String notes, String creatorEmail, String configJson, long startTimestamp, long endTimestamp, int participantCount) throws JSONException {
         String oldConfigJson = configPrefs.getString(String.format(Locale.getDefault(), "%s_configJson", name), null);
-        if (configJson.equals(oldConfigJson))
-            return;
+        // if (configJson.equals(oldConfigJson))
+        //    return;
 
         SharedPreferences.Editor editor = configPrefs.edit();
         editor.putString(String.format(Locale.getDefault(), "%s_configJson", name), configJson);
@@ -596,14 +597,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getFirebaseToken(){
+    private void getFirebaseToken() {
 
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
-        if(stepCheck != 0){
+        if (stepCheck != 0) {
             FirebaseInstanceId.getInstance().getInstanceId()
                     .addOnCompleteListener(task -> {
-                        if(!task.isSuccessful()){
+                        if (!task.isSuccessful()) {
                             Log.d(TAG, "getInstanceId failed", task.getException());
                             return;
                         }

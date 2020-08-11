@@ -505,7 +505,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
                         .setEmail(email)
                         .setTargetEmail(email)
@@ -517,8 +517,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 long lastTimestamp = Long.MIN_VALUE;
                 String lastComment = "";
                 try {
-                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getDoneSuccessfully())
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getSuccess())
                         for (String value : responseMessage.getValueList()) {
                             String[] cells = value.split(" ");
                             long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
@@ -597,15 +597,15 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-            EtService.RetrieveParticipantStatisticsRequestMessage retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStatisticsRequestMessage.newBuilder()
+            EtService.RetrieveParticipantStats.Request retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStats.Request.newBuilder()
                     .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                     .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                     .build();
             try {
-                EtService.RetrieveParticipantStatisticsResponseMessage responseMessage = stub.retrieveParticipantStatistics(retrieveParticipantStatisticsRequestMessage);
-                if (responseMessage.getDoneSuccessfully()) {
+                EtService.RetrieveParticipantStats.Response responseMessage = stub.retrieveParticipantStats(retrieveParticipantStatisticsRequestMessage);
+                if (responseMessage.getSuccess()) {
                     firstDayTimestamp = responseMessage.getCampaignJoinTimestamp();
                 }
             } catch (StatusRuntimeException e) {
@@ -630,7 +630,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 Calendar c = Calendar.getInstance();
-                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
                         .setEmail(email)
                         .setTargetEmail(email)
@@ -641,8 +641,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         .build();
                 int points = 0;
                 try {
-                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getDoneSuccessfully())
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getSuccess())
                         for (String value : responseMessage.getValueList()) {
                             String[] cells = value.split(" ");
                             if (cells.length != 3)
@@ -677,7 +677,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
                         .setEmail(email)
                         .setTargetEmail(email)
@@ -688,8 +688,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         .build();
                 int dailyPoints = 0;
                 try {
-                    EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getDoneSuccessfully())
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getSuccess())
                         for (String value : responseMessage.getValueList()) {
                             String[] cells = value.split(" ");
                             if (cells.length != 3)
@@ -838,7 +838,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 final int SUBMITTED = 55, PREDICTION = 56;
                 stressLevels.clear();
                 for (int dataSourceId : new int[]{SUBMITTED, PREDICTION}) {
-                    EtService.RetrieveFilteredDataRecordsRequestMessage requestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                    EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(userId)
                             .setEmail(email)
                             .setTargetEmail(email)
@@ -848,8 +848,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             .setTillTimestamp(tillTimestamp)
                             .build();
                     try {
-                        EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                        if (responseMessage.getDoneSuccessfully()) {
+                        EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                        if (responseMessage.getSuccess()) {
                             List<String> values = responseMessage.getValueList();
                             List<Long> timestamps = responseMessage.getTimestampList();
                             for (int n = 0; n < values.size(); n++) {

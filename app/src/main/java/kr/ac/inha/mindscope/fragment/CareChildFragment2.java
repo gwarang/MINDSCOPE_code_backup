@@ -321,7 +321,7 @@ public class CareChildFragment2 extends Fragment {
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
 
-                EtService.RetrieveFilteredDataRecordsRequestMessage retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecordsRequestMessage.newBuilder()
+                EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -332,8 +332,8 @@ public class CareChildFragment2 extends Fragment {
                         .build();
 
                 try {
-                    final EtService.RetrieveFilteredDataRecordsResponseMessage responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
-                    if (responseMessage.getDoneSuccessfully()) {
+                    final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                    if (responseMessage.getSuccess()) {
                         List<String> values = responseMessage.getValueList();
                         if (!values.isEmpty()) {
                             Log.d(TAG, "intervention list " + values);
