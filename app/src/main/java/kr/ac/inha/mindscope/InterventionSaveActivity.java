@@ -63,6 +63,7 @@ public class InterventionSaveActivity extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences("intervention", MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("curIntervention", interventionEdit.getText().toString());
+                    editor.putBoolean("didIntervention", false);
                     editor.apply();
                     Calendar cal = Calendar.getInstance();
                     String curIntervention = prefs.getString("curIntervention", "");

@@ -97,6 +97,7 @@ public class CareChildFragment2 extends Fragment {
 
         recommendIntervention1.setOnClickListener(view1 -> {
             editor.putString("curIntervention", recommendIntervention1.getText().toString());
+            editor.putBoolean("didIntervention", false);
             editor.apply();
             Calendar cal = Calendar.getInstance();
             String curIntervention = interventionPrefs.getString("curIntervention", "");
@@ -108,6 +109,7 @@ public class CareChildFragment2 extends Fragment {
         });
         recommendIntervention2.setOnClickListener(view12 -> {
             editor.putString("curIntervention", recommendIntervention2.getText().toString());
+            editor.putBoolean("didIntervention", false);
             editor.apply();
             Calendar cal = Calendar.getInstance();
             String curIntervention = interventionPrefs.getString("curIntervention", "");
@@ -119,6 +121,7 @@ public class CareChildFragment2 extends Fragment {
         });
         recommendIntervention3.setOnClickListener(view13 -> {
             editor.putString("curIntervention", recommendIntervention3.getText().toString());
+            editor.putBoolean("didIntervention", false);
             editor.apply();
             Calendar cal = Calendar.getInstance();
             String curIntervention = interventionPrefs.getString("curIntervention", "");
