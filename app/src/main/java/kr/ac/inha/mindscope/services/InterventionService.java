@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.Calendar;
+
+import kr.ac.inha.mindscope.R;
 
 import static kr.ac.inha.mindscope.Tools.PATH_NOTIFICATION;
 import static kr.ac.inha.mindscope.Tools.STRESS_DO_INTERVENTION;
@@ -54,6 +57,9 @@ public class InterventionService extends Service {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("didIntervention", true);
             editor.apply();
+            Toast.makeText(getApplicationContext(),
+                    getApplicationContext().getString(R.string.string_do_intervention_toast),
+                    Toast.LENGTH_LONG).show();
         }
 
         intent.removeExtra("stress_next_time");
