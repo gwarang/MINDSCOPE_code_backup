@@ -9,26 +9,18 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -42,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -63,7 +56,6 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
-import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -116,8 +108,18 @@ public class MeFragmentStep2 extends Fragment {
             stressResult = getStressResult(context);
             if (stressResult != null)
                 updateUi(view, stressResult);
+            else{
+                Calendar calendar = Calendar.getInstance();
+                firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
+                allContainer.setVisibility(View.INVISIBLE);
+                if(calendar.get(Calendar.HOUR_OF_DAY) >= 11){
+                    before11hoursTextView.setText(getResources().getString(R.string.when_no_report_and_after_11_hour));
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
+            allContainer.setVisibility(View.INVISIBLE);
         }
 
         return view;
@@ -131,12 +133,9 @@ public class MeFragmentStep2 extends Fragment {
         SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
 
         NavController navController = Navigation.findNavController(view);
-        Log.d(TAG, "navController : " + navController.getCurrentDestination().getId());
+        Log.d(TAG, "navController : " + Objects.requireNonNull(navController.getCurrentDestination()).getId());
 
         if (stressReportPrefs.getBoolean("today_last_report", false)) {
-//            SharedPreferences.Editor editor = stressReportPrefs.edit();
-//            editor.putBoolean("today_last_report", false);
-//            editor.apply();
             navController.navigate(R.id.action_me_to_care_step2);
         }
     }
@@ -178,6 +177,7 @@ public class MeFragmentStep2 extends Fragment {
         versionNameTextView.setText(getVersionInfo(requireContext()));
     }
 
+    @SuppressLint("SetTextI18n")
     public void updateUi(View view, String stressResult) {
         Context context = MainActivity.getInstance();
 

@@ -1,128 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:theme="@style/AppThemeNoActionBar"
     tools:context=".fragment.MeFragmentStep1">
 
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/frg_me_step2_app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/color_white"
-        android:elevation="10dp"
-        android:paddingHorizontal="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:elevation="10dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/step_test_btn_step2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="step test"
-                android:visibility="gone"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/report_test_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="report test"
-                android:visibility="gone"
-                app:layout_constraintLeft_toRightOf="@id/step_test_btn_step2"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/fragment_me_step2_btn_map"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_map_24px"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/version_name_step2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/navigation_first"
-                android:textSize="@dimen/my_text_size5"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/frg_me_step2_before_11hours_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/frg_me_step2_before_11hours_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_question"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/frg_me_step2_before_txt1"
             android:layout_marginBottom="13dp"
-            />
+            android:src="@drawable/ic_question"
+            app:layout_constraintBottom_toTopOf="@id/frg_me_step2_before_txt1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
             android:id="@+id/frg_me_step2_before_txt1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/string_frg_me_stpe2_before_txt1"
-            android:textAlignment="center"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
+            android:text="@string/string_frg_me_stpe2_before_txt1"
+            android:textAlignment="center"
             android:textColor="@color/textColor_blue"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:textSize="20sp"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:layout_marginTop="13dp"
             android:id="@+id/frg_me_step2_before_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
             android:fontFamily="@font/notosanscjkkrlight"
-            android:textSize="@dimen/my_text_size1"
             android:includeFontPadding="false"
             android:text="@string/string_frg_me_stpe2_before_txt2"
-            app:layout_constraintTop_toBottomOf="@id/frg_me_step2_before_txt1"
+            android:textAlignment="center"
+            android:textColor="@color/textColor_default"
+            android:textSize="@dimen/my_text_size1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:textAlignment="center"
-            android:textColor="@color/textColor_default"/>
+            app:layout_constraintTop_toBottomOf="@id/frg_me_step2_before_txt1" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -371,16 +305,16 @@
             android:id="@+id/frg_me_step2_no_features"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_features"
             android:fontFamily="@font/notosanscjkkrmedium"
-            android:textAlignment="center"
-            android:visibility="gone"
             android:includeFontPadding="false"
+            android:text="@string/no_features"
+            android:textAlignment="center"
             android:textSize="@dimen/my_text_size1"
-            app:layout_constraintTop_toTopOf="@id/stress_reason_container"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/stress_reason_container"
+            app:layout_constraintEnd_toEndOf="@id/stress_reason_container"
             app:layout_constraintStart_toStartOf="@id/stress_reason_container"
-            app:layout_constraintEnd_toEndOf="@id/stress_reason_container"/>
+            app:layout_constraintTop_toTopOf="@id/stress_reason_container" />
 
 
         <TextView
@@ -465,7 +399,74 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/frg_me_step2_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/color_white"
+        android:elevation="10dp"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:elevation="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/step_test_btn_step2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="step test"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/report_test_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="report test"
+                android:visibility="gone"
+                app:layout_constraintLeft_toRightOf="@id/step_test_btn_step2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/fragment_me_step2_btn_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_map_24px"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/version_name_step2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/navigation_first"
+                android:textSize="@dimen/my_text_size5"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

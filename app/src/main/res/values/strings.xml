@@ -338,4 +338,6 @@
 
     <string name="accessibility_description">Use accessibility service for collect voice audio feature during call</string>
 
+    <string name="when_no_report_and_after_11_hour">다음 스트레스 리포트를 기다려주세요!</string>
+
 </resources>
