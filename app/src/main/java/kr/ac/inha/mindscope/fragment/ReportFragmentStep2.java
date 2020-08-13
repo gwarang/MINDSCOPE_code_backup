@@ -492,14 +492,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             R.string.string_stress_level_high
                     };
                     int stressLevel = dailyAverageStressLevels.get(day);
-                    requireActivity().runOnUiThread(() -> {
-                        txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel])));
-                        txtStressLevel.setVisibility(View.VISIBLE);
-                    });
-                } else
-                    requireActivity().runOnUiThread(() -> {
-                        txtStressLevel.setVisibility(View.GONE); // should never happen
-                    });
+                    if(isAdded()){
+                        requireActivity().runOnUiThread(() -> {
+                            txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel])));
+                            txtStressLevel.setVisibility(View.VISIBLE);
+                        });
+                    }
+                } else{
+                    if(isAdded()){
+                        requireActivity().runOnUiThread(() -> {
+                            txtStressLevel.setVisibility(View.GONE); // should never happen
+                        });
+                    }
+                }
 
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
@@ -534,7 +539,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 channel.shutdown();
 
                 final String finalComment = lastComment;
-                requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
+                if(isAdded())
+                    requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
             }).start();
         }
         // endregion
@@ -698,7 +704,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 }
                 channel.shutdown();
                 final int finalDailyPoints = dailyPoints;
-                requireActivity().runOnUiThread(() -> dailyPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
+                if(isAdded())
+                    requireActivity().runOnUiThread(() -> dailyPointsView.setText(String.format(Locale.getDefault(), "%,d", finalDailyPoints)));
             }).start();
         }
 

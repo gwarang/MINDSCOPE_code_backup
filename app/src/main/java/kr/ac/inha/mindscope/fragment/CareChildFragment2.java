@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +34,6 @@ import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
-import kr.ac.inha.mindscope.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.Tools.STRESS_DO_INTERVENTION;
@@ -237,26 +235,6 @@ public class CareChildFragment2 extends Fragment {
         editor.apply();
     };
 
-//    CompoundButton.OnCheckedChangeListener switchListener = (compoundButton, isChecked) -> {
-//        SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_MUTE_TODAY_INTERVENTION);
-//        if (isChecked) {
-//            Log.d(TAG, "오늘의 알림 받기 설정");
-//            editor.putBoolean("muteToday", false);
-//            Calendar cal = Calendar.getInstance();
-//            String curIntervention = prefs.getString("curIntervention", "");
-//            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_UNMUTE_TODAY, 0);
-//        } else {
-//            Log.d(TAG, "오늘의 알림 받기 설정 해제");
-//            editor.putBoolean("muteToday", true);
-//            Calendar cal = Calendar.getInstance();
-//            String curIntervention = prefs.getString("curIntervention", "");
-//            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_MUTE_TODAY, 0);
-//        }
-//        editor.apply();
-//
-//    };
 
     public void updateRecommendInterventions() {
         InputStreamReader inputStreamReader = null;
@@ -356,23 +334,24 @@ public class CareChildFragment2 extends Fragment {
                     e.printStackTrace();
                 }
 
+                if(isAdded()){
+                    requireActivity().runOnUiThread(() -> {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                        StringBuilder didInterventionStr = new StringBuilder();
 
-                requireActivity().runOnUiThread(() -> {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                    StringBuilder didInterventionStr = new StringBuilder();
-
-                    for (String[] s : todayPerformedInterventions) {
-                        String timeText = dateFormat.format(Long.parseLong(s[0]));
-                        didInterventionStr.append(String.format("%s에 '%s'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));
-                    }
-                    if (!didInterventionStr.toString().equals("")) {
-                        Log.d(TAG, "load performed intervention : " + didInterventionStr);
-                        doneInterventionText.setText(didInterventionStr.toString());
-                        doneInterventionText.setVisibility(View.VISIBLE);
-                    } else {
-                        doneInterventionText.setVisibility(View.INVISIBLE);
-                    }
-                });
+                        for (String[] s : todayPerformedInterventions) {
+                            String timeText = dateFormat.format(Long.parseLong(s[0]));
+                            didInterventionStr.append(String.format("%s에 '%s'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));
+                        }
+                        if (!didInterventionStr.toString().equals("")) {
+                            Log.d(TAG, "load performed intervention : " + didInterventionStr);
+                            doneInterventionText.setText(didInterventionStr.toString());
+                            doneInterventionText.setVisibility(View.VISIBLE);
+                        } else {
+                            doneInterventionText.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
                 channel.shutdown();
             }).start();
         } else {
