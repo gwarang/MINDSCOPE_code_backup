@@ -657,7 +657,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 }
                 channel.shutdown();
                 final int finalPoints = points;
-                requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
+                if(isAdded())
+                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
             }).start();
         }
     }
@@ -985,10 +986,12 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         }
 
         // (4) make changes on UI
-        requireActivity().runOnUiThread(() -> {
-            materialCalendarView.invalidateDecorators();
-            materialCalendarView.setSelectedDate(CalendarDay.today());
-        });
+        if(isAdded()){
+            requireActivity().runOnUiThread(() -> {
+                materialCalendarView.invalidateDecorators();
+                materialCalendarView.setSelectedDate(CalendarDay.today());
+            });
+        }
     }
 
     private boolean isSubmission(long timestamp) {

@@ -319,10 +319,12 @@ public class MeFragmentStep1 extends Fragment {
                         if(isAdded()){
                             int finalAllPoints = allPoints;
                             int finalDailyPoints = dailyPoints;
-                            requireActivity().runOnUiThread(() -> {
-                                sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalAllPoints));
-                                todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints));
-                            });
+                            if(isAdded()){
+                                requireActivity().runOnUiThread(() -> {
+                                    sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalAllPoints));
+                                    todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints));
+                                });
+                            }
                         }
                     }
                 }
