@@ -84,6 +84,5 @@ public class InterventionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "intervention service destory");
     }
 }

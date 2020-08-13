@@ -135,8 +135,8 @@ public class MainService extends Service {
                 permissionNotificationPosted = false;
             }
 
+            long curTimestamp = System.currentTimeMillis();
             Calendar curCal = Calendar.getInstance();
-            long curTimestamp = curCal.getTimeInMillis();
 
             //region step check
             Tools.stepCheck(getApplicationContext());
@@ -202,7 +202,7 @@ public class MainService extends Service {
                     audioFeatureRecorder.start();
                     prevAudioRecordStartTime = curTimestamp;
                 }
-            } else if (stopAudioRecord && !AudioRunningForCall) {
+            } else if (stopAudioRecord) {
                 if (audioFeatureRecorder != null) {
                     Log.d(TAG, "call audioFeatureRecorder.stop()");
                     audioFeatureRecorder.stop();
