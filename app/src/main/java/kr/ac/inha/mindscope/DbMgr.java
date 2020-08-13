@@ -3,9 +3,6 @@ package kr.ac.inha.mindscope;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import java.util.Locale;
 
 public class DbMgr {
     private static SQLiteDatabase db;
@@ -38,6 +35,7 @@ public class DbMgr {
     }
 
     private static void saveStringData(int dataSourceId, long timestamp, float accuracy, String data) {
+
         db.execSQL("insert into Data(dataSourceId, timestamp, accuracy, data) values(?, ?, ?, ?);", new Object[]{
                 dataSourceId,
                 timestamp,

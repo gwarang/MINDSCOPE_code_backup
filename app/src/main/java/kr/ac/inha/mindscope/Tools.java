@@ -753,8 +753,11 @@ public class Tools {
             SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("APPLICATION_LOG", -1);
             assert dataSourceId != -1;
-            if (uniqueTagForEachActivityOrEvent != null && action != null)
+            if (uniqueTagForEachActivityOrEvent != null && action != null){
+                if (DbMgr.getDB() == null)
+                    DbMgr.init(con);
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action, sb.toString());
+            }
         }).start();
     }
 
