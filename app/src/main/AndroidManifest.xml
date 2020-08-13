@@ -33,9 +33,10 @@
         <activity
             android:name=".FirstStartActivity"
             android:theme="@style/AppThemeNoActionBar" />
+        <!-- android:theme="@android:style/Theme.NoTitleBar.Fullscreen"> -->
         <activity
             android:name=".SplashActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -62,9 +63,6 @@
         <activity
             android:name=".EMAActivity"
             android:theme="@style/AppThemeNoActionBar" />
-        <activity
-            android:name=".LocationsSettingActivity"
-            android:theme="@style/AppTheme" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -75,7 +73,7 @@
         <receiver
             android:name=".receivers.UndeadReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
 
         <receiver
             android:name=".receivers.StressReportReceiver"

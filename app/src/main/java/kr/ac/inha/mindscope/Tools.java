@@ -52,7 +52,6 @@ import java.util.Objects;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -155,12 +154,6 @@ public class Tools {
     public static final int SELF_REPORT_ANALYSIS_CORRECTNESS_INDEX = 3;
     public static final int SELF_REPORT_ANSWER_INDEX = 4;
     public static final int SELF_REPORT_FEATRUEIDS_INDEX = 5;
-
-    //endregion
-
-
-    //region Unique ID of each screen or button event
-    public static final int FIRST_START_ACTIVITY = 1;
     //endregion
 
     public static boolean hasPermissions(Context con, String... permissions) {

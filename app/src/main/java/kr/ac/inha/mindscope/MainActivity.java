@@ -1,37 +1,26 @@
 package kr.ac.inha.mindscope;
 
 import android.Manifest;
-import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,20 +29,16 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -67,7 +52,6 @@ import kr.ac.inha.mindscope.services.MainService;
 import kr.ac.inha.mindscope.services.StressReportDownloader;
 
 import static kr.ac.inha.mindscope.services.MainService.HEARTBEAT_PERIOD;
-import static kr.ac.inha.mindscope.services.MainService.PERMISSION_REQUEST_NOTIFICATION_ID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -238,13 +222,6 @@ public class MainActivity extends AppCompatActivity {
                 // nothing
                 break;
         }
-
-        if (!Tools.hasPermissions(this, Tools.PERMISSIONS)) {
-//            dialog = Tools.requestPermissions(MainActivity.this);
-            permissionDialog = Tools.requestPermissionsWithCustomDialog(MainActivity.this);
-            // permissionDialog.show(); // todo come here --> remove comment
-        }
-
 
         if (Tools.heartbeatNotSent(getApplicationContext())) {
             Log.e(TAG, "Heartbeat not sent");

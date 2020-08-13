@@ -39,7 +39,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -283,11 +282,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d(TAG, "locationList " + Arrays.toString(locations));
         for (String location : locations) {
             if (getLocationData(getApplicationContext(), location) != null) {
-//                addLocationMarker(Objects.requireNonNull(getLocationData(getApplicationContext(), location)));
                 locationArrayList.add(getLocationData(getApplicationContext(), location));
-//                StoreLocation storeLocation = getLocationData(getApplicationContext(), location);
-//                if (!storeLocation.getIsDeleted())
-
             }
         }
         LocationAdapter adapter = new LocationAdapter(this, R.layout.item_place_list, locationArrayList, this);
@@ -535,7 +530,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.d(TAG, String.format("code %d", code));
         }
         updateListView();
-
     }
 
     @Override

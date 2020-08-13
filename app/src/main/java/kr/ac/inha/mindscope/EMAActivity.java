@@ -106,7 +106,7 @@ public class EMAActivity extends AppCompatActivity {
         if (!loginPrefs.getBoolean("logged_in", false)) {
             finish();
         }
-        setContentView(R.layout.activity_ema2);
+        setContentView(R.layout.activity_ema);
 
         toolbar = findViewById(R.id.toolbar_ema);
         setSupportActionBar(toolbar);
@@ -136,7 +136,6 @@ public class EMAActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.toolbar_save:
-
                 emaSubmit();
                 break;
             case android.R.id.home:
@@ -225,8 +224,6 @@ public class EMAActivity extends AppCompatActivity {
             default:
                 emaNumView.setText(getResources().getString(R.string.ema_num_info1));
         }
-
-        btnSubmit = findViewById(R.id.btn_submit);
 
         // Answer check
         question1_group.setOnCheckedChangeListener((radioGroup, i) -> {

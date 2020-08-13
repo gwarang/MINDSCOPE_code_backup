@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import androidx.annotation.Nullable;
 import kr.ac.inha.mindscope.DbMgr;
 
-import static kr.ac.inha.mindscope.LocationsSettingActivity.ID_HOME;
+import static kr.ac.inha.mindscope.MapsActivity.ID_HOME;
 import static kr.ac.inha.mindscope.services.LocationService.LOCATIONS_TXT;
 import static kr.ac.inha.mindscope.services.MainService.SERVICE_START_X_MIN_BEFORE_EMA;
 

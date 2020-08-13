@@ -62,7 +62,6 @@ import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
-import kr.ac.inha.mindscope.Utils;
 
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
@@ -581,8 +580,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         lastPagePrefsEditor.putString("last_open_nav_frg", "report");
         lastPagePrefsEditor.apply();
     }
-
-    // endregion
 
     @Override
     public void onResume() {

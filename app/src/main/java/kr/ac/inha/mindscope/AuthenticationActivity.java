@@ -13,20 +13,19 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
-import static kr.ac.inha.mindscope.LocationsSettingActivity.GEOFENCE_RADIUS_DEFAULT;
+import static kr.ac.inha.mindscope.MapsActivity.GEOFENCE_RADIUS_DEFAULT;
 
 public class AuthenticationActivity extends Activity {
 
@@ -85,15 +84,21 @@ public class AuthenticationActivity extends Activity {
             return;
         }
 
-        for (LocationsSettingActivity.StoreLocation location : LocationsSettingActivity.ALL_LOCATIONS) {
-            if (LocationsSettingActivity.getLocationData(getApplicationContext(), location) != null) {
-                GeofenceHelper.startGeofence(this,
-                        Objects.requireNonNull(LocationsSettingActivity.getLocationData(getApplicationContext(), location)).getmId(),
-                        Objects.requireNonNull(LocationsSettingActivity.getLocationData(getApplicationContext(), location)).getmLatLng(),
-                        GEOFENCE_RADIUS_DEFAULT);
-                Log.d(TAG, "Geofences are reset");
-            } else
-                Log.d(TAG, "No Geofences in shared preferences");
+        SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
+        String locationList = locationPrefs.getString("locationList", "");
+        String[] locations;
+        if(!locationList.equals("")){
+            locations = locationList.split(" ");
+            Log.d(TAG, "locationList " + Arrays.toString(locations));
+            for(String location : locations){
+                MapsActivity.StoreLocation storeLocation = MapsActivity.getLocationData(getApplicationContext(), location);
+                if(storeLocation != null && storeLocation.getmId() != null){
+                    GeofenceHelper.startGeofence(getApplicationContext(), storeLocation.getmId(), storeLocation.getmLatLng(), GEOFENCE_RADIUS_DEFAULT);
+                    Log.d(TAG, "Geofences are reset");
+                } else{
+                    Log.d(TAG, "No Geofences in shared preferences");
+                }
+            }
         }
     }
 
@@ -180,7 +185,9 @@ public class AuthenticationActivity extends Activity {
         Log.d(TAG, "startMainActivity");
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(0);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(intent, RC_OPEN_MAIN_ACTIVITY);
+        finish();
         overridePendingTransition(0, 0);
     }
 

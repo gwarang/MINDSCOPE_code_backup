@@ -7,7 +7,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -39,8 +37,6 @@ import kr.ac.inha.mindscope.EMAActivity;
 import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
-import kr.ac.inha.mindscope.Utils;
-import kr.ac.inha.mindscope.services.MainService;
 
 public class MeFragmentStep1 extends Fragment {
 
@@ -52,6 +48,7 @@ public class MeFragmentStep1 extends Fragment {
     TextView time4;
     SharedPreferences loginPrefs;
     SharedPreferences configPrefs;
+    boolean isNetworkToastMsgAbail;
     private ImageButton btnMap;
     private AppBarLayout appBarLayout;
     private Button stepTestBtn;
@@ -66,10 +63,14 @@ public class MeFragmentStep1 extends Fragment {
     private TextView attdView;
     private TextView versionNameTextView;
     private RelativeLayout timeContainer;
-    boolean isNetworkToastMsgAbail;
 
     public static MeFragmentStep1 newInstance() {
         return new MeFragmentStep1();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -96,14 +97,13 @@ public class MeFragmentStep1 extends Fragment {
         int step = stepChangePrefs.getInt("stepCheck", 5);
         boolean step1Done = stepChangePrefs.getBoolean("step1Done", false);
 
-        if(step == 0){
+        if (step == 0) {
             before11Hours.setText(context.getResources().getString(R.string.string_frg_me_step0));
             before11Hours.setVisibility(View.VISIBLE);
             date.setVisibility(View.INVISIBLE);
             attdView.setVisibility(View.INVISIBLE);
             timeContainer.setVisibility(View.INVISIBLE);
-        }
-        else if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3) {
+        } else if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3) {
             before11Hours.setVisibility(View.VISIBLE);
             date.setVisibility(View.INVISIBLE);
             attdView.setVisibility(View.INVISIBLE);
@@ -191,7 +191,7 @@ public class MeFragmentStep1 extends Fragment {
 
 
         // sync ema submit & update ema submit check box
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = emaSubmitCheckPrefs.edit();
@@ -220,9 +220,9 @@ public class MeFragmentStep1 extends Fragment {
                     final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
                     if (responseMessage.getSuccess()) {
                         List<String> values = responseMessage.getValueList();
-                        for(String value : values){
+                        for (String value : values) {
                             String[] splitValue = value.split(" ");
-                            editor.putBoolean("ema_submit_check_"+splitValue[1], true);
+                            editor.putBoolean("ema_submit_check_" + splitValue[1], true);
                             editor.apply();
                         }
                     }
@@ -237,7 +237,7 @@ public class MeFragmentStep1 extends Fragment {
                     Calendar cal = Calendar.getInstance();
                     int curHours = cal.get(Calendar.HOUR_OF_DAY);
                     for (short i = 0; i < 4; i++) {
-                        if(curHours >= SUBMIT_HOUR[i]){
+                        if (curHours >= SUBMIT_HOUR[i]) {
                             if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
                                 times[i].setText(getResources().getString(R.string.string_survey_incomplete));
                                 timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_incomplete));
@@ -254,7 +254,7 @@ public class MeFragmentStep1 extends Fragment {
 
     public void loadAllPoints() {
         Context context = requireContext();
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
@@ -274,20 +274,20 @@ public class MeFragmentStep1 extends Fragment {
                         .setFromTimestamp(0)
                         .setTillTimestamp(c.getTimeInMillis())
                         .build();
-                try{
-                EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                int points = 0;
-                if (responseMessage.getSuccess())
-                    for (String value : responseMessage.getValueList()) {
-                        String[] cells = value.split(" ");
-                        if (cells.length != 3)
-                            continue;
-                        points += Integer.parseInt(cells[2]);
-                    }
-                final int finalPoints = points;
+                try {
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    int points = 0;
+                    if (responseMessage.getSuccess())
+                        for (String value : responseMessage.getValueList()) {
+                            String[] cells = value.split(" ");
+                            if (cells.length != 3)
+                                continue;
+                            points += Integer.parseInt(cells[2]);
+                        }
+                    final int finalPoints = points;
 
                     requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalPoints)));
-                }catch (IllegalStateException | StatusRuntimeException e){
+                } catch (IllegalStateException | StatusRuntimeException e) {
                     e.printStackTrace();
                 }
                 channel.shutdown();
@@ -297,7 +297,7 @@ public class MeFragmentStep1 extends Fragment {
 
     public void loadDailyPoints() {
         Context context = requireContext();
-        if(Tools.isNetworkAvailable()){
+        if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
@@ -329,16 +329,18 @@ public class MeFragmentStep1 extends Fragment {
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                     int dailyPoints = 0;
-                    if (responseMessage.getSuccess())
+                    if (responseMessage.getSuccess()){
                         for (String value : responseMessage.getValueList()) {
                             String[] cells = value.split(" ");
                             if (cells.length != 3)
                                 continue;
                             dailyPoints += Integer.parseInt(cells[2]);
                         }
+                    }
                     final int finalDailyPoints = dailyPoints;
-                    requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
-                }catch (StatusRuntimeException e){
+                    if(isAdded())
+                        requireActivity().runOnUiThread(() -> todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints)));
+                } catch (StatusRuntimeException e) {
                     e.printStackTrace();
                 }
                 channel.shutdown();
@@ -377,11 +379,11 @@ public class MeFragmentStep1 extends Fragment {
         updateEmaResponseView();
     }
 
-    public String getVersionInfo(Context context){
+    public String getVersionInfo(Context context) {
         String version = "Unknown";
         PackageInfo packageInfo;
 
-        if(context == null){
+        if (context == null) {
             return version;
         }
         try {
