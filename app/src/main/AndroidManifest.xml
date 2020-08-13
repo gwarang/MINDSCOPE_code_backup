@@ -33,10 +33,9 @@
         <activity
             android:name=".FirstStartActivity"
             android:theme="@style/AppThemeNoActionBar" />
-        <!-- android:theme="@android:style/Theme.NoTitleBar.Fullscreen"> -->
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
