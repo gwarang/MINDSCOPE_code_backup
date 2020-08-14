@@ -355,7 +355,7 @@ public class MeFragmentStep1 extends Fragment {
         }
         int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
         for (short i = 0; i < 4; i++) {
-            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour == 0) && ema_order != 0 && !submits[i]) {
+            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour == 0) && ema_order > 0 && !submits[i]) {
                 Intent intent = new Intent(getActivity(), EMAActivity.class);
                 intent.putExtra("ema_order", ema_order);
                 startActivity(intent);
