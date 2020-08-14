@@ -26,7 +26,6 @@ import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,7 +35,6 @@ import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -51,7 +49,6 @@ import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.SplashActivity;
 import kr.ac.inha.mindscope.StressReportActivity;
 import kr.ac.inha.mindscope.Tools;
-import kr.ac.inha.mindscope.Utils;
 import kr.ac.inha.mindscope.receivers.ActivityRecognitionReceiver;
 import kr.ac.inha.mindscope.receivers.ActivityTransitionsReceiver;
 import kr.ac.inha.mindscope.receivers.CallReceiver;
@@ -63,7 +60,6 @@ import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
 import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
-import static kr.ac.inha.mindscope.receivers.CallReceiver.AudioRunningForCall;
 
 public class MainService extends Service {
     private static final String TAG = "CustomSensorsService";
@@ -73,8 +69,9 @@ public class MainService extends Service {
     public static final int EMA_NOTI_ID = 1234; //in sec
     public static final int STRESS_REPORT_NOTIFI_ID = 12345; //in sec
     public static final int PERMISSION_REQUEST_NOTIFICATION_ID = 1111; //in sec
-    public static final long EMA_RESPONSE_EXPIRE_TIME = 3600;  //in sec
-    public static final long REPORT_RESPONSE_EXPIRE_TIME = 3600;  //in sec
+    public static final long EMA_RESPONSE_EXPIRE_TIME = 3600 * 2;  //in sec
+    public static final long ZATURI_RESPONSE_EXPIRE_TIME = 3600;  //in sec
+    public static final long REPORT_RESPONSE_EXPIRE_TIME = 3600 * 2;  //in sec
     public static final int SERVICE_START_X_MIN_BEFORE_EMA = (EMA_NOTIF_HOURS[1] - EMA_NOTIF_HOURS[0]) * 60 * 60; //in sec
     public static final short HEARTBEAT_PERIOD = 30;  //in sec
     public static final short DATA_SUBMIT_PERIOD = 60;  //in sec

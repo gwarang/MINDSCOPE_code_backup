@@ -40,10 +40,14 @@ import kr.ac.inha.mindscope.EMAActivity;
 import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
+
+import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
+
 public class MeFragmentStep1 extends Fragment {
 
     private static final String TAG = "MeFragment";
     private static final int[] SUBMIT_HOUR = {11, 15, 19, 23};
+    static HashMap<Long, Integer> allPointsMaps = new HashMap<>();
     TextView time1;
     TextView time2;
     TextView time3;
@@ -51,6 +55,7 @@ public class MeFragmentStep1 extends Fragment {
     SharedPreferences loginPrefs;
     SharedPreferences configPrefs;
     boolean isNetworkToastMsgAbail;
+    Thread loadPointsThread;
     private ImageButton btnMap;
     private AppBarLayout appBarLayout;
     private Button time1Btn;
@@ -63,10 +68,6 @@ public class MeFragmentStep1 extends Fragment {
     private TextView attdView;
     private TextView versionNameTextView;
     private RelativeLayout timeContainer;
-
-    Thread loadPointsThread;
-
-    static HashMap<Long, Integer> allPointsMaps = new HashMap<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -158,7 +159,7 @@ public class MeFragmentStep1 extends Fragment {
     public void onStop() {
         super.onStop();
         Log.e(TAG, "onStop");
-        if(loadPointsThread!=null && loadPointsThread.isAlive())
+        if (loadPointsThread != null && loadPointsThread.isAlive())
             loadPointsThread.interrupt();
 
     }
@@ -255,13 +256,13 @@ public class MeFragmentStep1 extends Fragment {
         allPointsMaps.clear();
         if (Tools.isNetworkAvailable()) {
 
-            if(loadPointsThread!=null && loadPointsThread.isAlive())
+            if (loadPointsThread != null && loadPointsThread.isAlive())
                 loadPointsThread.interrupt();
 
-            loadPointsThread = new Thread(){
+            loadPointsThread = new Thread() {
                 @Override
                 public void run() {
-                    while(!loadPointsThread.isInterrupted()){
+                    while (!loadPointsThread.isInterrupted()) {
                         int allPoints = 0;
                         int dailyPoints = 0;
                         SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
@@ -304,22 +305,22 @@ public class MeFragmentStep1 extends Fragment {
                         todayCal.set(Calendar.MILLISECOND, 0);
                         Calendar pointCal = Calendar.getInstance();
 
-                        for(Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()){
+                        for (Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()) {
                             allPoints += elem.getValue();
                             pointCal.setTimeInMillis(elem.getKey());
                             pointCal.set(Calendar.HOUR_OF_DAY, 0);
                             pointCal.set(Calendar.MINUTE, 0);
                             pointCal.set(Calendar.SECOND, 0);
                             pointCal.set(Calendar.MILLISECOND, 0);
-                            if( todayCal.compareTo(pointCal) == 0){
-                                dailyPoints+=elem.getValue();
+                            if (todayCal.compareTo(pointCal) == 0) {
+                                dailyPoints += elem.getValue();
                             }
                         }
 
-                        if(isAdded()){
+                        if (isAdded()) {
                             int finalAllPoints = allPoints;
                             int finalDailyPoints = dailyPoints;
-                            if(isAdded()){
+                            if (isAdded()) {
                                 requireActivity().runOnUiThread(() -> {
                                     sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalAllPoints));
                                     todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints));
@@ -346,20 +347,18 @@ public class MeFragmentStep1 extends Fragment {
         Calendar cal = Calendar.getInstance();
         int curHour = cal.get(Calendar.HOUR_OF_DAY);
         int todayDate = cal.get(Calendar.DATE);
-        if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1)) {
+        if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1) && curHour >= 1) {
             for (short i = 0; i < 4; i++) {
                 emaSubmitEditor.putBoolean("ema_submit_check_" + (i + 1), false);
                 emaSubmitEditor.apply();
             }
         }
+        int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
         for (short i = 0; i < 4; i++) {
-            if (curHour == SUBMIT_HOUR[i] && !submits[i]) {
-                int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
-                if (ema_order != 0) {
-                    Intent intent = new Intent(getActivity(), EMAActivity.class);
-                    intent.putExtra("ema_order", ema_order);
-                    startActivity(intent);
-                }
+            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour == 0) && ema_order != 0 && !submits[i]) {
+                Intent intent = new Intent(getActivity(), EMAActivity.class);
+                intent.putExtra("ema_order", ema_order);
+                startActivity(intent);
             }
         }
         updateEmaResponseView();

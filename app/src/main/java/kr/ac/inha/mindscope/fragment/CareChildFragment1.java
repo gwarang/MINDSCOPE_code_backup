@@ -36,12 +36,6 @@ import java.util.Locale;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import inha.nsl.easytrack.ETServiceGrpc;
-import inha.nsl.easytrack.EtService;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.StatusRuntimeException;
-import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
@@ -651,7 +645,7 @@ public class CareChildFragment1 extends Fragment {
             boolean predictionModelTag = Boolean.parseBoolean(predictionTokens[PREDICTION_MODELTAG_INDEX]);
             int predictionOrder = Integer.parseInt(predictionTokens[PREDICTION_ORDER_INDEX]);
             int predictionStressLv = Integer.parseInt(predictionTokens[PREDICTION_STRESSLV_INDEX]);
-            if (predictionModelTag && predictionOrder != 0) {
+            if (predictionModelTag && predictionOrder > 0) {
                 if (selfStressReportWithOrderIndex[predictionOrder - 1] != NON_SELF_STRESS_LV
                         && selfStressReportWithOrderIndex[predictionOrder - 1] != predictionStressLv) {
                     stressLvArray[predictionOrder - 1] = selfStressReportWithOrderIndex[predictionOrder - 1];

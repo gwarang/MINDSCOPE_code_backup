@@ -69,6 +69,7 @@ import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
+import static kr.ac.inha.mindscope.services.MainService.ZATURI_RESPONSE_EXPIRE_TIME;
 
 public class Tools {
 
@@ -477,19 +478,34 @@ public class Tools {
 
 
     public static int getEMAOrderFromRangeAfterEMA(Calendar cal) {
-        long t = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) * 1000;
+        Calendar notiCal = Calendar.getInstance();
+        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1)
+            notiCal.add(Calendar.DATE, -1);
+        notiCal.set(Calendar.MINUTE, 0);
+        notiCal.set(Calendar.SECOND, 0);
+        notiCal.set(Calendar.MILLISECOND, 0);
+        long curTimestamp = cal.getTimeInMillis();
         for (int i = 0; i < EMA_NOTIF_HOURS.length; i++) {
-            if ((EMA_NOTIF_HOURS[i] * 3600 * 1000) <= t && t <= (EMA_NOTIF_HOURS[i] * 3600 * 1000) + EMA_RESPONSE_EXPIRE_TIME * 1000)
+            notiCal.set(Calendar.HOUR_OF_DAY, EMA_NOTIF_HOURS[i]);
+            long notiTimestamp = notiCal.getTimeInMillis();
+            if(notiTimestamp <= curTimestamp && curTimestamp < notiTimestamp + EMA_RESPONSE_EXPIRE_TIME * 1000)
                 return i + 1;
-
         }
         return 0;
     }
 
     public static int getReportOrderFromRangeAfterReport(Calendar cal) {
-        long t = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)) * 1000;
-        for (int i = 0; i < REPORT_NOTIF_HOURS.length; i++) {
-            if ((REPORT_NOTIF_HOURS[i] * 3600 * 1000) <= t && t <= (REPORT_NOTIF_HOURS[i] * 3600 * 1000) + REPORT_RESPONSE_EXPIRE_TIME * 1000)
+        Calendar notiCal = Calendar.getInstance();
+        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1)
+            notiCal.add(Calendar.DATE, -1);
+        notiCal.set(Calendar.MINUTE, 0);
+        notiCal.set(Calendar.SECOND, 0);
+        notiCal.set(Calendar.MILLISECOND, 0);
+        long curTimestamp = cal.getTimeInMillis();
+        for (int i = 0; i < EMA_NOTIF_HOURS.length; i++) {
+            notiCal.set(Calendar.HOUR_OF_DAY, EMA_NOTIF_HOURS[i]);
+            long notiTimestamp = notiCal.getTimeInMillis();
+            if(notiTimestamp <= curTimestamp && curTimestamp < notiTimestamp + REPORT_RESPONSE_EXPIRE_TIME * 1000)
                 return i + 1;
         }
         return 0;
@@ -623,7 +639,7 @@ public class Tools {
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(
                         con.getApplicationContext(), channelId);
                 builder.setContentTitle(con.getString(R.string.app_name))
-                        .setTimeoutAfter(1000 * EMA_RESPONSE_EXPIRE_TIME)
+                        .setTimeoutAfter(1000 * ZATURI_RESPONSE_EXPIRE_TIME)
                         .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                         .setContent(notificationLayout)
                         .setCustomContentView(notificationLayout)

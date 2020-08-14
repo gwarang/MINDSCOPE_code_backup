@@ -101,7 +101,7 @@ public class StressReportDownloader extends Worker {
                                             eachLevelJSON.getBoolean("model_tag"));
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
                                     String[] split = oneReportWithTimestamp.split(",");
-                                    if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) != 0) {
+                                    if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) > 0) {
                                         FileOutputStream fileOutputStream = context.openFileOutput(STRESS_PREDICTION_RESULT, Context.MODE_APPEND);
                                         fileOutputStream.write(oneReportWithTimestamp.getBytes());
                                         fileOutputStream.close();

@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -83,32 +81,34 @@ public class StressReportFragment1 extends Fragment {
         @Override
         public void onClick(View view) {
 
-            if(noStressReport){
+            if (noStressReport) {
                 Calendar cal = Calendar.getInstance();
                 order = Tools.getReportOrderFromRangeAfterReport(cal);
                 SharedPreferences reportSubmitCheckPrefs = requireContext().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
                 SharedPreferences.Editor reportSubmitEditor = reportSubmitCheckPrefs.edit();
                 String reportSubmit = "self_report_submit_check_" + order;
                 reportSubmitEditor.putBoolean(reportSubmit, true);
-                reportSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
+                int submitDate = cal.get(Calendar.DATE);
+                if (cal.get(Calendar.HOUR_OF_DAY) < 1)
+                    submitDate--;
+                reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                 reportSubmitEditor.apply();
 
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-            }
-            else{
+            } else {
                 if (reportAnswer == 5) {
                     Toast.makeText(getContext(), "실제 스트레스 지수를 선택해주세요!", Toast.LENGTH_LONG).show();
                 } else {
-                    if(stressLevel != reportAnswer){
-                        for(String result : predictionArray){
+                    if (stressLevel != reportAnswer) {
+                        for (String result : predictionArray) {
                             String[] splitResult = result.split(",");
-                            if(Integer.parseInt(splitResult[PREDICTION_STRESSLV_INDEX]) == reportAnswer){
+                            if (Integer.parseInt(splitResult[PREDICTION_STRESSLV_INDEX]) == reportAnswer) {
                                 reportTimestamp = Long.parseLong(splitResult[PREDICTION_TIMESTAMP_INDEX]);
                                 day_num = Integer.parseInt(splitResult[PREDICTION_DAYNUM_INDEX]);
-                                if(day_num == 0){
+                                if (day_num == 0) {
                                     day_num = getDayNum();
                                 }
                                 order = Integer.parseInt(splitResult[PREDICTION_ORDER_INDEX]);
@@ -173,10 +173,9 @@ public class StressReportFragment1 extends Fragment {
         }
 //                gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
 
-        if(stressReportStr == null){
+        if (stressReportStr == null) {
             noStressReport = true;
-        }
-        else{
+        } else {
             String[] splitResult = stressReportStr.split(",");
             reportTimestamp = Long.parseLong(splitResult[0]);
             stressLevel = Integer.parseInt(splitResult[1]);
@@ -232,12 +231,11 @@ public class StressReportFragment1 extends Fragment {
                 break;
         }
 
-        if(noStressReport){
+        if (noStressReport) {
             stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
             answerContainer.setVisibility(View.INVISIBLE);
             questionTextView.setText(requireContext().getResources().getString(R.string.string_no_stress_report));
-        }
-        else{
+        } else {
             switch (stressLevel) {
                 case STRESS_LV1:
                     stressLevelImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
@@ -288,6 +286,10 @@ public class StressReportFragment1 extends Fragment {
 
         //region set calendar
         Calendar fromCalendar = Calendar.getInstance();
+        if(fromCalendar.get(Calendar.HOUR_OF_DAY) < 1){
+            fromCalendar.add(Calendar.DATE, -1);
+            fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[REPORT_NOTIF_HOURS.length-1]);
+        }
         int reportOrder = Tools.getReportPreviousOrder(fromCalendar);
         Calendar tillCalendar = Calendar.getInstance();
 
@@ -319,7 +321,7 @@ public class StressReportFragment1 extends Fragment {
             String[] tokens = line.split(",");
             long timestamp = Long.parseLong(tokens[0]);
 
-            if (fromCalendar.getTimeInMillis() <= timestamp && timestamp <= tillCalendar.getTimeInMillis()) {
+            if (fromCalendar.getTimeInMillis() <= timestamp && timestamp <= tillCalendar.getTimeInMillis() && Integer.parseInt(tokens[PREDICTION_ORDER_INDEX]) > 0 ) {
                 predictionArray.add(line);
             }
         }
@@ -428,7 +430,7 @@ public class StressReportFragment1 extends Fragment {
                         Log.d(TAG, "report timestamp from gRPC is empty");
                     }
                 }
-            }catch (StatusRuntimeException e){
+            } catch (StatusRuntimeException e) {
                 e.printStackTrace();
             }
 

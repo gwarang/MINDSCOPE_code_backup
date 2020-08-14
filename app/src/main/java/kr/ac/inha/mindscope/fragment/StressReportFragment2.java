@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -392,10 +391,21 @@ public class StressReportFragment2 extends Fragment {
                     String reportSubmit = "self_report_submit_check_" + order;
                     Calendar cal = Calendar.getInstance();
                     reportSubmitEditor.putBoolean(reportSubmit, true);
-                    reportSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
+                    long timestamp = System.currentTimeMillis();
+                    int submitDate = cal.get(Calendar.DATE);
+                    if (cal.get(Calendar.HOUR_OF_DAY) < 1) {
+                        submitDate--;
+                        Calendar submitCal = Calendar.getInstance();
+                        submitCal.add(Calendar.DATE, -1);
+                        submitCal.set(Calendar.HOUR_OF_DAY, 23);
+                        submitCal.set(Calendar.MINUTE, 59);
+                        submitCal.set(Calendar.SECOND, 59);
+                        submitCal.set(Calendar.MILLISECOND, 0);
+                        timestamp = submitCal.getTimeInMillis();
+                    }
+                    reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                     reportSubmitEditor.apply();
 
-                    long timestamp = System.currentTimeMillis();
 
                     SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                     int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
@@ -458,7 +468,10 @@ public class StressReportFragment2 extends Fragment {
                     Log.e(TAG, reportSubmit);
                     Calendar cal = Calendar.getInstance();
                     reportSubmitEditor.putBoolean(reportSubmit, true);
-                    reportSubmitEditor.putInt("reportSubmitDate", cal.get(Calendar.DATE));
+                    int submitDate = cal.get(Calendar.DATE);
+                    if (cal.get(Calendar.HOUR_OF_DAY) < 1)
+                        submitDate--;
+                    reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                     reportSubmitEditor.apply();
 
                     long timestamp = System.currentTimeMillis();

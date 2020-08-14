@@ -108,11 +108,11 @@ public class MeFragmentStep2 extends Fragment {
             stressResult = getStressResult(context);
             if (stressResult != null)
                 updateUi(view, stressResult);
-            else{
+            else {
                 Calendar calendar = Calendar.getInstance();
                 firstStartBefore11hoursContainer.setVisibility(View.VISIBLE);
                 allContainer.setVisibility(View.INVISIBLE);
-                if(calendar.get(Calendar.HOUR_OF_DAY) >= 11){
+                if (calendar.get(Calendar.HOUR_OF_DAY) >= 11) {
                     before11hoursTextView.setText(getResources().getString(R.string.when_no_report_and_after_11_hour));
                 }
             }
@@ -335,7 +335,7 @@ public class MeFragmentStep2 extends Fragment {
                     String text = String.format(context.getResources().getString(resId), applicationName);
                     phoneReason.add(text);
                 } else {
-                    if(Integer.parseInt(splitArray[0]) == 28)
+                    if (Integer.parseInt(splitArray[0]) == 28)
                         sleepReason.add(context.getResources().getString(resId));
                 }
 
@@ -529,20 +529,17 @@ public class MeFragmentStep2 extends Fragment {
         Calendar cal = Calendar.getInstance();
         int curHour = cal.get(Calendar.HOUR_OF_DAY);
         int todayDate = cal.get(Calendar.DATE);
-        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1)) {
+        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1) && curHour >= 1) {
             for (short i = 0; i < 4; i++) {
                 reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
                 reportSubmitEditor.apply();
             }
         }
+        int report_order = Tools.getReportOrderFromRangeAfterReport(cal);
         for (short i = 0; i < 4; i++) {
-            if (curHour == REPORT_NOTIF_HOURS[i] && !submits[i]) {
-                int ema_order = Tools.getReportOrderFromRangeAfterReport(cal);
-                if (ema_order != 0) {
-                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
-//                    intent.putExtra("ema_order", ema_order);
-                    startActivity(intent);
-                }
+            if ((curHour == REPORT_NOTIF_HOURS[i] || curHour == REPORT_NOTIF_HOURS[i]+1 || curHour == 0) && report_order > 0 && !submits[report_order-1]) {
+                Intent intent = new Intent(getActivity(), StressReportActivity.class);
+                startActivity(intent);
             }
         }
     }
