@@ -556,6 +556,7 @@ public class MeFragmentStep2 extends Fragment {
             fis = context.openFileInput(SELF_STRESS_REPORT_RESULT);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return;
         }
         InputStreamReader isr = new InputStreamReader(fis);
         BufferedReader bufferedReader = new BufferedReader(isr);
