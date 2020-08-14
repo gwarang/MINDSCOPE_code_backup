@@ -35,10 +35,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +44,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -73,8 +70,6 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
-import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
-import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -714,112 +709,112 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
     // endregion
 
-    public void loadAllStressLevels(Context context) throws IOException {
-        FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
-        InputStreamReader isr = new InputStreamReader(fis);
-        BufferedReader bufferedReader = new BufferedReader(isr);
-        String predictionLine;
-
-        FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
-        InputStreamReader isr2 = new InputStreamReader(fis2);
-        BufferedReader bufferedReader2 = new BufferedReader(isr2);
-        String selfStressReportLine;
-
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_MONTH, 1);
-        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        long tillTimestamp = c.getTimeInMillis();
-        c.setTimeInMillis(joinTimestamp);
-        long fromTimestamp = c.getTimeInMillis();
-
-        stressLevels.clear();
-
-        predictionArray = new ArrayList<>();
-        selfReportArray = new ArrayList<>();
-
-        //region load stress prediction
-        while ((predictionLine = bufferedReader.readLine()) != null) {
-            String[] predictionTokens = predictionLine.split(",");
-            long timestamp = Long.parseLong(predictionTokens[0]);
-
-            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
-                predictionArray.add(predictionLine);
-            }
-        }
-        //endregion
-
-        //region load self stress report
-        while ((selfStressReportLine = bufferedReader2.readLine()) != null) {
-            String[] selfReportTokens = selfStressReportLine.split(",");
-            long timestamp = Long.parseLong(selfReportTokens[0]);
-
-            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
-                selfReportArray.add(selfStressReportLine);
-            }
-        }
-        //endregion
-
-
-//        for (int n = 0; n < selfReportArray.size(); n++) {
-//            String value = selfReportArray.get(n);
-//            long timestamp = 0;
-//            int emaOrder = -1;
-//            int stressLevel = 0;
-//            // self-report
-//            String[] cells = value.split(",");
-//            if (cells.length != 5)
-//                continue;
-//            emaOrder = Integer.parseInt(cells[SELF_REPORT_ORDER_INDEX]);
-//            timestamp = fixTimestamp(Long.parseLong(cells[SELF_REPORT_TIMESTAMP_INDEX]), emaOrder);
-//            stressLevel = Integer.parseInt(cells[SELF_REPORT_ANSWER_INDEX]);
-//            if (stressLevel < 3) {
-//                c.setTimeInMillis(timestamp);
-//                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
-//                c.set(Calendar.MILLISECOND, 0);
-//                timestamp = c.getTimeInMillis();
-//                if (!stressLevels.containsKey(timestamp))
-//                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+//    public void loadAllStressLevels(Context context) throws IOException {
+//        FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
+//        InputStreamReader isr = new InputStreamReader(fis);
+//        BufferedReader bufferedReader = new BufferedReader(isr);
+//        String predictionLine;
+//
+//        FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
+//        InputStreamReader isr2 = new InputStreamReader(fis2);
+//        BufferedReader bufferedReader2 = new BufferedReader(isr2);
+//        String selfStressReportLine;
+//
+//        Calendar c = Calendar.getInstance();
+//        c.add(Calendar.DAY_OF_MONTH, 1);
+//        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+//        c.set(Calendar.MILLISECOND, 0);
+//        long tillTimestamp = c.getTimeInMillis();
+//        c.setTimeInMillis(joinTimestamp);
+//        long fromTimestamp = c.getTimeInMillis();
+//
+//        stressLevels.clear();
+//
+//        predictionArray = new ArrayList<>();
+//        selfReportArray = new ArrayList<>();
+//
+//        //region load stress prediction
+//        while ((predictionLine = bufferedReader.readLine()) != null) {
+//            String[] predictionTokens = predictionLine.split(",");
+//            long timestamp = Long.parseLong(predictionTokens[0]);
+//
+//            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
+//                predictionArray.add(predictionLine);
 //            }
 //        }
+//        //endregion
 //
-//        for (int n = 0; n < predictionArray.size(); n++) {
-//            String value = predictionArray.get(n);
-//            long timestamp = 0;
-//            int emaOrder = -1;
-//            int stressLevel = 0;
-
-//            // prediction
-//            try {
-//                JSONObject cells = new JSONObject(value);
-//                timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
-//                c.setTimeInMillis(timestamp);
-//                timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+//        //region load self stress report
+//        while ((selfStressReportLine = bufferedReader2.readLine()) != null) {
+//            String[] selfReportTokens = selfStressReportLine.split(",");
+//            long timestamp = Long.parseLong(selfReportTokens[0]);
 //
-//                Iterator<String> keys = cells.keys();
-//                do {
-//                    String key = keys.next();
-//                    if (cells.getJSONObject(key).getBoolean("model_tag"))
-//                        stressLevel = Integer.parseInt(key);
-//                }
-//                while (keys.hasNext());
-//            } catch (JSONException e) {
-//                continue;
-//            }
-//
-//            if (stressLevel < 3) {
-//                c.setTimeInMillis(timestamp);
-//                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
-//                c.set(Calendar.MILLISECOND, 0);
-//                timestamp = c.getTimeInMillis();
-//
-//                if (!stressLevels.containsKey(timestamp))
-//                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+//            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
+//                selfReportArray.add(selfStressReportLine);
 //            }
 //        }
-
-
-    }
+//        //endregion
+//
+//
+////        for (int n = 0; n < selfReportArray.size(); n++) {
+////            String value = selfReportArray.get(n);
+////            long timestamp = 0;
+////            int emaOrder = -1;
+////            int stressLevel = 0;
+////            // self-report
+////            String[] cells = value.split(",");
+////            if (cells.length != 5)
+////                continue;
+////            emaOrder = Integer.parseInt(cells[SELF_REPORT_ORDER_INDEX]);
+////            timestamp = fixTimestamp(Long.parseLong(cells[SELF_REPORT_TIMESTAMP_INDEX]), emaOrder);
+////            stressLevel = Integer.parseInt(cells[SELF_REPORT_ANSWER_INDEX]);
+////            if (stressLevel < 3) {
+////                c.setTimeInMillis(timestamp);
+////                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
+////                c.set(Calendar.MILLISECOND, 0);
+////                timestamp = c.getTimeInMillis();
+////                if (!stressLevels.containsKey(timestamp))
+////                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+////            }
+////        }
+////
+////        for (int n = 0; n < predictionArray.size(); n++) {
+////            String value = predictionArray.get(n);
+////            long timestamp = 0;
+////            int emaOrder = -1;
+////            int stressLevel = 0;
+//
+////            // prediction
+////            try {
+////                JSONObject cells = new JSONObject(value);
+////                timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
+////                c.setTimeInMillis(timestamp);
+////                timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
+////
+////                Iterator<String> keys = cells.keys();
+////                do {
+////                    String key = keys.next();
+////                    if (cells.getJSONObject(key).getBoolean("model_tag"))
+////                        stressLevel = Integer.parseInt(key);
+////                }
+////                while (keys.hasNext());
+////            } catch (JSONException e) {
+////                continue;
+////            }
+////
+////            if (stressLevel < 3) {
+////                c.setTimeInMillis(timestamp);
+////                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
+////                c.set(Calendar.MILLISECOND, 0);
+////                timestamp = c.getTimeInMillis();
+////
+////                if (!stressLevels.containsKey(timestamp))
+////                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+////            }
+////        }
+//
+//
+//    }
 
     public void loadAllStressLevelsFromServer() {
         if (Tools.isNetworkAvailable()) {
@@ -841,7 +836,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 final int SUBMITTED = 55, PREDICTION = 56;
-                stressLevels.clear();
+                synchronized (this){
+                    stressLevels.clear();
+                }
                 for (int dataSourceId : new int[]{SUBMITTED, PREDICTION}) {
                     EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(userId)
@@ -899,8 +896,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                     c.set(Calendar.MILLISECOND, 0);
                                     timestamp = c.getTimeInMillis();
 
-                                    if (!stressLevels.containsKey(timestamp))
-                                        stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+                                    synchronized (this){
+                                        if (!stressLevels.containsKey(timestamp))
+                                            stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
+                                    }
                                 }
                             }
                         }
@@ -946,10 +945,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(timestamp);
             CalendarDay day = CalendarDay.from(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
-            if (dailyStressLevelClusters.containsKey(day))
+            if (dailyStressLevelClusters.containsKey(day)) {
+                assert emaOrderStressLevelPair != null;
                 dailyStressLevelClusters.get(day).add(Triple.of(timestamp, emaOrderStressLevelPair.first, emaOrderStressLevelPair.second));
+            }
             else {
                 ArrayList<Triple<Long, Integer, Integer>> stressLevels = new ArrayList<>();
+                assert emaOrderStressLevelPair != null;
                 stressLevels.add(Triple.of(timestamp, emaOrderStressLevelPair.first, emaOrderStressLevelPair.second));
                 dailyStressLevelClusters.put(day, stressLevels);
             }
@@ -959,6 +961,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         for (CalendarDay day : dailyStressLevelClusters.keySet()) {
             ArrayList<Triple<Long, Integer, Integer>> cluster = dailyStressLevelClusters.get(day);
             double sum = 0;
+            assert cluster != null;
             for (Triple<Long, Integer, Integer> tsEmaOrderStressLvlTriple : cluster)
                 sum += tsEmaOrderStressLvlTriple.getRight() + 1;
             float avgStress = (float) (sum / cluster.size());
@@ -995,7 +998,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     private boolean isSubmission(long timestamp) {
-        return stressLevels.get(timestamp).first != -1;
+        return Objects.requireNonNull(stressLevels.get(timestamp)).first != -1;
     }
 
     public void hiddenViewUpdate(String feature_ids, int stressLevl) {
