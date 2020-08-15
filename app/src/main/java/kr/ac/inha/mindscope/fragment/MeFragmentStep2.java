@@ -56,6 +56,10 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
+import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ANSWER_INDEX;
+import static kr.ac.inha.mindscope.Tools.SELF_REPORT_DAYNUM_INDEX;
+import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ORDER_INDEX;
+import static kr.ac.inha.mindscope.Tools.SELF_REPORT_TIMESTAMP_INDEX;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -476,6 +480,7 @@ public class MeFragmentStep2 extends Fragment {
 
         //region self stress
         int selfStressLv = 5;
+        String lastSelfReport = null;
         try {
             FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
             InputStreamReader isr2 = new InputStreamReader(fis2);
@@ -489,6 +494,7 @@ public class MeFragmentStep2 extends Fragment {
 
                 if (fromCalendar.getTimeInMillis() <= timestamp && timestamp <= tillCalendar.getTimeInMillis()) {
                     selfStressLv = Integer.parseInt(tokens[4]);
+                    lastSelfReport = line2;
                 }
             }
         } catch (IOException e) {
@@ -513,6 +519,20 @@ public class MeFragmentStep2 extends Fragment {
                 }
             }
         }
+
+        if(lastSelfReport != null && stressResult == null){
+            // when no prediction, making stressResult using only self stress
+            String[] splitSelfReport = lastSelfReport.split(" ");
+            stressResult = String.format(Locale.getDefault(),"%d %d %d %d %.2f %s %b",
+                    Long.parseLong(splitSelfReport[SELF_REPORT_TIMESTAMP_INDEX]),
+                    Integer.parseInt(splitSelfReport[SELF_REPORT_ANSWER_INDEX]),
+                    Integer.parseInt(splitSelfReport[SELF_REPORT_DAYNUM_INDEX]),
+                    Integer.parseInt(splitSelfReport[SELF_REPORT_ORDER_INDEX]),
+                    0f,
+                    "",
+                    true);
+        }
+
         return stressResult;
     }
 

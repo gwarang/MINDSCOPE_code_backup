@@ -349,10 +349,10 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 506, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
-        if (calendar.get(Calendar.MINUTE) > 55) {
+        if (calendar.get(Calendar.MINUTE) > 50) {
             calendar.add(Calendar.HOUR_OF_DAY, 1);
         }
-        calendar.set(Calendar.MINUTE, 55);
+        calendar.set(Calendar.MINUTE, 50);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 

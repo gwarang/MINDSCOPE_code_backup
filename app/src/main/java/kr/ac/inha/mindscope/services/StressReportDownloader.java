@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
@@ -87,33 +88,34 @@ public class StressReportDownloader extends Worker {
                             for (int i = 0; i < values.size(); i++) {
                                 stressReportStr = values.get(i);
                                 long timestamp = valuesTimestamp.get(i);
-
-                                JSONObject stressReportJSON = new JSONObject(stressReportStr);
-                                for (short stressLv = 0; stressLv < 3; stressLv++) {
-                                    JSONObject eachLevelJSON = new JSONObject(stressReportJSON.getString(String.valueOf(stressLv)));
-                                    String oneReportWithTimestamp = String.format("%d,%d,%d,%d,%.2f,%s,%b\n",
-                                            timestamp,
-                                            stressLv,
-                                            eachLevelJSON.getInt("day_num"),
-                                            eachLevelJSON.getInt("ema_order"),
-                                            eachLevelJSON.getDouble("accuracy"),
-                                            eachLevelJSON.getString("feature_ids"),
-                                            eachLevelJSON.getBoolean("model_tag"));
+                                try{
+                                    JSONObject stressReportJSON = new JSONObject(stressReportStr);
+                                    for (short stressLv = 0; stressLv < 3; stressLv++) {
+                                        JSONObject eachLevelJSON = new JSONObject(stressReportJSON.getString(String.valueOf(stressLv)));
+                                        String oneReportWithTimestamp = String.format(Locale.getDefault(), "%d,%d,%d,%d,%.2f,%s,%b\n",
+                                                timestamp,
+                                                stressLv,
+                                                eachLevelJSON.getInt("day_num"),
+                                                eachLevelJSON.getInt("ema_order"),
+                                                eachLevelJSON.getDouble("accuracy"),
+                                                eachLevelJSON.getString("feature_ids"),
+                                                eachLevelJSON.getBoolean("model_tag"));
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
-                                    String[] split = oneReportWithTimestamp.split(",");
-                                    if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) > 0) {
-                                        FileOutputStream fileOutputStream = context.openFileOutput(STRESS_PREDICTION_RESULT, Context.MODE_APPEND);
-                                        fileOutputStream.write(oneReportWithTimestamp.getBytes());
-                                        fileOutputStream.close();
+                                        String[] split = oneReportWithTimestamp.split(",");
+                                        if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) > 0) {
+                                            FileOutputStream fileOutputStream = context.openFileOutput(STRESS_PREDICTION_RESULT, Context.MODE_APPEND);
+                                            fileOutputStream.write(oneReportWithTimestamp.getBytes());
+                                            fileOutputStream.close();
+                                        }
+                                        Log.d(TAG, oneReportWithTimestamp);
+                                        if (eachLevelJSON.getBoolean("model_tag")) {
+                                            stressReportPrefsEditor.putInt("reportAnswer", stressLv);
+                                            stressReportPrefsEditor.apply();
+                                        }
                                     }
-                                    Log.d(TAG, oneReportWithTimestamp);
-                                    if (eachLevelJSON.getBoolean("model_tag")) {
-                                        stressReportPrefsEditor.putInt("reportAnswer", stressLv);
-                                        stressReportPrefsEditor.apply();
-                                    }
-
+                                }catch (JSONException e){
+                                    e.printStackTrace();
                                 }
-
                             }
                             stressReportPrefsEditor.putLong("lastDownloadTime", valuesTimestamp.get(valuesTimestamp.size() - 1));
                             stressReportPrefsEditor.apply();
@@ -121,9 +123,8 @@ public class StressReportDownloader extends Worker {
                             Log.d(TAG, "values empty");
                         }
                     }
-                } catch (JSONException | IOException | StatusRuntimeException e) {
+                } catch (IOException | StatusRuntimeException e) {
                     e.printStackTrace();
-                    return Result.failure();
                 }
                 fromTimestamp = stressReportPrefs.getLong("lastSelfReportDownload", 0);
                 if (fromTimestamp == 0) {
@@ -161,7 +162,6 @@ public class StressReportDownloader extends Worker {
                         }
                     } catch (StatusRuntimeException e){
                         e.printStackTrace();
-                        return Result.failure();
                     }
                 }
                 channel.shutdown();

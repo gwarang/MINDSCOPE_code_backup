@@ -52,7 +52,7 @@ class AudioFeatureRecorder {
                     assert dataSourceId != -1;
                     long curTimestamp = System.currentTimeMillis();
                     DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, silenceDetector.currentSPL());
-                    Log.d(TAG, curTimestamp + " " + silenceDetector.currentSPL() + "");
+//                    Log.d(TAG, curTimestamp + " " + silenceDetector.currentSPL() + "");
                 }
                 return true;
             }

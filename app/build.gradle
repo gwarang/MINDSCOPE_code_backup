@@ -10,8 +10,8 @@ android {
         applicationId "kr.ac.inha.mindscope"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 9
-        versionName 'newCampaign-0815.0'
+        versionCode defaultVersionCode
+        versionName 'newCampaign-0816.0'
     }
     buildTypes {
         release {
