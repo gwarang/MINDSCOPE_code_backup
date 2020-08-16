@@ -56,6 +56,7 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURACTION_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ANSWER_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_DAYNUM_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ORDER_INDEX;
@@ -139,6 +140,10 @@ public class MeFragmentStep2 extends Fragment {
 
         NavController navController = Navigation.findNavController(view);
         Log.d(TAG, "navController : " + Objects.requireNonNull(navController.getCurrentDestination()).getId());
+        SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
+        boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
+        if (isFirstStartStep2DialogShowing)
+            startStressReportActivityWhenNotSubmitted();
 
         if (stressReportPrefs.getBoolean("today_last_report", false)) {
             navController.navigate(R.id.action_me_to_care_step2);
@@ -196,10 +201,10 @@ public class MeFragmentStep2 extends Fragment {
         boolean model_tag = Boolean.parseBoolean(splitResult[6]);
 
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-        SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
+
         Calendar cal = Calendar.getInstance();
         boolean firstStartStep2Check = stepChangePrefs.getBoolean("first_start_step2_check", false);
-        boolean isFirstStartStep2DialogShowing = firstPref.getBoolean("firstStartStep2", false);
+
         if (!firstStartStep2Check && cal.get(Calendar.HOUR_OF_DAY) < 11) {
             Calendar step2Cal = Calendar.getInstance();
             step2Cal.setTimeInMillis(stepChangePrefs.getLong("join_timestamp", 0));
@@ -270,8 +275,7 @@ public class MeFragmentStep2 extends Fragment {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration4));
             }
         }
-        if (isFirstStartStep2DialogShowing)
-            startStressReportActivityWhenNotSubmitted();
+
     }
 
     public void featureViewUpdate(String feature_ids, View view) {
@@ -334,7 +338,7 @@ public class MeFragmentStep2 extends Fragment {
                     socialReason.add(text);
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     locationReason.add(context.getResources().getString(resId));
-                } else if (category <= CATEGORY_ENTERTAIN_APP_USAGE) {
+                } else if (category <= CATEGORY_UNLOCK_DURACTION_APP_USAGE) {
                     phoneReason.add(context.getResources().getString(resId));
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
