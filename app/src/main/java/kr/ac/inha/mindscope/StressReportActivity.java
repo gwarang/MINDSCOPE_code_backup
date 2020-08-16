@@ -1,6 +1,5 @@
 package kr.ac.inha.mindscope;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,7 +52,7 @@ public class StressReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stres_report);
 
-        forceSyncIfLastDownloadIsOld(getApplicationContext());
+        forceSyncIfLastDownloadIsOld();
 
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -68,10 +67,10 @@ public class StressReportActivity extends AppCompatActivity {
     }
 
 
-    private void forceSyncIfLastDownloadIsOld(Context con){
+    private void forceSyncIfLastDownloadIsOld(){
         Log.d(TAG, "stress prediction synchronized");
         Calendar cal = Calendar.getInstance();
-        SharedPreferences stressReportPrefs = con.getSharedPreferences("stressReport", con.MODE_PRIVATE);
+        SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", MODE_PRIVATE);
 
         SharedPreferences.Editor stressReportPrefsEditor = stressReportPrefs.edit();
 
@@ -81,8 +80,8 @@ public class StressReportActivity extends AppCompatActivity {
 
         if (tillTimestamp - fromTimestamp > LAST_SYNC_TIME_THRESHOLD  && Tools.isNetworkAvailable()) {
             String stressReportStr;
-            SharedPreferences loginPrefs = con.getSharedPreferences("UserLogin", con.MODE_PRIVATE);
-            SharedPreferences configPrefs = con.getSharedPreferences("Configurations", con.MODE_PRIVATE);
+            SharedPreferences loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
+            SharedPreferences configPrefs = getSharedPreferences("Configurations", MODE_PRIVATE);
 
             ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
@@ -121,7 +120,7 @@ public class StressReportActivity extends AppCompatActivity {
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
                                     String[] split = oneReportWithTimestamp.split(",");
                                     if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) > 0) {
-                                        FileOutputStream fileOutputStream = con.openFileOutput(STRESS_PREDICTION_RESULT, con.MODE_APPEND);
+                                        FileOutputStream fileOutputStream = openFileOutput(STRESS_PREDICTION_RESULT, MODE_APPEND);
                                         fileOutputStream.write(oneReportWithTimestamp.getBytes());
                                         fileOutputStream.close();
                                     }

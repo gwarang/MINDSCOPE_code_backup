@@ -175,6 +175,9 @@ public class StressReportFragment1 extends Fragment {
 
         if (stressReportStr == null) {
             noStressReport = true;
+            Calendar cal = Calendar.getInstance();
+            reportTimestamp = cal.getTimeInMillis();
+            order = Tools.getReportOrderFromRangeAfterReport(cal);
         } else {
             String[] splitResult = stressReportStr.split(",");
             reportTimestamp = Long.parseLong(splitResult[0]);
