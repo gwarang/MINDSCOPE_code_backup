@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import kr.ac.inha.mindscope.DbMgr;
@@ -60,8 +61,6 @@ import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_R
 public class StressReportFragment2 extends Fragment {
 
     private static final String TAG = "StressReportFragment2";
-    private static final int YES_BTN = 1;
-    private static final int NO_BTN = 2;
     public int reportAnswer;
     public int stressLevel;
     public int day_num;
@@ -73,17 +72,17 @@ public class StressReportFragment2 extends Fragment {
     TextView accView;
     ImageView stressImg;
     TextView stressLevelView;
-    TextView reason1;
-    TextView reason2;
-    TextView reason3;
-    TextView reason4;
-    TextView reason5;
     ScrollView reasonContainer;
     Button yesBtn;
     Button noBtn;
     Button reportBtn;
     LinearLayout loadingLayout;
-    private int yesOrNo = 2;
+    ConstraintLayout analysisSelectContainer;
+    private int analysisResult = NOT_SELECT_ANALYSIS_CORRECTNESS;
+    private static final int NOT_SELECT_ANALYSIS_CORRECTNESS = 5;
+    private static final int INCORRECT_ANALYSIS_RESULT = 0;
+    private static final int CORRECT_ANALYSIS_RESULT = 1;
+    private static final int NO_FEATURES_ANALYSIS_RESULT = 2;
 
 
     public StressReportFragment2() {
@@ -151,6 +150,7 @@ public class StressReportFragment2 extends Fragment {
         noBtn = view.findViewById(R.id.btn_incorrect);
         reportBtn = view.findViewById(R.id.toolbar_report_btn2);
         reasonContainer = view.findViewById(R.id.stress_report_reason_container);
+        analysisSelectContainer = view.findViewById(R.id.btn_container);
 
         if (feature_ids != null)
             featureViewUpdate(feature_ids, view);
@@ -299,6 +299,8 @@ public class StressReportFragment2 extends Fragment {
             locationContainer.setVisibility(View.GONE);
             sleepContainer.setVisibility(View.GONE);
             noFeatureTextview.setVisibility(View.VISIBLE);
+            analysisResult = NO_FEATURES_ANALYSIS_RESULT;
+            analysisSelectContainer.setVisibility(View.INVISIBLE);
         } else {
             phoneListView.setAdapter(phoneAdapter);
             activityListView.setAdapter(activityAdapter);
@@ -367,7 +369,7 @@ public class StressReportFragment2 extends Fragment {
     View.OnClickListener reportClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (yesOrNo == 2) {
+            if (analysisResult == NOT_SELECT_ANALYSIS_CORRECTNESS) {
                 Toast.makeText(getContext(), "분석이 맞았는지 선택해주세요!", Toast.LENGTH_LONG).show();
             } else {
                 Context context = requireContext();
@@ -411,13 +413,13 @@ public class StressReportFragment2 extends Fragment {
                     int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
                     assert dataSourceId != -1;
                     Log.d(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
-                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, analysisResult, reportAnswer);
 
                     String oneReportWithTimestamp = String.format(Locale.KOREA, "%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
                             order,
-                            yesOrNo,
+                            analysisResult,
                             reportAnswer);
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
                     FileOutputStream fileOutputStream;
@@ -447,7 +449,7 @@ public class StressReportFragment2 extends Fragment {
                         notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
                     }
 
-                    Tools.saveApplicationLog(context, TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, yesOrNo);
+                    Tools.saveApplicationLog(context, TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, analysisResult);
                 } else {
                     // 그 외는 MainActivity로
 
@@ -479,12 +481,12 @@ public class StressReportFragment2 extends Fragment {
                     int dataSourceId = prefs.getInt("SELF_STRESS_REPORT", -1);
                     assert dataSourceId != -1;
                     Log.d(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
-                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, yesOrNo, reportAnswer);
+                    DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, analysisResult, reportAnswer);
                     String oneReportWithTimestamp = String.format(Locale.KOREA, "%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
                             order,
-                            yesOrNo,
+                            analysisResult,
                             reportAnswer);
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
                     FileOutputStream fileOutputStream;
@@ -514,7 +516,7 @@ public class StressReportFragment2 extends Fragment {
                         notificationManager.cancel(STRESS_REPORT_NOTIFI_ID);
                     }
 
-                    Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, yesOrNo);
+                    Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, analysisResult);
                 }
             }
         }
@@ -523,7 +525,7 @@ public class StressReportFragment2 extends Fragment {
     View.OnClickListener yesClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            yesOrNo = 1;
+            analysisResult = CORRECT_ANALYSIS_RESULT;
             yesBtn.setSelected(true);
             yesBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_blue));
             noBtn.setSelected(false);
@@ -534,7 +536,7 @@ public class StressReportFragment2 extends Fragment {
     View.OnClickListener noClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            yesOrNo = 0;
+            analysisResult = INCORRECT_ANALYSIS_RESULT;
             yesBtn.setSelected(false);
             yesBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_light));
             noBtn.setSelected(true);

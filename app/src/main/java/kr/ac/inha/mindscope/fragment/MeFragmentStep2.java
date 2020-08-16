@@ -126,6 +126,7 @@ public class MeFragmentStep2 extends Fragment {
             allContainer.setVisibility(View.INVISIBLE);
         }
 
+
         return view;
     }
 

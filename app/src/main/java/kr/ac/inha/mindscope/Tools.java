@@ -766,10 +766,10 @@ public class Tools {
             long timestamp = cal.getTimeInMillis();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String logDate = simpleDateFormat.format(cal.getTimeInMillis());
-            SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+            SharedPreferences prefs = con.getSharedPreferences("Configurations", MODE_PRIVATE);
             int dataSourceId = prefs.getInt("APPLICATION_LOG", -1);
-            assert dataSourceId != -1;
-            if (uniqueTagForEachActivityOrEvent != null && action != null){
+
+            if (dataSourceId != -1 && uniqueTagForEachActivityOrEvent != null && action != null) {
                 if (DbMgr.getDB() == null)
                     DbMgr.init(con);
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, logDate, uniqueTagForEachActivityOrEvent, action, sb.toString());
