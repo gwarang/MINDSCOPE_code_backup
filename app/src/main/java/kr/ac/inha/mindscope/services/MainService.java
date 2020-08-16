@@ -192,20 +192,32 @@ public class MainService extends Service {
 
             //region Registering Audio recorder periodically
             boolean canStartAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_PERIOD * 1000); // || AudioRunningForCall;
-            boolean stopAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_DURATION * 1000);
+//            boolean stopAudioRecord = (curTimestamp > prevAudioRecordStartTime + AUDIO_RECORDING_DURATION * 1000);
             if (canStartAudioRecord) {
                 if (audioFeatureRecorder == null) {
                     audioFeatureRecorder = new AudioFeatureRecorder(MainService.this);
                     audioFeatureRecorder.start();
                     prevAudioRecordStartTime = curTimestamp;
-                }
-            } else if (stopAudioRecord) {
-                if (audioFeatureRecorder != null) {
-                    Log.d(TAG, "call audioFeatureRecorder.stop()");
-                    audioFeatureRecorder.stop();
-                    audioFeatureRecorder = null;
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(audioFeatureRecorder != null){
+                                Log.d(TAG, "call audioFeatureRecorder.stop() in handler");
+                                audioFeatureRecorder.stop();
+                                audioFeatureRecorder = null;
+                            }
+                        }
+                    }, 5000);
                 }
             }
+//            else if (stopAudioRecord) {
+//                if (audioFeatureRecorder != null) {
+//                    Log.d(TAG, "call audioFeatureRecorder.stop()");
+////                    audioFeatureRecorder.stop();
+//                    audioFeatureRecorder = null;
+//                }
+//            }
             //endregion
 
 
