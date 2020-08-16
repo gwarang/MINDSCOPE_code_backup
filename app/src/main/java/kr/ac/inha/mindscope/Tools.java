@@ -271,6 +271,7 @@ public class Tools {
 
         UsageStatsManager usageStatsManager = (UsageStatsManager) con.getSystemService(Context.USAGE_STATS_SERVICE);
 
+        //region zaturi
         /* Zaturi start */
         SharedPreferences interventionPrefs = con.getSharedPreferences("intervention", MODE_PRIVATE);
         SharedPreferences stressReportPrefs = con.getSharedPreferences("stressReport", MODE_PRIVATE);
@@ -350,6 +351,7 @@ public class Tools {
             }
         }
         /* Zaturi end */
+        //endregion
 
         List<UsageStats> stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, fromCal.getTimeInMillis(), System.currentTimeMillis());
         for (UsageStats usageStats : stats) {
