@@ -25,6 +25,7 @@ import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,6 +140,25 @@ public class MainService extends Service {
             Tools.stepCheck(getApplicationContext());
             SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
             int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
+            if (stepCheck != 0 && !stepChangePrefs.getBoolean("haveToken", false)) {
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(task -> {
+                            if (!task.isSuccessful()) {
+                                Log.d(TAG, "getInstanceId failed", task.getException());
+                                return;
+                            }
+
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+
+                            // Log and toast
+//                        String ms = getString(R.string.msg_)
+                            Log.d("FCM Log", "FCM token: " + token);
+                            SharedPreferences.Editor stepChangePrefsEditor = stepChangePrefs.edit();
+                            stepChangePrefsEditor.putBoolean("haveToken", true);
+                            stepChangePrefsEditor.apply();
+                        });
+            }
             //endregion
 
             //region Sending Notification and some statistics periodically - EMA

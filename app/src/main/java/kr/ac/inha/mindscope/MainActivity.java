@@ -592,6 +592,9 @@ public class MainActivity extends AppCompatActivity {
                         // Log and toast
 //                        String ms = getString(R.string.msg_)
                         Log.d("FCM Log", "FCM token: " + token);
+                        SharedPreferences.Editor stepChangePrefsEditor = stepChangePrefs.edit();
+                        stepChangePrefsEditor.putBoolean("haveToken", true);
+                        stepChangePrefsEditor.apply();
                     });
         }
     }
