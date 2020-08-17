@@ -369,21 +369,23 @@ public class CareChildFragment1 extends Fragment {
         // initialize timestamp from today 00:00:00 to 23:59:59
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
+        tillCalendar.add(Calendar.DATE, 1);
         // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
-        if (fromCalendar.get(Calendar.HOUR_OF_DAY) >= 11) {
+        int curHour = fromCalendar.get(Calendar.HOUR_OF_DAY);
+        if (curHour >= 11) {
             // today
-            fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            fromCalendar.set(Calendar.HOUR_OF_DAY, 1);
             fromCalendar.set(Calendar.MINUTE, 0);
             fromCalendar.set(Calendar.SECOND, 0);
-            tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, 0);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
         } else {
             // yesterday
-            fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            fromCalendar.set(Calendar.HOUR_OF_DAY, 1);
             fromCalendar.set(Calendar.MINUTE, 0);
             fromCalendar.set(Calendar.SECOND, 0);
-            tillCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            tillCalendar.set(Calendar.HOUR_OF_DAY, 0);
             tillCalendar.set(Calendar.MINUTE, 59);
             tillCalendar.set(Calendar.SECOND, 59);
             long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;

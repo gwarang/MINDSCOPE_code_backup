@@ -710,112 +710,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
     // endregion
 
-//    public void loadAllStressLevels(Context context) throws IOException {
-//        FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);
-//        InputStreamReader isr = new InputStreamReader(fis);
-//        BufferedReader bufferedReader = new BufferedReader(isr);
-//        String predictionLine;
-//
-//        FileInputStream fis2 = context.openFileInput(SELF_STRESS_REPORT_RESULT);
-//        InputStreamReader isr2 = new InputStreamReader(fis2);
-//        BufferedReader bufferedReader2 = new BufferedReader(isr2);
-//        String selfStressReportLine;
-//
-//        Calendar c = Calendar.getInstance();
-//        c.add(Calendar.DAY_OF_MONTH, 1);
-//        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-//        c.set(Calendar.MILLISECOND, 0);
-//        long tillTimestamp = c.getTimeInMillis();
-//        c.setTimeInMillis(joinTimestamp);
-//        long fromTimestamp = c.getTimeInMillis();
-//
-//        stressLevels.clear();
-//
-//        predictionArray = new ArrayList<>();
-//        selfReportArray = new ArrayList<>();
-//
-//        //region load stress prediction
-//        while ((predictionLine = bufferedReader.readLine()) != null) {
-//            String[] predictionTokens = predictionLine.split(",");
-//            long timestamp = Long.parseLong(predictionTokens[0]);
-//
-//            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
-//                predictionArray.add(predictionLine);
-//            }
-//        }
-//        //endregion
-//
-//        //region load self stress report
-//        while ((selfStressReportLine = bufferedReader2.readLine()) != null) {
-//            String[] selfReportTokens = selfStressReportLine.split(",");
-//            long timestamp = Long.parseLong(selfReportTokens[0]);
-//
-//            if (fromTimestamp <= timestamp && timestamp <= tillTimestamp) {
-//                selfReportArray.add(selfStressReportLine);
-//            }
-//        }
-//        //endregion
-//
-//
-////        for (int n = 0; n < selfReportArray.size(); n++) {
-////            String value = selfReportArray.get(n);
-////            long timestamp = 0;
-////            int emaOrder = -1;
-////            int stressLevel = 0;
-////            // self-report
-////            String[] cells = value.split(",");
-////            if (cells.length != 5)
-////                continue;
-////            emaOrder = Integer.parseInt(cells[SELF_REPORT_ORDER_INDEX]);
-////            timestamp = fixTimestamp(Long.parseLong(cells[SELF_REPORT_TIMESTAMP_INDEX]), emaOrder);
-////            stressLevel = Integer.parseInt(cells[SELF_REPORT_ANSWER_INDEX]);
-////            if (stressLevel < 3) {
-////                c.setTimeInMillis(timestamp);
-////                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
-////                c.set(Calendar.MILLISECOND, 0);
-////                timestamp = c.getTimeInMillis();
-////                if (!stressLevels.containsKey(timestamp))
-////                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
-////            }
-////        }
-////
-////        for (int n = 0; n < predictionArray.size(); n++) {
-////            String value = predictionArray.get(n);
-////            long timestamp = 0;
-////            int emaOrder = -1;
-////            int stressLevel = 0;
-//
-////            // prediction
-////            try {
-////                JSONObject cells = new JSONObject(value);
-////                timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
-////                c.setTimeInMillis(timestamp);
-////                timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
-////
-////                Iterator<String> keys = cells.keys();
-////                do {
-////                    String key = keys.next();
-////                    if (cells.getJSONObject(key).getBoolean("model_tag"))
-////                        stressLevel = Integer.parseInt(key);
-////                }
-////                while (keys.hasNext());
-////            } catch (JSONException e) {
-////                continue;
-////            }
-////
-////            if (stressLevel < 3) {
-////                c.setTimeInMillis(timestamp);
-////                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY), 0, 0);
-////                c.set(Calendar.MILLISECOND, 0);
-////                timestamp = c.getTimeInMillis();
-////
-////                if (!stressLevels.containsKey(timestamp))
-////                    stressLevels.put(timestamp, new Pair<>(emaOrder, stressLevel));
-////            }
-////        }
-//
-//
-//    }
 
     public void loadAllStressLevelsFromServer() {
         if (Tools.isNetworkAvailable()) {
@@ -932,6 +826,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private long fixTimestamp(long timestamp, int emaOrder) {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(timestamp);
+        if(c.get(Calendar.HOUR_OF_DAY) < 1){
+            c.add(Calendar.DATE, -1);
+        }
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), getEmaOrderHour(emaOrder), 0, 0);
         return c.getTimeInMillis();
     }
