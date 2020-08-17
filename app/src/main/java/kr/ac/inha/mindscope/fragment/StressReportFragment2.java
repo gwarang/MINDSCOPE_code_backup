@@ -472,8 +472,16 @@ public class StressReportFragment2 extends Fragment {
                     Calendar cal = Calendar.getInstance();
                     reportSubmitEditor.putBoolean(reportSubmit, true);
                     int submitDate = cal.get(Calendar.DATE);
-                    if (cal.get(Calendar.HOUR_OF_DAY) < 1)
+                    if (cal.get(Calendar.HOUR_OF_DAY) < 1) {
                         submitDate--;
+                        Calendar submitCal = Calendar.getInstance();
+                        submitCal.add(Calendar.DATE, -1);
+                        submitCal.set(Calendar.HOUR_OF_DAY, 23);
+                        submitCal.set(Calendar.MINUTE, 59);
+                        submitCal.set(Calendar.SECOND, 59);
+                        submitCal.set(Calendar.MILLISECOND, 0);
+//                        timestamp = submitCal.getTimeInMillis();
+                    }
                     reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                     reportSubmitEditor.apply();
 
