@@ -1,6 +1,5 @@
 package kr.ac.inha.mindscope;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import static kr.ac.inha.mindscope.Tools.ACTION_OPEN_PAGE;
@@ -32,21 +29,19 @@ public class FirstStartActivity extends AppCompatActivity {
     private  static final String START_BUTTON_CLCIK = "START_BUTTON_CLICK";
     ViewPager2 viewPager2;
     SpringDotsIndicator springDotsIndicator;
-    LinearLayout containerBtn;
     TextView fsv_title;
     Button btnStart;
     CheckBox mCheckbox;
 
-    AlertDialog dialog;
-
-    private ViewPager mPager;
-    CheckBox checkBox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_start);
 
-//        Objects.requireNonNull(getSupportActionBar()).hide();
+        SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
+        SharedPreferences.Editor stepChangePrefsEditor = stepChangePrefs.edit();
+        stepChangePrefsEditor.putInt("stepCheck", 0);
+        stepChangePrefsEditor.apply();
 
         viewPager2 = findViewById(R.id.viewPager2);
         springDotsIndicator = (SpringDotsIndicator) findViewById(R.id.spring_dots_indicator);
