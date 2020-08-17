@@ -593,11 +593,12 @@ public class MeFragmentStep2 extends Fragment {
 
         Calendar startToday = Calendar.getInstance();
         Calendar endToday = Calendar.getInstance();
+        endToday.add(Calendar.DATE, 1);
 
         startToday.set(Calendar.HOUR_OF_DAY, 1);
         startToday.set(Calendar.MINUTE, 0);
         startToday.set(Calendar.SECOND, 0);
-        endToday.set(Calendar.HOUR_OF_DAY, 23);
+        endToday.set(Calendar.HOUR_OF_DAY, 0);
         endToday.set(Calendar.MINUTE, 59);
         endToday.set(Calendar.SECOND, 59);
 
