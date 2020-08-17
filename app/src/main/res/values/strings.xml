@@ -111,10 +111,10 @@
     <string name="fsv_point">Point</string>
     <string name="fsv_checkbox_text">모든 설명을 이해하였으며 실험 참가에 동의합니다.</string>
     <string name="fsv_contents_one">마인드스코프는\n스트레스를 관리하기 위한 서비스 입니다.\n마인드스코프의 스트레스 관리는\n두 단계로 진행됩니다!</string>
-    <string name="fsv_contents_two">당신을 위한 맞춤 스트레스 관리를 위해\n2주간 스트레스를 측정합니다.\n하루에 4번오는 설문에 답해주세요!\n꼼꼼히 답해줄수록 정확한 예측이 가능하답니다.</string>
-    <string name="fsv_contents_three">2주 간의 설문과 측정이 끝나면\n마인드스코프가 4주 동안 매일\n당신의 스트레스를 분석하여 보내드립니다.\n스트레스 해소를 위한 방법도\n추천 받을 수 있답니다.</string>
-    <string name="fsv_contents_four">6주 간의 실험동안 포인트를 모아보세요!\n\nstep 1에서는 설문 1개를 완료할 때마다\nstep 2에서는 리포트 1개를 확인할 때마다\n250원씩의 포인트가 차곡차곡 쌓인답니다.\n실험 중에 총 42,000원을 쌓을 수 있어요!</string>
-    <string name="fsv_contents_five">기본 사례비는 18,000원이며\n실험 종료 인터뷰에 참여하면\n20,000원을 추가지급합니다.\n\n성실하게 실험에 참여하신다면\n총 60,000원을 받을 수 있답니다!</string>
+    <string name="fsv_contents_two">당신을 위한 맞춤 스트레스 관리를 위해\n10일간 스트레스를 측정합니다.\n하루에 4번오는 설문에 답해주세요!\n꼼꼼히 답해줄수록 정확한 예측이 가능하답니다.</string>
+    <string name="fsv_contents_three">10일 간의 설문과 측정이 끝나면\n마인드스코프가 10일 동안 매일\n당신의 스트레스를 분석하여 보내드립니다.\n스트레스 해소를 위한 방법도\n추천 받을 수 있답니다.</string>
+    <string name="fsv_contents_four">20일 간의 실험동안 포인트를 모아보세요!\n\nstep 1에서는 설문 1개를 완료할 때마다\nstep 2에서는 리포트 1개를 확인할 때마다\n250원씩의 포인트가 차곡차곡 쌓인답니다.\n실험 중에 총 20,000원을 쌓을 수 있어요!</string>
+    <string name="fsv_contents_five">기본 사례비는 18,000원이며\n실험 종료 인터뷰에 참여하면\n20,000원을 추가지급합니다.\n\n성실하게 실험에 참여하신다면\n총 48,000원을 받을 수 있답니다!</string>
     <string name="fsv_contents_six">이제 마인드스코프에 대해\n다 알게 되었군요!\n실험 동의에 체크하고\n마인드스코프를 시작해 볼까요?\n\n</string>
 
     <string name="map_explain">집, 기숙사, 학교, 학습공간, 작업공간, 동아리방, 헬스장 등\n여러분이 자주 방문하는 장소를 검색하여 추가해주세요.</string>

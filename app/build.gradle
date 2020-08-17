@@ -11,7 +11,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode defaultVersionCode
-        versionName 'newCampaign-0817.0'
+        versionName '1.0.0'
     }
     buildTypes {
         release {

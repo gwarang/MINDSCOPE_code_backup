@@ -85,8 +85,8 @@ public class Tools {
     public static final int CATEGORY_UNLOCK_DURACTION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000;  // TODO change 60 * 60 * 24 * 1 * 1000  for real test
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000;  // TODO change 60 * 60 * 24 * 14 * 1000  for real test
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
 
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
@@ -810,6 +810,14 @@ public class Tools {
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
         if (joinTimestamp == 0) {
             joinTimestamp = getJoinTime(context);
+            if(joinTimestamp == 0){
+                Calendar tempCal = Calendar.getInstance();
+                tempCal.set(Calendar.HOUR_OF_DAY, 0);
+                tempCal.set(Calendar.MINUTE, 0);
+                tempCal.set(Calendar.SECOND, 0);
+                tempCal.set(Calendar.MILLISECOND, 0);
+                joinTimestamp = tempCal.getTimeInMillis();
+            }
         }
         int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
@@ -830,7 +838,6 @@ public class Tools {
             stepEditor.apply();
         }
         //endregion
-
     }
 
     public static long getJoinTime(Context context) {
