@@ -222,6 +222,7 @@
     <string name="mute_today">Mute today\'s notifications</string>
     <string name="do_intervention">Relieve stress</string>
     <string name="diff_intervention">Change intervention</string>
+    <string name="enter_diff_int">Enter a new intervention</string>
     <!--Zaturi end-->
 
 

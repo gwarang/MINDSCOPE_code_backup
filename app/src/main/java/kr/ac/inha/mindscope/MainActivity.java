@@ -145,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
         if (intent.getExtras() != null) {
             if (intent.getBooleanExtra("get_point", false)) {
                 updatePointAndShowDialog(intent);
+            } else if (intent.getBooleanExtra("change_intervention", false)) {
+                navController.navigate(R.id.action_me_to_care_step2);
             }
         }
 

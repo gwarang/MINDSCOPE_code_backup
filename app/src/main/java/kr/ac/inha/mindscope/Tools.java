@@ -133,6 +133,7 @@ public class Tools {
             "kr.ac.inha.mindscope"                  // MindScope
     };
     public static final int ZATURI_NOTIFICATION_ID = 2222;
+    public static final int ZATURI_DIFF_INT_NOTIFICATION_ID = 2223;
     public static final int STRESS_CONFIG = 0;
     public static final int STRESS_NEXT_TIME = 1;
     public static final int STRESS_MUTE_TODAY = 2;
@@ -140,6 +141,7 @@ public class Tools {
     public static final int STRESS_DO_INTERVENTION = 4;
     public static final int STRESS_OTHER_RECOMMENDATION = 5;
     public static final int STRESS_PUSH_NOTI_SENT = 6;
+    public static final int STRESS_DO_DIFF_INTERVENTION = 7;
     public static final int PATH_APP = 0;
     public static final int PATH_NOTIFICATION = 1;
     /* Zaturi end */
@@ -278,7 +280,6 @@ public class Tools {
         SharedPreferences interventionPrefs = con.getSharedPreferences("intervention", MODE_PRIVATE);
         SharedPreferences stressReportPrefs = con.getSharedPreferences("stressReport", MODE_PRIVATE);
         // Check if between 11am and 11pm
-        // TODO: [TEST] Reverse the condition
         if (isBetween11am11pm()) {
             // If not MUTE_TODAY
             if (!interventionPrefs.getBoolean("muteToday", false)) {
@@ -333,7 +334,8 @@ public class Tools {
                                         editor.apply();
                                     }
                                     // If the interval from last usage > 10 min
-                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 600000)
+//                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 600000)
+                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 6000)
                                             && !packageName.contains(launcher_packageName)) {
                                         Log.d("ZATURI", "TIMER STARTS");
                                         // Turn on flag for timer and set the timer
@@ -629,7 +631,6 @@ public class Tools {
 
 //        Intent notificationIntent = new Intent(MainService.this, EMAActivity.class);
                 Intent nextTimeIntent = new Intent(con, InterventionService.class);
-                // TODO: Save to server : 다음에 하기 (STRESS_NEXT_TIME)
                 nextTimeIntent.putExtra("stress_next_time", true); // STRESS_NEXT_TIME 다음에 하기 1
                 nextTimeIntent.putExtra("path", 1); // path is 1 (notification)
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
@@ -638,8 +639,6 @@ public class Tools {
                 Intent muteTodayIntent = new Intent(con, InterventionService.class);
                 muteTodayIntent.putExtra("stress_mute_today", true); // STRESS_MUTE_TODAY 오늘의 알림 끄기 2
                 muteTodayIntent.putExtra("path", 1); // path is 1 (notification)
-                // TODO: Save to server : 오늘의 알림 끄기 (STRESS_MUTE_TODAY)
-                //  Change muteToday to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_MUTE_TODAY, PATH_NOTIFICATION);
 //        SharedPreferences.Editor editor = prefs.edit();
@@ -653,9 +652,6 @@ public class Tools {
                 Intent stressRelIntent = new Intent(con, InterventionService.class);
                 stressRelIntent.putExtra("stress_do_intervention", true); // STRESS_DO_INTERVENTION 스트레스 해소하기 4
                 stressRelIntent.putExtra("path", 1); // path is 1 (notification)
-                // TODO: Save to server : 스트레스 해소하기 (STRESS_DO_INTERVENTION)
-                //  Go to 스트레스 해소하기 화면 (to be determined)
-                //  Change didIntervention to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_DO_INTERVENTION, PATH_NOTIFICATION);
 //        SharedPreferences.Editor editor = prefs.edit();
@@ -671,20 +667,10 @@ public class Tools {
                 PendingIntent stressRelPI = PendingIntent.getService(con,
                         3, stressRelIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent diffIntPI = PendingIntent.getService(con,
+                        4, diffIntIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
-                RemoteInput remoteInput = new RemoteInput.Builder("key_text_reply")
-                        .setLabel(con.getResources().getString(R.string.diff_intervention))
-                        .build();
-                PendingIntent diffIntPI = PendingIntent.getBroadcast(con,
-                        4, diffIntIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//                PendingIntent diffIntPI = PendingIntent.getService(con,
-//                        4, diffIntIntent,
-//                        PendingIntent.FLAG_UPDATE_CURRENT);
-
-                NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_edit_24px,
-                        "다른거 하기", diffIntPI)
-                        .addRemoteInput(remoteInput)
-                        .build();
 
                 RemoteViews notificationLayout = new RemoteViews(con.getPackageName(), R.layout.notification_intervention);
                 notificationLayout.setTextViewText(R.id.textIntervention, curIntervention);
@@ -704,8 +690,7 @@ public class Tools {
                         .setAutoCancel(true)
                         .setCategory(CATEGORY_ALARM)
                         .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
-                        .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .addAction(action);
+                        .setPriority(NotificationCompat.PRIORITY_MAX);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(channelId,
