@@ -213,6 +213,7 @@
     <string name="next_time">다음에 하기</string>
     <string name="mute_today">오늘의 알림 끄기</string>
     <string name="do_intervention">스트레스 해소하기</string>
+    <string name="diff_intervention">다른거 하기</string>
     <!--Zaturi end-->
 
     <string name="feature_0high">한 자리에 오래 머무른 시간이 길어요</string>

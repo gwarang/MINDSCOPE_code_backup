@@ -10,6 +10,8 @@ import java.util.Objects;
 
 import kr.ac.inha.mindscope.DbMgr;
 
+import static kr.ac.inha.mindscope.Tools.sendStressInterventionNoti;
+
 
 public class ScreenAndUnlockReceiver extends BroadcastReceiver {
     public static final String TAG = "ScreenAndUnlockReceiver";
@@ -39,6 +41,31 @@ public class ScreenAndUnlockReceiver extends BroadcastReceiver {
                 assert dataSourceId != -1;
                 Log.d(TAG, "STORING DATA :" + dataSourceId + " " + phoneUnlockedDuration);
                 DbMgr.saveMixedData(dataSourceId, phoneUnlockedDurationStart, 1.0f, phoneUnlockedDurationStart, phoneUnlockedDurationEnd, phoneUnlockedDuration);
+
+                /* Zaturi starts */
+                SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+
+                if (loginPrefs.getBoolean("zaturiTimerOn", false)) {
+                    Log.d("ZATURI", "Different package name");
+                    // Check if the usage duration < 30 sec
+                    if (System.currentTimeMillis() -
+                            loginPrefs.getLong("zaturiTimerStart", 0) < 30000) {
+                        Log.d("ZATURI", "SEND NOTI");
+                        // Then send a notification
+                        sendStressInterventionNoti(context);
+                    }
+                    // Reset the variables
+                    SharedPreferences.Editor editor = loginPrefs.edit();
+                    editor.putBoolean("zaturiTimerOn", false);
+                    editor.putLong("zaturiTimerStart", 0);
+                    editor.putString("zaturiPackage", "");
+
+                    // Save last phone usage time (except for communication app usage)
+                    editor.putLong("zaturiLastPhoneUsage", System.currentTimeMillis());
+                    editor.apply();
+                }
+
+                /* Zaturi ends */
             }
             //endregion
 
