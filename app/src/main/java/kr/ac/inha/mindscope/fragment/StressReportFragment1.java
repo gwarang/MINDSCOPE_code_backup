@@ -345,10 +345,11 @@ public class StressReportFragment1 extends Fragment {
         int dayNum;
         SharedPreferences a = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         long joinTimestamp = a.getLong("join_timestamp", 0);
-        String firstTimeStr = a.getString("firstDaeMillis", "2020-07-09");
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Calendar cal = Calendar.getInstance();
+        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+            cal.add(Calendar.DATE, -1);
+        }
         long caldate = joinTimestamp - cal.getTimeInMillis();
 
         dayNum = (int) (caldate / (24 * 60 * 60 * 1000));
