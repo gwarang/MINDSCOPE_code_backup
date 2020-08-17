@@ -553,6 +553,13 @@ public class MeFragmentStep2 extends Fragment {
         };
         Calendar cal = Calendar.getInstance();
         int curHour = cal.get(Calendar.HOUR_OF_DAY);
+        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+            cal.add(Calendar.DATE, -1);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
         int todayDate = cal.get(Calendar.DATE);
         if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1) && curHour >= 1) {
             for (short i = 0; i < 4; i++) {
@@ -587,7 +594,7 @@ public class MeFragmentStep2 extends Fragment {
         Calendar startToday = Calendar.getInstance();
         Calendar endToday = Calendar.getInstance();
 
-        startToday.set(Calendar.HOUR_OF_DAY, 0);
+        startToday.set(Calendar.HOUR_OF_DAY, 1);
         startToday.set(Calendar.MINUTE, 0);
         startToday.set(Calendar.SECOND, 0);
         endToday.set(Calendar.HOUR_OF_DAY, 23);

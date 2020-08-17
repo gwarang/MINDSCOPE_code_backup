@@ -404,7 +404,7 @@ public class StressReportFragment2 extends Fragment {
                         submitCal.set(Calendar.MINUTE, 59);
                         submitCal.set(Calendar.SECOND, 59);
                         submitCal.set(Calendar.MILLISECOND, 0);
-                        timestamp = submitCal.getTimeInMillis();
+//                        timestamp = submitCal.getTimeInMillis();
                     }
                     reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                     reportSubmitEditor.apply();

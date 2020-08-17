@@ -98,7 +98,7 @@ public class MeFragmentStep1 extends Fragment {
             date.setVisibility(View.INVISIBLE);
             attdView.setVisibility(View.INVISIBLE);
             timeContainer.setVisibility(View.INVISIBLE);
-        } else if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 3) {
+        } else if (cal.get(Calendar.HOUR_OF_DAY) < 11 && cal.get(Calendar.HOUR_OF_DAY) > 0) {
             before11Hours.setVisibility(View.VISIBLE);
             date.setVisibility(View.INVISIBLE);
             attdView.setVisibility(View.INVISIBLE);
@@ -108,6 +108,9 @@ public class MeFragmentStep1 extends Fragment {
             date.setVisibility(View.VISIBLE);
             attdView.setVisibility(View.VISIBLE);
             timeContainer.setVisibility(View.VISIBLE);
+            SharedPreferences.Editor editor = stepChangePrefs.edit();
+            editor.putBoolean("step1FirstAfter11o'clock", true);
+            editor.apply();
         }
 
         time1 = root.findViewById(R.id.time1_state);
@@ -195,12 +198,13 @@ public class MeFragmentStep1 extends Fragment {
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
                 Calendar fromCal = Calendar.getInstance();
-                fromCal.set(Calendar.HOUR_OF_DAY, 0);
+                fromCal.set(Calendar.HOUR_OF_DAY, 1);
                 fromCal.set(Calendar.MINUTE, 0);
                 fromCal.set(Calendar.SECOND, 0);
                 fromCal.set(Calendar.MILLISECOND, 0);
-                Calendar tillCal = (Calendar) fromCal.clone();
-                tillCal.set(Calendar.HOUR_OF_DAY, 23);
+                Calendar tillCal = Calendar.getInstance();
+                tillCal.add(Calendar.DATE, 1);
+                tillCal.set(Calendar.HOUR_OF_DAY, 0);
                 tillCal.set(Calendar.MINUTE, 59);
                 tillCal.set(Calendar.SECOND, 59);
                 EtService.RetrieveFilteredDataRecords.Request retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
@@ -235,7 +239,7 @@ public class MeFragmentStep1 extends Fragment {
                         Calendar cal = Calendar.getInstance();
                         int curHours = cal.get(Calendar.HOUR_OF_DAY);
                         for (short i = 0; i < 4; i++) {
-                            if (curHours >= SUBMIT_HOUR[i]) {
+                            if (curHours >= SUBMIT_HOUR[i] || curHours <= 1) {
                                 if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
                                     times[i].setText(getResources().getString(R.string.string_survey_incomplete));
                                     timeBtns[i].setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_time_incomplete));
@@ -337,6 +341,7 @@ public class MeFragmentStep1 extends Fragment {
 
     public void startEmaActivityWhenNotSubmitted() {
         SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
         boolean[] submits = {
                 emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false),
@@ -346,6 +351,13 @@ public class MeFragmentStep1 extends Fragment {
         };
         Calendar cal = Calendar.getInstance();
         int curHour = cal.get(Calendar.HOUR_OF_DAY);
+        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+            cal.add(Calendar.DATE, -1);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
         int todayDate = cal.get(Calendar.DATE);
         if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1) && curHour >= 1) {
             for (short i = 0; i < 4; i++) {
@@ -355,10 +367,12 @@ public class MeFragmentStep1 extends Fragment {
         }
         int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
         for (short i = 0; i < 4; i++) {
-            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour == 0) && ema_order > 0 && !submits[i]) {
-                Intent intent = new Intent(getActivity(), EMAActivity.class);
-                intent.putExtra("ema_order", ema_order);
-                startActivity(intent);
+            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour == 0) && ema_order > 0 && !submits[ema_order - 1]) {
+                if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
+                    Intent intent = new Intent(getActivity(), EMAActivity.class);
+                    intent.putExtra("ema_order", ema_order);
+                    startActivity(intent);
+                }
             }
         }
         updateEmaResponseView();

@@ -85,8 +85,8 @@ public class Tools {
     public static final int CATEGORY_UNLOCK_DURACTION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 1 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day + 1 hour, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 1 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
 
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
@@ -482,8 +482,10 @@ public class Tools {
 
     public static int getEMAOrderFromRangeAfterEMA(Calendar cal) {
         Calendar notiCal = Calendar.getInstance();
-        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1)
+        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1){
             notiCal.add(Calendar.DATE, -1);
+            notiCal.set(Calendar.HOUR_OF_DAY, 23);
+        }
         notiCal.set(Calendar.MINUTE, 0);
         notiCal.set(Calendar.SECOND, 0);
         notiCal.set(Calendar.MILLISECOND, 0);
@@ -499,8 +501,10 @@ public class Tools {
 
     public static int getReportOrderFromRangeAfterReport(Calendar cal) {
         Calendar notiCal = Calendar.getInstance();
-        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1)
+        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1){
             notiCal.add(Calendar.DATE, -1);
+            notiCal.set(Calendar.HOUR_OF_DAY, 23);
+        }
         notiCal.set(Calendar.MINUTE, 0);
         notiCal.set(Calendar.SECOND, 0);
         notiCal.set(Calendar.MILLISECOND, 0);
@@ -831,7 +835,7 @@ public class Tools {
             // step2
             SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
             stepEditor.putInt("stepCheck", 2);
-            if (diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60 * 60 * 11 * 1000) {
+            if (diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60 * 60 * 10 * 1000) {
                 stepEditor.putBoolean("first_start_care_step2_check", true);
                 stepEditor.putBoolean("first_start_step2_check", true);
             }

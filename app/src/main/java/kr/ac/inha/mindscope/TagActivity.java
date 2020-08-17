@@ -80,12 +80,13 @@ public class TagActivity extends AppCompatActivity {
         inputTag.setHint("#내상태를 #기록해주세요 #을붙이셔야 #적용됩니다.");
 
         // Toolbar
-        toolbar = (Toolbar) findViewById(R.id.toolbar_tag);
+        toolbar = findViewById(R.id.toolbar_tag);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null)
+        if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
         // endregion
 
         tagBtn.setOnClickListener(clickListener);
@@ -150,6 +151,13 @@ public class TagActivity extends AppCompatActivity {
             String emaSubmit = "ema_submit_check_" + emaOrder;
             Calendar cal = Calendar.getInstance();
             emaSubmitEditor.putBoolean(emaSubmit, true);
+            if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+                cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.HOUR_OF_DAY, 23);
+                cal.set(Calendar.MINUTE, 59);
+                cal.set(Calendar.SECOND, 59);
+                cal.set(Calendar.MILLISECOND, 0);
+            }
             emaSubmitEditor.putInt("emaSubmitDate", cal.get(Calendar.DATE));
             emaSubmitEditor.apply();
 

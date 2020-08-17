@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -125,6 +124,9 @@ public class EMAActivity extends AppCompatActivity {
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
         Calendar cal = Calendar.getInstance();
+        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+            cal.add(Calendar.DATE, -1);
+        }
         long caldate = joinTimestamp - cal.getTimeInMillis();
         dayNum = caldate / (24 * 60 * 60 * 1000);
         dayNum = Math.abs(dayNum);
@@ -202,7 +204,12 @@ public class EMAActivity extends AppCompatActivity {
 
         todayNum = getDayNum();
 
-        Date currentTime = Calendar.getInstance().getTime();
+        Calendar cal = Calendar.getInstance();
+        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+            cal.add(Calendar.DATE, -1);
+        }
+
+        Date currentTime = cal.getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
@@ -367,45 +374,6 @@ public class EMAActivity extends AppCompatActivity {
 //        Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();
     }
 
-    public void clickSubmit(View view) {
-        long timestamp = System.currentTimeMillis();
-        Log.d(TAG, "timestamp: " + timestamp);
-
-        String answers = String.format(Locale.US, "%d %d %d %d",
-                answer1,
-                answer2,
-                answer3,
-                answer4);
-
-        Log.d(TAG, "answer " + answers + " " + answer5);
-
-        SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-        int dataSourceId = prefs.getInt("SURVEY_EMA", -1);
-        assert dataSourceId != -1;
-        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, emaOrder, answers);
-
-        SharedPreferences.Editor editor = loginPrefs.edit();
-        editor.putBoolean("ema_btn_make_visible", false);
-        editor.apply();
-
-        SharedPreferences prefsSelfReport = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-        int dataSourceId2 = prefs.getInt("SELF_STRESS_REPORT", -1);
-        assert dataSourceId2 != -1;
-        DbMgr.saveMixedData(dataSourceId2, timestamp, 1.0f, timestamp, /*day_num,*/ emaOrder, answer5);
-
-
-        //go to main activity
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.cancel(EMA_NOTI_ID);
-        }
-
-        Toast.makeText(this, "Response saved", Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     protected void onPause() {
