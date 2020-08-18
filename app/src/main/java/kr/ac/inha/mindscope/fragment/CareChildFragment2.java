@@ -103,6 +103,7 @@ public class CareChildFragment2 extends Fragment {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
+            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
@@ -115,6 +116,7 @@ public class CareChildFragment2 extends Fragment {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
+            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
@@ -127,6 +129,7 @@ public class CareChildFragment2 extends Fragment {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
+            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
@@ -164,6 +167,7 @@ public class CareChildFragment2 extends Fragment {
 
         SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
+        assert curIntervention != null;
         if (!curIntervention.equals("")) {
             currentIntervention.setText(curIntervention);
             currentInterventionContainer.setVisibility(View.VISIBLE);
@@ -208,6 +212,7 @@ public class CareChildFragment2 extends Fragment {
                 editor.putBoolean("didIntervention", true);
                 editor.putInt("performedDate", cal.get(Calendar.DATE));
                 editor.apply();
+                assert curIntervention != null;
                 Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, STRESS_DO_INTERVENTION, 0);
 //                loadTodayPerformedIntervention();
                 doneInterventionText.setText(newPerformedList);
@@ -226,11 +231,13 @@ public class CareChildFragment2 extends Fragment {
             editor.putBoolean("muteToday", true);
             Calendar cal = Calendar.getInstance();
             String curIntervention = prefs.getString("curIntervention", "");
+            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_MUTE_TODAY, 0);
         } else {
             editor.putBoolean("muteToday", false);
             Calendar cal = Calendar.getInstance();
             String curIntervention = prefs.getString("curIntervention", "");
+            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_UNMUTE_TODAY, 0);
         }
         editor.apply();
@@ -261,6 +268,7 @@ public class CareChildFragment2 extends Fragment {
         Random random = new Random();
         int[] randomNums = new int[3];
         for (int i = 0; i < 3; i++) {
+            assert interventionSplit != null;
             randomNums[i] = random.nextInt(interventionSplit.length);
         }
 
@@ -271,6 +279,7 @@ public class CareChildFragment2 extends Fragment {
         Calendar cal = Calendar.getInstance();
         SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
+        assert curIntervention != null;
         Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_OTHER_RECOMMENDATION, 0);
         Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_LOAD_OTHER_INTERVENTION);
 
@@ -333,7 +342,7 @@ public class CareChildFragment2 extends Fragment {
                             Log.d(TAG, "values empty");
                         }
                     }
-                }catch (StatusRuntimeException e){
+                }catch (StatusRuntimeException | NumberFormatException e){
                     e.printStackTrace();
                 }
 
