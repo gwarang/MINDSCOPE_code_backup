@@ -52,7 +52,6 @@ import java.util.Objects;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.RemoteInput;
 
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
@@ -334,8 +333,8 @@ public class Tools {
                                         editor.apply();
                                     }
                                     // If the interval from last usage > 10 min
-//                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 600000)
-                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 6000)
+                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 600000)
+//                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 6000)
                                             && !packageName.contains(launcher_packageName)) {
                                         Log.d("ZATURI", "TIMER STARTS");
                                         // Turn on flag for timer and set the timer

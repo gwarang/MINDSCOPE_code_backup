@@ -330,13 +330,18 @@ public class CareChildFragment2 extends Fragment {
                             Log.d(TAG, "intervention list " + values);
                             for (String value : values) {
                                 String[] splitValue = value.split(" ");
-                                if (splitValue[1] != null && !splitValue[1].equals("") && splitValue[1].charAt(0) == '#'
+
+                                if (splitValue[2].toString().equals("하기") || splitValue[2].toString().equals("보기")) {
+                                    Log.d(TAG, "skip existing wrong data with spaces");
+                                }
+                                else if (splitValue[1] != null && !splitValue[1].equals("") && splitValue[1].charAt(0) == '#'
                                         && (((Integer.parseInt(splitValue[2]) == STRESS_DO_INTERVENTION)
                                         || (Integer.parseInt(splitValue[2]) == STRESS_DO_DIFF_INTERVENTION)))) {
                                     Log.d(TAG, "intervention is : " + splitValue[1]);
                                     todayPerformedInterventions.add(splitValue);
-                                } else
+                                } else {
                                     Log.d(TAG, "no intervention");
+                                }
                             }
                         } else {
                             Log.d(TAG, "values empty");
