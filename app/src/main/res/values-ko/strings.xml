@@ -135,7 +135,7 @@
     <string name="time_report_duration4">오후 07:00부터 오후 11:00까지의</string>
 
 
-    <string name="step1_notice">이 기능은 2주 간의 설문을 마친 뒤\nSTEP 2부터 잠금 해제 됩니다</string>
+    <string name="step1_notice">이 기능은 10일 간의 설문을 마친 뒤\nSTEP 2부터 잠금 해제 됩니다</string>
 
     <string name="place_name">위치</string>
     <string name="place_home">집</string>
