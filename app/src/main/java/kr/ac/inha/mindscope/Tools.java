@@ -52,6 +52,8 @@ import java.util.Objects;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -131,6 +133,7 @@ public class Tools {
             "kr.ac.inha.mindscope"                  // MindScope
     };
     public static final int ZATURI_NOTIFICATION_ID = 2222;
+    public static final int ZATURI_DIFF_INT_NOTIFICATION_ID = 2223;
     public static final int STRESS_CONFIG = 0;
     public static final int STRESS_NEXT_TIME = 1;
     public static final int STRESS_MUTE_TODAY = 2;
@@ -138,6 +141,7 @@ public class Tools {
     public static final int STRESS_DO_INTERVENTION = 4;
     public static final int STRESS_OTHER_RECOMMENDATION = 5;
     public static final int STRESS_PUSH_NOTI_SENT = 6;
+    public static final int STRESS_DO_DIFF_INTERVENTION = 7;
     public static final int PATH_APP = 0;
     public static final int PATH_NOTIFICATION = 1;
     /* Zaturi end */
@@ -299,13 +303,41 @@ public class Tools {
                             String packageName = currentEvent.getPackageName();
                             // For all apps except communication apps
                             Log.d("ZATURI", "packageName: " + packageName);
-                            if (!Arrays.asList(COMMUNICATION_APPS).contains(packageName)
-                                    && !packageName.contains(launcher_packageName)) {
+                            if (!Arrays.asList(COMMUNICATION_APPS).contains(packageName)) {
+//                                    && !packageName.contains(launcher_packageName)) {
                                 // When an app is opened/resumed
                                 if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED) {
                                     Log.d("ZATURI", "ACTIVITY_RESUMED");
+                                    // When an app closes (== when another app resumes)
+                                    // Check if timer is on
+                                    if (loginPrefs.getBoolean("zaturiTimerOn", false)) {
+                                        // Check if the package name doesn't match
+                                        if (!packageName.equals(loginPrefs.getString("zaturiPackage", ""))) {
+                                            Log.d("ZATURI", "Different package name");
+                                            // Check if the usage duration < 30 sec
+                                            if (currentEvent.getTimeStamp() -
+                                                    loginPrefs.getLong("zaturiTimerStart", 0) < 30000) {
+                                                Log.d("ZATURI", "SEND NOTI");
+                                                // Then send a notification
+                                                sendStressInterventionNoti(con);
+                                            }
+                                            // Reset the variables
+                                            SharedPreferences.Editor editor = loginPrefs.edit();
+                                            editor.putBoolean("zaturiTimerOn", false);
+                                            editor.putLong("zaturiTimerStart", 0);
+                                            editor.putString("zaturiPackage", "");
+                                            editor.apply();
+                                        }
+                                        // Save last phone usage time (except for communication app usage)
+                                        SharedPreferences.Editor editor = loginPrefs.edit();
+                                        editor.putLong("zaturiLastPhoneUsage", currentEvent.getTimeStamp());
+                                        editor.apply();
+                                    }
                                     // If the interval from last usage > 10 min
-                                    if (System.currentTimeMillis() - zaturiLastPhoneUsage > 600000) {
+//                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 600000)
+                                    else if ((System.currentTimeMillis() - zaturiLastPhoneUsage > 6000)
+                                            && !packageName.contains(launcher_packageName)) {
+                                        Log.d("ZATURI", "TIMER STARTS");
                                         // Turn on flag for timer and set the timer
                                         // & remember the package name
                                         SharedPreferences.Editor editor = loginPrefs.edit();
@@ -318,6 +350,7 @@ public class Tools {
                                         || currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_STOPPED) {
                                     if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED) Log.d("ZATURI", "ACTIVITY_PAUSED");
                                     if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_STOPPED) Log.d("ZATURI", "ACTIVITY_STOPPED");
+                                    /*
                                     // When an app closes
                                     // Check if timer is on
                                     if (loginPrefs.getBoolean("zaturiTimerOn", false)) {
@@ -339,10 +372,15 @@ public class Tools {
                                         }
                                     }
 
-                                    // Save last phone usage time (except for communication app usage)
-                                    SharedPreferences.Editor editor = loginPrefs.edit();
-                                    editor.putLong("zaturiLastPhoneUsage", currentEvent.getTimeStamp());
-                                    editor.apply();
+                                     */
+
+                                    if (!loginPrefs.getBoolean("zaturiTimerOn", false)) {
+                                        Log.d("ZATURI", "save last phone usage time");
+                                        // Save last phone usage time (except for communication app usage)
+                                        SharedPreferences.Editor editor = loginPrefs.edit();
+                                        editor.putLong("zaturiLastPhoneUsage", currentEvent.getTimeStamp());
+                                        editor.apply();
+                                    }
                                 }
                             }
                         }
@@ -597,7 +635,6 @@ public class Tools {
 
 //        Intent notificationIntent = new Intent(MainService.this, EMAActivity.class);
                 Intent nextTimeIntent = new Intent(con, InterventionService.class);
-                // TODO: Save to server : 다음에 하기 (STRESS_NEXT_TIME)
                 nextTimeIntent.putExtra("stress_next_time", true); // STRESS_NEXT_TIME 다음에 하기 1
                 nextTimeIntent.putExtra("path", 1); // path is 1 (notification)
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
@@ -606,20 +643,19 @@ public class Tools {
                 Intent muteTodayIntent = new Intent(con, InterventionService.class);
                 muteTodayIntent.putExtra("stress_mute_today", true); // STRESS_MUTE_TODAY 오늘의 알림 끄기 2
                 muteTodayIntent.putExtra("path", 1); // path is 1 (notification)
-                // TODO: Save to server : 오늘의 알림 끄기 (STRESS_MUTE_TODAY)
-                //  Change muteToday to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_MUTE_TODAY, PATH_NOTIFICATION);
 //        SharedPreferences.Editor editor = prefs.edit();
 //        editor.putBoolean("muteToday", true);
 //        editor.apply();
 
+                Intent diffIntIntent = new Intent(con, InterventionService.class);
+                diffIntIntent.putExtra("stress_diff_int", true);
+                diffIntIntent.putExtra("path", 1);
+
                 Intent stressRelIntent = new Intent(con, InterventionService.class);
                 stressRelIntent.putExtra("stress_do_intervention", true); // STRESS_DO_INTERVENTION 스트레스 해소하기 4
                 stressRelIntent.putExtra("path", 1); // path is 1 (notification)
-                // TODO: Save to server : 스트레스 해소하기 (STRESS_DO_INTERVENTION)
-                //  Go to 스트레스 해소하기 화면 (to be determined)
-                //  Change didIntervention to true
 //        saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
 //                STRESS_DO_INTERVENTION, PATH_NOTIFICATION);
 //        SharedPreferences.Editor editor = prefs.edit();
@@ -635,12 +671,17 @@ public class Tools {
                 PendingIntent stressRelPI = PendingIntent.getService(con,
                         3, stressRelIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent diffIntPI = PendingIntent.getService(con,
+                        4, diffIntIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
 
                 RemoteViews notificationLayout = new RemoteViews(con.getPackageName(), R.layout.notification_intervention);
                 notificationLayout.setTextViewText(R.id.textIntervention, curIntervention);
                 notificationLayout.setOnClickPendingIntent(R.id.btnNextTime, nextTimePI);
-                notificationLayout.setOnClickPendingIntent(R.id.btnMuteToday, muteTodayPI);
+                notificationLayout.setOnClickPendingIntent(R.id.btnDiffInt, diffIntPI);
                 notificationLayout.setOnClickPendingIntent(R.id.btnStressRel, stressRelPI);
+
 
                 String channelId = con.getString(R.string.notif_channel_id);
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(

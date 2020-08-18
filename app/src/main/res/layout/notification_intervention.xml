@@ -27,18 +27,21 @@
         <TextView android:id="@+id/btnNextTime"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:textAlignment="center"
             android:text="@string/next_time"
             style="@style/Widget.AppCompat.ActionButton"/>
         <TextView
-            android:id="@+id/btnMuteToday"
+            android:id="@+id/btnDiffInt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mute_today"
+            android:textAlignment="center"
+            android:text="@string/diff_intervention"
             style="@style/Widget.AppCompat.ActionButton"/>
         <TextView
             android:id="@+id/btnStressRel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:text="@string/do_intervention"
             style="@style/Widget.AppCompat.ActionButton"/>
     </LinearLayout>
