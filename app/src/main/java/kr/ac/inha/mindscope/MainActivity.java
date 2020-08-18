@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -49,7 +48,6 @@ import kr.ac.inha.mindscope.dialog.PointCustomDialog;
 import kr.ac.inha.mindscope.receivers.AppUseNotifierReceiver;
 import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
 import kr.ac.inha.mindscope.receivers.StressReportReceiver;
-import kr.ac.inha.mindscope.services.InterventionService;
 import kr.ac.inha.mindscope.services.MainService;
 import kr.ac.inha.mindscope.services.StressReportDownloader;
 
@@ -596,13 +594,11 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "getInstanceId failed", task.getException());
                             return;
                         }
-
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
-
                         // Log and toast
 //                        String ms = getString(R.string.msg_)
-                        Log.d("FCM Log", "FCM token: " + token);
+                        Log.d("FCM Log mainactivity", "FCM token: " + token);
                         SharedPreferences.Editor stepChangePrefsEditor = stepChangePrefs.edit();
                         stepChangePrefsEditor.putBoolean("haveToken", true);
                         stepChangePrefsEditor.apply();

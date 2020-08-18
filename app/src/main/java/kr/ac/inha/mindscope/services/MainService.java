@@ -147,13 +147,11 @@ public class MainService extends Service {
                                 Log.d(TAG, "getInstanceId failed", task.getException());
                                 return;
                             }
-
                             // Get new Instance ID token
                             String token = task.getResult().getToken();
-
                             // Log and toast
 //                        String ms = getString(R.string.msg_)
-                            Log.d("FCM Log", "FCM token: " + token);
+                            Log.d("FCM Log mainservice", "FCM token: " + token);
                             SharedPreferences.Editor stepChangePrefsEditor = stepChangePrefs.edit();
                             stepChangePrefsEditor.putBoolean("haveToken", true);
                             stepChangePrefsEditor.apply();

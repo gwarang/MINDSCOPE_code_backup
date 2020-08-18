@@ -13,7 +13,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(@NonNull String token) {
-        Log.d("FCM Log", "Refreshed token: " + token);
+        Log.d("FCM Log myfirebase", "Refreshed token: " + token);
 
     }
 
