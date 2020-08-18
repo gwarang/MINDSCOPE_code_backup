@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +49,7 @@ import kr.ac.inha.mindscope.dialog.PointCustomDialog;
 import kr.ac.inha.mindscope.receivers.AppUseNotifierReceiver;
 import kr.ac.inha.mindscope.receivers.ConnectionMonitor;
 import kr.ac.inha.mindscope.receivers.StressReportReceiver;
+import kr.ac.inha.mindscope.services.InterventionService;
 import kr.ac.inha.mindscope.services.MainService;
 import kr.ac.inha.mindscope.services.StressReportDownloader;
 
@@ -146,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             if (intent.getBooleanExtra("get_point", false)) {
                 updatePointAndShowDialog(intent);
             } else if (intent.getBooleanExtra("change_intervention", false)) {
-                navController.navigate(R.id.action_me_to_care_step2);
+                // TODO: Navigate to 마음 케어 -> 스트레스 해소 탭
             }
         }
 
@@ -491,6 +493,13 @@ public class MainActivity extends AppCompatActivity {
     private void changeNav() {
         stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         int step = stepChangePrefs.getInt("stepCheck", 0);
+
+        // For step 2 testing
+//        step = 2;
+//        SharedPreferences.Editor editor1 = stepChangePrefs.edit();
+//        editor1.putBoolean("step1Done", true);
+//        editor1.putInt("stepCheck", 2);
+//        editor1.apply();
 
         if (step == 1 && !stepChangePrefs.getBoolean("step1Done", false)) {
             View view = getLayoutInflater().inflate(R.layout.first_start_step_dialog, null);
