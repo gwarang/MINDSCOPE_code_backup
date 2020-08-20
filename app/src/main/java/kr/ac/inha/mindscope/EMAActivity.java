@@ -29,6 +29,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import static kr.ac.inha.mindscope.fragment.MeFragmentStep1.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class EMAActivity extends AppCompatActivity {
@@ -124,7 +125,7 @@ public class EMAActivity extends AppCompatActivity {
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
         Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             cal.add(Calendar.DATE, -1);
         }
         long caldate = joinTimestamp - cal.getTimeInMillis();

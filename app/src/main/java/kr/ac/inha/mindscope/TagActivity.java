@@ -27,6 +27,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import static kr.ac.inha.mindscope.fragment.MeFragmentStep1.timeTheDayNumIsChanged;
+
 public class TagActivity extends AppCompatActivity {
 
     public static final int DIALOG_ENALBE = 1;
@@ -151,7 +153,7 @@ public class TagActivity extends AppCompatActivity {
             String emaSubmit = "ema_submit_check_" + emaOrder;
             Calendar cal = Calendar.getInstance();
             emaSubmitEditor.putBoolean(emaSubmit, true);
-            if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+            if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
                 cal.add(Calendar.DATE, -1);
                 cal.set(Calendar.HOUR_OF_DAY, 23);
                 cal.set(Calendar.MINUTE, 59);

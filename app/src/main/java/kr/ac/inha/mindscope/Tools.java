@@ -52,7 +52,6 @@ import java.util.Objects;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -67,6 +66,7 @@ import static android.app.Notification.CATEGORY_ALARM;
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
+import static kr.ac.inha.mindscope.fragment.MeFragmentStep1.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
@@ -86,8 +86,8 @@ public class Tools {
     public static final int CATEGORY_UNLOCK_DURACTION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 1 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day + 1 hour, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 1 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day + 1 hour, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
 
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
@@ -519,7 +519,7 @@ public class Tools {
 
     public static int getEMAOrderFromRangeAfterEMA(Calendar cal) {
         Calendar notiCal = Calendar.getInstance();
-        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1){
+        if(notiCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             notiCal.add(Calendar.DATE, -1);
             notiCal.set(Calendar.HOUR_OF_DAY, 23);
         }
@@ -538,7 +538,7 @@ public class Tools {
 
     public static int getReportOrderFromRangeAfterReport(Calendar cal) {
         Calendar notiCal = Calendar.getInstance();
-        if(notiCal.get(Calendar.HOUR_OF_DAY) < 1){
+        if(notiCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             notiCal.add(Calendar.DATE, -1);
             notiCal.set(Calendar.HOUR_OF_DAY, 23);
         }
@@ -583,18 +583,22 @@ public class Tools {
         long calDateDays;
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
-        long timestamp = System.currentTimeMillis();
+        long uploadTimestamp = System.currentTimeMillis();
 
-        long diffTimestamp = timestamp - joinTimestamp;
+        Calendar curCal = Calendar.getInstance();
+        if(curCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+            curCal.add(Calendar.DATE, -1);
+        }
+
+
+        long diffTimestamp = curCal.getTimeInMillis() - joinTimestamp;
         calDateDays = Math.abs(diffTimestamp / (24 * 60 * 60 * 1000));
 
-
         SharedPreferences prefs = context.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-        SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", MODE_PRIVATE);
         int dataSourceId = prefs.getInt("REWARD_POINTS", -1);
         assert dataSourceId != -1;
         Log.d(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
-        DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, calDateDays, Tools.POINT_INCREASE_VALUE);
+        DbMgr.saveMixedData(dataSourceId, uploadTimestamp, 1.0f, uploadTimestamp, calDateDays, Tools.POINT_INCREASE_VALUE);
 
         fastUploadToServer(context);
     }

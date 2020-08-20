@@ -157,7 +157,6 @@
                 android:id="@+id/time1_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="test"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size3"/>
@@ -194,7 +193,6 @@
                 android:id="@+id/time2_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="test"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size3"/>
@@ -234,7 +232,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
-                android:text="설문미완료"
                 android:textSize="@dimen/my_text_size3"/>
 
         </LinearLayout>
@@ -268,7 +265,6 @@
                 android:id="@+id/time4_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="test"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:textSize="@dimen/my_text_size3"/>
