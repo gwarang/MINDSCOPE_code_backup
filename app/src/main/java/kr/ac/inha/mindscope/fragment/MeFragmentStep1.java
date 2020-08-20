@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -152,8 +153,14 @@ public class MeFragmentStep1 extends Fragment {
         SharedPreferences firstPref = requireActivity().getSharedPreferences("firstStart", Context.MODE_PRIVATE);
         int firstviewshow = firstPref.getInt("First", 0);
         boolean isFirstStartStep1DialogShowing = firstPref.getBoolean("firstStartStep1", false);
-        if (firstviewshow == 1 && isFirstStartStep1DialogShowing)
-            startEmaActivityWhenNotSubmitted();
+        if (firstviewshow == 1 && isFirstStartStep1DialogShowing){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startEmaActivityWhenNotSubmitted();
+                }
+            }, 500);
+        }
         loadAllPoints();
         updateEmaResponseView();
     }
@@ -302,23 +309,39 @@ public class MeFragmentStep1 extends Fragment {
                         }
                         channel.shutdown();
 
-                        Calendar todayCal = Calendar.getInstance();
-                        todayCal.set(Calendar.HOUR_OF_DAY, 0);
-                        todayCal.set(Calendar.MINUTE, 0);
-                        todayCal.set(Calendar.SECOND, 0);
-                        todayCal.set(Calendar.MILLISECOND, 0);
+                        Calendar todayStartCal = Calendar.getInstance();
+                        Calendar todayEndCal = Calendar.getInstance();
+                        todayStartCal.set(Calendar.HOUR_OF_DAY, 1);
+                        todayStartCal.set(Calendar.MINUTE, 0);
+                        todayStartCal.set(Calendar.SECOND, 0);
+                        todayStartCal.set(Calendar.MILLISECOND, 0);
+                        todayEndCal.add(Calendar.DATE, 1);
+                        todayEndCal.set(Calendar.HOUR_OF_DAY, 0);
+                        todayEndCal.set(Calendar.MINUTE, 59);
+                        todayEndCal.set(Calendar.SECOND, 59);
+                        todayEndCal.set(Calendar.MILLISECOND, 0);
                         Calendar pointCal = Calendar.getInstance();
+
+                        long startTimestamp = todayStartCal.getTimeInMillis();
+                        long endTimestamp = todayEndCal.getTimeInMillis();
+                        long pointTimestamp = 0;
 
                         for (Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()) {
                             allPoints += elem.getValue();
                             pointCal.setTimeInMillis(elem.getKey());
-                            pointCal.set(Calendar.HOUR_OF_DAY, 0);
-                            pointCal.set(Calendar.MINUTE, 0);
-                            pointCal.set(Calendar.SECOND, 0);
-                            pointCal.set(Calendar.MILLISECOND, 0);
-                            if (todayCal.compareTo(pointCal) == 0) {
+
+                            pointTimestamp = pointCal.getTimeInMillis();
+                            if(startTimestamp <= pointTimestamp && pointTimestamp <= endTimestamp){
                                 dailyPoints += elem.getValue();
                             }
+
+//                            pointCal.set(Calendar.HOUR_OF_DAY, 0);
+//                            pointCal.set(Calendar.MINUTE, 0);
+//                            pointCal.set(Calendar.SECOND, 0);
+//                            pointCal.set(Calendar.MILLISECOND, 0);
+//                            if (todayStartCal.compareTo(pointCal) == 0) {
+//                                dailyPoints += elem.getValue();
+//                            }
                         }
 
                         if (isAdded()) {
@@ -373,6 +396,7 @@ public class MeFragmentStep1 extends Fragment {
                 }
             }
         }
+        loadAllPoints();
         updateEmaResponseView();
     }
 
