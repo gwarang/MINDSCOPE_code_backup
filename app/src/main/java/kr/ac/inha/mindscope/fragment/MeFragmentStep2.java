@@ -61,6 +61,7 @@ import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ANSWER_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_DAYNUM_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ORDER_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_TIMESTAMP_INDEX;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -449,21 +450,19 @@ public class MeFragmentStep2 extends Fragment {
         Calendar tillCalendar = Calendar.getInstance();
 
         // initialize calendar time
-        // 10:00:00~11:59:59, 14:00:00~15:59:59, 18:00:00~19:59:59, 22:00:00~23:59:59
+        // 10:00:00~11:59:59, 14:00:00~15:59:59, 18:00:00~19:59:59, 22:00:00~06:59:59
         if (reportOrder < 4) {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
         } else {
             if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
-                long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-                long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-                fromCalendar.setTimeInMillis(fromTimestampYesterday);
-                tillCalendar.setTimeInMillis(tillTimestampYesterday);
+                fromCalendar.add(Calendar.DATE, -1);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
             } else {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1]);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
+                tillCalendar.add(Calendar.DATE, 1);
             }
         }
         fromCalendar.set(Calendar.MINUTE, 0);
@@ -553,7 +552,7 @@ public class MeFragmentStep2 extends Fragment {
         };
         Calendar cal = Calendar.getInstance();
         int curHour = cal.get(Calendar.HOUR_OF_DAY);
-        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             cal.add(Calendar.DATE, -1);
             cal.set(Calendar.HOUR_OF_DAY, 23);
             cal.set(Calendar.MINUTE, 59);
@@ -561,7 +560,7 @@ public class MeFragmentStep2 extends Fragment {
             cal.set(Calendar.MILLISECOND, 0);
         }
         int todayDate = cal.get(Calendar.DATE);
-        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1) && curHour >= 1) {
+        if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1) && curHour >= timeTheDayNumIsChanged) {
             for (short i = 0; i < 4; i++) {
                 reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
                 reportSubmitEditor.apply();
@@ -569,7 +568,7 @@ public class MeFragmentStep2 extends Fragment {
         }
         int report_order = Tools.getReportOrderFromRangeAfterReport(cal);
         for (short i = 0; i < 4; i++) {
-            if ((curHour == REPORT_NOTIF_HOURS[i] || curHour == REPORT_NOTIF_HOURS[i]+1 || curHour == 0) && report_order > 0 && !submits[report_order-1]) {
+            if ((curHour == REPORT_NOTIF_HOURS[i] || curHour == REPORT_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && report_order > 0 && !submits[report_order-1]) {
                 Intent intent = new Intent(getActivity(), StressReportActivity.class);
                 startActivity(intent);
             }

@@ -66,7 +66,6 @@ import static android.app.Notification.CATEGORY_ALARM;
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.StressReportActivity.REPORT_NOTIF_HOURS;
-import static kr.ac.inha.mindscope.fragment.MeFragmentStep1.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment1.REPORT_DURATION;
 import static kr.ac.inha.mindscope.services.MainService.EMA_RESPONSE_EXPIRE_TIME;
 import static kr.ac.inha.mindscope.services.MainService.REPORT_RESPONSE_EXPIRE_TIME;
@@ -88,6 +87,7 @@ public class Tools {
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
     public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day + 1 hour, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
     public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
+    public static final int timeTheDayNumIsChanged = 7;
 
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
@@ -545,6 +545,13 @@ public class Tools {
         notiCal.set(Calendar.MINUTE, 0);
         notiCal.set(Calendar.SECOND, 0);
         notiCal.set(Calendar.MILLISECOND, 0);
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+            cal.add(Calendar.DATE, -1);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 1);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
         long curTimestamp = cal.getTimeInMillis();
         for (int i = 0; i < EMA_NOTIF_HOURS.length; i++) {
             notiCal.set(Calendar.HOUR_OF_DAY, EMA_NOTIF_HOURS[i]);

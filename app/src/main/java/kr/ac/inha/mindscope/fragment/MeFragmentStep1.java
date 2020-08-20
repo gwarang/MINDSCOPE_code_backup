@@ -43,12 +43,13 @@ import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 
 import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 
 public class MeFragmentStep1 extends Fragment {
 
     private static final String TAG = "MeFragment";
     private static final int[] SUBMIT_HOUR = {11, 15, 19, 23};
-    public static final int timeTheDayNumIsChanged = 7;
+
     static HashMap<Long, Integer> allPointsMaps = new HashMap<>();
     TextView time1;
     TextView time2;
@@ -160,6 +161,7 @@ public class MeFragmentStep1 extends Fragment {
         int firstviewshow = firstPref.getInt("First", 0);
         boolean isFirstStartStep1DialogShowing = firstPref.getBoolean("firstStartStep1", false);
 
+        updateEmaResponseView();
         if (firstviewshow == 1 && isFirstStartStep1DialogShowing){
             new Handler().postDelayed(new Runnable() {
                 @Override

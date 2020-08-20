@@ -24,17 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import inha.nsl.easytrack.ETServiceGrpc;
-import inha.nsl.easytrack.EtService;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.StatusRuntimeException;
-import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.StressReportActivity;
@@ -49,6 +42,7 @@ import static kr.ac.inha.mindscope.Tools.PREDICTION_FEATUREIDS_INDEX;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_ORDER_INDEX;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_STRESSLV_INDEX;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_TIMESTAMP_INDEX;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.MeFragmentStep2.TIMESTAMP_ONE_DAY;
 import static kr.ac.inha.mindscope.services.MainService.STRESS_REPORT_NOTIFI_ID;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -89,7 +83,7 @@ public class StressReportFragment1 extends Fragment {
                 String reportSubmit = "self_report_submit_check_" + order;
                 reportSubmitEditor.putBoolean(reportSubmit, true);
                 int submitDate = cal.get(Calendar.DATE);
-                if (cal.get(Calendar.HOUR_OF_DAY) < 1)
+                if (cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged)
                     submitDate--;
                 reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                 reportSubmitEditor.apply();
@@ -212,11 +206,15 @@ public class StressReportFragment1 extends Fragment {
 
         // UI
         dateView = view.findViewById(R.id.report_step2_date);
-        Date currentTime = new Date(reportTimestamp);
+
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged)
+            cal.add(Calendar.DATE, -1);
+
+        Date currentTime = new Date(cal.getTimeInMillis());
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
-        currentHours = cal.get(Calendar.HOUR_OF_DAY);
+//        currentHours = cal.get(Calendar.HOUR_OF_DAY);
         timeView = view.findViewById(R.id.report_step2_time);
         switch (order) {
             case 1:
@@ -338,15 +336,13 @@ public class StressReportFragment1 extends Fragment {
         return stressResult;
     }
 
-
-
     public int getDayNum() {
         int dayNum;
-        SharedPreferences a = getActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        SharedPreferences a = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         long joinTimestamp = a.getLong("join_timestamp", 0);
 
         Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             cal.add(Calendar.DATE, -1);
         }
         long caldate = joinTimestamp - cal.getTimeInMillis();

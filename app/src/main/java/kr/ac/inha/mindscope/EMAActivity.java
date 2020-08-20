@@ -29,7 +29,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import static kr.ac.inha.mindscope.fragment.MeFragmentStep1.timeTheDayNumIsChanged;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.services.MainService.EMA_NOTI_ID;
 
 public class EMAActivity extends AppCompatActivity {

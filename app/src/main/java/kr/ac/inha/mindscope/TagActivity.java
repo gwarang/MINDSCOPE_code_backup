@@ -27,7 +27,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import static kr.ac.inha.mindscope.fragment.MeFragmentStep1.timeTheDayNumIsChanged;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
+
 
 public class TagActivity extends AppCompatActivity {
 
