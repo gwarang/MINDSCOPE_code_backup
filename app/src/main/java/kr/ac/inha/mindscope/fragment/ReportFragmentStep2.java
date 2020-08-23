@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -70,6 +71,7 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURACTION_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 /**
@@ -662,6 +664,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     public void loadDailyPoints(CalendarDay day) {
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
+                HashMap<Long, Integer> dailyPointsMaps = new HashMap<>();
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
@@ -669,7 +672,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 final int REWARD_POINTS = 58;
 
                 Calendar c = Calendar.getInstance();
-                c.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+                c.set(day.getYear(), day.getMonth() - 1, day.getDay(), timeTheDayNumIsChanged, 0, 0);
                 c.set(Calendar.MILLISECOND, 0);
                 long fromTimestamp = c.getTimeInMillis();
                 c.add(Calendar.DAY_OF_MONTH, 1);
@@ -689,13 +692,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int dailyPoints = 0;
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getSuccess())
+                    if (responseMessage.getSuccess()){
                         for (String value : responseMessage.getValueList()) {
                             String[] cells = value.split(" ");
                             if (cells.length != 3)
                                 continue;
-                            dailyPoints += Integer.parseInt(cells[2]);
+                            dailyPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+//                            dailyPoints += Integer.parseInt(cells[2]);
                         }
+                        for(Map.Entry<Long, Integer> elem : dailyPointsMaps.entrySet()){
+                            dailyPoints += elem.getValue();
+                        }
+                    }
+
                 } catch (StatusRuntimeException e) {
                     e.printStackTrace();
                 }
@@ -826,7 +835,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private long fixTimestamp(long timestamp, int emaOrder) {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(timestamp);
-        if(c.get(Calendar.HOUR_OF_DAY) < 1){
+        if(c.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             c.add(Calendar.DATE, -1);
         }
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), getEmaOrderHour(emaOrder), 0, 0);
@@ -1055,6 +1064,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     }
 
+    // region decorators
     public static class LowStressDecorator implements DayViewDecorator {
         private static HashSet<CalendarDay> lowStressCalendarDays;
         private final Drawable lowBackgroundDrawable;
@@ -1142,7 +1152,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         }
     }
 
-    // region decorators
     public class DayDecorator implements DayViewDecorator {
         private final CalendarDay today;
         private final Drawable todayBackgroundDrawable;

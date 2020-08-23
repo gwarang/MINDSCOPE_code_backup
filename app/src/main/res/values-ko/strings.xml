@@ -189,7 +189,7 @@
     <string name="string_prediction_correct">제 예측이 맞았네요!</string>
     <string name="string_prediction_incorrect">제 예측이 틀렸네요!</string>
 
-    <string name="string_am_i_right">제 분석이 맞았나요?</string>
+    <string name="string_am_i_right">스트레스 요인에 대한 제 분석이 맞았나요?</string>
 
     <string name="care_step2_title">마음 케어</string>
     <string name="tab_title1_care_step2">스트레스 분석</string>
@@ -280,12 +280,12 @@
     <string name="feature_0general_1">일반적으로 활동량이 적을 때,\n스트레스가 높아요</string>
     <string name="feature_7general_0">일반적으로 다른 사람들과의 교류가 많을 때,\n스트레스가 낮아요</string>
     <string name="feature_7general_1">일반적으로 다른 사람들과의 교류가 적을 때,\n스트레스가 높아요</string>
-    <string name="feature_12general_0">일반적으로 활동 반경이 클 때,\n스트레스가 낮아요</string>
-    <string name="feature_12general_1">일반적으로 활동 반경이 작을 때,\n스트레스가 높아요</string>
-    <string name="feature_18general_0">일반적으로 핸드폰 사용이 적으면,\n스트레스가 낮아요</string>
-    <string name="feature_18general_1">일반적으로 핸드폰 사용이 많으면,\n스트레스가 높아요</string>
-    <string name="feature_29general_0">일반적으로 수면량이 많으면,\n스트레스가 낮아요</string>
-    <string name="feature_29general_1">일반적으로 수면량이 적으면,\n스트레스가 높아요</string>
+    <string name="feature_11general_0">일반적으로 활동 반경이 클 때,\n스트레스가 낮아요</string>
+    <string name="feature_11general_1">일반적으로 활동 반경이 작을 때,\n스트레스가 높아요</string>
+    <string name="feature_17general_0">일반적으로 핸드폰 사용이 적으면,\n스트레스가 낮아요</string>
+    <string name="feature_17general_1">일반적으로 핸드폰 사용이 많으면,\n스트레스가 높아요</string>
+    <string name="feature_28general_0">일반적으로 수면량이 많으면,\n스트레스가 낮아요</string>
+    <string name="feature_28general_1">일반적으로 수면량이 적으면,\n스트레스가 높아요</string>
 
     <string name="string_first_start_step1_title">지금부터 STEP 1을 시작합니다!</string>
     <string name="string_first_start_step2_title">STEP 1을 모두 완료하였습니다.\n이제 STEP2가 시작됩니다!</string>
