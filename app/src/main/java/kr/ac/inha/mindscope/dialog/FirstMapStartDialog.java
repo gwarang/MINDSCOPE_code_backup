@@ -36,8 +36,6 @@ public class FirstMapStartDialog extends Dialog {
 
         btn = findViewById(R.id.first_map_dialog_btn);
         btn.setOnClickListener(mClickListener);
-
-
     }
 
     public FirstMapStartDialog(@NonNull Context context, View.OnClickListener clickListener) {

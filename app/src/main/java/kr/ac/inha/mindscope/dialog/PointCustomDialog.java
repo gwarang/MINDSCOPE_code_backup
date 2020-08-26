@@ -31,8 +31,6 @@ public class PointCustomDialog extends Dialog {
     private Button btn;
     private View.OnClickListener mBtnListener;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,15 +44,13 @@ public class PointCustomDialog extends Dialog {
 
         todayPointsView = findViewById(R.id.point_today_value);
         sumPointsView = findViewById(R.id.point_sum_value);
-//        retrievePointFromServer();
         todayPointsView.setText(String.valueOf(todayPoints));
         sumPointsView.setText(String.valueOf(sumPoints));
         btn = findViewById(R.id.point_btn);
         btn.setOnClickListener(mBtnListener);
-
     }
 
-    public PointCustomDialog(Context context, View.OnClickListener clickListener){
+    public PointCustomDialog(Context context, View.OnClickListener clickListener) {
         super(context);
         this.mBtnListener = clickListener;
     }

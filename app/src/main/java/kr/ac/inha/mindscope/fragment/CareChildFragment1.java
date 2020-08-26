@@ -20,8 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -53,7 +50,7 @@ import static kr.ac.inha.mindscope.Tools.PREDICTION_ORDER_INDEX;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_STRESSLV_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_DAYNUM_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ORDER_INDEX;
-import static kr.ac.inha.mindscope.fragment.MeFragmentStep2.TIMESTAMP_ONE_DAY;
+import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.SELF_STRESS_REPORT_RESULT;
 import static kr.ac.inha.mindscope.services.StressReportDownloader.STRESS_PREDICTION_RESULT;
@@ -99,8 +96,6 @@ public class CareChildFragment1 extends Fragment {
     ImageButton arrowBtn3;
     ImageButton arrowBtn4;
     ImageButton backArrow;
-    List<String> stressReports;
-    List<String> selfStressReports;
     ConstraintLayout defaultContainer;
     ConstraintLayout hiddenContainer;
     RelativeLayout beforeStartStep2Container;
@@ -126,8 +121,6 @@ public class CareChildFragment1 extends Fragment {
     int order3StressLevel;
     int order4StressLevel;
 
-
-    ArrayList<JSONObject[]> stressReportsJsonArray;
     int[] selfStressReportWithOrderIndex;
     //endregion
 
@@ -156,22 +149,6 @@ public class CareChildFragment1 extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        if(Tools.isNetworkAvailable()){
-//            getStressReportDataFromGRPC();
-//            getSelfStressReportDataFromGRPC();
-//        }else{
-//            Toast.makeText(requireContext(), requireContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
-//        }
-
-//        stressReportsJsonArray = new ArrayList<>();
-//
-//        if(stressReports != null){
-//            for(String reportStr : stressReports){
-//                JSONObject[] jsonObjects = Tools.parsingStressReport(reportStr);
-//                stressReportsJsonArray.add(jsonObjects);
-//            }
-//        }
 
         selfStressReportWithOrderIndex = new int[]{NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV};
         if (selfReportArray != null && !selfReportArray.isEmpty()) {
@@ -202,48 +179,12 @@ public class CareChildFragment1 extends Fragment {
             stressAvgTextview.setText(Html.fromHtml(getString(R.string.string_stress_level_high)));
         }
 
-//        // checkbox UI update
-//        for(short i = 0; i < selfStressReportWithOrderIndex.length; i++){
-//            if(selfStressReportWithOrderIndex[i] != NON_SELF_STRESS_LV){
-//                switch (i+1){
-//                    case ORDER1:
-//                        checkBox1.setChecked(true);
-//                        break;
-//                    case ORDER2:
-//                        checkBox2.setChecked(true);
-//                        break;
-//                    case ORDER3:
-//                        checkBox3.setChecked(true);
-//                        break;
-//                    case ORDER4:
-//                        checkBox4.setChecked(true);
-//                        break;
-//                }
-//            }else{
-//                switch (i+1){
-//                    case ORDER1:
-//                        checkBox1.setChecked(false);
-//                        break;
-//                    case ORDER2:
-//                        checkBox2.setChecked(false);
-//                        break;
-//                    case ORDER3:
-//                        checkBox3.setChecked(false);
-//                        break;
-//                    case ORDER4:
-//                        checkBox4.setChecked(false);
-//                        break;
-//                }
-//            }
-//        }
-
         updateUI();
 
         backArrow.setOnClickListener(view1 -> {
             defaultContainer.setVisibility(View.VISIBLE);
             hiddenContainer.setVisibility(View.INVISIBLE);
         });
-
 
         arrowBtn1.setOnClickListener(view12 -> {
             defaultContainer.setVisibility(View.INVISIBLE);
@@ -274,7 +215,6 @@ public class CareChildFragment1 extends Fragment {
             Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 4);
         });
 
-
         return view;
     }
 
@@ -287,7 +227,6 @@ public class CareChildFragment1 extends Fragment {
         lastPagePrefsEditor.putInt("last_open_tab_position", 0);
         lastPagePrefsEditor.apply();
     }
-
 
     public void init(View view) {
         Context context = MainActivity.getInstance();
@@ -370,29 +309,24 @@ public class CareChildFragment1 extends Fragment {
         Calendar fromCalendar = Calendar.getInstance();
         Calendar tillCalendar = Calendar.getInstance();
         tillCalendar.add(Calendar.DATE, 1);
-        // Set the date to today if it is between 11 and 24, and set the date to yesterday if it is between 0 and 11
+        // Set the date to today(07:00:00~06:59:59), and set the date to yesterday if it is between 0 and 11
         int curHour = fromCalendar.get(Calendar.HOUR_OF_DAY);
-        if (curHour >= 11) {
-            // today
-            fromCalendar.set(Calendar.HOUR_OF_DAY, 1);
-            fromCalendar.set(Calendar.MINUTE, 0);
-            fromCalendar.set(Calendar.SECOND, 0);
-            tillCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            tillCalendar.set(Calendar.MINUTE, 59);
-            tillCalendar.set(Calendar.SECOND, 59);
-        } else {
+        if (curHour < timeTheDayNumIsChanged) {
             // yesterday
-            fromCalendar.set(Calendar.HOUR_OF_DAY, 1);
-            fromCalendar.set(Calendar.MINUTE, 0);
-            fromCalendar.set(Calendar.SECOND, 0);
-            tillCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            tillCalendar.set(Calendar.MINUTE, 59);
-            tillCalendar.set(Calendar.SECOND, 59);
-            long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-            long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-            fromCalendar.setTimeInMillis(fromTimestampYesterday);
-            tillCalendar.setTimeInMillis(tillTimestampYesterday);
+            fromCalendar.add(Calendar.DATE, -1);
+            tillCalendar.add(Calendar.DATE, -1);
         }
+
+        fromCalendar.set(Calendar.HOUR_OF_DAY, 7);
+        fromCalendar.set(Calendar.MINUTE, 0);
+        fromCalendar.set(Calendar.SECOND, 0);
+        fromCalendar.set(Calendar.MILLISECOND, 0);
+        tillCalendar.add(Calendar.DATE, 1);
+        tillCalendar.set(Calendar.HOUR_OF_DAY, 6);
+        tillCalendar.set(Calendar.MINUTE, 59);
+        tillCalendar.set(Calendar.SECOND, 59);
+        tillCalendar.set(Calendar.MILLISECOND, 0);
+
         timestamp = fromCalendar.getTimeInMillis();
 
         //region stress prediction
@@ -434,10 +368,9 @@ public class CareChildFragment1 extends Fragment {
 
     public void updateUI() {
 
-
         if (predictionArray == null) {
             Calendar calendar = Calendar.getInstance();
-            String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());
+//            String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());
             defaultContainer.setVisibility(View.INVISIBLE);
             beforeStartStep2Container.setVisibility(View.VISIBLE);
             beforeStartStep2TextView.setText(getResources().getString(R.string.string_when_no_prediction));
@@ -625,12 +558,10 @@ public class CareChildFragment1 extends Fragment {
                                     break;
                             }
                         }
-
                     }
                 }
             }
         }
-
     }
 
     public float getAvgStress(Context context) throws IOException {
@@ -690,6 +621,9 @@ public class CareChildFragment1 extends Fragment {
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
+                if(category == 12 || category == 18 || category == 29){
+                    category--;
+                }
                 String applicationName = "";
 
                 if (splitArray[1].contains("&") && (category == CATEGORY_SNS_APP_USAGE
@@ -710,7 +644,7 @@ public class CareChildFragment1 extends Fragment {
                     }
                 }
 
-                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length-1];
+                String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length - 1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
@@ -740,7 +674,6 @@ public class CareChildFragment1 extends Fragment {
         }
 
 
-
         ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
                 requireActivity(), R.layout.item_feature_ids, phoneReason
         );
@@ -757,14 +690,14 @@ public class CareChildFragment1 extends Fragment {
                 requireActivity(), R.layout.item_feature_ids, sleepReason
         );
 
-        if(noFeatures){
+        if (noFeatures) {
             phoneContainer.setVisibility(View.GONE);
             activityContainer.setVisibility(View.GONE);
             socialContainer.setVisibility(View.GONE);
             locationContainer.setVisibility(View.GONE);
             sleepContainer.setVisibility(View.GONE);
             noFeatureTextview.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             phoneListView.setAdapter(phoneAdapter);
             activityListView.setAdapter(activityAdapter);
             socialListView.setAdapter(socialAdapter);

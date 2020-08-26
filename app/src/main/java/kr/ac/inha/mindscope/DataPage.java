@@ -1,19 +1,11 @@
 package kr.ac.inha.mindscope;
 
-import android.widget.LinearLayout;
-
 public class DataPage {
     int color;
     String title;
     String contents;
-    LinearLayout linearLayout;
 
-    public DataPage(String title, String contents){
-        this.title = title;
-        this.contents = contents;
-    }
-
-    public DataPage(String title, String contents, int color){
+    public DataPage(String title, String contents, int color) {
         this.title = title;
         this.contents = contents;
         this.color = color;

@@ -215,6 +215,9 @@ public class StressReportFragment2 extends Fragment {
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
+                if(category == 12 || category == 18 || category == 29){
+                    category--;
+                }
                 String applicationName = "";
 
                 if (splitArray[1].contains("&") && (category == CATEGORY_SNS_APP_USAGE
