@@ -36,9 +36,6 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -775,6 +772,8 @@ public class Tools {
 
                                 if (responseMessage.getSuccess()) {
                                     DbMgr.deleteRecord(cursor.getInt(0));
+                                }else {
+                                    Log.e(TAG, "submit failed, data_source_id=" + cursor.getInt(cursor.getColumnIndex("dataSourceId")) + ", value=" + cursor.getString(cursor.getColumnIndex("data"))); // todo come back here
                                 }
 
                             } while (cursor.moveToNext());
@@ -790,25 +789,6 @@ public class Tools {
             }
         };
         fastUploadThread.start();
-    }
-
-    public static JSONObject[] parsingStressReport(String originStressReportStr) {
-        // REPORT Parsing
-        try {
-            JSONObject jsonObject = new JSONObject(originStressReportStr);
-            JSONObject[] jsonObjects = new JSONObject[jsonObject.length()];
-
-            for (short i = 0; i < jsonObject.length(); i++) {
-                jsonObjects[i] = jsonObject.getJSONObject(String.valueOf(i));
-            }
-//            jsonObjects[0] = jsonObject.getJSONObject("1"); // jsonObjects[key - 1] has a report for prediction stress level is key
-//            jsonObjects[1] = jsonObject.getJSONObject("2");
-//            jsonObjects[2] = jsonObject.getJSONObject("3");
-            return jsonObjects;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public static void saveApplicationLog(Context con, String uniqueTagForEachActivityOrEvent, String action, Object... params) {

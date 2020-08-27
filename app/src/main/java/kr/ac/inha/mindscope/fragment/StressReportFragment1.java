@@ -88,7 +88,10 @@ public class StressReportFragment1 extends Fragment {
                 reportSubmitEditor.putInt("reportSubmitDate", submitDate);
                 reportSubmitEditor.apply();
 
+                Tools.updatePoint(requireContext());
+
                 Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.putExtra("get_point", true);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             } else {
