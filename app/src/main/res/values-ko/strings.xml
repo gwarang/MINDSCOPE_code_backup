@@ -32,11 +32,11 @@
     <string name="authentication_btn">Authenticate</string>
 
     <string name="ema_explanation">* 0(Never) ~ 4(Very Often)</string>
-    <string name="ema_question_1">1. 지난 3시간 동안, 초조하거나 스트레스가 쌓인다고 느꼈나요?</string>
-    <string name="ema_question_2">2. 지난 3시간 동안, 예상치 못한 일이 생겨서 기분이 나빠졌나요?</string>
-    <string name="ema_question_3">3. 지난 3시간 동안 매사를 잘 컨트롤 하고 있다고 느꼈나요?</string>
-    <string name="ema_question_4">4. 지난 3시간 동안 짜증나고 성가신 일들을 성공적으로 처리하였나요?</string>
-    <string name="ema_question_5">5. 지난 3시간 동안 당신의 스트레스 수준은 다음중 무엇인가요?</string>
+    <string name="ema_question_1">1. 지난 4시간 동안, 초조하거나 스트레스가 쌓인다고 느꼈나요?</string>
+    <string name="ema_question_2">2. 지난 4시간 동안, 예상치 못한 일이 생겨서 기분이 나빠졌나요?</string>
+    <string name="ema_question_3">3. 지난 4시간 동안 매사를 잘 컨트롤 하고 있다고 느꼈나요?</string>
+    <string name="ema_question_4">4. 지난 4시간 동안 짜증나고 성가신 일들을 성공적으로 처리하였나요?</string>
+    <string name="ema_question_5">5. 지난 4시간 동안 당신의 스트레스 수준은 다음중 무엇인가요?</string>
 
     <string name="submit">제출</string>
     <string name="next">다음</string>
@@ -223,8 +223,8 @@
     <string name="feature_4high">평소에 비해 많이 걸었어요</string>
     <string name="feature_5high">평소에 비해 차량 이동이 많았어요</string>
     <string name="feature_6high">평소에 비해 주변이 시끄러웠던 것 같아요</string>
-    <string name="feature_7high">평소에 비해 통화량이 많았어요</string>
-    <string name="feature_8high">평소에 비해 통화량이 많았어요</string>
+    <string name="feature_7high">평소에 비해 통화 시간이 많았어요</string>
+    <string name="feature_8high">평소에 비해 통화 횟수가 많았어요</string>
     <string name="feature_9high">평소에 비해 통화량이 많았어요</string>
     <string name="feature_10high">평소에 비해 SNS\n앱 사용%1$s이 많았어요</string>
     <string name="feature_11high">평소에 비해 많이 이동했어요</string>
@@ -253,8 +253,8 @@
     <string name="feature_4low">평소에 비해 조금 걸었어요</string>
     <string name="feature_5low">평소에 비해 차량 이동이 적었어요</string>
     <string name="feature_6low">평소에 비해 주변이 조용했던 것 같아요</string>
-    <string name="feature_7low">평소에 비해 통화량이 적었어요</string>
-    <string name="feature_8low">평소에 비해 통화량이 적었어요</string>
+    <string name="feature_7low">평소에 비해 통화 시간이 적었어요</string>
+    <string name="feature_8low">평소에 비해 통화 횟수가 적었어요</string>
     <string name="feature_9low">평소에 비해 통화량이 적었어요</string>
     <string name="feature_10low">평소에 비해 SNS 앱 사용%1$s이 적었어요</string>
     <string name="feature_11low">평소에 비해 적게 이동했어요</string>
