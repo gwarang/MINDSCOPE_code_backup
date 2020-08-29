@@ -641,6 +641,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         .setTillTimestamp(c.getTimeInMillis())
                         .build();
                 int points = 0;
+                HashMap<Long, Integer> allPointsMaps = new HashMap<>();
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                     if (responseMessage.getSuccess())
@@ -648,12 +649,19 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             String[] cells = value.split(" ");
                             if (cells.length != 3)
                                 continue;
-                            points += Integer.parseInt(cells[2]);
+                            allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+//                            points += Integer.parseInt(cells[2]);
                         }
                 } catch (StatusRuntimeException e) {
                     e.printStackTrace();
                 }
                 channel.shutdown();
+
+
+                for(Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()){
+                    points += elem.getValue();
+                }
+
                 final int finalPoints = points;
                 if(isAdded())
                     requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
