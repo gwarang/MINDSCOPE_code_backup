@@ -287,8 +287,6 @@ public class MeFragmentStep2 extends Fragment {
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
-
-        feature_ids = "12-high 18-high&com.google.android.youtube 11-high 5-high 13-high 25-low 0-low 24-low";
         Log.e(TAG, "feature_ids: " + feature_ids);
 
 
