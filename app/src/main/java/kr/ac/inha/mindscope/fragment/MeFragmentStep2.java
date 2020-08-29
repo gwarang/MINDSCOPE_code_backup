@@ -288,6 +288,7 @@ public class MeFragmentStep2 extends Fragment {
         ArrayList<String> sleepReason = new ArrayList<>();
 
 
+        feature_ids = "12-high 18-high&com.google.android.youtube 11-high 5-high 13-high 25-low 0-low 24-low";
         Log.e(TAG, "feature_ids: " + feature_ids);
 
 
@@ -302,7 +303,7 @@ public class MeFragmentStep2 extends Fragment {
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
-                if(category == 12 || category == 18 || category == 29){
+                if((category == 12 || category == 18 || category == 29) && (splitArray[1].equals("general_1") || splitArray[1].equals("general_0"))){
                     category--;
                 }
                 String applicationName = "";

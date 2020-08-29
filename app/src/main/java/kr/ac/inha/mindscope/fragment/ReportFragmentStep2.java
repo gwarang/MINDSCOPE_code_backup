@@ -928,7 +928,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             for (int i = 0; i < featureArray.length; i++) {
                 String[] splitArray = featureArray[i].split("-");
                 int category = Integer.parseInt(splitArray[0]);
-                if(category == 12 || category == 18 || category == 29){
+                if((category == 12 || category == 18 || category == 29) && (splitArray[1].equals("general_1") || splitArray[1].equals("general_0"))){
                     category--;
                 }
                 String applicationName = "";
