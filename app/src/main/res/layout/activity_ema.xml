@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="스트레스 측정 테스트"
+            android:text="@string/ema_title"
             android:textSize="20sp" />
 
     </androidx.appcompat.widget.Toolbar>
@@ -53,7 +53,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="23dp"
-                android:text="test number info"
                 android:textAlignment="center"
                 android:textColor="@color/textColor_blue"
                 android:textSize="14sp" />

@@ -31,12 +31,20 @@
     <string name="authentication_txt">Authentication</string>
     <string name="authentication_btn">Authenticate</string>
 
+    <string name="ema_title">스트레스 측정 테스트</string>
+
     <string name="ema_explanation">* 0(Never) ~ 4(Very Often)</string>
     <string name="ema_question_1">1. 지난 4시간 동안, 초조하거나 스트레스가 쌓인다고 느꼈나요?</string>
     <string name="ema_question_2">2. 지난 4시간 동안, 예상치 못한 일이 생겨서 기분이 나빠졌나요?</string>
     <string name="ema_question_3">3. 지난 4시간 동안 매사를 잘 컨트롤 하고 있다고 느꼈나요?</string>
     <string name="ema_question_4">4. 지난 4시간 동안 짜증나고 성가신 일들을 성공적으로 처리하였나요?</string>
     <string name="ema_question_5">5. 지난 4시간 동안 당신의 스트레스 수준은 다음중 무엇인가요?</string>
+
+    <string name="ema_answer_1">전혀 그렇지 않다</string>
+    <string name="ema_answer_2">약간 그렇지 않다</string>
+    <string name="ema_answer_3">보통이다</string>
+    <string name="ema_answer_4">조금 그렇다</string>
+    <string name="ema_answer_5">매우 그렇다</string>
 
     <string name="submit">제출</string>
     <string name="next">다음</string>
