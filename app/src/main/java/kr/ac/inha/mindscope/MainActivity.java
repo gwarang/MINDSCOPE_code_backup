@@ -618,6 +618,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences configPrefs = getSharedPreferences("Configurations", MODE_PRIVATE);
         SharedPreferences.Editor configPrefsEditor = configPrefs.edit();
         String oldVersion = configPrefs.getString("versionName", "Unknown");
+        Log.d(TAG, "oldVersion: " + oldVersion);
 //        String oldVersion = "test";
         String version = "Unknown";
         PackageInfo packageInfo;
