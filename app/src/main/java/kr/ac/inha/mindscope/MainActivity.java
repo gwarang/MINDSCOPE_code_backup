@@ -626,8 +626,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
             version = packageInfo.versionName;
-            configPrefsEditor.putString("versionName", version);
-            configPrefsEditor.apply();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -638,6 +636,8 @@ public class MainActivity extends AppCompatActivity {
                 long timestamp = System.currentTimeMillis();
                 Log.d(TAG, "APP_VERSION dataSourceId, version: " + dataSourceId + ", " + version);
                 DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, version);
+                configPrefsEditor.putString("versionName", version);
+                configPrefsEditor.apply();
             }
 
         }
