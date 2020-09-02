@@ -43,7 +43,7 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
-import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURACTION_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURATION_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_FEATUREIDS_INDEX;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_MODELTAG_INDEX;
 import static kr.ac.inha.mindscope.Tools.PREDICTION_ORDER_INDEX;
@@ -658,7 +658,7 @@ public class CareChildFragment1 extends Fragment {
                     socialReason.add(text);
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     locationReason.add(context.getResources().getString(resId));
-                } else if (category <= CATEGORY_UNLOCK_DURACTION_APP_USAGE) {
+                } else if (category <= CATEGORY_UNLOCK_DURATION_APP_USAGE) {
                     phoneReason.add(context.getResources().getString(resId));
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);

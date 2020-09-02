@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +41,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         setContentView(R.layout.activity_main);
 
+        checkVersionInfo();
         getFirebaseToken();
 
         Intent intent = getIntent();
@@ -606,5 +610,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public void checkVersionInfo() {
+        if (DbMgr.getDB() == null)
+            DbMgr.init(getApplicationContext());
+
+        SharedPreferences configPrefs = getSharedPreferences("Configurations", MODE_PRIVATE);
+        SharedPreferences.Editor configPrefsEditor = configPrefs.edit();
+        String oldVersion = configPrefs.getString("versionName", "Unknown");
+//        String oldVersion = "test";
+        String version = "Unknown";
+        PackageInfo packageInfo;
+
+        try {
+            packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
+            version = packageInfo.versionName;
+            configPrefsEditor.putString("versionName", version);
+            configPrefsEditor.apply();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if(!version.equals("Unknown") && !version.equals(oldVersion)){
+            int dataSourceId = configPrefs.getInt("APP_VERSION", -1);
+            if(dataSourceId != -1){
+                long timestamp = System.currentTimeMillis();
+                Log.d(TAG, "APP_VERSION dataSourceId, version: " + dataSourceId + ", " + version);
+                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, version);
+            }
+
+        }
+
+
+    }
 
 }

@@ -79,7 +79,7 @@ public class Tools {
     public static final int CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE = 9;
     public static final int CATEGORY_LOCATION_END_INDEX = 15;
     public static final int CATEGORY_SNS_APP_USAGE = 10;
-    public static final int CATEGORY_UNLOCK_DURACTION_APP_USAGE = 17;
+    public static final int CATEGORY_UNLOCK_DURATION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
     public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day + 1 hour, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test

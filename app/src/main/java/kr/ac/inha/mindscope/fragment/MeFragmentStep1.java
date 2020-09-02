@@ -91,8 +91,8 @@ public class MeFragmentStep1 extends Fragment {
         before11Hours = root.findViewById(R.id.frg_me_before_11hours);
         attdView = root.findViewById(R.id.today_survey_attd);
         timeContainer = root.findViewById(R.id.time_container);
-        versionNameTextView = root.findViewById(R.id.version_name_step1);
-        versionNameTextView.setText(getVersionInfo(requireContext()));
+//        versionNameTextView = root.findViewById(R.id.version_name_step1);
+//        versionNameTextView.setText(getVersionInfo(requireContext()));
 
 
         Calendar cal = Calendar.getInstance();
@@ -412,21 +412,21 @@ public class MeFragmentStep1 extends Fragment {
         updateEmaResponseView();
     }
 
-    public String getVersionInfo(Context context) {
-        String version = "Unknown";
-        PackageInfo packageInfo;
-
-        if (context == null) {
-            return version;
-        }
-        try {
-            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
-            version = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
+//    public String getVersionInfo(Context context) {
+//        String version = "Unknown";
+//        PackageInfo packageInfo;
+//
+//        if (context == null) {
+//            return version;
+//        }
+//        try {
+//            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
+//            version = packageInfo.versionName;
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return version;
+//    }
 
 
 }

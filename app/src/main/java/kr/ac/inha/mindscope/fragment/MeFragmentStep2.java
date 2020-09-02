@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -56,7 +55,7 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
-import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURACTION_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURATION_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ANSWER_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_DAYNUM_INDEX;
 import static kr.ac.inha.mindscope.Tools.SELF_REPORT_ORDER_INDEX;
@@ -184,8 +183,8 @@ public class MeFragmentStep2 extends Fragment {
         });
         dateView = view.findViewById(R.id.frg_me_step2_date1);
         timeView = (TextView) view.findViewById(R.id.frg_me_step2_time1);
-        versionNameTextView = view.findViewById(R.id.version_name_step2);
-        versionNameTextView.setText(getVersionInfo(requireContext()));
+//        versionNameTextView = view.findViewById(R.id.version_name_step2);
+//        versionNameTextView.setText(getVersionInfo(requireContext()));
     }
 
     @SuppressLint("SetTextI18n")
@@ -287,6 +286,9 @@ public class MeFragmentStep2 extends Fragment {
         ArrayList<String> locationReason = new ArrayList<>();
         ArrayList<String> sleepReason = new ArrayList<>();
 
+
+//        feature_ids = "18-high&com.joara.mobile 14-low 13-low 6-low 10-low"; // "18-high&com.joara.mobile 24-low 17-high 28-high 8-low";
+//        feature_ids = "18-low 14-low 5-low";
         Log.e(TAG, "feature_ids: " + feature_ids);
 
 
@@ -341,7 +343,7 @@ public class MeFragmentStep2 extends Fragment {
                     socialReason.add(text);
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     locationReason.add(context.getResources().getString(resId));
-                } else if (category <= CATEGORY_UNLOCK_DURACTION_APP_USAGE) {
+                } else if (category <= CATEGORY_UNLOCK_DURATION_APP_USAGE) {
                     phoneReason.add(context.getResources().getString(resId));
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
@@ -620,19 +622,19 @@ public class MeFragmentStep2 extends Fragment {
         }
     }
 
-    public String getVersionInfo(Context context) {
-        String version = "Unknown";
-        PackageInfo packageInfo;
-
-        if (context == null) {
-            return version;
-        }
-        try {
-            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
-            version = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
+//    public String getVersionInfo(Context context) {
+//        String version = "Unknown";
+//        PackageInfo packageInfo;
+//
+//        if (context == null) {
+//            return version;
+//        }
+//        try {
+//            packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
+//            version = packageInfo.versionName;
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return version;
+//    }
 }
