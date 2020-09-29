@@ -124,9 +124,7 @@ public class InterventionService extends Service {
                 }
 
                 final Notification notification = builder.build();
-                Log.d("ZATURI", "CHECKPOINT 1");
                 if (notificationManager != null) {
-                    Log.d("ZATURI", "CHECKPOINT 2");
                     notificationManager.notify(ZATURI_NOTIFICATION_ID, notification);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong("zaturiLastIntervention", System.currentTimeMillis());

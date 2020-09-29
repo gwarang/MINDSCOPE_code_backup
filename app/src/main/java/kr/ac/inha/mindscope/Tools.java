@@ -276,7 +276,7 @@ public class Tools {
         SharedPreferences interventionPrefs = con.getSharedPreferences("intervention", MODE_PRIVATE);
         SharedPreferences stressReportPrefs = con.getSharedPreferences("stressReport", MODE_PRIVATE);
         // Check if between 11am and 11pm
-        if (isBetween11am11pm()) {
+        if (isBetween11am9pm()) {
             // If not MUTE_TODAY
             if (!interventionPrefs.getBoolean("muteToday", false)) {
                 // If user didn't perform stress intervention today
@@ -299,6 +299,23 @@ public class Tools {
                             String packageName = currentEvent.getPackageName();
                             // For all apps except communication apps
                             Log.d("ZATURI", "packageName: " + packageName);
+                            if (packageName.equals(launcher_packageName)) {
+                                // if timer is on (is tracking)
+                                if (loginPrefs.getBoolean("zaturiTimerOn", false)) {
+                                    if (currentEvent.getTimeStamp() -
+                                            loginPrefs.getLong("zaturiTimerStart", 0) < 30000) {    // < 30 sec usage
+                                        Log.d("ZATURI", "SEND NOTI");
+                                        // Then send a notification
+                                        sendStressInterventionNoti(con);
+                                    }
+                                    // Reset the variables
+                                    SharedPreferences.Editor editor = loginPrefs.edit();
+                                    editor.putBoolean("zaturiTimerOn", false);
+                                    editor.putLong("zaturiTimerStart", 0);
+                                    editor.putString("zaturiPackage", "");
+                                    editor.apply();
+                                }
+                            }
                             if (!Arrays.asList(COMMUNICATION_APPS).contains(packageName)) {
 //                                    && !packageName.contains(launcher_packageName)) {
                                 // When an app is opened/resumed
@@ -307,23 +324,6 @@ public class Tools {
                                     // When an app closes (== when another app resumes)
                                     // Check if timer is on
                                     if (loginPrefs.getBoolean("zaturiTimerOn", false)) {
-                                        // Check if the package name doesn't match
-                                        if (!packageName.equals(loginPrefs.getString("zaturiPackage", ""))) {
-                                            Log.d("ZATURI", "Different package name");
-                                            // Check if the usage duration < 30 sec
-                                            if (currentEvent.getTimeStamp() -
-                                                    loginPrefs.getLong("zaturiTimerStart", 0) < 30000) {
-                                                Log.d("ZATURI", "SEND NOTI");
-                                                // Then send a notification
-                                                sendStressInterventionNoti(con);
-                                            }
-                                            // Reset the variables
-                                            SharedPreferences.Editor editor = loginPrefs.edit();
-                                            editor.putBoolean("zaturiTimerOn", false);
-                                            editor.putLong("zaturiTimerStart", 0);
-                                            editor.putString("zaturiPackage", "");
-                                            editor.apply();
-                                        }
                                         // Save last phone usage time (except for communication app usage)
                                         SharedPreferences.Editor editor = loginPrefs.edit();
                                         editor.putLong("zaturiLastPhoneUsage", currentEvent.getTimeStamp());
@@ -346,29 +346,6 @@ public class Tools {
                                         || currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_STOPPED) {
                                     if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED) Log.d("ZATURI", "ACTIVITY_PAUSED");
                                     if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_STOPPED) Log.d("ZATURI", "ACTIVITY_STOPPED");
-                                    /*
-                                    // When an app closes
-                                    // Check if timer is on
-                                    if (loginPrefs.getBoolean("zaturiTimerOn", false)) {
-                                        // Check if the package name matches
-                                        if (packageName.equals(loginPrefs.getString("zaturiPackage", ""))) {
-                                            // Check if the usage duration < 30 sec
-                                            if (currentEvent.getTimeStamp() -
-                                                    loginPrefs.getLong("zaturiTimerStart", 0) < 30000) {
-                                                // Then send a notification
-                                                sendStressInterventionNoti(con);
-
-                                                // Reset the variables
-                                                SharedPreferences.Editor editor = loginPrefs.edit();
-                                                editor.putBoolean("zaturiTimerOn", false);
-                                                editor.putLong("zaturiTimerStart", 0);
-                                                editor.putString("zaturiPackage", "");
-                                                editor.apply();
-                                            }
-                                        }
-                                    }
-
-                                     */
 
                                     if (!loginPrefs.getBoolean("zaturiTimerOn", false)) {
                                         Log.d("ZATURI", "save last phone usage time");
@@ -608,10 +585,10 @@ public class Tools {
     }
 
     /* Zaturi start */
-    private static boolean isBetween11am11pm() {
+    private static boolean isBetween11am9pm() {
         // Check if the current time is between 11AM and 11PM
         int start = 11;
-        int end = 23;
+        int end = 21;
         int hours = (end - start) % 24;
 
         Calendar cal = Calendar.getInstance();
@@ -633,7 +610,7 @@ public class Tools {
         String curIntervention = prefs.getString("curIntervention", "");
         Long lastInterventionTime = prefs.getLong("zaturiLastIntervention", 0);
 
-        if (System.currentTimeMillis() - lastInterventionTime > 10000) {
+        if (System.currentTimeMillis() - lastInterventionTime > 60 * 60 * 1000) {        // 1 hour
             if (!curIntervention.equals("")) {
                 // Create and send stress intervention notification
 
