@@ -26,7 +26,9 @@ import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.protobuf.ByteString;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -299,7 +301,7 @@ public class MainService extends Service {
                                         .setEmail(email)
                                         .setDataSource(cursor.getInt(cursor.getColumnIndex("dataSourceId")))
                                         .setTimestamp(cursor.getLong(cursor.getColumnIndex("timestamp")))
-                                        .setValues(cursor.getString(cursor.getColumnIndex("data")))
+                                        .setValue(ByteString.copyFrom(cursor.getString(cursor.getColumnIndex("data")), StandardCharsets.UTF_8))
                                         .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                                         .build();
 //                                String res = cursor.getInt(0) + ", " + cursor.getLong(1) + ", " + cursor.getLong(2) + ", " + cursor.getLong(4);

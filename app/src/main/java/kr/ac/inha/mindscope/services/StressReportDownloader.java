@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.protobuf.ByteString;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,11 +84,12 @@ public class StressReportDownloader extends Worker {
                 try {
                     final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
                     if (responseMessage.getSuccess()) {
-                        List<String> values = responseMessage.getValueList();
+                        // checkByteString
+                        List<ByteString> values = responseMessage.getValueList();
                         List<Long> valuesTimestamp = responseMessage.getTimestampList();
                         if (!values.isEmpty()) {
                             for (int i = 0; i < values.size(); i++) {
-                                stressReportStr = values.get(i);
+                                stressReportStr = values.get(i).toString();
                                 long timestamp = valuesTimestamp.get(i);
                                 try{
                                     JSONObject stressReportJSON = new JSONObject(stressReportStr);
@@ -141,14 +144,15 @@ public class StressReportDownloader extends Worker {
                     try{
                         final EtService.RetrieveFilteredDataRecords.Response responseMessage2 = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage2);
                         if (responseMessage2.getSuccess()) {
-                            List<String> values = responseMessage2.getValueList();
+                            // checkByteString
+                            List<ByteString> values = responseMessage2.getValueList();
                             List<Long> timestampvalue = responseMessage2.getTimestampList();
                             if (!values.isEmpty()) {
                                 FileOutputStream fileOutputStream = null;
                                 try {
                                     fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
-                                    for (String value : values) {
-                                        String selfReport = value.replace(" ", ",");
+                                    for (ByteString value : values) {
+                                        String selfReport = value.toString().replace(" ", ",");
                                         selfReport += '\n';
                                         fileOutputStream.write(selfReport.getBytes());
                                     }

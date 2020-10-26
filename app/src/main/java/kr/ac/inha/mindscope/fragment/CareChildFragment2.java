@@ -13,6 +13,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.protobuf.ByteString;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -325,11 +327,12 @@ public class CareChildFragment2 extends Fragment {
                 try {
                     final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
                     if (responseMessage.getSuccess()) {
-                        List<String> values = responseMessage.getValueList();
+                        // checkByteString
+                        List<ByteString> values = responseMessage.getValueList();
                         if (!values.isEmpty()) {
                             Log.d(TAG, "intervention list " + values);
-                            for (String value : values) {
-                                String[] splitValue = value.split(" ");
+                            for (ByteString value : values) {
+                                String[] splitValue = value.toString().split(" ");
 
                                 if (splitValue[2].toString().equals("하기") || splitValue[2].toString().equals("보기")) {
                                     Log.d(TAG, "skip existing wrong data with spaces");

@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.protobuf.ByteString;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -240,9 +241,10 @@ public class MeFragmentStep1 extends Fragment {
                 try {
                     final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
                     if (responseMessage.getSuccess()) {
-                        List<String> values = responseMessage.getValueList();
-                        for (String value : values) {
-                            String[] splitValue = value.split(" ");
+                        // checkByteString
+                        List<ByteString> values = responseMessage.getValueList();
+                        for (ByteString value : values) {
+                            String[] splitValue = value.toString().split(" ");
                             editor.putBoolean("ema_submit_check_" + splitValue[1], true);
                             editor.apply();
                         }
@@ -312,8 +314,9 @@ public class MeFragmentStep1 extends Fragment {
                         try {
                             EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                             if (responseMessage.getSuccess()) {
-                                for (String value : responseMessage.getValueList()) {
-                                    String[] cells = value.split(" ");
+                                // checkByteString
+                                for (ByteString value : responseMessage.getValueList()) {
+                                    String[] cells = value.toString().split(" ");
                                     if (cells.length != 3)
                                         continue;
                                     allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));

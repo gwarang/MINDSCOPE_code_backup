@@ -46,6 +46,7 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -582,12 +583,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             try {
                 final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
                 if (responseMessage.getSuccess()) {
-                    List<String> values = responseMessage.getValueList();
+                    // checkByteString
+                    List<ByteString> values = responseMessage.getValueList();
                     final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
                     SharedPreferences.Editor editor = locationPrefs.edit();
-                    for (String value : values) {
-                        Log.d(TAG, "location list from server : " + value + " " + value.length());
-                        String[] splitValue = value.split(" ");
+                    for (ByteString value : values) {
+                        Log.d(TAG, "location list from server : " + value.toString() + " " + value.toString().length());
+                        String[] splitValue = value.toString().split(" ");
                         if (splitValue.length == 5) {
 
                             String placeUserName = splitValue[0];

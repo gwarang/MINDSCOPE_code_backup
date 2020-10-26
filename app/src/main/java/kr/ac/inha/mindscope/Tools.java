@@ -35,8 +35,10 @@ import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.protobuf.ByteString;
 
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -742,7 +744,7 @@ public class Tools {
                                         .setEmail(email)
                                         .setDataSource(cursor.getInt(1))
                                         .setTimestamp(cursor.getLong(2))
-                                        .setValues(cursor.getString(4))
+                                        .setValue(ByteString.copyFrom(cursor.getString(4), StandardCharsets.UTF_8)) // checkByteString
                                         .setCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                                         .build();
                                 EtService.SubmitDataRecord.Response responseMessage = stub.submitDataRecord(submitDataRecordRequestMessage);

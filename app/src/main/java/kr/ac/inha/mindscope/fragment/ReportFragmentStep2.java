@@ -25,6 +25,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.protobuf.ByteString;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -520,17 +521,20 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 String lastComment = "";
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getSuccess())
-                        for (String value : responseMessage.getValueList()) {
-                            String[] cells = value.split(" ");
-                            long timestamp = Long.parseLong(value.substring(0, value.indexOf(' ')));
-                            String comment = value.substring(value.indexOf(' ') + 1);
+                    if (responseMessage.getSuccess()){
+                        // checkByteString
+                        for (ByteString value : responseMessage.getValueList()) {
+                            String valueStr = value.toString();
+                            String[] cells = valueStr.split(" ");
+                            long timestamp = Long.parseLong(valueStr.substring(0, valueStr.indexOf(' ')));
+                            String comment = valueStr.substring(valueStr.indexOf(' ') + 1);
 
                             if (timestamp > lastTimestamp) {
                                 lastTimestamp = timestamp;
                                 lastComment = comment;
                             }
                         }
+                    }
                 } catch (StatusRuntimeException e) {
                     e.printStackTrace();
                 }
@@ -644,14 +648,17 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 HashMap<Long, Integer> allPointsMaps = new HashMap<>();
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getSuccess())
-                        for (String value : responseMessage.getValueList()) {
-                            String[] cells = value.split(" ");
+                    if (responseMessage.getSuccess()){
+                        // checkByteString
+                        for (ByteString value : responseMessage.getValueList()) {
+                            String valueStr = value.toString();
+                            String[] cells = valueStr.split(" ");
                             if (cells.length != 3)
                                 continue;
                             allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
 //                            points += Integer.parseInt(cells[2]);
                         }
+                    }
                 } catch (StatusRuntimeException e) {
                     e.printStackTrace();
                 }
@@ -701,8 +708,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                     if (responseMessage.getSuccess()){
-                        for (String value : responseMessage.getValueList()) {
-                            String[] cells = value.split(" ");
+                        // checkByteString
+                        for (ByteString value : responseMessage.getValueList()) {
+                            String valueStr = value.toString();
+                            String[] cells = valueStr.split(" ");
                             if (cells.length != 3)
                                 continue;
                             dailyPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
@@ -764,10 +773,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     try {
                         EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
                         if (responseMessage.getSuccess()) {
-                            List<String> values = responseMessage.getValueList();
+                            // checkByteString
+                            List<ByteString> values = responseMessage.getValueList();
                             List<Long> timestamps = responseMessage.getTimestampList();
                             for (int n = 0; n < values.size(); n++) {
-                                String value = values.get(n);
+                                String value = values.get(n).toString();
                                 int dayNum = 0;
                                 long timestamp = 0;
                                 int emaOrder = -1;
