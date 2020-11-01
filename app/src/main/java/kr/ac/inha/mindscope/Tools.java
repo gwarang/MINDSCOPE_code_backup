@@ -613,11 +613,10 @@ public class Tools {
         Long lastInterventionTime = prefs.getLong("zaturiLastIntervention", 0);
 
         if (System.currentTimeMillis() - lastInterventionTime > 60 * 60 * 1000) {        // 1 hour
+            final NotificationManager notificationManager = (NotificationManager)
+                    con.getSystemService(Context.NOTIFICATION_SERVICE);
             if (!curIntervention.equals("")) {
                 // Create and send stress intervention notification
-
-                final NotificationManager notificationManager = (NotificationManager)
-                        con.getSystemService(Context.NOTIFICATION_SERVICE);
 
 //        Intent notificationIntent = new Intent(MainService.this, EMAActivity.class);
                 Intent nextTimeIntent = new Intent(con, InterventionService.class);
@@ -699,6 +698,47 @@ public class Tools {
                     saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
                             STRESS_PUSH_NOTI_SENT, PATH_NOTIFICATION);
                 }
+            }
+            else if (prefs.getBoolean("didFirstIntervention", false)) {
+                Intent setIntIntent = new Intent(con, InterventionService.class);
+                setIntIntent.putExtra("stress_set_int", true);
+                setIntIntent.putExtra("path", 1);
+
+                PendingIntent setIntPI = PendingIntent.getService(con,
+                        5, setIntIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+                String channelId = con.getString(R.string.notif_channel_id);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                        con.getApplicationContext(), channelId);
+                builder.setContentTitle(con.getString(R.string.first_intervention))
+                        .setTimeoutAfter(1000 * ZATURI_RESPONSE_EXPIRE_TIME)
+                        .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                        .setContentText(con.getString(R.string.move_to_first_intervention))
+                        .setAutoCancel(true)
+                        .setCategory(CATEGORY_ALARM)
+                        .setSmallIcon(R.mipmap.ic_launcher_low_foreground)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setContentIntent(setIntPI);
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new NotificationChannel(channelId,
+                            con.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+                    if (notificationManager != null) {
+                        notificationManager.createNotificationChannel(channel);
+                    }
+                }
+
+                final Notification notification = builder.build();
+                if (notificationManager != null) {
+                    notificationManager.notify(ZATURI_NOTIFICATION_ID, notification);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putBoolean("didFirstInterventin", true);
+                    editor.apply();
+                    saveStressIntervention(con, System.currentTimeMillis(), curIntervention,
+                            STRESS_PUSH_NOTI_SENT, PATH_NOTIFICATION);
+                }
+
             }
         }
     }

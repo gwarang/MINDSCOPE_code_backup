@@ -52,6 +52,7 @@ public class InterventionService extends Service {
         boolean action_do_intervention = intent.getBooleanExtra("stress_do_intervention", false);
         boolean action_diff_int = intent.getBooleanExtra("stress_diff_int", false);
         boolean action_diff_int_done = intent.getBooleanExtra("stress_diff_int_done", false);
+        boolean action_set_int = intent.getBooleanExtra("stress_set_int", false);
         int path = intent.getIntExtra("path", -1);
 
         SharedPreferences prefs = getSharedPreferences("intervention", MODE_PRIVATE);
@@ -77,6 +78,11 @@ public class InterventionService extends Service {
             Toast.makeText(getApplicationContext(),
                     getApplicationContext().getString(R.string.string_do_intervention_toast),
                     Toast.LENGTH_LONG).show();
+        } else if (action_set_int) {
+            Intent openMindscope = new Intent(getApplicationContext(), MainActivity.class);
+            openMindscope.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            openMindscope.putExtra("change_intervention", true);
+            startActivity(openMindscope);
         } else {
             Context con =  getApplicationContext();
             final NotificationManager notificationManager = (NotificationManager)

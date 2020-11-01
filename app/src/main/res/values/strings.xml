@@ -231,6 +231,8 @@
     <string name="do_intervention">Relieve stress</string>
     <string name="diff_intervention">Change intervention</string>
     <string name="enter_diff_int">Enter a new intervention</string>
+    <string name="first_intervention">Set the first stress intervention!</string>
+    <string name="move_to_first_intervention">Click to set the intervention.</string>
     <!--Zaturi end-->
 
 
