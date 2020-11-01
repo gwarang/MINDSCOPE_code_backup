@@ -222,6 +222,8 @@
     <string name="do_intervention">스트레스 해소하기</string>
     <string name="diff_intervention">다른거 하기</string>
     <string name="enter_diff_int">다른 해소 방안 입력</string>
+    <string name="first_intervention">첫 스트레스 해소방안을 설정해볼까요?</string>
+    <string name="move_to_first_intervention">알림을 누르면 해소 방안 설정 화면으로 이어집니다.</string>
     <!--Zaturi end-->
 
     <string name="feature_0high">한 자리에 오래 머무른 시간이 길어요</string>
