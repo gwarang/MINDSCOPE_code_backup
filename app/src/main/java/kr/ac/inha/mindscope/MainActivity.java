@@ -628,7 +628,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     public void checkVersionInfo() {
         if (DbMgr.getDB() == null)
             DbMgr.init(getApplicationContext());
@@ -663,4 +662,114 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void loadAllPoints() {
+
+        SharedPreferences pointsPrefs = getSharedPreferences("points", Context.MODE_PRIVATE);
+        int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
+        long daynum = pointsPrefs.getLong("daynum", 0);
+        int localTodayPoints = 0;
+        for (int i = 1; i<=4; i++){
+            localTodayPoints += pointsPrefs.getInt("day_" + daynum + "_order_" + i, 0);
+        }
+
+//        sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
+//        todayPointsView.setText(String.format(Locale.getDefault(), "%d", localTodayPoints));
+
+
+
+//        Log.d(TAG, "start loadAllPoints");
+//        Context context = requireContext();
+//        allPointsMaps.clear();
+//        if (Tools.isNetworkAvailable()) {
+//
+//            if (loadPointsThread != null && loadPointsThread.isAlive())
+//                loadPointsThread.interrupt();
+//
+//            loadPointsThread = new Thread() {
+//                @Override
+//                public void run() {
+//                    while (!loadPointsThread.isInterrupted()) {
+//                        int allPoints = 0;
+//                        int dailyPoints = 0;
+//                        SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+//                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+//                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+//                        int campaignId = Integer.parseInt(context.getString(R.string.stress_campaign_id));
+//                        final int REWARD_POINTS = 58;
+//
+//                        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+//                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+//                        Calendar c = Calendar.getInstance();
+//                        EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
+//                                .setUserId(userId)
+//                                .setEmail(email)
+//                                .setTargetEmail(email)
+//                                .setTargetCampaignId(campaignId)
+//                                .setTargetDataSourceId(REWARD_POINTS)
+//                                .setFromTimestamp(0)
+//                                .setTillTimestamp(c.getTimeInMillis())
+//                                .build();
+//                        try {
+//                            EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+//                            if (responseMessage.getSuccess()) {
+//                                // checkByteString
+//                                for (ByteString value : responseMessage.getValueList()) {
+//                                    String[] cells = value.toString().split(" ");
+//                                    if (cells.length != 3)
+//                                        continue;
+//                                    allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+//                                }
+//                            }
+//                        } catch (IllegalStateException | StatusRuntimeException e) {
+//                            e.printStackTrace();
+//                        }
+//                        channel.shutdown();
+//
+//                        Calendar todayStartCal = Calendar.getInstance();
+//                        Calendar todayEndCal = Calendar.getInstance();
+//                        if(todayStartCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+//                            todayStartCal.add(Calendar.DATE, -1);
+//                        }else{
+//                            todayEndCal.add(Calendar.DATE, 1);
+//                        }
+//                        todayStartCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged);
+//                        todayStartCal.set(Calendar.MINUTE, 0);
+//                        todayStartCal.set(Calendar.SECOND, 0);
+//                        todayStartCal.set(Calendar.MILLISECOND, 0);
+//                        todayEndCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
+//                        todayEndCal.set(Calendar.MINUTE, 59);
+//                        todayEndCal.set(Calendar.SECOND, 59);
+//                        todayEndCal.set(Calendar.MILLISECOND, 0);
+//                        Calendar pointCal = Calendar.getInstance();
+//
+//                        long startTimestamp = todayStartCal.getTimeInMillis();
+//                        long endTimestamp = todayEndCal.getTimeInMillis();
+//                        long pointTimestamp = 0;
+//
+//                        for (Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()) {
+//                            allPoints += elem.getValue();
+//                            pointCal.setTimeInMillis(elem.getKey());
+//
+//                            pointTimestamp = pointCal.getTimeInMillis();
+//                            if(startTimestamp <= pointTimestamp && pointTimestamp <= endTimestamp){
+//                                dailyPoints += elem.getValue();
+//                            }
+//
+//                        }
+//
+//                        if (isAdded()) {
+//                            int finalAllPoints = allPoints;
+//                            int finalDailyPoints = dailyPoints;
+//                            requireActivity().runOnUiThread(() -> {
+//                                sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalAllPoints));
+//                                todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints));
+//                            });
+//                        }
+//                    }
+//                }
+//            };
+//            loadPointsThread.setDaemon(true);
+//            loadPointsThread.start();
+//        }
+    }
 }

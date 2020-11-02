@@ -50,10 +50,10 @@ public class PointCustomDialog extends Dialog {
             todayPoints += pointsPrefs.getInt("day_" + dayNum + "_order_" + i, 0);
         }
         int step = stepChangePrefs.getInt("stepCheck", 0);
-//        todo : 나중에 돌아와서 주석 해제 (스텝2때만 보일수 있도록)
-//        if(step != 2){
-//            btn_stress.setVisibility(View.GONE);
-//        }
+
+        if(step != 2){
+            btn_stress.setVisibility(View.GONE);
+        }
         btn.setOnClickListener(mBtnListener);
         btn_stress.setOnClickListener(mBtnListener2);
 

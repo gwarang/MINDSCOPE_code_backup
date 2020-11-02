@@ -38,6 +38,7 @@ import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 import kr.ac.inha.mindscope.dialog.PerformedDialog;
+import kr.ac.inha.mindscope.dialog.RecommendDialog;
 
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.Tools.STRESS_DO_DIFF_INTERVENTION;
@@ -56,6 +57,7 @@ public class CareChildFragment2 extends Fragment {
     Button editInterventionBtn;
     Button makeInterventionBtn;
     Button loadInterventionBtn;
+    Button loadInterventionBtn2;
 
     TextView doneInterventionText;
     TextView recommendIntervention1;
@@ -64,8 +66,12 @@ public class CareChildFragment2 extends Fragment {
     TextView currentIntervention;
 
     private PerformedDialog performedDialog;
+    private RecommendDialog recommendDialog;
 
     Switch interventionSwitch;
+
+    SharedPreferences interventionPrefs;
+    SharedPreferences.Editor editor;
 
     ArrayList<String[]> todayPerformedInterventions;
 
@@ -87,15 +93,16 @@ public class CareChildFragment2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_care_child2, container, false);
 
         init(view);
-        SharedPreferences interventionPrefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
+        interventionPrefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
 
 
         interventionSwitch.setChecked(!interventionPrefs.getBoolean("muteToday", false));
-        SharedPreferences.Editor editor = interventionPrefs.edit();
+        editor = interventionPrefs.edit();
         //region clickListener
         editInterventionBtn.setOnClickListener(clickEditBtn);
         makeInterventionBtn.setOnClickListener(clickMakeBtn);
         loadInterventionBtn.setOnClickListener(clickLoadBtn);
+        loadInterventionBtn2.setOnClickListener(clickLoadBtn2);
 //        interventionSwitch.setOnCheckedChangeListener(switchListener);
         interventionSwitch.setOnClickListener(switchClickListener);
 
@@ -169,6 +176,7 @@ public class CareChildFragment2 extends Fragment {
         editInterventionBtn = view.findViewById(R.id.child2_edit_btn);
         makeInterventionBtn = view.findViewById(R.id.child2_make_btn);
         loadInterventionBtn = view.findViewById(R.id.child2_load_btn);
+        loadInterventionBtn2 = view.findViewById(R.id.child2_load_btn2);
 
         doneInterventionText = view.findViewById(R.id.child2_txt3);
         recommendIntervention1 = view.findViewById(R.id.child2_recommend1);
@@ -241,6 +249,37 @@ public class CareChildFragment2 extends Fragment {
     };
 
     View.OnClickListener clickLoadBtn = view -> updateRecommendInterventions();
+
+    View.OnClickListener clickLoadBtn2 = view -> showRecommendDialog();
+    private void showRecommendDialog(){
+        recommendDialog = new RecommendDialog(requireContext(), recommendDialogListener);
+        recommendDialog.setCancelable(false);
+        recommendDialog.show();
+    }
+    private View.OnClickListener recommendDialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            if(interventionPrefs.getString("intervention_radio_contents", "") != null && !interventionPrefs.getString("intervention_radio_contents", "").equals("")){
+                editor.putString("curIntervention", interventionPrefs.getString("intervention_radio_contents", ""));
+                editor.putBoolean("didIntervention", false);
+                editor.apply();
+            }
+            Calendar cal = Calendar.getInstance();
+            String curIntervention = interventionPrefs.getString("curIntervention", "");
+            assert curIntervention != null;
+            if (curIntervention.contains(" ")) {
+                curIntervention = curIntervention.replace(" ", "_");
+            }
+            currentIntervention.setText(curIntervention.replace("_", " "));
+            currentInterventionContainer.setVisibility(View.VISIBLE);
+            makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
+            Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
+            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
+
+            recommendDialog.dismiss();
+        }
+    };
 
     View.OnClickListener switchClickListener = view -> {
         SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
@@ -355,7 +394,7 @@ public class CareChildFragment2 extends Fragment {
                             Log.d(TAG, "intervention list " + values);
                             for (ByteString value : values) {
                                 String[] splitValue = value.toString(StandardCharsets.UTF_8).split(" ");
-                                Log.d(TAG, "로드 인터벤션 테스트 " + value.toString(StandardCharsets.UTF_8) + "\nddd " + splitValue.length);
+//                                Log.d(TAG, "로드 인터벤션 테스트 " + value.toString(StandardCharsets.UTF_8) + "\nddd " + splitValue.length);
 
                                 if(splitValue.length != 4)
                                     continue;
