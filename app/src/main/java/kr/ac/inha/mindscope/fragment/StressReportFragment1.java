@@ -76,6 +76,9 @@ public class StressReportFragment1 extends Fragment {
         public void onClick(View view) {
 
             if (noStressReport) {
+
+                // todo 스트레스 리포트 제대로 도착하지 않은경우에도 로그 남기는 것 추가하기
+
                 Calendar cal = Calendar.getInstance();
                 order = Tools.getReportOrderFromRangeAfterReport(cal);
                 SharedPreferences reportSubmitCheckPrefs = requireContext().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
@@ -330,10 +333,20 @@ public class StressReportFragment1 extends Fragment {
         }
         //endregion
 
+        if(predictionArray.isEmpty()){
+            stressResult = "1599629400000,2,23,2,0.00,NO_FEATURES,true";
+            Log.d(TAG, "완전1 " + stressResult);
+        }
+
         for (String result : predictionArray) {
+            // todo test
+            result = "1599629400000,2,23,2,0.00,NO_FEATURES,true";
             String[] splitResult = result.split(",");
+            Log.d(TAG, "완전 "+ splitResult.toString());
             if (Boolean.parseBoolean(splitResult[6])) {
-                stressResult = result;
+//                stressResult = result;
+                stressResult = "1599629400000,2,23,2,0.00,NO_FEATURES,true";
+                Log.d(TAG, "완전테스트 " + stressResult);
             }
         }
         return stressResult;

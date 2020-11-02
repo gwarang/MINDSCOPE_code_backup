@@ -352,4 +352,6 @@
 
     <string name="when_no_report_and_after_11_hour">다음 스트레스 리포트를 기다려주세요!</string>
 
+    <string name="when_no_intervention_performed">아직 스트레스를 해소하지 않았습니다!\n스트레스를 해소해보세요!</string>
+
 </resources>

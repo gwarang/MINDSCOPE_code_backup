@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="286dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:layout_marginTop="26dp"
+        android:id="@+id/performed_intervention_img"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.3"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        android:src="@drawable/icon_low"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:layout_marginTop="6dp"
+        android:layout_marginHorizontal="20dp"
+        android:id="@+id/performed_intervention"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:textSize="@dimen/my_text_size4"
+        android:textColor="@color/textColor_blue"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/performed_intervention_img"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:layout_marginBottom="4dp"
+        android:id="@+id/performed_intervention2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="스트레스 해소방법을 수행하였습니다."
+        android:textSize="@dimen/my_text_size3"
+        android:textColor="@color/textColor_default"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/performed_intervention"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:layout_marginBottom="20dp"
+        android:id="@+id/performed_intervention_btn"
+        android:layout_width="115dp"
+        android:layout_height="32dp"
+        android:text="확인"
+        app:layout_constraintTop_toBottomOf="@id/performed_intervention2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/color_white"
+        android:stateListAnimator="@null"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size2"
+        android:background="@drawable/btn_start_enable"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

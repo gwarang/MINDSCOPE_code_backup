@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -42,7 +41,7 @@ public class InterventionSaveActivity extends AppCompatActivity {
         }
 
         interventionEdit = findViewById(R.id.input_intervention);
-        interventionEdit.setOnFocusChangeListener(focusChangeListener);
+//        interventionEdit.setOnFocusChangeListener(focusChangeListener);
         interventionEdit.addTextChangedListener(textWatcher);
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
@@ -75,6 +74,8 @@ public class InterventionSaveActivity extends AppCompatActivity {
                     Calendar cal = Calendar.getInstance();
                     String curIntervention = prefs.getString("curIntervention", "WRONG_INTERVENTION");
                     assert curIntervention != null;
+                    if (curIntervention.contains(" "))
+                        curIntervention = curIntervention.replace(" ", "_");
                     Tools.saveStressIntervention(getApplicationContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG,0);
                     finish();
                 }
@@ -90,20 +91,20 @@ public class InterventionSaveActivity extends AppCompatActivity {
         return true;
     }
 
-    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View view, boolean b) {
-            if(b){
-                Log.d(TAG, "focus true");
-                String s = interventionEdit.getText().toString();
-                if(interventionEdit.getText().toString().equals("")){
-                    Log.d(TAG, "add first #");
-                    interventionEdit.setText("#");
-                    interventionEdit.setSelection(interventionEdit.getText().length());
-                }
-            }
-        }
-    };
+//    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+//        @Override
+//        public void onFocusChange(View view, boolean b) {
+//            if(b){
+//                Log.d(TAG, "focus true");
+//                String s = interventionEdit.getText().toString();
+//                if(interventionEdit.getText().toString().equals("")){
+//                    Log.d(TAG, "add first #");
+//                    interventionEdit.setText("#");
+//                    interventionEdit.setSelection(interventionEdit.getText().length());
+//                }
+//            }
+//        }
+//    };
 
     TextWatcher textWatcher = new TextWatcher() {
         @Override

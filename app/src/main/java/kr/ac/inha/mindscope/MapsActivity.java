@@ -588,8 +588,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     final SharedPreferences locationPrefs = getSharedPreferences("UserLocations", MODE_PRIVATE);
                     SharedPreferences.Editor editor = locationPrefs.edit();
                     for (ByteString value : values) {
-                        Log.d(TAG, "location list from server : " + value.toString() + " " + value.toString().length());
-                        String[] splitValue = value.toString().split(" ");
+                        Log.d(TAG, "location list from server : " + value.toString("UTF-8") + " " + value.toString("UTF-8").length());
+                        String[] splitValue = value.toString("UTF-8").split(" ");
                         if (splitValue.length == 5) {
 
                             String placeUserName = splitValue[0];
@@ -617,7 +617,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                     locationList = locationPrefs.getString("locationList", "");
                 }
-            } catch (StatusRuntimeException e) {
+            } catch (StatusRuntimeException | IOException e) {
                 Log.d("Tools", "DataCollectorService.setUpHeartbeatSubmissionThread() exception: " + e.getMessage());
                 e.printStackTrace();
             } finally {

@@ -18,6 +18,7 @@ import com.google.protobuf.ByteString;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +37,7 @@ import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.InterventionSaveActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
+import kr.ac.inha.mindscope.dialog.PerformedDialog;
 
 import static android.content.Context.MODE_PRIVATE;
 import static kr.ac.inha.mindscope.Tools.STRESS_DO_DIFF_INTERVENTION;
@@ -61,6 +63,7 @@ public class CareChildFragment2 extends Fragment {
     TextView recommendIntervention3;
     TextView currentIntervention;
 
+    private PerformedDialog performedDialog;
 
     Switch interventionSwitch;
 
@@ -102,10 +105,13 @@ public class CareChildFragment2 extends Fragment {
             editor.apply();
             Calendar cal = Calendar.getInstance();
             String curIntervention = interventionPrefs.getString("curIntervention", "");
-            currentIntervention.setText(curIntervention);
+            assert curIntervention != null;
+            if (curIntervention.contains(" ")) {
+                curIntervention = curIntervention.replace(" ", "_");
+            }
+            currentIntervention.setText(curIntervention.replace("_", " "));
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
-            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
@@ -115,10 +121,13 @@ public class CareChildFragment2 extends Fragment {
             editor.apply();
             Calendar cal = Calendar.getInstance();
             String curIntervention = interventionPrefs.getString("curIntervention", "");
-            currentIntervention.setText(curIntervention);
+            assert curIntervention != null;
+            if (curIntervention.contains(" ")) {
+                curIntervention = curIntervention.replace(" ", "_");
+            }
+            currentIntervention.setText(curIntervention.replace("_", " "));
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
-            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
@@ -128,10 +137,13 @@ public class CareChildFragment2 extends Fragment {
             editor.apply();
             Calendar cal = Calendar.getInstance();
             String curIntervention = interventionPrefs.getString("curIntervention", "");
-            currentIntervention.setText(curIntervention);
+            assert curIntervention != null;
+            if (curIntervention.contains(" ")) {
+                curIntervention = curIntervention.replace(" ", "_");
+            }
+            currentIntervention.setText(curIntervention.replace("_", " "));
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
-            assert curIntervention != null;
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_CONFIG, 0);
             Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_OTHER_INTERVENTION, curIntervention);
         });
@@ -171,7 +183,7 @@ public class CareChildFragment2 extends Fragment {
         String curIntervention = prefs.getString("curIntervention", "");
         assert curIntervention != null;
         if (!curIntervention.equals("")) {
-            currentIntervention.setText(curIntervention);
+            currentIntervention.setText(curIntervention.replace("_", " "));
             currentInterventionContainer.setVisibility(View.VISIBLE);
             makeInterventionBtn.setText(getString(R.string.string_child2_do_intervention));
         } else {
@@ -200,10 +212,9 @@ public class CareChildFragment2 extends Fragment {
                 startActivity(intent);
                 Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_MAKE_INTERVENTION);
             } else {
-
                 SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                String curPerformed = String.format("%s에 '%s'을/를 수행하였습니다.",dateFormat.format(System.currentTimeMillis()), currentIntervention.getText().toString().replace("#", ""));
-                String newPerformedList = doneInterventionText.getText() + curPerformed + '\n';
+                String curPerformed = String.format("%s에 '%s'을/를 수행하였습니다.",dateFormat.format(System.currentTimeMillis()), currentIntervention.getText().toString());
+                String newPerformedList = doneInterventionText.getText().toString().replace(getString(R.string.when_no_intervention_performed), "") + curPerformed + '\n';
 
                 Toast.makeText(requireContext(), curPerformed, Toast.LENGTH_SHORT).show();
 
@@ -215,10 +226,15 @@ public class CareChildFragment2 extends Fragment {
                 editor.putInt("performedDate", cal.get(Calendar.DATE));
                 editor.apply();
                 assert curIntervention != null;
+                if (curIntervention.contains(" "))
+                    curIntervention = curIntervention.replace(" ", "_");
                 Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, STRESS_DO_INTERVENTION, 0);
 //                loadTodayPerformedIntervention();
-                doneInterventionText.setText(newPerformedList);
+                doneInterventionText.setText(newPerformedList.replace("-", " "));
                 doneInterventionText.setVisibility(View.VISIBLE);
+
+                showPerformedInterventionDialog(curIntervention);
+
             }
 
         }
@@ -234,12 +250,16 @@ public class CareChildFragment2 extends Fragment {
             Calendar cal = Calendar.getInstance();
             String curIntervention = prefs.getString("curIntervention", "");
             assert curIntervention != null;
+            if (curIntervention.contains(" "))
+                curIntervention = curIntervention.replace(" ", "_");
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_MUTE_TODAY, 0);
         } else {
             editor.putBoolean("muteToday", false);
             Calendar cal = Calendar.getInstance();
             String curIntervention = prefs.getString("curIntervention", "");
             assert curIntervention != null;
+            if (curIntervention.contains(" "))
+                curIntervention = curIntervention.replace(" ", "_");
             Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_UNMUTE_TODAY, 0);
         }
         editor.apply();
@@ -274,14 +294,16 @@ public class CareChildFragment2 extends Fragment {
             randomNums[i] = random.nextInt(interventionSplit.length);
         }
 
-        recommendIntervention1.setText(String.format("#%s", interventionSplit[randomNums[0]]));
-        recommendIntervention2.setText(String.format("#%s", interventionSplit[randomNums[1]]));
-        recommendIntervention3.setText(String.format("#%s", interventionSplit[randomNums[2]]));
+        recommendIntervention1.setText(interventionSplit[randomNums[0]].replace("_", " "));
+        recommendIntervention2.setText(interventionSplit[randomNums[1]].replace("_", " "));
+        recommendIntervention3.setText(interventionSplit[randomNums[2]].replace("_", " "));
 
         Calendar cal = Calendar.getInstance();
         SharedPreferences prefs = requireActivity().getSharedPreferences("intervention", MODE_PRIVATE);
         String curIntervention = prefs.getString("curIntervention", "");
         assert curIntervention != null;
+        if (curIntervention.contains(" "))
+            curIntervention = curIntervention.replace(" ", "_");
         Tools.saveStressIntervention(requireContext(), cal.getTimeInMillis(), curIntervention, Tools.STRESS_OTHER_RECOMMENDATION, 0);
         Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_LOAD_OTHER_INTERVENTION);
 
@@ -332,12 +354,13 @@ public class CareChildFragment2 extends Fragment {
                         if (!values.isEmpty()) {
                             Log.d(TAG, "intervention list " + values);
                             for (ByteString value : values) {
-                                String[] splitValue = value.toString().split(" ");
+                                String[] splitValue = value.toString(StandardCharsets.UTF_8).split(" ");
+                                Log.d(TAG, "로드 인터벤션 테스트 " + value.toString(StandardCharsets.UTF_8) + "\nddd " + splitValue.length);
 
-                                if (splitValue[2].toString().equals("하기") || splitValue[2].toString().equals("보기")) {
-                                    Log.d(TAG, "skip existing wrong data with spaces");
-                                }
-                                else if (splitValue[1] != null && !splitValue[1].equals("") && splitValue[1].charAt(0) == '#'
+                                if(splitValue.length != 4)
+                                    continue;
+
+                                if (splitValue[1] != null && !splitValue[1].equals("") && !splitValue[1].equals("NOT_SELECT_INTERVENTION")
                                         && (((Integer.parseInt(splitValue[2]) == STRESS_DO_INTERVENTION)
                                         || (Integer.parseInt(splitValue[2]) == STRESS_DO_DIFF_INTERVENTION)))) {
                                     Log.d(TAG, "intervention is : " + splitValue[1]);
@@ -346,6 +369,7 @@ public class CareChildFragment2 extends Fragment {
                                     Log.d(TAG, "no intervention");
                                 }
                             }
+
                         } else {
                             Log.d(TAG, "values empty");
                         }
@@ -361,14 +385,12 @@ public class CareChildFragment2 extends Fragment {
 
                         for (String[] s : todayPerformedInterventions) {
                             String timeText = dateFormat.format(Long.parseLong(s[0]));
-                            didInterventionStr.append(String.format("%s에 '%s'을/를 수행하였습니다.\n", timeText, s[1].substring(1)));
+                            didInterventionStr.append(String.format("%s에 '%s'을/를 수행하였습니다.\n", timeText, s[1].replace("_", " ")));
                         }
                         if (!didInterventionStr.toString().equals("")) {
                             Log.d(TAG, "load performed intervention : " + didInterventionStr);
+                            doneInterventionText.setText(doneInterventionText.getText().toString().replace(getString(R.string.when_no_intervention_performed), ""));
                             doneInterventionText.setText(didInterventionStr.toString());
-                            doneInterventionText.setVisibility(View.VISIBLE);
-                        } else {
-                            doneInterventionText.setVisibility(View.INVISIBLE);
                         }
                     });
                 }
@@ -381,4 +403,17 @@ public class CareChildFragment2 extends Fragment {
 
 //
     }
+
+    private void showPerformedInterventionDialog(String intervention){
+        performedDialog = new PerformedDialog(requireContext(), performedDialogListener, intervention);
+        performedDialog.setCancelable(false);
+        performedDialog.show();
+
+    }
+    private View.OnClickListener performedDialogListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            performedDialog.dismiss();
+        }
+    };
 }

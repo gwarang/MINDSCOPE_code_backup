@@ -41,7 +41,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-
 import inha.nsl.easytrack.ETServiceGrpc;
 import inha.nsl.easytrack.EtService;
 import io.grpc.ManagedChannel;
@@ -98,6 +97,25 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener pointDialogListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            pointCustomDialog.dismiss();
+        }
+    };
+    private View.OnClickListener pointDialogListener2 = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            SharedPreferences stressReportPrefs = getSharedPreferences("stressReport", MODE_PRIVATE);
+            SharedPreferences.Editor stressReportPrefsEdiotr = stressReportPrefs.edit();
+            stressReportPrefsEdiotr.putBoolean("click_go_to_care", true);
+            stressReportPrefsEdiotr.apply();
+
+//            SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+//            lastPagePrefsEditor.putString("last_open_nav_frg", LAST_NAV_FRG2);
+//            lastPagePrefsEditor.apply();
+            navController.navigate(R.id.action_me_to_care_step2);
+            Log.d(TAG, "care 이동 테스트 " + lastPagePrefs.getString("last_open_nav_frg", "test"));
+
+            //todo : go to care
+
             pointCustomDialog.dismiss();
         }
     };
@@ -544,7 +562,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("step2Done", true);
             editor.apply();
 
-            Log.d(TAG, "step2 test " + stepChangePrefs.getInt("stepchange", 9));
+//            Log.d(TAG, "step2 test " + stepChangePrefs.getInt("stepchange", 9));
         }
 
         // Bottom Navigation Bar
@@ -580,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
     private void updatePointAndShowDialog(Intent intent) {
         if (intent.getExtras() != null && intent.getExtras().getBoolean("get_point", false)) {
             Log.d(TAG, "point dialog test");
-            pointCustomDialog = new PointCustomDialog(this, pointDialogListener);
+            pointCustomDialog = new PointCustomDialog(this, pointDialogListener, pointDialogListener2);
             pointCustomDialog.setCancelable(false);
             pointCustomDialog.show();
             intent.putExtra("get_point", false);

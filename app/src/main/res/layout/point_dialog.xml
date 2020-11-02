@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+    android:layout_width="286dp"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="10dp"
-    android:paddingVertical="30dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="14dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="14dp"
         android:id="@+id/container_today_point"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,18 +28,17 @@
         android:orientation="horizontal"
         android:layout_marginHorizontal="20dp"
         android:padding="5dp"
-        android:visibility="gone"
         android:background="@color/color_point_bg">
 
         <TextView
-            android:paddingLeft="20dp"
+            android:paddingLeft="40dp"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/point_today_title"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/string_today_point"
-            android:textSize="@dimen/my_text_size3"
+            android:textSize="@dimen/my_text_size2"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -50,10 +49,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textSize="@dimen/my_text_size3"
+            android:textSize="@dimen/my_text_size2"
             android:fontFamily="@font/notosanscjkkrmedium"
             android:includeFontPadding="false"
-            android:paddingRight="10dp"
+            android:paddingRight="40dp"
             android:textColor="@color/textColor_blue"/>
 
         <TextView
@@ -65,6 +64,7 @@
             android:layout_height="wrap_content"
             android:text="point"
             android:textSize="@dimen/my_text_size3"
+            android:visibility="gone"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -80,18 +80,17 @@
         android:orientation="horizontal"
         android:layout_marginHorizontal="20dp"
         android:padding="5dp"
-        android:visibility="gone"
         android:background="@color/color_point_bg">
 
         <TextView
-            android:paddingLeft="20dp"
+            android:paddingLeft="40dp"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/point_sum_title"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/string_sum_point"
-            android:textSize="@dimen/my_text_size3"
+            android:textSize="@dimen/my_text_size2"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
@@ -102,10 +101,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textSize="@dimen/my_text_size3"
+            android:textSize="@dimen/my_text_size2"
             android:fontFamily="@font/notosanscjkkrmedium"
             android:includeFontPadding="false"
-            android:paddingRight="10dp"
+            android:paddingRight="40dp"
             android:textColor="@color/textColor_blue"/>
 
         <TextView
@@ -116,19 +115,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="point"
-            android:textSize="@dimen/my_text_size3"
+            android:textSize="@dimen/my_text_size2"
+            android:visibility="gone"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/point_btn"
-        android:layout_width="120dp"
-        android:layout_height="35dp"
-        android:text="확인"
+    <TextView
+        android:id="@+id/point_dialog_contents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="스트레스 해소방안을 설정해볼까요?"
+        android:textAlignment="center"
+        android:textSize="@dimen/guide_text_size"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/container_sum_point"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/point_stress_btn"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:text="스트레스 해소하러 가기"
+        app:layout_constraintTop_toBottomOf="@id/point_dialog_contents"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="10dp"
@@ -136,7 +150,23 @@
         android:stateListAnimator="@null"
         android:fontFamily="@font/notosanscjkkrregular"
         android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size3"
+        android:textSize="@dimen/my_text_size2"
+        android:background="@drawable/btn_start_enable"/>
+
+    <Button
+        android:id="@+id/point_btn"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:text="다음에 하기"
+        app:layout_constraintTop_toBottomOf="@id/point_stress_btn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/color_white"
+        android:stateListAnimator="@null"
+        android:fontFamily="@font/notosanscjkkrregular"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/my_text_size2"
         android:background="@drawable/btn_start_enable"/>
 
 

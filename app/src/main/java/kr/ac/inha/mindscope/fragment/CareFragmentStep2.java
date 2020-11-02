@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +54,8 @@ public class CareFragmentStep2 extends Fragment {
     public void onResume() {
         super.onResume();
         SharedPreferences stressReportPrefs = requireActivity().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = stressReportPrefs.edit();
         if (stressReportPrefs.getBoolean("today_last_report", false)) {
-            SharedPreferences.Editor editor = stressReportPrefs.edit();
             editor.putBoolean("today_last_report", false);
             editor.apply();
             // last report full screen dialog
@@ -80,6 +79,15 @@ public class CareFragmentStep2 extends Fragment {
         }
 
         SharedPreferences lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+
+        if(stressReportPrefs.getBoolean("click_go_to_care", false)){
+            lastPagePrefsEditor.putInt("last_open_tab_position", 1);
+            editor.putBoolean("click_go_to_care", false);
+            editor.apply();
+            lastPagePrefsEditor.apply();
+        }
+
         int curPosition = lastPagePrefs.getInt("last_open_tab_position", 0);
         viewPager.postDelayed(() -> requireActivity().runOnUiThread(() -> viewPager.setCurrentItem(curPosition)), 100);
 

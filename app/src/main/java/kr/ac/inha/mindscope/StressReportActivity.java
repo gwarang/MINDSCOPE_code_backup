@@ -106,7 +106,7 @@ public class StressReportActivity extends AppCompatActivity {
                     List<Long> valuesTimestamp = responseMessage.getTimestampList();
                     if (!values.isEmpty()) {
                         for (int i = 0; i < values.size(); i++) {
-                            stressReportStr = values.get(i).toString();
+                            stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8");
                             long timestamp = valuesTimestamp.get(i);
                             try {
                                 JSONObject stressReportJSON = new JSONObject(stressReportStr);

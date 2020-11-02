@@ -9,16 +9,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.Calendar;
 import java.util.Objects;
 
-import inha.nsl.easytrack.ETServiceGrpc;
-import inha.nsl.easytrack.EtService;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.R;
-import kr.ac.inha.mindscope.Utils;
 
 public class PointCustomDialog extends Dialog {
 
@@ -29,7 +22,9 @@ public class PointCustomDialog extends Dialog {
     TextView todayPointsView;
     TextView sumPointsView;
     private Button btn;
+    private Button btn_stress;
     private View.OnClickListener mBtnListener;
+    private View.OnClickListener mBtnListener2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +39,31 @@ public class PointCustomDialog extends Dialog {
 
         todayPointsView = findViewById(R.id.point_today_value);
         sumPointsView = findViewById(R.id.point_sum_value);
+        btn = findViewById(R.id.point_btn);
+        btn_stress = findViewById(R.id.point_stress_btn);
+        SharedPreferences stepChangePrefs = getContext().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        SharedPreferences pointsPrefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
+        sumPoints = pointsPrefs.getInt("sumPoints", 0);
+        long dayNum = pointsPrefs.getLong("daynum", 0);
+        todayPoints = 0;
+        for(int i=1; i<=4; i++){
+            todayPoints += pointsPrefs.getInt("day_" + dayNum + "_order_" + i, 0);
+        }
+        int step = stepChangePrefs.getInt("stepCheck", 0);
+//        todo : 나중에 돌아와서 주석 해제 (스텝2때만 보일수 있도록)
+//        if(step != 2){
+//            btn_stress.setVisibility(View.GONE);
+//        }
+        btn.setOnClickListener(mBtnListener);
+        btn_stress.setOnClickListener(mBtnListener2);
+
         todayPointsView.setText(String.valueOf(todayPoints));
         sumPointsView.setText(String.valueOf(sumPoints));
-        btn = findViewById(R.id.point_btn);
-        btn.setOnClickListener(mBtnListener);
     }
 
-    public PointCustomDialog(Context context, View.OnClickListener clickListener) {
+    public PointCustomDialog(Context context, View.OnClickListener clickListener, View.OnClickListener clickListener2) {
         super(context);
         this.mBtnListener = clickListener;
+        this.mBtnListener2 = clickListener2;
     }
 }

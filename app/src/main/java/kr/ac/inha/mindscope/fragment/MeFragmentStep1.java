@@ -3,8 +3,6 @@ package kr.ac.inha.mindscope.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -20,13 +18,13 @@ import android.widget.TextView;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.protobuf.ByteString;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -244,12 +242,12 @@ public class MeFragmentStep1 extends Fragment {
                         // checkByteString
                         List<ByteString> values = responseMessage.getValueList();
                         for (ByteString value : values) {
-                            String[] splitValue = value.toString().split(" ");
+                            String[] splitValue = value.toString("UTF-8").split(" ");
                             editor.putBoolean("ema_submit_check_" + splitValue[1], true);
                             editor.apply();
                         }
                     }
-                } catch (StatusRuntimeException e) {
+                } catch (StatusRuntimeException | IOException e) {
                     e.printStackTrace();
                 } finally {
                     channel.shutdown();
@@ -279,100 +277,114 @@ public class MeFragmentStep1 extends Fragment {
     }
 
     public void loadAllPoints() {
-        Log.d(TAG, "start loadAllPoints");
-        Context context = requireContext();
-        allPointsMaps.clear();
-        if (Tools.isNetworkAvailable()) {
 
-            if (loadPointsThread != null && loadPointsThread.isAlive())
-                loadPointsThread.interrupt();
-
-            loadPointsThread = new Thread() {
-                @Override
-                public void run() {
-                    while (!loadPointsThread.isInterrupted()) {
-                        int allPoints = 0;
-                        int dailyPoints = 0;
-                        SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-                        int campaignId = Integer.parseInt(context.getString(R.string.stress_campaign_id));
-                        final int REWARD_POINTS = 58;
-
-                        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                        Calendar c = Calendar.getInstance();
-                        EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
-                                .setUserId(userId)
-                                .setEmail(email)
-                                .setTargetEmail(email)
-                                .setTargetCampaignId(campaignId)
-                                .setTargetDataSourceId(REWARD_POINTS)
-                                .setFromTimestamp(0)
-                                .setTillTimestamp(c.getTimeInMillis())
-                                .build();
-                        try {
-                            EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                            if (responseMessage.getSuccess()) {
-                                // checkByteString
-                                for (ByteString value : responseMessage.getValueList()) {
-                                    String[] cells = value.toString().split(" ");
-                                    if (cells.length != 3)
-                                        continue;
-                                    allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
-                                }
-                            }
-                        } catch (IllegalStateException | StatusRuntimeException e) {
-                            e.printStackTrace();
-                        }
-                        channel.shutdown();
-
-                        Calendar todayStartCal = Calendar.getInstance();
-                        Calendar todayEndCal = Calendar.getInstance();
-                        if(todayStartCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
-                            todayStartCal.add(Calendar.DATE, -1);
-                        }else{
-                            todayEndCal.add(Calendar.DATE, 1);
-                        }
-                        todayStartCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged);
-                        todayStartCal.set(Calendar.MINUTE, 0);
-                        todayStartCal.set(Calendar.SECOND, 0);
-                        todayStartCal.set(Calendar.MILLISECOND, 0);
-                        todayEndCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
-                        todayEndCal.set(Calendar.MINUTE, 59);
-                        todayEndCal.set(Calendar.SECOND, 59);
-                        todayEndCal.set(Calendar.MILLISECOND, 0);
-                        Calendar pointCal = Calendar.getInstance();
-
-                        long startTimestamp = todayStartCal.getTimeInMillis();
-                        long endTimestamp = todayEndCal.getTimeInMillis();
-                        long pointTimestamp = 0;
-
-                        for (Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()) {
-                            allPoints += elem.getValue();
-                            pointCal.setTimeInMillis(elem.getKey());
-
-                            pointTimestamp = pointCal.getTimeInMillis();
-                            if(startTimestamp <= pointTimestamp && pointTimestamp <= endTimestamp){
-                                dailyPoints += elem.getValue();
-                            }
-
-                        }
-
-                        if (isAdded()) {
-                            int finalAllPoints = allPoints;
-                            int finalDailyPoints = dailyPoints;
-                            requireActivity().runOnUiThread(() -> {
-                                sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalAllPoints));
-                                todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints));
-                            });
-                        }
-                    }
-                }
-            };
-            loadPointsThread.setDaemon(true);
-            loadPointsThread.start();
+        SharedPreferences pointsPrefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
+        int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
+        long daynum = pointsPrefs.getLong("daynum", 0);
+        int localTodayPoints = 0;
+        for (int i = 1; i<=4; i++){
+            localTodayPoints += pointsPrefs.getInt("day_" + daynum + "_order_" + i, 0);
         }
+
+        sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
+        todayPointsView.setText(String.format(Locale.getDefault(), "%d", localTodayPoints));
+
+
+
+//        Log.d(TAG, "start loadAllPoints");
+//        Context context = requireContext();
+//        allPointsMaps.clear();
+//        if (Tools.isNetworkAvailable()) {
+//
+//            if (loadPointsThread != null && loadPointsThread.isAlive())
+//                loadPointsThread.interrupt();
+//
+//            loadPointsThread = new Thread() {
+//                @Override
+//                public void run() {
+//                    while (!loadPointsThread.isInterrupted()) {
+//                        int allPoints = 0;
+//                        int dailyPoints = 0;
+//                        SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+//                        int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+//                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+//                        int campaignId = Integer.parseInt(context.getString(R.string.stress_campaign_id));
+//                        final int REWARD_POINTS = 58;
+//
+//                        ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+//                        ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+//                        Calendar c = Calendar.getInstance();
+//                        EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
+//                                .setUserId(userId)
+//                                .setEmail(email)
+//                                .setTargetEmail(email)
+//                                .setTargetCampaignId(campaignId)
+//                                .setTargetDataSourceId(REWARD_POINTS)
+//                                .setFromTimestamp(0)
+//                                .setTillTimestamp(c.getTimeInMillis())
+//                                .build();
+//                        try {
+//                            EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+//                            if (responseMessage.getSuccess()) {
+//                                // checkByteString
+//                                for (ByteString value : responseMessage.getValueList()) {
+//                                    String[] cells = value.toString().split(" ");
+//                                    if (cells.length != 3)
+//                                        continue;
+//                                    allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+//                                }
+//                            }
+//                        } catch (IllegalStateException | StatusRuntimeException e) {
+//                            e.printStackTrace();
+//                        }
+//                        channel.shutdown();
+//
+//                        Calendar todayStartCal = Calendar.getInstance();
+//                        Calendar todayEndCal = Calendar.getInstance();
+//                        if(todayStartCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+//                            todayStartCal.add(Calendar.DATE, -1);
+//                        }else{
+//                            todayEndCal.add(Calendar.DATE, 1);
+//                        }
+//                        todayStartCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged);
+//                        todayStartCal.set(Calendar.MINUTE, 0);
+//                        todayStartCal.set(Calendar.SECOND, 0);
+//                        todayStartCal.set(Calendar.MILLISECOND, 0);
+//                        todayEndCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
+//                        todayEndCal.set(Calendar.MINUTE, 59);
+//                        todayEndCal.set(Calendar.SECOND, 59);
+//                        todayEndCal.set(Calendar.MILLISECOND, 0);
+//                        Calendar pointCal = Calendar.getInstance();
+//
+//                        long startTimestamp = todayStartCal.getTimeInMillis();
+//                        long endTimestamp = todayEndCal.getTimeInMillis();
+//                        long pointTimestamp = 0;
+//
+//                        for (Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()) {
+//                            allPoints += elem.getValue();
+//                            pointCal.setTimeInMillis(elem.getKey());
+//
+//                            pointTimestamp = pointCal.getTimeInMillis();
+//                            if(startTimestamp <= pointTimestamp && pointTimestamp <= endTimestamp){
+//                                dailyPoints += elem.getValue();
+//                            }
+//
+//                        }
+//
+//                        if (isAdded()) {
+//                            int finalAllPoints = allPoints;
+//                            int finalDailyPoints = dailyPoints;
+//                            requireActivity().runOnUiThread(() -> {
+//                                sumPointsView.setText(String.format(Locale.getDefault(), "%d", finalAllPoints));
+//                                todayPointsView.setText(String.format(Locale.getDefault(), "%d", finalDailyPoints));
+//                            });
+//                        }
+//                    }
+//                }
+//            };
+//            loadPointsThread.setDaemon(true);
+//            loadPointsThread.start();
+//        }
     }
 
     public void startEmaActivityWhenNotSubmitted() {

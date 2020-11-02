@@ -36,6 +36,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -524,7 +525,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     if (responseMessage.getSuccess()){
                         // checkByteString
                         for (ByteString value : responseMessage.getValueList()) {
-                            String valueStr = value.toString();
+                            String valueStr = value.toString("UTF-8");
                             String[] cells = valueStr.split(" ");
                             long timestamp = Long.parseLong(valueStr.substring(0, valueStr.indexOf(' ')));
                             String comment = valueStr.substring(valueStr.indexOf(' ') + 1);
@@ -535,7 +536,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             }
                         }
                     }
-                } catch (StatusRuntimeException e) {
+                } catch (StatusRuntimeException | IOException e) {
                     e.printStackTrace();
                 }
                 channel.shutdown();
@@ -592,6 +593,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onResume() {
         super.onResume();
+
+
+
         Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_OPEN_PAGE);
     }
 
@@ -651,7 +655,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     if (responseMessage.getSuccess()){
                         // checkByteString
                         for (ByteString value : responseMessage.getValueList()) {
-                            String valueStr = value.toString();
+                            String valueStr = value.toString("UTF-8");
                             String[] cells = valueStr.split(" ");
                             if (cells.length != 3)
                                 continue;
@@ -659,7 +663,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 //                            points += Integer.parseInt(cells[2]);
                         }
                     }
-                } catch (StatusRuntimeException e) {
+                } catch (StatusRuntimeException | IOException e) {
                     e.printStackTrace();
                 }
                 channel.shutdown();
@@ -670,8 +674,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 }
 
                 final int finalPoints = points;
-                if(isAdded())
-                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints)));
+//                if(isAdded())
+//                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints))); // removed : changed sumPoints logic based on local sumPoints
             }).start();
         }
     }
@@ -710,7 +714,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     if (responseMessage.getSuccess()){
                         // checkByteString
                         for (ByteString value : responseMessage.getValueList()) {
-                            String valueStr = value.toString();
+                            String valueStr = value.toString("UTF-8");
                             String[] cells = valueStr.split(" ");
                             if (cells.length != 3)
                                 continue;
@@ -722,7 +726,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         }
                     }
 
-                } catch (StatusRuntimeException e) {
+                } catch (StatusRuntimeException | IOException e) {
                     e.printStackTrace();
                 }
                 channel.shutdown();
@@ -754,9 +758,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 c.setTimeInMillis(joinTimestamp);
                 long fromTimestamp = c.getTimeInMillis();
 
+                SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                final int SUBMITTED = 55, PREDICTION = 56;
+                final int SUBMITTED = configPrefs.getInt("SELF_STRESS_REPORT", -1), PREDICTION = configPrefs.getInt("STRESS_PREDICTION", -1);
                 synchronized (this){
                     stressLevels.clear();
                 }
@@ -777,7 +783,12 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             List<ByteString> values = responseMessage.getValueList();
                             List<Long> timestamps = responseMessage.getTimestampList();
                             for (int n = 0; n < values.size(); n++) {
-                                String value = values.get(n).toString();
+                                String value = null;
+                                if(dataSourceId == SUBMITTED){
+                                    value = values.get(n).toString("UTF-8");
+                                }else{
+                                    value = values.get(n).substring(1, values.get(n).size()-1).toString("UTF-8");
+                                }
                                 int dayNum = 0;
                                 long timestamp = 0;
                                 int emaOrder = -1;
@@ -825,7 +836,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                 }
                             }
                         }
-                    } catch (StatusRuntimeException e) {
+                    } catch (StatusRuntimeException | IOException e) {
                         e.printStackTrace();
                     }
                 }

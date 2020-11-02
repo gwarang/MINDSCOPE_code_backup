@@ -7,6 +7,7 @@
     tools:context=".fragment.CareChildFragment2">
 
     <ScrollView
+        android:id="@+id/child2_scrollview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -102,38 +103,23 @@
 
             <Button
                 android:id="@+id/child2_make_btn"
-                android:layout_width="180dp"
+                android:layout_width="200dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="18dp"
-                android:background="@drawable/btn_design_blue"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/btn_start_enable"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
                 android:stateListAnimator="@null"
                 android:text="스트레스 해소방안 만들기"
-                android:textColor="@color/textColor_blue"
+                android:textColor="@color/color_white"
                 android:textSize="@dimen/my_text_size1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/intervention_container"
-                app:layout_constraintBottom_toTopOf="@id/child2_txt3"/>
+                app:layout_constraintBottom_toTopOf="@id/child2_recommend_container"/>
 
-            <TextView
-                android:id="@+id/child2_txt3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:layout_marginBottom="18dp"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="30dp"
-                android:textAlignment="center"
-                android:textColor="@color/textColor_light"
-                android:textSize="@dimen/my_text_size2"
-                android:visibility="visible"
-                app:layout_constraintBottom_toTopOf="@id/child2_recommend_container"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/child2_make_btn" />
+
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -142,10 +128,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="19dp"
                 android:background="@drawable/view_top_border"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/child2_interaction_container"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/child2_txt3">
+                app:layout_constraintTop_toBottomOf="@+id/child2_make_btn">
 
                 <TextView
                     android:id="@+id/child2_txt4"
@@ -209,6 +195,7 @@
                     android:layout_width="140dp"
                     android:layout_height="30dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/btn_design"
                     android:drawableLeft="@drawable/ic_refresh_blue_24px"
                     android:fontFamily="@font/notosanscjkkrregular"
@@ -220,9 +207,74 @@
                     android:textSize="@dimen/my_text_size1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/child2_load_btn2"
+                    app:layout_constraintTop_toBottomOf="@id/child2_recommend3" />
+
+                <Button
+                    android:id="@+id/child2_load_btn2"
+                    android:layout_width="140dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/btn_design"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:stateListAnimator="@null"
+                    android:text="모든 리스트 보기"
+                    android:textColor="@color/textColor_default_light"
+                    android:textSize="@dimen/my_text_size1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/child2_load_btn"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/child2_recommend3" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/child2_interaction_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/view_top_border"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/child2_interaction_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="18dp"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="35dp"
+                    android:text="스트레스 해소 내역"
+                    android:textColor="@color/textColor_default"
+                    android:textSize="@dimen/my_text_size1"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/child2_txt3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="18dp"
+                    android:fontFamily="@font/notosanscjkkrlight"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="35dp"
+                    android:text="@string/when_no_intervention_performed"
+                    android:textColor="@color/textColor_light"
+                    android:textSize="@dimen/my_text_size1"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/child2_interaction_title" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

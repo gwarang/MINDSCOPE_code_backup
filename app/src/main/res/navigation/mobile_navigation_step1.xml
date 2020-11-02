@@ -8,16 +8,37 @@
     <fragment
         android:id="@+id/navigation_me"
         android:name="kr.ac.inha.mindscope.fragment.MeFragmentStep1"
-        tools:layout="@layout/fragment_me" />
+        tools:layout="@layout/fragment_me" >
+        <action
+            android:id="@+id/action_navigation_me_to_navigation_care"
+            app:destination="@id/navigation_care" />
+        <action
+            android:id="@+id/action_navigation_me_to_navigation_report"
+            app:destination="@id/navigation_report" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_care"
         android:name="kr.ac.inha.mindscope.fragment.CareFragmentStep1"
-        tools:layout="@layout/fragment_care" />
+        tools:layout="@layout/fragment_care" >
+        <action
+            android:id="@+id/action_navigation_care_to_navigation_report"
+            app:destination="@id/navigation_report" />
+        <action
+            android:id="@+id/action_navigation_care_to_navigation_me"
+            app:destination="@id/navigation_me" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_report"
-        android:name="kr.ac.inha.mindscope.fragment.ReportFragmentStep1"
-        tools:layout="@layout/fragment_report" />
+        android:name="kr.ac.inha.mindscope.fragment.ReportFragmentStep2"
+        tools:layout="@layout/fragment_report_step2" >
+        <action
+            android:id="@+id/action_navigation_report_to_navigation_me"
+            app:destination="@id/navigation_me" />
+        <action
+            android:id="@+id/action_navigation_report_to_navigation_care"
+            app:destination="@id/navigation_care" />
+    </fragment>
 
 </navigation>

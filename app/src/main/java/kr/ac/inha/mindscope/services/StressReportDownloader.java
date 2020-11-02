@@ -89,7 +89,7 @@ public class StressReportDownloader extends Worker {
                         List<Long> valuesTimestamp = responseMessage.getTimestampList();
                         if (!values.isEmpty()) {
                             for (int i = 0; i < values.size(); i++) {
-                                stressReportStr = values.get(i).toString();
+                                stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8");
                                 long timestamp = valuesTimestamp.get(i);
                                 try{
                                     JSONObject stressReportJSON = new JSONObject(stressReportStr);
@@ -152,7 +152,7 @@ public class StressReportDownloader extends Worker {
                                 try {
                                     fileOutputStream = context.openFileOutput(SELF_STRESS_REPORT_RESULT, Context.MODE_APPEND);
                                     for (ByteString value : values) {
-                                        String selfReport = value.toString().replace(" ", ",");
+                                        String selfReport = value.toString("UTF-8").replace(" ", ",");
                                         selfReport += '\n';
                                         fileOutputStream.write(selfReport.getBytes());
                                     }

@@ -565,10 +565,24 @@ public class Tools {
     public static void updatePoint(Context context) {
         long calDateDays;
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
+        SharedPreferences pointsPrefs = context.getSharedPreferences("points", MODE_PRIVATE);
+        SharedPreferences.Editor pointsPrefsEditors = pointsPrefs.edit();
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
         long uploadTimestamp = System.currentTimeMillis();
 
         Calendar curCal = Calendar.getInstance();
+        int hour = curCal.get(Calendar.HOUR_OF_DAY);
+        int order = 0;
+        if (hour >= 11 && hour < 15){
+            order = 1;
+        }else if(hour < 19){
+            order = 2;
+        }else if(hour < 23){
+            order = 3;
+        }else{
+            order = 4;
+        }
+
         if(curCal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             curCal.add(Calendar.DATE, -1);
         }
@@ -582,6 +596,13 @@ public class Tools {
         assert dataSourceId != -1;
         Log.d(TAG, "REWARD_POINTS dataSourceId: " + dataSourceId);
         DbMgr.saveMixedData(dataSourceId, uploadTimestamp, 1.0f, uploadTimestamp, calDateDays, Tools.POINT_INCREASE_VALUE);
+
+        int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
+        localSumPoints += Tools.POINT_INCREASE_VALUE;
+        pointsPrefsEditors.putInt("sumPoints", localSumPoints);
+        pointsPrefsEditors.putLong("daynum", calDateDays);
+        pointsPrefsEditors.putInt("day_" + calDateDays + "_order_" + order, Tools.POINT_INCREASE_VALUE);
+        pointsPrefsEditors.apply();
 
         fastUploadToServer(context);
     }

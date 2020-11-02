@@ -145,9 +145,11 @@ public class MeFragmentStep2 extends Fragment {
         if (isFirstStartStep2DialogShowing)
             startStressReportActivityWhenNotSubmitted();
 
-        if (stressReportPrefs.getBoolean("today_last_report", false)) {
+        if (stressReportPrefs.getBoolean("today_last_report", false) || stressReportPrefs.getBoolean("click_go_to_care", false)) {
             navController.navigate(R.id.action_me_to_care_step2);
+            // todo : ref 스트레스 해소하기 이동
         }
+
     }
 
     @Override
@@ -530,8 +532,8 @@ public class MeFragmentStep2 extends Fragment {
 
         if(lastSelfReport != null && stressResult == null){
             // when no prediction, making stressResult using only self stress
-            String[] splitSelfReport = lastSelfReport.split(" ");
-            stressResult = String.format(Locale.getDefault(),"%d %d %d %d %.2f %s %b",
+            String[] splitSelfReport = lastSelfReport.split(",");
+            stressResult = String.format(Locale.getDefault(),"%d,%d,%d,%d,%.2f,%s,%b",
                     Long.parseLong(splitSelfReport[SELF_REPORT_TIMESTAMP_INDEX]),
                     Integer.parseInt(splitSelfReport[SELF_REPORT_ANSWER_INDEX]),
                     Integer.parseInt(splitSelfReport[SELF_REPORT_DAYNUM_INDEX]),
