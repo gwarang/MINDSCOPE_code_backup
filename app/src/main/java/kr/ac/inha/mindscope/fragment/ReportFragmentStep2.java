@@ -740,7 +740,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
     // endregion
 
-
     public void loadAllStressLevelsFromServer() {
         if (Tools.isNetworkAvailable()) {
             // [Kevin] load stress levels (submissions & predictions) from gRPC server

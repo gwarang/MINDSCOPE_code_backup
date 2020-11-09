@@ -341,8 +341,9 @@ public class EMAActivity extends AppCompatActivity {
     public void emaSubmit() {
         long timestamp = System.currentTimeMillis();
 
-        if (answer1 == 5 || answer2 == 5 || answer3 == 5 || answer4 == 5 || answer5 == 5) {
-            Toast.makeText(getApplicationContext(), "모든 문항에 응답해주세요!", Toast.LENGTH_LONG).show();
+        // answer1 == 5 || answer2 == 5 || answer3 == 5 || answer4 == 5 ||
+        if (answer5 == 5) {
+            Toast.makeText(getApplicationContext(), "문항에 응답해주세요!", Toast.LENGTH_LONG).show();
             return;
         }
 

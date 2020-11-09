@@ -123,13 +123,30 @@ public class TagActivity extends AppCompatActivity {
             }
             Log.d(TAG, forMyTags.toString());
 
+            SharedPreferences tagsPrefs = getSharedPreferences("EMA_Tags", MODE_PRIVATE);
+            SharedPreferences.Editor tagsPrefsEditor = tagsPrefs.edit();
+
+            long saveTimestamp = fixTimestamp(timestamp, emaOrder);
+            String saveTags = "";
+
             SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
             assert dataSourceId != -1;
+            long temp = 0;
             for(String tag : tags){
-                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, dayNum, emaOrder, tag);
+
+                DbMgr.saveMixedData(dataSourceId, timestamp + temp, 1.0f, timestamp+temp, dayNum, emaOrder, tag);
+                Log.d(TAG, "submit test : " + (timestamp + temp) + " " + tag);
+                temp++;
                 Tools.saveApplicationLog(getApplicationContext(), TAG, "SAVE_EACH_EMA_TAG_IN_LOCAL");
+                if(saveTags.equals("")){
+                    saveTags = tag;
+                }else{
+                    saveTags += " " + tag;
+                }
             }
+            tagsPrefsEditor.putString(String.valueOf(saveTimestamp), answer5 + "_" + saveTags);
+            tagsPrefsEditor.apply();
 
 
             String answers = String.format(Locale.US, "%d %d %d %d %d",
@@ -249,5 +266,31 @@ public class TagActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private int getEmaOrderHour(int emaOrder) {
+        switch (emaOrder) {
+            case 1:
+                return 11;
+            case 2:
+                return 15;
+            case 3:
+                return 19;
+            case 4:
+                return 23;
+            default:
+                return -1;
+        }
+    }
+
+    private long fixTimestamp(long timestamp, int emaOrder) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(timestamp);
+        if(c.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+            c.add(Calendar.DATE, -1);
+        }
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), getEmaOrderHour(emaOrder), 0, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis();
     }
 }
