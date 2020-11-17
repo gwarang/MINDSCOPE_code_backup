@@ -204,7 +204,8 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/view_bottom_border"
                             android:orientation="horizontal"
-                            android:paddingVertical="5dp">
+                            android:paddingVertical="5dp"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -241,7 +242,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border">
+                            android:background="@drawable/view_bottom_border"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -278,7 +280,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border">
+                            android:background="@drawable/view_bottom_border"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -314,7 +317,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border">
+                            android:background="@drawable/view_bottom_border"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -400,7 +404,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/notosanscjkkrregular"
                 android:includeFontPadding="false"
-                android:text="@string/string_stress_why"
+                android:text="스트레스 레벨에 따라 text 변함"
                 android:textAlignment="center"
                 android:textSize="@dimen/my_text_size3"
                 app:layout_constraintBottom_toTopOf="@id/stress_report_reason_container"

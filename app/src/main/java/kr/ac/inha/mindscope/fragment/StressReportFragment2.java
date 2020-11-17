@@ -407,6 +407,8 @@ public class StressReportFragment2 extends Fragment {
                     Log.d(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, analysisResult, reportAnswer);
 
+
+
                     String oneReportWithTimestamp = String.format(Locale.KOREA, "%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
@@ -442,7 +444,15 @@ public class StressReportFragment2 extends Fragment {
                     }
 
                     Tools.saveApplicationLog(context, TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, analysisResult);
-                } else {
+
+                    // TODO 답변 이유 팝업창
+                    if(analysisResult == INCORRECT_ANALYSIS_RESULT){
+                        if(checkSurveyCount()){
+                            surveyDialog();
+                        }
+                    }
+                }
+                else {
                     // 그 외는 MainActivity로
 
                     SharedPreferences stressReportPrefs = context.getSharedPreferences("stressReport", Context.MODE_PRIVATE);
@@ -470,6 +480,9 @@ public class StressReportFragment2 extends Fragment {
                     assert dataSourceId != -1;
                     Log.d(TAG, "SELF_STRESS_REPORT dataSourceId: " + dataSourceId);
                     DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, day_num, order, analysisResult, reportAnswer);
+
+
+
                     String oneReportWithTimestamp = String.format(Locale.KOREA, "%d,%d,%d,%d,%d\n",
                             timestamp,
                             day_num,
@@ -505,6 +518,14 @@ public class StressReportFragment2 extends Fragment {
                     }
 
                     Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, analysisResult);
+
+
+                    // todo 답변 이유 팝업 창
+                    if(analysisResult == INCORRECT_ANALYSIS_RESULT){
+                        if(checkSurveyCount()){
+                            surveyDialog();
+                        }
+                    }
                 }
             }
         }
@@ -531,5 +552,25 @@ public class StressReportFragment2 extends Fragment {
             noBtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor_blue));
         }
     };
+
+    public boolean checkSurveyCount(){
+        SharedPreferences stressReportPrefs = requireContext().getSharedPreferences("stressReport", Context.MODE_PRIVATE);
+        SharedPreferences.Editor stressReportPrefsEditor = stressReportPrefs.edit();
+        int noCount = stressReportPrefs.getInt("no_count", 0) + 1;
+        stressReportPrefsEditor.putInt("no_count", noCount);
+        stressReportPrefsEditor.apply();
+
+        if(noCount >= 3){
+            stressReportPrefsEditor.putInt("no_count", 0);
+            stressReportPrefsEditor.apply();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void surveyDialog(){
+        // todo survey dialog
+    }
 
 }
