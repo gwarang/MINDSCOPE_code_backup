@@ -41,7 +41,6 @@ import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 
-import static kr.ac.inha.mindscope.EMAActivity.EMA_NOTIF_HOURS;
 import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 
 public class MeFragmentStep1 extends Fragment {
@@ -407,7 +406,7 @@ public class MeFragmentStep1 extends Fragment {
             cal.set(Calendar.MILLISECOND, 0);
         }
         int todayDate = cal.get(Calendar.DATE);
-        if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1) && curHour >= timeTheDayNumIsChanged) {
+        if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1)) {
             for (short i = 0; i < 4; i++) {
                 emaSubmitEditor.putBoolean("ema_submit_check_" + (i + 1), false);
                 emaSubmitEditor.apply();
@@ -415,7 +414,14 @@ public class MeFragmentStep1 extends Fragment {
         }
         int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
         for (short i = 0; i < 4; i++) {
-            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && ema_order > 0 && !submits[ema_order - 1]) {
+//            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && ema_order > 0 && !submits[ema_order - 1]) {
+//                if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
+//                    Intent intent = new Intent(getActivity(), EMAActivity.class);
+//                    intent.putExtra("ema_order", ema_order);
+//                    startActivity(intent);
+//                }
+//            }
+            if (ema_order > 0 && !submits[ema_order - 1]) {
                 if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
                     Intent intent = new Intent(getActivity(), EMAActivity.class);
                     intent.putExtra("ema_order", ema_order);
@@ -426,6 +432,7 @@ public class MeFragmentStep1 extends Fragment {
         loadAllPoints();
         updateEmaResponseView();
     }
+
 
 //    public String getVersionInfo(Context context) {
 //        String version = "Unknown";

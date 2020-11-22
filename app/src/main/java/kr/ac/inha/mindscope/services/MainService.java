@@ -72,9 +72,9 @@ public class MainService extends Service {
     public static final int EMA_NOTI_ID = 1234; //in sec
     public static final int STRESS_REPORT_NOTIFI_ID = 12345; //in sec
     public static final int PERMISSION_REQUEST_NOTIFICATION_ID = 1111; //in sec
-    public static final long EMA_RESPONSE_EXPIRE_TIME = 3600 * 2;  //in sec
+    public static final long EMA_RESPONSE_EXPIRE_TIME = 3600 * 4;  //in sec
     public static final long ZATURI_RESPONSE_EXPIRE_TIME = 3600;  //in sec
-    public static final long REPORT_RESPONSE_EXPIRE_TIME = 3600 * 2;  //in sec
+    public static final long REPORT_RESPONSE_EXPIRE_TIME = 3600 * 4;  //in sec
     public static final int SERVICE_START_X_MIN_BEFORE_EMA = (EMA_NOTIF_HOURS[1] - EMA_NOTIF_HOURS[0]) * 60 * 60; //in sec
     public static final short HEARTBEAT_PERIOD = 30;  //in sec
     public static final short DATA_SUBMIT_PERIOD = 60;  //in sec

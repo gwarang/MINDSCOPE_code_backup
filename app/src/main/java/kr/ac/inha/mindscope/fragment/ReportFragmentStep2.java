@@ -1125,6 +1125,35 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         }
     }
 
+    public static class LowEMADecorator implements DayViewDecorator {
+        private static HashSet<CalendarDay> lowEMACalendarDays;
+        private final Drawable lowEMABackgroundDrawable;
+
+        public LowEMADecorator(Drawable stressLevelDrawable) {
+            this.lowEMABackgroundDrawable = stressLevelDrawable;
+            if (lowEMACalendarDays == null)
+                lowEMACalendarDays = new HashSet<>();
+        }
+
+        public static void clearLowEMACalendarDays() {
+            lowEMACalendarDays.clear();
+        }
+
+        public static void addLowStressCalendarDay(CalendarDay day) {
+            lowEMACalendarDays.add(day);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return !materialCalendarView.getSelectedDate().equals(day) && lowEMACalendarDays.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(lowEMABackgroundDrawable);
+        }
+    }
+
     public static class LittleHighStressDecorator implements DayViewDecorator {
         private static HashSet<CalendarDay> littleHighStressCalendarDays;
         private final Drawable littleHighBackgroundDrawable;
@@ -1154,6 +1183,35 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         }
     }
 
+    public static class LittleHighEMADecorator implements DayViewDecorator {
+        private static HashSet<CalendarDay> littleHighEMACalendarDays;
+        private final Drawable littleHighEMABackgroundDrawable;
+
+        public LittleHighEMADecorator(Drawable stressLevelDrawable) {
+            this.littleHighEMABackgroundDrawable = stressLevelDrawable;
+            if (littleHighEMACalendarDays == null)
+                littleHighEMACalendarDays = new HashSet<>();
+        }
+
+        public static void clearLittleHighEMACalendarDays() {
+            littleHighEMACalendarDays.clear();
+        }
+
+        public static void addLittleHighStressCalendarDay(CalendarDay day) {
+            littleHighEMACalendarDays.add(day);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return !materialCalendarView.getSelectedDate().equals(day) && littleHighEMACalendarDays.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(littleHighEMABackgroundDrawable);
+        }
+    }
+
     public static class HighStressDecorator implements DayViewDecorator {
         private static HashSet<CalendarDay> highStressCalendarDays;
         private final Drawable highBackgroundDrawable;
@@ -1180,6 +1238,35 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         @Override
         public void decorate(DayViewFacade view) {
             view.setBackgroundDrawable(highBackgroundDrawable);
+        }
+    }
+
+    public static class HighEMADecorator implements DayViewDecorator {
+        private static HashSet<CalendarDay> highEMACalendarDays;
+        private final Drawable highEMABackgroundDrawable;
+
+        public HighEMADecorator(Drawable stressLevelDrawable) {
+            this.highEMABackgroundDrawable = stressLevelDrawable;
+            if (highEMACalendarDays == null)
+                highEMACalendarDays = new HashSet<>();
+        }
+
+        public static void clearHighStressCalendarDays() {
+            highEMACalendarDays.clear();
+        }
+
+        public static void addHighStressCalendarDay(CalendarDay day) {
+            highEMACalendarDays.add(day);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return !materialCalendarView.getSelectedDate().equals(day) && highEMACalendarDays.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.setBackgroundDrawable(highEMABackgroundDrawable);
         }
     }
 

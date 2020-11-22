@@ -6,56 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".fragment.StressReportFragment2">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/frg_report_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/bg_toolbar"
+            android:elevation="10dp"
+            android:layout_centerHorizontal="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:elevation="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/toolbar_report_btn2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:fontFamily="@font/notosanscjkkrmedium"
+                    android:includeFontPadding="false"
+                    android:text="제출"
+                    android:textColor="@color/textColor_blue"
+                    android:textSize="@dimen/my_text_size3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/notosanscjkkrregular"
+                    android:includeFontPadding="false"
+                    android:text="@string/stress_report_title"
+                    android:textSize="@dimen/my_text_size5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
         <ImageView
             android:id="@+id/frg_report_step2_img"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="20dp"
+            android:layout_width="118dp"
+            android:layout_height="118dp"
+            android:layout_marginTop="43dp"
             android:adjustViewBounds="true"
             android:src="@drawable/icon_low"
-            app:layout_constraintBottom_toTopOf="@id/txt_stress_level"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/stress_report_step2_txt_container"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.23" />
-
-        <LinearLayout
-            android:id="@+id/stress_report_step2_txt_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="19dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/frg_report_step2_img"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frg_report_app_bar">
-
-            <TextView
-                android:id="@+id/txt_yes_no"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/notosanscjkkrregular"
-                android:includeFontPadding="false"
-                android:text="test"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size3" />
-
-            <TextView
-                android:id="@+id/prediction_acc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/notosanscjkkrlight"
-                android:includeFontPadding="false"
-                android:text="acc test"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size1" />
-        </LinearLayout>
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/frg_report_app_bar"/>
 
 
         <LinearLayout
@@ -67,11 +76,7 @@
             android:background="#80000000"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -90,17 +95,303 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/txt_stress_level"
+            android:id="@+id/txt_stress_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="stress level day"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size1"
+            android:textColor="@color/textColor_default_light"
+            android:layout_below="@id/frg_report_step2_img" />
+
+        <TextView
+            android:id="@+id/txt_stress_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
+            android:fontFamily="@font/notosanscjkkrlight"
+            android:includeFontPadding="false"
+            android:text="stress level time"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size1"
+            android:textColor="@color/textColor_default_light"
+            android:layout_below="@id/txt_stress_day" />
+
+        <TextView
+            android:id="@+id/txt_stress_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:text="stress level txt"
             android:textAlignment="center"
             android:textSize="@dimen/my_text_size1"
-            app:layout_constraintBottom_toTopOf="@id/scrollveiw_container"
-            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img" />
+            android:layout_below="@id/txt_stress_time" />
+
+
+        <TextView
+            android:id="@+id/txt_reason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:text="스트레스 레벨에 따라 text 변함"
+            android:textAlignment="center"
+            android:textSize="@dimen/my_text_size3"
+            android:textColor="@color/textColor_42"
+            android:layout_below="@id/txt_stress_level"
+             />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/condition3_container"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:layout_below="@id/txt_reason"
+            app:layout_constraintVertical_weight="1"
+            >
+
+
+
+            <ScrollView
+                android:id="@+id/stress_report_reason_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="14dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/color_low_bg"
+                android:fillViewport="true"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/listview_integrate_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ListView
+                            android:id="@+id/listview_integrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/stress_report_no_features"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrmedium"
+                android:includeFontPadding="false"
+                android:text="@string/no_features"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size1"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/stress_report_reason_container"
+                app:layout_constraintEnd_toEndOf="@id/stress_report_reason_container"
+                app:layout_constraintStart_toStartOf="@id/stress_report_reason_container"
+                app:layout_constraintTop_toTopOf="@id/stress_report_reason_container" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/condition2_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:layout_below="@id/txt_reason"
+            app:layout_constraintVertical_weight="1"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/condition2_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingVertical="25dp"
+                android:layout_marginHorizontal="14dp"
+                android:background="@color/color_low_bg"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <RelativeLayout
+                    android:id="@+id/stress_report_img_container1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp">
+
+                    <ImageView
+                        android:id="@+id/stress_report_img1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/mobile"
+                        android:alpha="0.3"
+                        android:layout_centerInParent="true"/>
+
+                    <TextView
+                        android:id="@+id/stress_report_txt1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:layout_below="@id/stress_report_img1"
+                        android:text="휴대폰 사용"
+                        android:textColor="@color/border_btn_gray"
+                        android:fontFamily="@font/notosanscjkkrregular"
+                        android:includeFontPadding="false"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/my_text_size0"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/stress_report_img_container2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp">
+
+                    <ImageView
+                        android:id="@+id/stress_report_img2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/social"
+                        android:alpha="0.3"
+                        android:layout_centerInParent="true"/>
+
+                    <TextView
+                        android:id="@+id/stress_report_txt2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:layout_below="@id/stress_report_img2"
+                        android:text="소셜 활동"
+                        android:textColor="@color/border_btn_gray"
+                        android:fontFamily="@font/notosanscjkkrregular"
+                        android:includeFontPadding="false"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/my_text_size0"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/stress_report_img_container3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp">
+
+                    <ImageView
+                        android:id="@+id/stress_report_img3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.3"
+                        android:src="@drawable/place"
+                        android:layout_centerInParent="true"/>
+
+                    <TextView
+                        android:id="@+id/stress_report_txt3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:layout_below="@id/stress_report_img3"
+                        android:text="장소 이동"
+                        android:textColor="@color/border_btn_gray"
+                        android:fontFamily="@font/notosanscjkkrregular"
+                        android:includeFontPadding="false"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/my_text_size0"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/stress_report_img_container4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp">
+
+                    <ImageView
+                        android:id="@+id/stress_report_img4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.3"
+                        android:src="@drawable/physical"
+                        android:layout_centerInParent="true"/>
+
+                    <TextView
+                        android:id="@+id/stress_report_txt4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:layout_below="@id/stress_report_img4"
+                        android:text="신체 활동"
+                        android:textColor="@color/border_btn_gray"
+                        android:fontFamily="@font/notosanscjkkrregular"
+                        android:includeFontPadding="false"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/my_text_size0"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/stress_report_img_container5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp">
+
+                    <ImageView
+                        android:id="@+id/stress_report_img5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/sleep"
+                        android:alpha="0.3"
+                        android:layout_centerInParent="true"/>
+
+                    <TextView
+                        android:id="@+id/stress_report_txt5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:layout_below="@id/stress_report_img5"
+                        android:text="수면"
+                        android:textColor="@color/border_btn_gray"
+                        android:fontFamily="@font/notosanscjkkrregular"
+                        android:includeFontPadding="false"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/my_text_size0"/>
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_container"
@@ -108,10 +399,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/scrollveiw_container">
+            android:layout_alignParentBottom="true">
 
             <Button
                 android:id="@+id/btn_correct"
@@ -163,303 +451,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/scrollveiw_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="15dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/btn_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_stress_level"
-            app:layout_constraintVertical_weight="1">
 
-            <ScrollView
-                android:id="@+id/stress_report_reason_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginHorizontal="14dp"
-                android:background="@color/color_low_bg"
-                android:fillViewport="true"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txt_reason">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:id="@+id/listview_phone_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border"
-                            android:orientation="horizontal"
-                            android:paddingVertical="5dp"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginHorizontal="6dp"
-                                android:src="@drawable/ic_f_phoneusage" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:fontFamily="@font/notosanscjkkrregular"
-                                android:includeFontPadding="false"
-                                android:text="휴대폰 사용"
-                                android:textSize="@dimen/my_text_size3" />
-
-                        </LinearLayout>
-
-                        <ListView
-                            android:id="@+id/listview_phone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:id="@+id/listview_activity_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginHorizontal="6dp"
-                                android:src="@drawable/ic_f_activity" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/notosanscjkkrregular"
-                                android:includeFontPadding="false"
-                                android:paddingVertical="3dp"
-                                android:text="신체 활동"
-                                android:textSize="@dimen/my_text_size3" />
-
-                        </LinearLayout>
-
-
-                        <ListView
-                            android:id="@+id/listview_activity"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/listview_location_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginHorizontal="6dp"
-                                android:src="@drawable/ic_f_location" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/notosanscjkkrregular"
-                                android:includeFontPadding="false"
-                                android:paddingVertical="3dp"
-                                android:text="활동 반경"
-                                android:textSize="@dimen/my_text_size3" />
-
-                        </LinearLayout>
-
-
-                        <ListView
-                            android:id="@+id/listview_location"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/listview_social_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginHorizontal="6dp"
-                                android:src="@drawable/ic_f_social" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/notosanscjkkrregular"
-                                android:includeFontPadding="false"
-                                android:paddingVertical="3dp"
-                                android:text="소셜"
-                                android:textSize="@dimen/my_text_size3" />
-
-                        </LinearLayout>
-
-                        <ListView
-                            android:id="@+id/listview_social"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/listview_sleep_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/view_bottom_border">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginHorizontal="6dp"
-                                android:src="@drawable/ic_f_sleep" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/notosanscjkkrregular"
-                                android:includeFontPadding="false"
-                                android:paddingVertical="3dp"
-                                android:text="수면"
-                                android:textSize="@dimen/my_text_size3" />
-                        </LinearLayout>
-
-                        <ListView
-                            android:id="@+id/listview_sleep"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-                </LinearLayout>
-            </ScrollView>
-
-            <TextView
-                android:id="@+id/stress_report_no_features"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/notosanscjkkrmedium"
-                android:includeFontPadding="false"
-                android:text="@string/no_features"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size1"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/stress_report_reason_container"
-                app:layout_constraintEnd_toEndOf="@id/stress_report_reason_container"
-                app:layout_constraintStart_toStartOf="@id/stress_report_reason_container"
-                app:layout_constraintTop_toTopOf="@id/stress_report_reason_container" />
-
-
-            <TextView
-                android:id="@+id/txt_reason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/notosanscjkkrregular"
-                android:includeFontPadding="false"
-                android:text="스트레스 레벨에 따라 text 변함"
-                android:textAlignment="center"
-                android:textSize="@dimen/my_text_size3"
-                app:layout_constraintBottom_toTopOf="@id/stress_report_reason_container"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/frg_report_app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/bg_toolbar"
-            android:elevation="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:elevation="10dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/toolbar_report_btn2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#00000000"
-                    android:fontFamily="@font/notosanscjkkrmedium"
-                    android:includeFontPadding="false"
-                    android:text="확인"
-                    android:textColor="@color/textColor_blue"
-                    android:textSize="@dimen/my_text_size3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/notosanscjkkrregular"
-                    android:includeFontPadding="false"
-                    android:text="@string/stress_report_title"
-                    android:textSize="@dimen/my_text_size5"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </FrameLayout>

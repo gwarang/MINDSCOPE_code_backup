@@ -45,7 +45,7 @@
                     android:id="@+id/toolbar_report_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="확인"
+                    android:text="다음"
                     app:layout_constraintTop_toTopOf="parent"
                     android:textSize="@dimen/my_text_size3"
                     android:fontFamily="@font/notosanscjkkrmedium"

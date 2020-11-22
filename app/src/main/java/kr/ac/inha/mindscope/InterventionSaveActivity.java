@@ -91,20 +91,6 @@ public class InterventionSaveActivity extends AppCompatActivity {
         return true;
     }
 
-//    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
-//        @Override
-//        public void onFocusChange(View view, boolean b) {
-//            if(b){
-//                Log.d(TAG, "focus true");
-//                String s = interventionEdit.getText().toString();
-//                if(interventionEdit.getText().toString().equals("")){
-//                    Log.d(TAG, "add first #");
-//                    interventionEdit.setText("#");
-//                    interventionEdit.setSelection(interventionEdit.getText().length());
-//                }
-//            }
-//        }
-//    };
 
     TextWatcher textWatcher = new TextWatcher() {
         @Override
@@ -119,10 +105,7 @@ public class InterventionSaveActivity extends AppCompatActivity {
             Log.d(TAG, "onTextChanged");
 
             if(interventionEdit.isFocusable()){
-//                if(charSequence.length() == 1 && charSequence.toString() != "#" && charSequence.toString() != " "){
-//                    inputTag.setText("#"+inputTag.getText());
-//                    inputTag.setSelection(inputTag.getText().length());
-//                }
+
                 if(charSequence.length() > 0 && charSequence.charAt(charSequence.length()-1) == ' '){
                     interventionEdit.setText(interventionEdit.getText().toString().replace(' ', '_'));
                     interventionEdit.setSelection(interventionEdit.getText().length());

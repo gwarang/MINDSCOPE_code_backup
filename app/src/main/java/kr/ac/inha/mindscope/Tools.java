@@ -84,9 +84,13 @@ public class Tools {
     public static final int CATEGORY_UNLOCK_DURATION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : after joined day + 1 hour, can receive EMA - change 60 * 60 * 24 * 1 * 1000  for real test
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 7 * 1 * 1000;  // TODO curVersion(pilot test 20200818) : when participation duration is 11, can receive STRESS_PREDICTION - change 60 * 60 * 24 * 14 * 1000  for real test
-    public static final int timeTheDayNumIsChanged = 7;
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 11 * 1 * 1000;  //
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 11 * 1 * 1000;  //
+    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 11 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 11 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 16 * 1000 + 60 * 60 * 11 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 21 * 1000 + 60 * 60 * 11 * 1 * 1000;
+    public static final int timeTheDayNumIsChanged = 11;
 
     static int PERMISSION_ALL = 1;
     public static final int POINT_INCREASE_VALUE = 250;
@@ -502,6 +506,13 @@ public class Tools {
         notiCal.set(Calendar.MINUTE, 0);
         notiCal.set(Calendar.SECOND, 0);
         notiCal.set(Calendar.MILLISECOND, 0);
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+            cal.add(Calendar.DATE, -1);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 1);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
         long curTimestamp = cal.getTimeInMillis();
         for (int i = 0; i < EMA_NOTIF_HOURS.length; i++) {
             notiCal.set(Calendar.HOUR_OF_DAY, EMA_NOTIF_HOURS[i]);
@@ -575,9 +586,9 @@ public class Tools {
         int order = 0;
         if (hour >= 11 && hour < 15){
             order = 1;
-        }else if(hour < 19){
+        }else if(hour >= 15 && hour < 19){
             order = 2;
-        }else if(hour < 23){
+        }else if(hour >= 19 && hour < 23){
             order = 3;
         }else{
             order = 4;
@@ -897,14 +908,13 @@ public class Tools {
         int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
         long diff = curTimestamp - joinTimestamp;
+        SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
         if (diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE) {
             // step1
-            SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
             stepEditor.putInt("stepCheck", 1);
             stepEditor.apply();
         } else if (diff >= STEP1_EXPIRE_TIMESTAMP_VALUE) {
             // step2
-            SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
             stepEditor.putInt("stepCheck", 2);
             if (diff >= STEP1_EXPIRE_TIMESTAMP_VALUE + 60 * 60 * 10 * 1000) {
                 stepEditor.putBoolean("first_start_care_step2_check", true);
@@ -912,6 +922,22 @@ public class Tools {
             }
             stepEditor.apply();
         }
+
+        // todo condition 순서 바꾸고 싶으면 putInt 안에 순서 바꿀것
+        if(diff < CONDITION_EXPIRE_DURATION1){
+            stepEditor.putInt("condition", 0);
+        }
+        else if(diff < CONDITION_EXPIRE_DURATION2){
+            stepEditor.putInt("condition", 1);
+        }
+        else if(diff < CONDITION_EXPIRE_DURATION3){
+            stepEditor.putInt("condition", 2);
+        }
+        else{
+            stepEditor.putInt("condition", 3);
+        }
+        stepEditor.apply();
+
         //endregion
     }
 

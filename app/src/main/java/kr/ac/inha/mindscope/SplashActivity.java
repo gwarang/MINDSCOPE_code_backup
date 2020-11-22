@@ -81,7 +81,10 @@ public class SplashActivity extends Activity {
                             .setTillTimestamp(tillTimestamp)
                             .build();
                     try {
+                        Log.d(TAG, "before responseMessage");
                         final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                        Log.d(TAG, "after responseMessage");
+                        // todo 이 위에 엄청 느림 ask to kevin
                         if (responseMessage.getSuccess()) {
                             // checkByteString
                             List<ByteString> values = responseMessage.getValueList();
@@ -137,7 +140,9 @@ public class SplashActivity extends Activity {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             SplashActivity.this.finish();
+            Log.e(TAG, "스플래시 끝2");
         }, SPLASH_DISPLAY_TIME);
+        Log.e(TAG, "스플래시 끝");
     }
 
     @Override

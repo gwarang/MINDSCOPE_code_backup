@@ -333,19 +333,20 @@ public class StressReportFragment1 extends Fragment {
         }
         //endregion
 
-        if(predictionArray.isEmpty()){
-            stressResult = "1599629400000,2,23,2,0.00,NO_FEATURES,true";
-            Log.d(TAG, "완전1 " + stressResult);
-        }
+        // todo 이거 지워야함
+//        if(predictionArray.isEmpty()){
+//            stressResult = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
+//            Log.d(TAG, "완전1 " + stressResult);
+//        }
 
         for (String result : predictionArray) {
             // todo test
-            result = "1599629400000,2,23,2,0.00,NO_FEATURES,true";
+//            result = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
             String[] splitResult = result.split(",");
             Log.d(TAG, "완전 "+ splitResult.toString());
             if (Boolean.parseBoolean(splitResult[6])) {
-//                stressResult = result;
-                stressResult = "1599629400000,2,23,2,0.00,NO_FEATURES,true";
+                stressResult = result;
+//                stressResult = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
                 Log.d(TAG, "완전테스트 " + stressResult);
             }
         }
