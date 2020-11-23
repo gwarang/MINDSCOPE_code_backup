@@ -233,25 +233,29 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
-        switch (last_frg) {
-            case LAST_NAV_FRG1:
-                // nothing
-                break;
-            case LAST_NAV_FRG2:
-                if(stepChangePrefs.getInt("stepCheck", 1) == 2)
-                    navController.navigate(R.id.action_me_to_care_step2);
-                else
-                    navController.navigate(R.id.action_navigation_me_to_navigation_care);
-                break;
-            case LAST_NAV_FRG3:
-                if(stepChangePrefs.getInt("stepCheck", 1) == 2)
-                    navController.navigate(R.id.action_me_to_report_step2);
-                else
-                    navController.navigate(R.id.action_navigation_me_to_navigation_report);
-                break;
-            default:
-                // nothing
-                break;
+        try{
+            switch (last_frg) {
+                case LAST_NAV_FRG1:
+                    // nothing
+                    break;
+                case LAST_NAV_FRG2:
+                    if(stepChangePrefs.getInt("stepCheck", 1) == 2)
+                        navController.navigate(R.id.action_me_to_care_step2);
+                    else
+                        navController.navigate(R.id.action_navigation_me_to_navigation_care);
+                    break;
+                case LAST_NAV_FRG3:
+                    if(stepChangePrefs.getInt("stepCheck", 1) == 2)
+                        navController.navigate(R.id.action_me_to_report_step2);
+                    else
+                        navController.navigate(R.id.action_navigation_me_to_navigation_report);
+                    break;
+                default:
+                    // nothing
+                    break;
+            }
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
         }
 
         if (Tools.heartbeatNotSent(getApplicationContext())) {
@@ -581,9 +585,9 @@ public class MainActivity extends AppCompatActivity {
             navView.getMenu().clear();
             navView.inflateMenu(R.menu.bottom_navigation_menu_step2);
             appBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.navigation_me_step2, R.id.navigation_care, R.id.navigation_report).build();
+                    R.id.navigation_me_step2, R.id.navigation_care_step2, R.id.navigation_report_step2).build();
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-            navController.setGraph(R.navigation.mobile_navigation_stpe2);
+            navController.setGraph(R.navigation.mobile_navigation_step2);
 
         } else {
             // STEP 1 -- stepCheck == 0 or 1
@@ -592,6 +596,7 @@ public class MainActivity extends AppCompatActivity {
             appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.navigation_me, R.id.navigation_care, R.id.navigation_report).build();
             navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+            navController.setGraph(R.navigation.mobile_navigation_step1);
             Log.d(TAG, "nav1");
         }
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);

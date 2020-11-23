@@ -54,6 +54,7 @@ public class MeFragmentStep1 extends Fragment {
     TextView time3;
     TextView time4;
     SharedPreferences loginPrefs;
+    SharedPreferences lastPagePrefs;
     SharedPreferences configPrefs;
     boolean isNetworkToastMsgAbail;
     Thread loadPointsThread;
@@ -69,10 +70,12 @@ public class MeFragmentStep1 extends Fragment {
     private TextView attdView;
     private TextView versionNameTextView;
     private RelativeLayout timeContainer;
+    static boolean runningUpdateUi;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Me1 onCreate");
     }
 
     @Override
@@ -177,6 +180,11 @@ public class MeFragmentStep1 extends Fragment {
         if (loadPointsThread != null && loadPointsThread.isAlive())
             loadPointsThread.interrupt();
 
+        lastPagePrefs = requireActivity().getSharedPreferences("LastPage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
+        lastPagePrefsEditor.putString("last_open_nav_frg", "me");
+        lastPagePrefsEditor.apply();
+
     }
 
     private void updateEmaResponseView() {
@@ -226,6 +234,7 @@ public class MeFragmentStep1 extends Fragment {
                 tillCal.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
                 tillCal.set(Calendar.MINUTE, 59);
                 tillCal.set(Calendar.SECOND, 59);
+                Log.d(TAG, "Me1");
                 EtService.RetrieveFilteredDataRecords.Request retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
@@ -236,7 +245,9 @@ public class MeFragmentStep1 extends Fragment {
                         .setTillTimestamp(tillCal.getTimeInMillis())
                         .build();
                 try {
+                    Log.d(TAG, "before responseMessage");
                     final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredDataRecordsRequestMessage);
+                    Log.d(TAG, "after responseMessage");
                     if (responseMessage.getSuccess()) {
                         // checkByteString
                         List<ByteString> values = responseMessage.getValueList();
@@ -287,7 +298,7 @@ public class MeFragmentStep1 extends Fragment {
 
         sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
         todayPointsView.setText(String.format(Locale.getDefault(), "%d", localTodayPoints));
-
+        Log.d(TAG, "Me1 point");
 
 
 //        Log.d(TAG, "start loadAllPoints");
@@ -430,7 +441,7 @@ public class MeFragmentStep1 extends Fragment {
             }
         }
         loadAllPoints();
-        updateEmaResponseView();
+//        updateEmaResponseView();
     }
 
 
