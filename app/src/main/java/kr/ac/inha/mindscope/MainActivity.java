@@ -231,16 +231,23 @@ public class MainActivity extends AppCompatActivity {
 
         changeNav();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         String last_frg = lastPagePrefs.getString("last_open_nav_frg", "");
         switch (last_frg) {
             case LAST_NAV_FRG1:
                 // nothing
                 break;
             case LAST_NAV_FRG2:
-                navController.navigate(R.id.action_me_to_care_step2);
+                if(stepChangePrefs.getInt("stepCheck", 1) == 2)
+                    navController.navigate(R.id.action_me_to_care_step2);
+                else
+                    navController.navigate(R.id.action_navigation_me_to_navigation_care);
                 break;
             case LAST_NAV_FRG3:
-                navController.navigate(R.id.action_me_to_report_step2);
+                if(stepChangePrefs.getInt("stepCheck", 1) == 2)
+                    navController.navigate(R.id.action_me_to_report_step2);
+                else
+                    navController.navigate(R.id.action_navigation_me_to_navigation_report);
                 break;
             default:
                 // nothing

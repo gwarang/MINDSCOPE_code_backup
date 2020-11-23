@@ -84,12 +84,12 @@ public class Tools {
     public static final int CATEGORY_UNLOCK_DURATION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 1 * 1000 + 60 * 60 * 11 * 1 * 1000;  //
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 11 * 1 * 1000;  //
-    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 11 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 11 * 1000 + 60 * 60 * 11 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 16 * 1000 + 60 * 60 * 11 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 21 * 1000 + 60 * 60 * 11 * 1 * 1000;
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;  //
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;  //
+    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 4 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 5 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 7 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
     public static final int timeTheDayNumIsChanged = 11;
 
     static int PERMISSION_ALL = 1;
@@ -219,10 +219,21 @@ public class Tools {
         dialog.setCancelable(false);
         ConstraintLayout permissionLayout = view.findViewById(R.id.permission_dialog_layout);
         Button permissionBtn = view.findViewById(R.id.permission_btn);
-        permissionBtn.setOnClickListener(view1 -> {
-            Tools.grantPermissions(activity, PERMISSIONS);
-            dialog.dismiss();
-        });
+        if(Build.VERSION_CODES.Q <= Build.VERSION.SDK_INT){
+            ArrayList<String> permissions2 = new ArrayList<>(Arrays.asList(PERMISSIONS));
+            permissions2.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+            String[] permissionsArray = permissions2.toArray(new String[permissions2.size()]);
+            permissionBtn.setOnClickListener(view12 -> {
+                Tools.grantPermissions(activity, permissionsArray);
+                dialog.dismiss();
+
+            });
+        }else {
+            permissionBtn.setOnClickListener(view1 -> {
+                Tools.grantPermissions(activity, PERMISSIONS);
+                dialog.dismiss();
+            });
+        }
         return dialog;
     }
 
@@ -248,8 +259,26 @@ public class Tools {
             activity.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         if (!isGPSLocationOn(activity.getApplicationContext()))
             activity.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-        if (!simple_permissions_granted)
-            ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
+        if (!simple_permissions_granted){
+            boolean permissionAccessCoarseLocationApproved =
+                    ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED;
+            if(permissionAccessCoarseLocationApproved){
+                boolean backgroundLocationCoarseLocationApproved =
+                        true;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    backgroundLocationCoarseLocationApproved = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                }
+
+                if(!backgroundLocationCoarseLocationApproved){
+                    ActivityCompat.requestPermissions(activity, permissions, PERMISSION_ALL);
+                }
+            }
+            else{
+                ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
+            }
+
+        }
 
     }
 
@@ -924,6 +953,11 @@ public class Tools {
         }
 
         // todo condition 순서 바꾸고 싶으면 putInt 안에 순서 바꿀것
+        /*
+        * condition order : 1-2-3 --> 0 1 2 3
+        * condition order : 3-2-1 --> 0 3 2 1
+        * condition order : 2-1-3
+        * */
         if(diff < CONDITION_EXPIRE_DURATION1){
             stepEditor.putInt("condition", 0);
         }
