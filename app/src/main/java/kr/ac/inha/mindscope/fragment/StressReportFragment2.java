@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,6 +111,11 @@ public class StressReportFragment2 extends Fragment {
     private static final int CORRECT_ANALYSIS_RESULT = 1;
     private static final int NO_FEATURES_ANALYSIS_RESULT = 2;
     AnalysisSurveyDialog analysisSurveyDialog;
+    RelativeLayout categoryImgContainer1;
+    RelativeLayout categoryImgContainer2;
+    RelativeLayout categoryImgContainer3;
+    RelativeLayout categoryImgContainer4;
+    RelativeLayout categoryImgContainer5;
     //endregion
 
 
@@ -200,6 +206,11 @@ public class StressReportFragment2 extends Fragment {
         condition2txt3 = view.findViewById(R.id.stress_report_txt3);
         condition2txt4 = view.findViewById(R.id.stress_report_txt4);
         condition2txt5 = view.findViewById(R.id.stress_report_txt5);
+        categoryImgContainer1 = view.findViewById(R.id.stress_report_img_container1);
+        categoryImgContainer2 = view.findViewById(R.id.stress_report_img_container2);
+        categoryImgContainer3 = view.findViewById(R.id.stress_report_img_container3);
+        categoryImgContainer4 = view.findViewById(R.id.stress_report_img_container4);
+        categoryImgContainer5 = view.findViewById(R.id.stress_report_img_container5);
 
 
         if (feature_ids != null)
@@ -258,19 +269,19 @@ public class StressReportFragment2 extends Fragment {
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
                 stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_low)));
                 reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
-                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
+//                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
                 break;
             case STRESS_LV2:
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, requireActivity().getTheme()));
                 stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_littlehigh)));
                 reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
-                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
+//                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
                 break;
             case STRESS_LV3:
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, requireActivity().getTheme()));
                 stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_high)));
                 reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
-                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
+//                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
                 break;
         }
 
@@ -285,6 +296,7 @@ public class StressReportFragment2 extends Fragment {
             case CONDITION2:
                 condition2Container.setVisibility(View.VISIBLE);
                 condition3Container.setVisibility(View.GONE);
+                reason.setText("제가 참고한 데이터는요,");
                 Log.d(TAG, "condition2");
                 break;
             case CONDITION3:
@@ -351,30 +363,107 @@ public class StressReportFragment2 extends Fragment {
 //                    activityReason.add(context.getResources().getString(resId));
                     condition2Img4.setAlpha(1.0f);
                     condition2txt4.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE) {
 //                    socialReason.add(context.getResources().getString(resId));
                     condition2Img2.setAlpha(1.0f);
                     condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category == CATEGORY_SNS_APP_USAGE) {
 //                    String text = String.format(context.getResources().getString(resId), applicationName);
 //                    socialReason.add(text);
                     condition2Img2.setAlpha(1.0f);
                     condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     condition2Img3.setAlpha(1.0f);
                     condition2txt3.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_UNLOCK_DURATION_APP_USAGE) {
                     condition2Img1.setAlpha(1.0f);
                     condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
 //                    String text = String.format(context.getResources().getString(resId), applicationName);
 //                    phoneReason.add(text);
                     condition2Img1.setAlpha(1.0f);
                     condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else {
 //                    sleepReason.add(context.getResources().getString(resId));
                     condition2Img5.setAlpha(1.0f);
                     condition2txt5.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (reportAnswer){
+                        case STRESS_LV1:
+                            categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 }
 
                 if( category == CATEGORY_SNS_APP_USAGE || (category <= CATEGORY_FOOD_APP_USAGE && category > CATEGORY_UNLOCK_DURATION_APP_USAGE)){
@@ -389,7 +478,7 @@ public class StressReportFragment2 extends Fragment {
             }
         }
 
-        ListView integarateListView = view.findViewById(R.id.listview_integrate);
+        ListView integrateListView = view.findViewById(R.id.listview_integrate);
 //        ListView phoneListView = view.findViewById(R.id.listview_phone);
 //        ListView activityListView = view.findViewById(R.id.listview_activity);
 //        ListView socialListView = view.findViewById(R.id.listview_social);
@@ -435,7 +524,7 @@ public class StressReportFragment2 extends Fragment {
             analysisResult = NO_FEATURES_ANALYSIS_RESULT;
             analysisSelectContainer.setVisibility(View.INVISIBLE);
         } else {
-            integarateListView.setAdapter(integrateAdapter);
+            integrateListView.setAdapter(integrateAdapter);
 //            phoneListView.setAdapter(phoneAdapter);
 //            activityListView.setAdapter(activityAdapter);
 //            socialListView.setAdapter(socialAdapter);
@@ -446,7 +535,7 @@ public class StressReportFragment2 extends Fragment {
             if(integrateReason.isEmpty())
                 integrateContainer.setVisibility(View.GONE);
             else{
-                setListViewHeightBasedOnChildren(integarateListView);
+                setListViewHeightBasedOnChildren(integrateListView);
                 integrateContainer.setVisibility(View.VISIBLE);
             }
 

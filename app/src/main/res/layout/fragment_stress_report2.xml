@@ -158,8 +158,6 @@
             app:layout_constraintVertical_weight="1"
             >
 
-
-
             <ScrollView
                 android:id="@+id/stress_report_reason_container"
                 android:layout_width="match_parent"
@@ -234,7 +232,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:paddingVertical="25dp"
                 android:layout_marginHorizontal="14dp"
-                android:background="@color/color_low_bg"
                 android:orientation="horizontal"
                 android:gravity="center">
 

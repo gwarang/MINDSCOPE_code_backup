@@ -120,9 +120,9 @@
     <string name="fsv_checkbox_text">모든 설명을 이해하였으며 실험 참가에 동의합니다.</string>
     <string name="fsv_contents_one">마인드스코프는\n스트레스를 관리하기 위한 서비스 입니다.\n마인드스코프의 스트레스 관리는\n두 단계로 진행됩니다!</string>
     <string name="fsv_contents_two">당신을 위한 맞춤 스트레스 관리를 위해\n10일간 스트레스를 측정합니다.\n하루에 4번오는 설문에 답해주세요!\n꼼꼼히 답해줄수록 정확한 예측이 가능하답니다.</string>
-    <string name="fsv_contents_three">10일 간의 설문과 측정이 끝나면\n마인드스코프가 10일 동안 매일\n당신의 스트레스를 분석하여 보내드립니다.\n스트레스 해소를 위한 방법도\n추천 받을 수 있답니다.</string>
-    <string name="fsv_contents_four">20일 간의 실험동안 포인트를 모아보세요!\n\nstep 1에서는 설문 1개를 완료할 때마다\nstep 2에서는 리포트 1개를 확인할 때마다\n250원씩의 포인트가 차곡차곡 쌓인답니다.\n실험 중에 총 20,000원을 쌓을 수 있어요!</string>
-    <string name="fsv_contents_five">기본 사례비는 18,000원이며\n실험 종료 인터뷰에 참여하면\n20,000원을 추가지급합니다.\n\n성실하게 실험에 참여하신다면\n총 48,000원을 받을 수 있답니다!</string>
+    <string name="fsv_contents_three">10일 간의 설문과 측정이 끝나면\n마인드스코프가 15일 동안 매일\n당신의 스트레스를 분석하여 보내드립니다.\n총 3번, 5일을 주기로\n리포트 형식이 달라진답니다.\n어떻게 달라지는지 한 번 확인해보세요.</string>
+    <string name="fsv_contents_four">25일의 실험동안 포인트를 모아보세요!\n\nstep 1에서는 설문 1개를 완료할 때마다\nstep 2에서는 리포트 1개를 확인할 때마다\n250원씩의 포인트가 차곡차곡 쌓인답니다.\n실험 중에 총 25,000원을 쌓을 수 있어요!</string>
+    <string name="fsv_contents_five">기본 사례비는 25,000원이며,\n실험 중 최대 25,000원을 쌓을 수 있습니다.\n추가로 실험 종료 인터뷰에 참여하시면 10,000원을 더 받을 수 있습니다.\n성실하게 실험에 참여하신다면 최대 60,000원을 받을 수 있답니다!</string>
     <string name="fsv_contents_six">이제 마인드스코프에 대해\n다 알게 되었군요!\n실험 동의에 체크하고\n마인드스코프를 시작해 볼까요?\n\n</string>
 
     <string name="map_explain">집, 기숙사, 학교, 학습공간, 작업공간, 동아리방, 헬스장 등\n여러분이 자주 방문하는 장소를 검색하여 추가해주세요.</string>
@@ -311,7 +311,7 @@
     <string name="string_first_start_step1_title">지금부터 STEP 1을 시작합니다!</string>
     <string name="string_first_start_step2_title">STEP 1을 모두 완료하였습니다.\n이제 STEP2가 시작됩니다!</string>
     <string name="string_first_start_step1_txt"><![CDATA[STEP 1에서는 <font color="#3e89e0">하루 4번</font> 설문을 하게 됩니다.<\br>설문은 총 <font color="#3e89e0">4문항</font>으로 구성되어 있으며<\br>설문 하나를 완료하면 <font color="#3e89e0">250포인트</font>가 적립<\br>됩니다. <font color="#3e89e0">기록 태그</font>를 입력해주신다면 마인드<\br>스코프의 발전에 더 큰 도움이 될거에요!]]></string>
-    <string name="string_first_start_step2_txt"><![CDATA[STEP 2에서는 마인드스코프가<\br>스트레스 예측을 시작합니다.<\br><\br>하루에 총 <font color="#3e89e0">4번</font> 오는 <font color="#3e89e0">스트레스 리포트</font>를<\br>통해 나의 스트레스 상태와 측정 근거를<\br>알아 봅시다. 그리고 매일 밤 도착하는<\br> <font color="#3e89e0">오늘의 리포트</font>를 통해 하루를 돌아봐요.<\br>리포트 하나를 확인하실 때마다<\br><font color="#3e89e0">250 포인트</font>가 적립됩니다!]]></string>
+    <string name="string_first_start_step2_txt"><![CDATA[STEP 2에서는 마인드스코프가<\br>스트레스 예측을 시작합니다.<\br><\br>하루에 총 <font color="#3e89e0">4번</font> 오는 <font color="#3e89e0">스트레스 리포트</font>를<\br>통해 나의 스트레스 상태를 알아 봅시다.<\br>그리고 매일 밤 도착하는<\br> <font color="#3e89e0">오늘의 리포트</font>를 통해 하루를 돌아봐요.<\br>리포트 하나를 확인하실 때마다<\br><font color="#3e89e0">250 포인트</font>가 적립됩니다!]]></string>
 
     <string name="string_frg_me_step0">오전 11시부터\n스트레스 측정 알림이 도착할 예정입니다!\n조금만 기다려주세요.</string>
     <string name="string_frg_me_before_11hours">오전 11시부터\n스트레스 측정 알림이 도착할 예정입니다!\n조금만 기다려주세요.</string>
@@ -354,8 +354,8 @@
 
     <string name="when_no_intervention_performed">아직 스트레스를 해소하지 않았습니다!\n스트레스를 해소해보세요!</string>
 
-    <string name="stress_report_lv0">스트레스가 낮을 때,</string>
-    <string name="stress_report_lv1">스트레스가 조금 높을 때,</string>
-    <string name="stress_report_lv2">스트레스가 높을 때,</string>
+    <string name="stress_report_lv0">당신은 스트레스가 낮을 때,</string>
+    <string name="stress_report_lv1">당신은 스트레스가 조금 높을 때,</string>
+    <string name="stress_report_lv2">당신은 스트레스가 높을 때,</string>
 
 </resources>

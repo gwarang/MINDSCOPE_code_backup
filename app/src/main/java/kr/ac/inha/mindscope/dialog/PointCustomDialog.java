@@ -21,6 +21,7 @@ public class PointCustomDialog extends Dialog {
     public static int sumPoints;
     TextView todayPointsView;
     TextView sumPointsView;
+    TextView pointTxt1;
     private Button btn;
     private Button btn_stress;
     private View.OnClickListener mBtnListener;
@@ -39,6 +40,7 @@ public class PointCustomDialog extends Dialog {
 
         todayPointsView = findViewById(R.id.point_today_value);
         sumPointsView = findViewById(R.id.point_sum_value);
+        pointTxt1 = findViewById(R.id.point_dialog_contents);
         btn = findViewById(R.id.point_btn);
         btn_stress = findViewById(R.id.point_stress_btn);
         SharedPreferences stepChangePrefs = getContext().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
@@ -53,6 +55,8 @@ public class PointCustomDialog extends Dialog {
 
         if(step != 2){
             btn_stress.setVisibility(View.GONE);
+            pointTxt1.setVisibility(View.GONE);
+            btn.setText("확인");
         }
         btn.setOnClickListener(mBtnListener);
         btn_stress.setOnClickListener(mBtnListener2);

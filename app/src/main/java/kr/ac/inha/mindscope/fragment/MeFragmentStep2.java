@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -105,6 +106,12 @@ public class MeFragmentStep2 extends Fragment {
     private TextView condition2txt4;
     private TextView condition2txt5;
     public int condition;
+    RelativeLayout categoryImgContainer1;
+    RelativeLayout categoryImgContainer2;
+    RelativeLayout categoryImgContainer3;
+    RelativeLayout categoryImgContainer4;
+    RelativeLayout categoryImgContainer5;
+
 
 
     public MeFragmentStep2() {
@@ -227,6 +234,11 @@ public class MeFragmentStep2 extends Fragment {
         condition2txt3 = view.findViewById(R.id.me_stress_report_txt3);
         condition2txt4 = view.findViewById(R.id.me_stress_report_txt4);
         condition2txt5 = view.findViewById(R.id.me_stress_report_txt5);
+        categoryImgContainer1 = view.findViewById(R.id.me_stress_report_img_container1);
+        categoryImgContainer2 = view.findViewById(R.id.me_stress_report_img_container2);
+        categoryImgContainer3 = view.findViewById(R.id.me_stress_report_img_container3);
+        categoryImgContainer4 = view.findViewById(R.id.me_stress_report_img_container4);
+        categoryImgContainer5 = view.findViewById(R.id.me_stress_report_img_container5);
 //        versionNameTextView = view.findViewById(R.id.version_name_step2);
 //        versionNameTextView.setText(getVersionInfo(requireContext()));
         switch (condition){
@@ -258,7 +270,7 @@ public class MeFragmentStep2 extends Fragment {
 
         String[] splitResult = stressResult.split(",");
         long reportTimestamp = Long.parseLong(splitResult[0]);
-        int stressLevel = Integer.parseInt(splitResult[1]);
+        stressLevel = Integer.parseInt(splitResult[1]);
         int day_num = Integer.parseInt(splitResult[2]);
         int ema_order = Integer.parseInt(splitResult[3]);
         float accuracy = Float.parseFloat(splitResult[4]);
@@ -412,30 +424,107 @@ public class MeFragmentStep2 extends Fragment {
 //                    activityReason.add(context.getResources().getString(resId));
                     condition2Img4.setAlpha(1.0f);
                     condition2txt4.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE) {
 //                    socialReason.add(context.getResources().getString(resId));
                     condition2Img2.setAlpha(1.0f);
                     condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category == CATEGORY_SNS_APP_USAGE) {
 //                    String text = String.format(context.getResources().getString(resId), applicationName);
 //                    socialReason.add(text);
                     condition2Img2.setAlpha(1.0f);
                     condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
                     condition2Img3.setAlpha(1.0f);
                     condition2txt3.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_UNLOCK_DURATION_APP_USAGE) {
                     condition2Img1.setAlpha(1.0f);
                     condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
 //                    String text = String.format(context.getResources().getString(resId), applicationName);
 //                    phoneReason.add(text);
                     condition2Img1.setAlpha(1.0f);
                     condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 } else {
 //                    sleepReason.add(context.getResources().getString(resId));
                     condition2Img5.setAlpha(1.0f);
                     condition2txt5.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    switch (stressLevel){
+                        case STRESS_LV1:
+                            categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
+                            break;
+                        case STRESS_LV2:
+                            categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_littlehigh_bg));
+                            break;
+                        case STRESS_LV3:
+                            categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_high_bg));
+                            break;
+                    }
                 }
 
                 if( category == CATEGORY_SNS_APP_USAGE || (category <= CATEGORY_FOOD_APP_USAGE && category > CATEGORY_UNLOCK_DURATION_APP_USAGE)){
