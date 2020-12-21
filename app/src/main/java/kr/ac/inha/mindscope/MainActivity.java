@@ -112,9 +112,7 @@ public class MainActivity extends AppCompatActivity {
 //            lastPagePrefsEditor.putString("last_open_nav_frg", LAST_NAV_FRG2);
 //            lastPagePrefsEditor.apply();
             navController.navigate(R.id.action_me_to_care_step2);
-            Log.d(TAG, "care 이동 테스트 " + lastPagePrefs.getString("last_open_nav_frg", "test"));
 
-            //todo : go to care
 
             pointCustomDialog.dismiss();
         }
@@ -165,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
+            // "get_point" 라는 intent가 있으면 포인트 얻었다는 팝업창 보여주기
             if (intent.getBooleanExtra("get_point", false)) {
                 updatePointAndShowDialog(intent);
             } else if (intent.getBooleanExtra("change_intervention", false)) {
@@ -270,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
         customSensorsService = new Intent(this, MainService.class);
 
+        // 신경안써도됨
         if (Tools.isNetworkAvailable()) {
             loadCampaign();
         } else if (configPrefs.getBoolean("campaignLoaded", false)) {
@@ -618,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFirebaseToken() {
-
+        // Firebase Cloud Msg.
         SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
         int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
         if (stepCheck != 0) {
@@ -635,6 +635,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("FCM Log mainactivity", "FCM token: " + token);
                         SharedPreferences.Editor stepChangePrefsEditor = stepChangePrefs.edit();
                         stepChangePrefsEditor.putBoolean("haveToken", true);
+                        stepChangePrefsEditor.putString("FCM_token", token);
                         stepChangePrefsEditor.apply();
                     });
         }

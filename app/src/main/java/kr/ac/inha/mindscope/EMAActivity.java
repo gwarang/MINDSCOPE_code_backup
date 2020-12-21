@@ -356,7 +356,7 @@ public class EMAActivity extends AppCompatActivity {
         intent.putExtra("answer2", answer2);
         intent.putExtra("answer3", answer3);
         intent.putExtra("answer4", answer4);
-        intent.putExtra("answer5", answer5);
+        intent.putExtra("answer5", answer5); // 이게 스트레스 수준 정도
         startActivity(intent);
 
 

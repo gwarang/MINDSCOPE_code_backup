@@ -215,6 +215,7 @@ public class CareChildFragment1 extends Fragment {
             hiddenContainer.setVisibility(View.INVISIBLE);
         });
 
+        // todo condition 1일때는 arrowBtn들 안보이게 또는 비활성화
         arrowBtn1.setOnClickListener(view12 -> {
             defaultContainer.setVisibility(View.INVISIBLE);
             hiddenContainer.setVisibility(View.VISIBLE);
@@ -452,7 +453,7 @@ public class CareChildFragment1 extends Fragment {
                                         stressTextview1.setText(getResources().getString(R.string.string_low));
                                         stressImg1.setVisibility(View.VISIBLE);
                                         stressTextview1.setVisibility(View.VISIBLE);
-                                        arrowBtn1.setVisibility(View.VISIBLE);
+                                        arrowBtn1.setVisibility(View.VISIBLE); // "condition" 1일때는 안보이게
                                         feature_ids1 = featre_ids_result;
                                         order1StressLevel = stressLevel;
                                         Log.d(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
@@ -673,6 +674,7 @@ public class CareChildFragment1 extends Fragment {
 //        ArrayList<String> socialReason = new ArrayList<>();
 //        ArrayList<String> locationReason = new ArrayList<>();
 //        ArrayList<String> sleepReason = new ArrayList<>();
+
 
 
         boolean noFeatures = false;

@@ -126,12 +126,6 @@ public class MeFragmentStep2 extends Fragment {
         // todo change condition by date
         SharedPreferences stepChangePrefs = requireContext().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         condition = stepChangePrefs.getInt("condition", 0);
-
-        // todo test 나중에 지울것
-        condition = CONDITION1;
-
-
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -243,14 +237,12 @@ public class MeFragmentStep2 extends Fragment {
 //        versionNameTextView.setText(getVersionInfo(requireContext()));
         switch (condition){
             case CONDITION1:
-                // todo condition 1
 //                submitReport();
                 txtReason.setVisibility(View.INVISIBLE);
-                condition2Container.setVisibility(View.GONE);
-                reasonContainer.setVisibility(View.GONE);
+                condition2Container.setVisibility(View.GONE); // 조건 2 컨테이너
+                reasonContainer.setVisibility(View.GONE); // 조건 3 컨테이너
                 break;
             case CONDITION2:
-                // todo condition 2
                 condition2Container.setVisibility(View.VISIBLE);
                 reasonContainer.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "condition2");
@@ -557,6 +549,7 @@ public class MeFragmentStep2 extends Fragment {
 
         TextView noFeatureTextview = view.findViewById(R.id.frg_me_step2_no_features);
 
+        // 스트레스 리스트뷰랑 엮여지는 어댑터
         ArrayAdapter<String> integrateAdapter = new ArrayAdapter<>(
                 context, R.layout.item_feature_ids, integrateReason
         );

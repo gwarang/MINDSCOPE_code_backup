@@ -41,6 +41,7 @@ public class SplashActivity extends Activity {
 
         Log.d("SplashActivity", "onCreate");
 
+        // 앱 완전 종료시 첫화면으로 뜨도록 초기화 하는 코드
         SharedPreferences lastPagePrefs = getSharedPreferences("LastPage", MODE_PRIVATE);
         SharedPreferences.Editor lastPagePrefsEditor = lastPagePrefs.edit();
         lastPagePrefsEditor.putString("last_open_nav_frg", "me");
@@ -67,6 +68,8 @@ public class SplashActivity extends Activity {
                     SharedPreferences loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                     SharedPreferences configPrefs = getSharedPreferences("Configurations", MODE_PRIVATE);
 
+                    // EasyTrack 관련 함수
+                    // 이 부분 가져다 쓰세요 그냥
                     ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
 
                     ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
@@ -76,25 +79,26 @@ public class SplashActivity extends Activity {
                             .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                             .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                             .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                            .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
+                            .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1)) // 가지고 오고 싶은 데이터베이스 이름이나 코드
                             .setFromTimestamp(fromTimestamp) //  fromTimestamp
                             .setTillTimestamp(tillTimestamp)
                             .build();
                     try {
                         Log.d(TAG, "before responseMessage");
+                        // responseMessage에 데이터가 있다고 생각하시면 됩니다.
                         final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
                         Log.d(TAG, "after responseMessage");
-                        // todo 이 위에 엄청 느림 ask to kevin
                         if (responseMessage.getSuccess()) {
                             // checkByteString
-                            List<ByteString> values = responseMessage.getValueList();
-                            List<Long> valuesTimestamp = responseMessage.getTimestampList();
+                            List<ByteString> values = responseMessage.getValueList(); // 여기에 데이터 값
+                            List<Long> valuesTimestamp = responseMessage.getTimestampList(); // 여기에 타임스탬프 값
                             if (!values.isEmpty()) {
                                 for (int i = 0; i < values.size(); i++) {
-                                    stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8");
+                                    stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8"); // String 타입으로 변환된 스트레스 리포트
                                     long timestamp = valuesTimestamp.get(i);
                                     try {
                                         JSONObject stressReportJSON = new JSONObject(stressReportStr);
+                                        // JSON 스트레스 리포트 분해, 스트레스 레벨에 따라서 분해하는 부분임
                                         for (short stressLv = 0; stressLv < 3; stressLv++) {
                                             JSONObject eachLevelJSON = new JSONObject(stressReportJSON.getString(String.valueOf(stressLv)));
                                             String oneReportWithTimestamp = String.format(Locale.getDefault(), "%d,%d,%d,%d,%.2f,%s,%b\n",
@@ -107,7 +111,9 @@ public class SplashActivity extends Activity {
                                                     eachLevelJSON.getBoolean("model_tag"));
 //                                            timestamp + "#" + stressLv + "#" + stressReportJSON.getString(String.valueOf(stressLv));
                                             String[] split = oneReportWithTimestamp.split(",");
+                                            // 버그 픽스용 if문
                                             if (Integer.parseInt(split[PREDICTION_ORDER_INDEX]) > 0) {
+                                                // order가 0이 아니면 파일에다가 저장해놓고 나중에 쓰임
                                                 FileOutputStream fileOutputStream = openFileOutput(STRESS_PREDICTION_RESULT, MODE_APPEND);
                                                 fileOutputStream.write(oneReportWithTimestamp.getBytes());
                                                 fileOutputStream.close();
@@ -140,9 +146,7 @@ public class SplashActivity extends Activity {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             SplashActivity.this.finish();
-            Log.e(TAG, "스플래시 끝2");
         }, SPLASH_DISPLAY_TIME);
-        Log.e(TAG, "스플래시 끝");
     }
 
     @Override

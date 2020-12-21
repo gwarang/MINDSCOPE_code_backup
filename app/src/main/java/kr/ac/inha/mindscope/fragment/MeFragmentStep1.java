@@ -162,7 +162,9 @@ public class MeFragmentStep1 extends Fragment {
         int firstviewshow = firstPref.getInt("First", 0);
         boolean isFirstStartStep1DialogShowing = firstPref.getBoolean("firstStartStep1", false);
 
+        // 이 함수가 제일 중요
         updateEmaResponseView();
+
         if (firstviewshow == 1 && isFirstStartStep1DialogShowing){
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -240,7 +242,7 @@ public class MeFragmentStep1 extends Fragment {
                         .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
-                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1))
+                        .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1)) // 여기가 원하는 데이터소스 불러오려고 설정하는 부분
                         .setFromTimestamp(fromCal.getTimeInMillis())
                         .setTillTimestamp(tillCal.getTimeInMillis())
                         .build();
@@ -250,7 +252,7 @@ public class MeFragmentStep1 extends Fragment {
                     Log.d(TAG, "after responseMessage");
                     if (responseMessage.getSuccess()) {
                         // checkByteString
-                        List<ByteString> values = responseMessage.getValueList();
+                        List<ByteString> values = responseMessage.getValueList(); // SURVEY_EMA 의 데이터가 bytestring type의 값들의 리스트로 오게됨
                         for (ByteString value : values) {
                             String[] splitValue = value.toString("UTF-8").split(" ");
                             editor.putBoolean("ema_submit_check_" + splitValue[1], true);
@@ -288,6 +290,7 @@ public class MeFragmentStep1 extends Fragment {
 
     public void loadAllPoints() {
 
+        // todo 동기화 하는 과정  앱을 삭제하면 SP가 다 날라감. 그래서 나중에는 서버하고 동기화하는 과정을 추가해주셔야한다.
         SharedPreferences pointsPrefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
         int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
         long daynum = pointsPrefs.getLong("daynum", 0);

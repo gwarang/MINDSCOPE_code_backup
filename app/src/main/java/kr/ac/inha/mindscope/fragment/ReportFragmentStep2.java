@@ -231,6 +231,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         txtStressLevel = root.findViewById(R.id.txt_stress_level);
         txtStressLevel.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
 
+        // todo 이 파일 안에서 달력에 그리는거 구현해야합니다.
         materialCalendarView = root.findViewById(R.id.calendarView);
         materialCalendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE);
         materialCalendarView.setTileHeightDp(tileHeight);
@@ -239,7 +240,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 new DayDecorator(),
                 new LowStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.low_circle_background)),
                 new LittleHighStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.littlehigh_circle_background)),
-                new HighStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.high_circle_background))
+                new HighStressDecorator(ContextCompat.getDrawable(requireContext(), R.drawable.high_circle_background)),
+                new LowEMADecorator(ContextCompat.getDrawable(requireContext(), R.drawable.low_circle_background)),
+                new LittleHighEMADecorator(ContextCompat.getDrawable(requireContext(), R.drawable.littlehigh_circle_background)),
+                new HighEMADecorator(ContextCompat.getDrawable(requireContext(), R.drawable.high_circle_background))
         );
         materialCalendarView.setOnDateChangedListener(this);
 
@@ -256,6 +260,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         });
 
         // set up per time-slot stress level button clicks
+        // todo STEP1 일때는 태그한 데이터 들이 보여질수 있도록 구현
         arrowResult1.setOnClickListener((v) -> {
             // 07:00 ~ 11:00
             Calendar c = Calendar.getInstance();
@@ -938,6 +943,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     public void hiddenViewUpdate(String feature_ids, int stressLevl) {
         Context context = requireContext();
+
+        // 아래 도움말은 child1 기준 약간씩 다름
+        // todo 조건 1, 2, 3 업데이트 해야됨. MeFragmentStep2.java 의 featureViewUpdate()함수 참고
+        // todo fragment_care_child3.xml을 fragment_me_step2의 condition UI 참고해서 수정
+        // child1_container1 은 시간이랑 체크박스 있는 UI
+        // child1_container2 는 condition3의 UI -> fragment_me_step2.xml의 stress_reason_container 참고해서 수정
+        // frg_me_step2.xml 파일의 me_condition2_container 참고해서 condition2의 UI 구성
 
         ArrayList<String> phoneReason = new ArrayList<>();
         ArrayList<String> activityReason = new ArrayList<>();

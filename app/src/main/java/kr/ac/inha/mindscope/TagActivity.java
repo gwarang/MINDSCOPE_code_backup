@@ -79,6 +79,8 @@ public class TagActivity extends AppCompatActivity {
         String str3hoursago = prefs.getString("lasthashtags", "");
         tag3hoursView.setText(str3hoursago);
 
+        // todo 달력에 표시할 정보들을 이 액티비티에서 같이 로컬로 저장을 해두셔도 됩니다.
+
 
         inputTag.setHint("#내상태를 #기록해주세요 #을붙이셔야 #적용됩니다.");
 
@@ -129,12 +131,13 @@ public class TagActivity extends AppCompatActivity {
             long saveTimestamp = fixTimestamp(timestamp, emaOrder);
             String saveTags = "";
 
+            // 데이터 ET에 저장할때 아래 코드 참고
             SharedPreferences prefs = getSharedPreferences("Configurations", Context.MODE_PRIVATE);
             int dataSourceId = prefs.getInt("REPORT_TAGS", -1);
             assert dataSourceId != -1;
             long temp = 0;
             for(String tag : tags){
-
+                // 저장 할때 아래 함수 참고
                 DbMgr.saveMixedData(dataSourceId, timestamp + temp, 1.0f, timestamp+temp, dayNum, emaOrder, tag);
                 Log.d(TAG, "submit test : " + (timestamp + temp) + " " + tag);
                 temp++;

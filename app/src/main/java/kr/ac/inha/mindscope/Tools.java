@@ -84,12 +84,12 @@ public class Tools {
     public static final int CATEGORY_UNLOCK_DURATION_APP_USAGE = 17;
     public static final int CATEGORY_ENTERTAIN_APP_USAGE = 18;
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
-    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;  //
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 4 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;  //
-    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 4 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 5 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 7 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 30 * 1 * 1000;
+    public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;  // step0 이제 쓰이지 않음
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 55 * 1 * 1000;  //todo STEP1 만료기간
+    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //todo condition 기간 변경은 맨 앞에 60 * 60 * 24 * 날짜 * 1000에서 날짜부분 변경
+    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 8 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 10 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 12 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //condition 끝나는 기간 = 실험 종료 기간을 나타낸 거지만 쓰이지 않음
     public static final int timeTheDayNumIsChanged = 11;
 
     static int PERMISSION_ALL = 1;
@@ -938,7 +938,8 @@ public class Tools {
 
         long diff = curTimestamp - joinTimestamp;
         SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
-        if (diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE) {
+//        if (diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE) { // 이전에는 step0가 존재했지만 이젠 존재 x
+        if (diff < STEP1_EXPIRE_TIMESTAMP_VALUE) {
             // step1
             stepEditor.putInt("stepCheck", 1);
             stepEditor.apply();
@@ -954,21 +955,22 @@ public class Tools {
 
         // todo condition 순서 바꾸고 싶으면 putInt 안에 순서 바꿀것
         /*
+        * stepEditor.putInt("condition", 여기) 여기 자리 변경
         * condition order : 1-2-3 --> 0 1 2 3
         * condition order : 3-2-1 --> 0 3 2 1
-        * condition order : 2-1-3
+        * condition order : 2-1-3 --> 0 2 1 3
         * */
         if(diff < CONDITION_EXPIRE_DURATION1){
             stepEditor.putInt("condition", 0);
         }
         else if(diff < CONDITION_EXPIRE_DURATION2){
-            stepEditor.putInt("condition", 1);
+            stepEditor.putInt("condition", 3);
         }
         else if(diff < CONDITION_EXPIRE_DURATION3){
             stepEditor.putInt("condition", 2);
         }
         else{
-            stepEditor.putInt("condition", 3);
+            stepEditor.putInt("condition", 1);
         }
         stepEditor.apply();
 

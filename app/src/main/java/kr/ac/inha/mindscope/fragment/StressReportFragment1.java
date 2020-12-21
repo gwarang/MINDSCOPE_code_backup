@@ -262,7 +262,7 @@ public class StressReportFragment1 extends Fragment {
                 lowBtn.setSelected(true);
                 littleHighBtn.setSelected(false);
                 highBtn.setSelected(false);
-                reportAnswer = 0;
+                reportAnswer = 0; // 스트레스 레벨
                 btnReport.setClickable(true);
             });
             littleHighBtn.setOnClickListener(view1 -> {
@@ -343,11 +343,9 @@ public class StressReportFragment1 extends Fragment {
             // todo test
 //            result = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
             String[] splitResult = result.split(",");
-            Log.d(TAG, "완전 "+ splitResult.toString());
             if (Boolean.parseBoolean(splitResult[6])) {
                 stressResult = result;
 //                stressResult = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
-                Log.d(TAG, "완전테스트 " + stressResult);
             }
         }
         return stressResult;
