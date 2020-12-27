@@ -196,6 +196,7 @@
                     app:layout_constraintTop_toBottomOf="@id/frg_report_step2_img1" />
 
 
+                <!-- @ji 시간대별 스트레스 4개  -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/report_result1"
                     android:layout_width="match_parent"
@@ -599,9 +600,9 @@
             android:layout_margin="20dp"
             android:background="#00000000"
             android:src="@drawable/ic_baseline_arrow_back_24"
-            android:tint="@color/textColor_default_light"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/textColor_default_light" />
 
         <ImageView
             android:id="@+id/frg_report_step2_hidden_img1"
@@ -616,223 +617,400 @@
             app:layout_constraintWidth_default="percent"
             app:layout_constraintWidth_percent="0.25" />
 
-        <ScrollView
+        <!-- condition2 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/frg_report_step2_stress_reason_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginHorizontal="14dp"
-            android:layout_marginBottom="50dp"
-            android:background="@color/color_low_bg"
-            android:fillViewport="true"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_txt_reason">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-
-                <LinearLayout
-                    android:id="@+id/frg_report_step2_listview_phone_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_txt_reason"
+                    android:visibility="gone">
 
                     <LinearLayout
+                        android:id="@+id/frg_report_step2_condition2_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/view_bottom_border"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:paddingVertical="25dp"
+                        android:layout_marginHorizontal="14dp"
                         android:orientation="horizontal"
-                        android:paddingVertical="5dp">
+                        android:gravity="center">
 
-                        <ImageView
+                        <RelativeLayout
+                            android:id="@+id/frg_report_step2_img_container1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="6dp"
-                            android:src="@drawable/ic_f_phoneusage" />
+                            android:layout_marginHorizontal="6dp">
 
-                        <TextView
+                            <ImageView
+                                android:id="@+id/frg_report_step2_img1_"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/mobile"
+                                android:alpha="0.3"
+                                android:layout_centerInParent="true"/>
+
+                            <TextView
+                                android:id="@+id/frg_report_step2_txt1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:layout_below="@id/frg_report_step2_img1_"
+                                android:text="휴대폰 사용"
+                                android:textColor="@color/border_btn_gray"
+                                android:fontFamily="@font/notosanscjkkrregular"
+                                android:includeFontPadding="false"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="@dimen/my_text_size0"/>
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/frg_report_step2_img_container2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/notosanscjkkrregular"
-                            android:includeFontPadding="false"
-                            android:text="휴대폰 사용"
-                            android:textSize="@dimen/my_text_size3" />
+                            android:layout_marginHorizontal="6dp">
+
+                            <ImageView
+                                android:id="@+id/frg_report_step2_img2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/social"
+                                android:alpha="0.3"
+                                android:layout_centerInParent="true"/>
+
+                            <TextView
+                                android:id="@+id/frg_report_step2_txt2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:layout_below="@id/frg_report_step2_img2"
+                                android:text="소셜 활동"
+                                android:textColor="@color/border_btn_gray"
+                                android:fontFamily="@font/notosanscjkkrregular"
+                                android:includeFontPadding="false"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="@dimen/my_text_size0"/>
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/frg_report_step2_img_container3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="6dp">
+
+                            <ImageView
+                                android:id="@+id/frg_report_step2_img3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:alpha="0.3"
+                                android:src="@drawable/place"
+                                android:layout_centerInParent="true"/>
+
+                            <TextView
+                                android:id="@+id/frg_report_step2_txt3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:layout_below="@id/frg_report_step2_img3"
+                                android:text="장소 이동"
+                                android:textColor="@color/border_btn_gray"
+                                android:fontFamily="@font/notosanscjkkrregular"
+                                android:includeFontPadding="false"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="@dimen/my_text_size0"/>
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/frg_report_step2_img_container4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="6dp">
+
+                            <ImageView
+                                android:id="@+id/frg_report_step2_img4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:alpha="0.3"
+                                android:src="@drawable/physical"
+                                android:layout_centerInParent="true"/>
+
+                            <TextView
+                                android:id="@+id/frg_report_step2_txt4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:layout_below="@id/frg_report_step2_img4"
+                                android:text="신체 활동"
+                                android:textColor="@color/border_btn_gray"
+                                android:fontFamily="@font/notosanscjkkrregular"
+                                android:includeFontPadding="false"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="@dimen/my_text_size0"/>
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/frg_report_step2_img_container5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="6dp">
+
+                            <ImageView
+                                android:id="@+id/frg_report_step2_img5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/sleep"
+                                android:alpha="0.3"
+                                android:layout_centerInParent="true"/>
+
+                            <TextView
+                                android:id="@+id/frg_report_step2_txt5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:layout_below="@id/frg_report_step2_img5"
+                                android:text="수면"
+                                android:textColor="@color/border_btn_gray"
+                                android:fontFamily="@font/notosanscjkkrregular"
+                                android:includeFontPadding="false"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="@dimen/my_text_size0"/>
+
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
-                    <ListView
-                        android:id="@+id/frg_report_step2_listview_phone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="#00000000" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <!-- 활동2 스크롤뷰로 만들어 놓은 것 -->
+<!--        <ScrollView-->
+<!--            android:id="@+id/frg_report_step2_stress_reason_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginHorizontal="14dp"-->
+<!--            android:layout_marginBottom="50dp"-->
+<!--            android:background="@color/color_low_bg"-->
+<!--            android:fillViewport="true"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/frg_report_step2_txt_reason">-->
 
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/frg_report_step2_listview_activity_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/view_bottom_border">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="6dp"
-                            android:src="@drawable/ic_f_activity" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/notosanscjkkrregular"
-                            android:includeFontPadding="false"
-                            android:paddingVertical="3dp"
-                            android:text="신체 활동"
-                            android:textSize="@dimen/my_text_size3" />
-
-                    </LinearLayout>
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
 
 
-                    <ListView
-                        android:id="@+id/frg_report_step2_listview_activity"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="#00000000" />
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/frg_report_step2_listview_phone_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
 
-                </LinearLayout>
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/view_bottom_border"-->
+<!--                        android:orientation="horizontal"-->
+<!--                        android:paddingVertical="5dp">-->
 
-                <LinearLayout
-                    android:id="@+id/frg_report_step2_listview_location_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginHorizontal="6dp"-->
+<!--                            android:src="@drawable/ic_f_phoneusage" />-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/view_bottom_border">
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:fontFamily="@font/notosanscjkkrregular"-->
+<!--                            android:includeFontPadding="false"-->
+<!--                            android:text="휴대폰 사용"-->
+<!--                            android:textSize="@dimen/my_text_size3" />-->
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="6dp"
-                            android:src="@drawable/ic_f_location" />
+<!--                    </LinearLayout>-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/notosanscjkkrregular"
-                            android:includeFontPadding="false"
-                            android:paddingVertical="3dp"
-                            android:text="활동 반경"
-                            android:textSize="@dimen/my_text_size3" />
+<!--                    <ListView-->
+<!--                        android:id="@+id/frg_report_step2_listview_phone"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:divider="#00000000" />-->
 
-                    </LinearLayout>
-
-
-                    <ListView
-                        android:id="@+id/frg_report_step2_listview_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="#00000000" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/frg_report_step2_listview_social_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/view_bottom_border">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="6dp"
-                            android:src="@drawable/ic_f_social" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/notosanscjkkrregular"
-                            android:includeFontPadding="false"
-                            android:paddingVertical="3dp"
-                            android:text="소셜"
-                            android:textSize="@dimen/my_text_size3" />
-
-                    </LinearLayout>
+<!--                </LinearLayout>-->
 
 
-                    <ListView
-                        android:id="@+id/frg_report_step2_listview_social"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="#00000000" />
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/frg_report_step2_listview_activity_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
 
-                </LinearLayout>
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/view_bottom_border">-->
 
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginHorizontal="6dp"-->
+<!--                            android:src="@drawable/ic_f_activity" />-->
 
-                <LinearLayout
-                    android:id="@+id/frg_report_step2_listview_sleep_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:fontFamily="@font/notosanscjkkrregular"-->
+<!--                            android:includeFontPadding="false"-->
+<!--                            android:paddingVertical="3dp"-->
+<!--                            android:text="신체 활동"-->
+<!--                            android:textSize="@dimen/my_text_size3" />-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/view_bottom_border">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="6dp"
-                            android:src="@drawable/ic_f_sleep" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/notosanscjkkrregular"
-                            android:includeFontPadding="false"
-                            android:paddingVertical="3dp"
-                            android:text="수면"
-                            android:textSize="@dimen/my_text_size3" />
-
-                    </LinearLayout>
+<!--                    </LinearLayout>-->
 
 
-                    <ListView
-                        android:id="@+id/frg_report_step2_listview_sleep"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:divider="#00000000" />
+<!--                    <ListView-->
+<!--                        android:id="@+id/frg_report_step2_listview_activity"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:divider="#00000000" />-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-            </LinearLayout>
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/frg_report_step2_listview_location_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/view_bottom_border">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginHorizontal="6dp"-->
+<!--                            android:src="@drawable/ic_f_location" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:fontFamily="@font/notosanscjkkrregular"-->
+<!--                            android:includeFontPadding="false"-->
+<!--                            android:paddingVertical="3dp"-->
+<!--                            android:text="활동 반경"-->
+<!--                            android:textSize="@dimen/my_text_size3" />-->
+
+<!--                    </LinearLayout>-->
 
 
-        </ScrollView>
+<!--                    <ListView-->
+<!--                        android:id="@+id/frg_report_step2_listview_location"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:divider="#00000000" />-->
+
+<!--                </LinearLayout>-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/frg_report_step2_listview_social_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/view_bottom_border">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginHorizontal="6dp"-->
+<!--                            android:src="@drawable/ic_f_social" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:fontFamily="@font/notosanscjkkrregular"-->
+<!--                            android:includeFontPadding="false"-->
+<!--                            android:paddingVertical="3dp"-->
+<!--                            android:text="소셜"-->
+<!--                            android:textSize="@dimen/my_text_size3" />-->
+
+<!--                    </LinearLayout>-->
+
+
+<!--                    <ListView-->
+<!--                        android:id="@+id/frg_report_step2_listview_social"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:divider="#00000000" />-->
+
+<!--                </LinearLayout>-->
+
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/frg_report_step2_listview_sleep_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/view_bottom_border">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginHorizontal="6dp"-->
+<!--                            android:src="@drawable/ic_f_sleep" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:fontFamily="@font/notosanscjkkrregular"-->
+<!--                            android:includeFontPadding="false"-->
+<!--                            android:paddingVertical="3dp"-->
+<!--                            android:text="수면"-->
+<!--                            android:textSize="@dimen/my_text_size3" />-->
+
+<!--                    </LinearLayout>-->
+
+
+<!--                    <ListView-->
+<!--                        android:id="@+id/frg_report_step2_listview_sleep"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:divider="#00000000" />-->
+
+<!--                </LinearLayout>-->
+<!--            </LinearLayout>-->
+<!--        </ScrollView>-->
 
         <TextView
             android:id="@+id/frg_report_step2_no_features"
@@ -849,6 +1027,8 @@
             app:layout_constraintStart_toStartOf="@id/frg_report_step2_stress_reason_container"
             app:layout_constraintTop_toTopOf="@id/frg_report_step2_stress_reason_container" />
 
+
+        <!-- 스트레스 레벨에따라 텍스트 바뀜 -->
         <TextView
             android:id="@+id/frg_report_step2_txt_reason"
             android:layout_width="match_parent"
@@ -863,6 +1043,74 @@
             app:layout_constraintBottom_toTopOf="@id/frg_report_step2_stress_reason_container"
             app:layout_constraintTop_toBottomOf="@id/frg_report_step2_txt_stress_level" />
 
+        <!-- condition3 reasons -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/frg_report_condition3_container"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/frg_report_step2_txt_reason"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:visibility="gone"
+            app:layout_constraintVertical_weight="1">
+
+            <ScrollView
+                android:id="@+id/frg_report_step2_reason_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="14dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/color_low_bg"
+                android:fillViewport="true"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/frg_report_step2_listview_integrate_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ListView
+                            android:id="@+id/frg_report_step2_listview_integrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/stress_report_no_features"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanscjkkrmedium"
+                android:includeFontPadding="false"
+                android:text="@string/no_features"
+                android:textAlignment="center"
+                android:textSize="@dimen/my_text_size1"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/frg_report_step2_reason_container"
+                app:layout_constraintEnd_toEndOf="@id/frg_report_step2_reason_container"
+                app:layout_constraintStart_toStartOf="@id/frg_report_step2_reason_container"
+                app:layout_constraintTop_toTopOf="@id/frg_report_step2_reason_container" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!-- 스트레스 리포트 상세 텍스트뷰들  -->
         <TextView
             android:id="@+id/frg_report_step2_txt_stress_level"
             android:layout_width="match_parent"

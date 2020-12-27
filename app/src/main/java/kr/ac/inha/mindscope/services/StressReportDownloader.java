@@ -89,7 +89,10 @@ public class StressReportDownloader extends Worker {
                         List<Long> valuesTimestamp = responseMessage.getTimestampList();
                         if (!values.isEmpty()) {
                             for (int i = 0; i < values.size(); i++) {
-                                stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8");
+                                // stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8");
+                                //@jeongin : 서버 저장 수정으로 string 형식도 수정 20.12.27
+                                stressReportStr = values.get(i).toString("UTF-8");
+                                Log.d(TAG,stressReportStr);
                                 long timestamp = valuesTimestamp.get(i);
                                 try{
                                     JSONObject stressReportJSON = new JSONObject(stressReportStr);

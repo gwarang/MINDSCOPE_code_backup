@@ -94,7 +94,9 @@ public class SplashActivity extends Activity {
                             List<Long> valuesTimestamp = responseMessage.getTimestampList(); // 여기에 타임스탬프 값
                             if (!values.isEmpty()) {
                                 for (int i = 0; i < values.size(); i++) {
-                                    stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8"); // String 타입으로 변환된 스트레스 리포트
+                                    //stressReportStr = values.get(i).substring(1,values.get(i).size()-1).toString("UTF-8"); // String 타입으로 변환된 스트레스 리포트
+                                    //@jeongin : 서버 저장 수정으로 string 형식도 수정 20.12.27
+                                    stressReportStr = values.get(i).toString("UTF-8");
                                     long timestamp = valuesTimestamp.get(i);
                                     try {
                                         JSONObject stressReportJSON = new JSONObject(stressReportStr);
