@@ -128,18 +128,18 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     TextView hiddenDateView;
     TextView hiddenTimeView;
     TextView hiddenStressLevelView;
-    ConstraintLayout condition2Container;
-    LinearLayout condition2Layout;
-    private ImageView condition2Img1;
-    private ImageView condition2Img2;
-    private ImageView condition2Img3;
-    private ImageView condition2Img4;
-    private ImageView condition2Img5;
-    private TextView condition2txt1;
-    private TextView condition2txt2;
-    private TextView condition2txt3;
-    private TextView condition2txt4;
-    private TextView condition2txt5;
+//    ConstraintLayout condition2Container;
+//    LinearLayout condition2Layout;
+//    private ImageView condition2Img1;
+//    private ImageView condition2Img2;
+//    private ImageView condition2Img3;
+//    private ImageView condition2Img4;
+//    private ImageView condition2Img5;
+//    private TextView condition2txt1;
+//    private TextView condition2txt2;
+//    private TextView condition2txt3;
+//    private TextView condition2txt4;
+//    private TextView condition2txt5;
     public int condition;
     RelativeLayout categoryImgContainer1;
     RelativeLayout categoryImgContainer2;
@@ -147,15 +147,15 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     RelativeLayout categoryImgContainer4;
     RelativeLayout categoryImgContainer5;
 
-//    ListView phoneListView;
-//    ListView activityListView;
-//    ListView socialListView;
-//    ListView locationListView;
-//    ListView sleepListView;
-//    LinearLayout phoneContainer;
-//    LinearLayout activityContainer;
-//    LinearLayout socialContainer;
-//    LinearLayout locationContainer;
+    ListView phoneListView;
+    ListView activityListView;
+    ListView socialListView;
+    ListView locationListView;
+    ListView sleepListView;
+    LinearLayout phoneContainer;
+    LinearLayout activityContainer;
+    LinearLayout socialContainer;
+    LinearLayout locationContainer;
     LinearLayout sleepContainer;
     ScrollView reasonContainer;
     ImageButton backArrow;
@@ -234,38 +234,38 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         hiddenTimeView = root.findViewById(R.id.frg_report_step2_time1);
         hiddenStressLevelView = root.findViewById(R.id.frg_report_step2_txt_stress_level);
         backArrow = root.findViewById(R.id.frg_report_step2_back_arrow);
-        condition2Container = root.findViewById(R.id.frg_report_step2_stress_reason_container);
-        condition2Layout = root.findViewById(R.id.frg_report_step2_condition2_layout);
+//        condition2Container = root.findViewById(R.id.frg_report_step2_stress_reason_container);
+//        condition2Layout = root.findViewById(R.id.frg_report_step2_condition2_layout);
+//
+//
+//        condition2Img1 = root.findViewById(R.id.frg_report_step2_img1_);
+//        condition2Img2 = root.findViewById(R.id.frg_report_step2_img2);
+//        condition2Img3 = root.findViewById(R.id.frg_report_step2_img3);
+//        condition2Img4 = root.findViewById(R.id.frg_report_step2_img4);
+//        condition2Img5 = root.findViewById(R.id.frg_report_step2_img5);
+//        condition2txt1 = root.findViewById(R.id.frg_report_step2_txt1);
+//        condition2txt2 = root.findViewById(R.id.frg_report_step2_txt2);
+//        condition2txt3 = root.findViewById(R.id.frg_report_step2_txt3);
+//        condition2txt4 = root.findViewById(R.id.frg_report_step2_txt4);
+//        condition2txt5 = root.findViewById(R.id.frg_report_step2_txt5);
+//        categoryImgContainer1 = root.findViewById(R.id.frg_report_step2_img_container1);
+//        categoryImgContainer2 = root.findViewById(R.id.frg_report_step2_img_container2);
+//        categoryImgContainer3 = root.findViewById(R.id.frg_report_step2_img_container3);
+//        categoryImgContainer4 = root.findViewById(R.id.frg_report_step2_img_container4);
+//        categoryImgContainer5 = root.findViewById(R.id.frg_report_step2_img_container5);
 
+        phoneListView = root.findViewById(R.id.frg_report_step2_listview_phone);
+        activityListView = root.findViewById(R.id.frg_report_step2_listview_activity);
+        socialListView = root.findViewById(R.id.frg_report_step2_listview_social);
+        locationListView = root.findViewById(R.id.frg_report_step2_listview_location);
+        sleepListView = root.findViewById(R.id.frg_report_step2_listview_sleep);
+        phoneContainer = root.findViewById(R.id.frg_report_step2_listview_phone_container);
+        activityContainer = root.findViewById(R.id.frg_report_step2_listview_activity_container);
+        socialContainer = root.findViewById(R.id.frg_report_step2_listview_social_container);
+        locationContainer = root.findViewById(R.id.frg_report_step2_listview_location_container);
+        sleepContainer = root.findViewById(R.id.frg_report_step2_listview_sleep_container);
 
-        condition2Img1 = root.findViewById(R.id.frg_report_step2_img1_);
-        condition2Img2 = root.findViewById(R.id.frg_report_step2_img2);
-        condition2Img3 = root.findViewById(R.id.frg_report_step2_img3);
-        condition2Img4 = root.findViewById(R.id.frg_report_step2_img4);
-        condition2Img5 = root.findViewById(R.id.frg_report_step2_img5);
-        condition2txt1 = root.findViewById(R.id.frg_report_step2_txt1);
-        condition2txt2 = root.findViewById(R.id.frg_report_step2_txt2);
-        condition2txt3 = root.findViewById(R.id.frg_report_step2_txt3);
-        condition2txt4 = root.findViewById(R.id.frg_report_step2_txt4);
-        condition2txt5 = root.findViewById(R.id.frg_report_step2_txt5);
-        categoryImgContainer1 = root.findViewById(R.id.frg_report_step2_img_container1);
-        categoryImgContainer2 = root.findViewById(R.id.frg_report_step2_img_container2);
-        categoryImgContainer3 = root.findViewById(R.id.frg_report_step2_img_container3);
-        categoryImgContainer4 = root.findViewById(R.id.frg_report_step2_img_container4);
-        categoryImgContainer5 = root.findViewById(R.id.frg_report_step2_img_container5);
-
-//        phoneListView = root.findViewById(R.id.frg_report_step2_listview_phone);
-//        activityListView = root.findViewById(R.id.frg_report_step2_listview_activity);
-//        socialListView = root.findViewById(R.id.frg_report_step2_listview_social);
-//        locationListView = root.findViewById(R.id.frg_report_step2_listview_location);
-//        sleepListView = root.findViewById(R.id.frg_report_step2_listview_sleep);
-//        phoneContainer = root.findViewById(R.id.frg_report_step2_listview_phone_container);
-//        activityContainer = root.findViewById(R.id.frg_report_step2_listview_activity_container);
-//        socialContainer = root.findViewById(R.id.frg_report_step2_listview_social_container);
-//        locationContainer = root.findViewById(R.id.frg_report_step2_listview_location_container);
-//        sleepContainer = root.findViewById(R.id.frg_report_step2_listview_sleep_container);
-
-        //reasonContainer = root.findViewById(R.id.frg_report_step2_stress_reason_container);
+        reasonContainer = root.findViewById(R.id.frg_report_step2_stress_reason_container);
 
         noFeatureTextview = root.findViewById(R.id.frg_report_step2_no_features);
 
@@ -316,6 +316,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
 
             int stressLv = stressLevels.get(timestamp).second;
+
             String feature_ids = null;
             if (object != null) {
                 try {
@@ -345,8 +346,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             hiddenDateView.setText(hiddenDateStr + "의");
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration2));
 
+            Log.d(TAG,timestampStressFeaturesMap.toString());
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
-
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
             if (object != null) {
@@ -356,7 +357,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
+            } 
+
             if (feature_ids != null) {
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
@@ -727,6 +729,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     }
 
     public void loadDailyPoints(CalendarDay day) {
+        Log.d(TAG,"loadDailyPoints");
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
                 HashMap<Long, Integer> dailyPointsMaps = new HashMap<>();
@@ -757,6 +760,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int dailyPoints = 0;
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    //@jeongin :  responseMessage.getSuccess() 가 false로 오고 있음 20.12.29
                     if (responseMessage.getSuccess()){
                         // checkByteString
                         for (ByteString value : responseMessage.getValueList()) {
@@ -765,6 +769,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             if (cells.length != 3)
                                 continue;
                             dailyPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+                            Log.d(TAG,dailyPointsMaps.toString());
 //                            dailyPoints += Integer.parseInt(cells[2]);
                         }
                         for(Map.Entry<Long, Integer> elem : dailyPointsMaps.entrySet()){
@@ -827,13 +832,17 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             // checkByteString
                             List<ByteString> values = responseMessage.getValueList();
                             List<Long> timestamps = responseMessage.getTimestampList();
+                            Log.d(TAG,values.toString());
                             for (int n = 0; n < values.size(); n++) {
                                 String value = null;
-                                if(dataSourceId == SUBMITTED){
-                                    value = values.get(n).toString("UTF-8");
-                                }else{
-                                    value = values.get(n).substring(1, values.get(n).size()-1).toString("UTF-8");
-                                }
+                                //@jeognin : 마음기록 제대로 안 보이는 문제 수정 20.12.29
+//                                if(dataSourceId == SUBMITTED){
+//                                    value = values.get(n).toString("UTF-8");
+//                                }else{
+//                                    value = values.get(n).substring(1, values.get(n).size()-1).toString("UTF-8");
+//                                }
+
+                                value = values.get(n).toString("UTF-8");
                                 int dayNum = 0;
                                 long timestamp = 0;
                                 int emaOrder = -1;
@@ -856,7 +865,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                         timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
                                         c.setTimeInMillis(timestamp);
                                         timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
-
                                         Iterator<String> keys = cells.keys();
                                         do {
                                             String key = keys.next();
@@ -995,11 +1003,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         //@ji : 20.12.26 featureViewUpdate()내용으로 아래 수정
 
         ArrayList<String> integrateReason = new ArrayList<>();
-//        ArrayList<String> phoneReason = new ArrayList<>();
-//        ArrayList<String> activityReason = new ArrayList<>();
-//        ArrayList<String> socialReason = new ArrayList<>();
-//        ArrayList<String> locationReason = new ArrayList<>();
-//        ArrayList<String> sleepReason = new ArrayList<>();
+        ArrayList<String> phoneReason = new ArrayList<>();
+        ArrayList<String> activityReason = new ArrayList<>();
+        ArrayList<String> socialReason = new ArrayList<>();
+        ArrayList<String> locationReason = new ArrayList<>();
+        ArrayList<String> sleepReason = new ArrayList<>();
         boolean noFeatures = false;
 
         if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
@@ -1039,9 +1047,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
                 if (category <= CATEGORY_ACTIVITY_END_INDEX) {
-//                    activityReason.add(context.getResources().getString(resId));
-                    condition2Img4.setAlpha(1.0f);
-                    condition2txt4.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    activityReason.add(context.getResources().getString(resId));
+//                    condition2Img4.setAlpha(1.0f);
+//                    condition2txt4.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1054,9 +1062,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE) {
-//                    socialReason.add(context.getResources().getString(resId));
-                    condition2Img2.setAlpha(1.0f);
-                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    socialReason.add(context.getResources().getString(resId));
+//                    condition2Img2.setAlpha(1.0f);
+//                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1069,10 +1077,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category == CATEGORY_SNS_APP_USAGE) {
-//                    String text = String.format(context.getResources().getString(resId), applicationName);
-//                    socialReason.add(text);
-                    condition2Img2.setAlpha(1.0f);
-                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    String text = String.format(context.getResources().getString(resId), applicationName);
+                    socialReason.add(text);
+//                    condition2Img2.setAlpha(1.0f);
+//                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1085,8 +1093,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
-                    condition2Img3.setAlpha(1.0f);
-                    condition2txt3.setTextColor(requireContext().getColor(R.color.textColor_default));
+//                    condition2Img3.setAlpha(1.0f);
+//                    condition2txt3.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1099,8 +1107,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_UNLOCK_DURATION_APP_USAGE) {
-                    condition2Img1.setAlpha(1.0f);
-                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+//                    condition2Img1.setAlpha(1.0f);
+//                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1113,10 +1121,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
-//                    String text = String.format(context.getResources().getString(resId), applicationName);
-//                    phoneReason.add(text);
-                    condition2Img1.setAlpha(1.0f);
-                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    String text = String.format(context.getResources().getString(resId), applicationName);
+                    phoneReason.add(text);
+//                    condition2Img1.setAlpha(1.0f);
+//                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1129,9 +1137,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else {
-//                    sleepReason.add(context.getResources().getString(resId));
-                    condition2Img5.setAlpha(1.0f);
-                    condition2txt5.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    sleepReason.add(context.getResources().getString(resId));
+//                    condition2Img5.setAlpha(1.0f);
+//                    condition2txt5.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1179,35 +1187,35 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 context, R.layout.item_feature_ids, integrateReason
         );
 
-//        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
-//                context, R.layout.item_feature_ids, phoneReason
-//        );
-//        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
-//                context, R.layout.item_feature_ids, activityReason
-//        );
-//        ArrayAdapter<String> socialAdapter = new ArrayAdapter<>(
-//                context, R.layout.item_feature_ids, socialReason
-//        );
-//        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
-//                context, R.layout.item_feature_ids, locationReason
-//        );
-//        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<>(
-//                context, R.layout.item_feature_ids, sleepReason
-//        );
+        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
+                context, R.layout.item_feature_ids, phoneReason
+        );
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
+                context, R.layout.item_feature_ids, activityReason
+        );
+        ArrayAdapter<String> socialAdapter = new ArrayAdapter<>(
+                context, R.layout.item_feature_ids, socialReason
+        );
+        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
+                context, R.layout.item_feature_ids, locationReason
+        );
+        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<>(
+                context, R.layout.item_feature_ids, sleepReason
+        );
 
         if (noFeatures) {
-//            phoneContainer.setVisibility(View.GONE);
-//            activityContainer.setVisibility(View.GONE);
-//            socialContainer.setVisibility(View.GONE);
-//            locationContainer.setVisibility(View.GONE);
-//            sleepContainer.setVisibility(View.GONE);
+            phoneContainer.setVisibility(View.GONE);
+            activityContainer.setVisibility(View.GONE);
+            socialContainer.setVisibility(View.GONE);
+            locationContainer.setVisibility(View.GONE);
+            sleepContainer.setVisibility(View.GONE);
             noFeatureTextview.setVisibility(View.VISIBLE);
         } else {
-//            phoneListView.setAdapter(phoneAdapter);
-//            activityListView.setAdapter(activityAdapter);
-//            socialListView.setAdapter(socialAdapter);
-//            locationListView.setAdapter(locationAdapter);
-//            sleepListView.setAdapter(sleepAdapter);
+            phoneListView.setAdapter(phoneAdapter);
+            activityListView.setAdapter(activityAdapter);
+            socialListView.setAdapter(socialAdapter);
+            locationListView.setAdapter(locationAdapter);
+            sleepListView.setAdapter(sleepAdapter);
             noFeatureTextview.setVisibility(View.GONE);
 
 //            if (integrateReason.isEmpty())
@@ -1217,39 +1225,39 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 //                integrateContainer.setVisibility(View.VISIBLE);
 //            }
 
-//            if (phoneReason.isEmpty())
-//                phoneContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(phoneListView);
-//                phoneContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (activityReason.isEmpty())
-//                activityContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(activityListView);
-//                activityContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (socialReason.isEmpty())
-//                socialContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(socialListView);
-//                socialContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (locationReason.isEmpty())
-//                locationContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(locationListView);
-//                locationContainer.setVisibility(View.VISIBLE);
-//            }
-//            if (sleepReason.isEmpty())
-//                sleepContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(sleepListView);
-//                sleepContainer.setVisibility(View.VISIBLE);
-//            }
+            if (phoneReason.isEmpty())
+                phoneContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(phoneListView);
+                phoneContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (activityReason.isEmpty())
+                activityContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(activityListView);
+                activityContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (socialReason.isEmpty())
+                socialContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(socialListView);
+                socialContainer.setVisibility(View.VISIBLE);
+            }
+
+            if (locationReason.isEmpty())
+                locationContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(locationListView);
+                locationContainer.setVisibility(View.VISIBLE);
+            }
+            if (sleepReason.isEmpty())
+                sleepContainer.setVisibility(View.GONE);
+            else {
+                setListViewHeightBasedOnChildren(sleepListView);
+                sleepContainer.setVisibility(View.VISIBLE);
+            }
 
         }
 
