@@ -965,20 +965,37 @@ public class Tools {
         * condition order : 1-2-3 --> 0 1 2 3
         * condition order : 3-2-1 --> 0 3 2 1
         * condition order : 2-1-3 --> 0 2 1 3
+        * newCondition 자리도 위 순서와 동일하게 바꿔주세요!!!
         * */
+        int curCondition = stepChangePrefs.getInt("condition", 0);
+        int newCondition = 0;
         if(diff < CONDITION_EXPIRE_DURATION1){
+            newCondition = 0;
             stepEditor.putInt("condition", 0);
         }
         else if(diff < CONDITION_EXPIRE_DURATION2){
-            stepEditor.putInt("condition", 1);
+            newCondition = 3;
+            stepEditor.putInt("condition", 3);
         }
         else if(diff < CONDITION_EXPIRE_DURATION3){
+            newCondition = 2;
             stepEditor.putInt("condition", 2);
         }
         else{
-            stepEditor.putInt("condition", 3);
+            newCondition = 1;
+            stepEditor.putInt("condition", 1);
         }
         stepEditor.apply();
+        if(curCondition != newCondition){
+            // 현재 컨디션(정확히는 condition 재확인하기전 condition)과 새롭게 계산된 condition이 다를때 서버에 업로드해줍니다.
+            SharedPreferences configPrefs = context.getSharedPreferences("Configurations", MODE_PRIVATE);
+            int dataSourceId = configPrefs.getInt("CONDITIONS", -1);
+            if(dataSourceId != -1){
+                long timestamp = System.currentTimeMillis();
+                Log.d(TAG, "CONDITIONS dataSourceId, condition: " + dataSourceId + ", " + newCondition);
+                DbMgr.saveMixedData(dataSourceId, timestamp, 1.0f, timestamp, newCondition);
+            }
+        }
 
         //endregion
     }
