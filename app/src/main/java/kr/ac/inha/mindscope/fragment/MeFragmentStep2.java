@@ -261,6 +261,10 @@ public class MeFragmentStep2 extends Fragment {
         Context context = MainActivity.getInstance();
 
         String[] splitResult = stressResult.split(",");
+        Log.d(TAG,splitResult.toString());
+
+        Log.d(TAG,"ㅇㅇㅇ");
+        Log.d(TAG,splitResult.toString());
         long reportTimestamp = Long.parseLong(splitResult[0]);
         stressLevel = Integer.parseInt(splitResult[1]);
         int day_num = Integer.parseInt(splitResult[2]);
@@ -268,7 +272,15 @@ public class MeFragmentStep2 extends Fragment {
         float accuracy = Float.parseFloat(splitResult[4]);
         String feature_ids = splitResult[5];
         boolean model_tag = Boolean.parseBoolean(splitResult[6]);
+//        long reportTimestamp = Long.parseLong("1609781415000");
+//        stressLevel = 2;
+//        int day_num = 18;
+//        int ema_order = 2;
+//        float accuracy = (float) 0.25;
+//        String feature_ids = "0-general_0 7-general_0 11-general_0 17-general_0 28-general_0 ";
+//        boolean model_tag = true;
 
+        Log.d(TAG, "데이터 "+reportTimestamp+" "+stressLevel+" "+day_num+" "+ema_order+" "+accuracy+" "+feature_ids+" "+model_tag+" ");
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", Context.MODE_PRIVATE);
 
         Calendar cal = Calendar.getInstance();
@@ -305,6 +317,7 @@ public class MeFragmentStep2 extends Fragment {
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
                     condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
+                    txtReason.setVisibility(View.INVISIBLE);
                     break;
                 case STRESS_LV2:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -315,6 +328,8 @@ public class MeFragmentStep2 extends Fragment {
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
                     condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
+                    txtReason.setVisibility(View.VISIBLE);
+                    txtReason.setText("제가 참고한 데이터는요,");
                     break;
                 case STRESS_LV3:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -325,6 +340,8 @@ public class MeFragmentStep2 extends Fragment {
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
                     condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
+                    txtReason.setVisibility(View.VISIBLE);
+                    txtReason.setText("당신은 스트레스가 높을 때,");
                     break;
             }
 
@@ -572,6 +589,7 @@ public class MeFragmentStep2 extends Fragment {
 
         if (noFeatures) {
             integrateContainer.setVisibility(View.GONE);
+            condition2Container.setVisibility(View.GONE);
 //            phoneContainer.setVisibility(View.GONE);
 //            activityContainer.setVisibility(View.GONE);
 //            socialContainer.setVisibility(View.GONE);
@@ -580,6 +598,7 @@ public class MeFragmentStep2 extends Fragment {
             noFeatureTextview.setVisibility(View.VISIBLE);
         } else {
             integrateListView.setAdapter(integrateAdapter);
+            condition2Container.setVisibility(View.VISIBLE);
 //            phoneListView.setAdapter(phoneAdapter);
 //            activityListView.setAdapter(activityAdapter);
 //            socialListView.setAdapter(socialAdapter);

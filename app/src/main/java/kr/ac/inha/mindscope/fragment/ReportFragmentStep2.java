@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.format.DateFormat;
@@ -76,6 +77,9 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURATION_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment2.CONDITION1;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment2.CONDITION2;
+import static kr.ac.inha.mindscope.fragment.StressReportFragment2.CONDITION3;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHeightBasedOnChildren;
 
 /**
@@ -128,18 +132,20 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     TextView hiddenDateView;
     TextView hiddenTimeView;
     TextView hiddenStressLevelView;
-//    ConstraintLayout condition2Container;
-//    LinearLayout condition2Layout;
-//    private ImageView condition2Img1;
-//    private ImageView condition2Img2;
-//    private ImageView condition2Img3;
-//    private ImageView condition2Img4;
-//    private ImageView condition2Img5;
-//    private TextView condition2txt1;
-//    private TextView condition2txt2;
-//    private TextView condition2txt3;
-//    private TextView condition2txt4;
-//    private TextView condition2txt5;
+    ConstraintLayout condition2Container;
+    LinearLayout condition2Layout;
+
+    private TextView txtReason;
+    private ImageView condition2Img1;
+    private ImageView condition2Img2;
+    private ImageView condition2Img3;
+    private ImageView condition2Img4;
+    private ImageView condition2Img5;
+    private TextView condition2txt1;
+    private TextView condition2txt2;
+    private TextView condition2txt3;
+    private TextView condition2txt4;
+    private TextView condition2txt5;
     public int condition;
     RelativeLayout categoryImgContainer1;
     RelativeLayout categoryImgContainer2;
@@ -166,6 +172,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private CalendarDay chooseDay;
     SharedPreferences lastPagePrefs;
     TextView noFeatureTextview;
+
+    ListView integrateListView;
+    LinearLayout integrateContainer;
+
     // endregion
 
     public ReportFragmentStep2() {
@@ -181,7 +191,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -234,43 +243,51 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         hiddenTimeView = root.findViewById(R.id.frg_report_step2_time1);
         hiddenStressLevelView = root.findViewById(R.id.frg_report_step2_txt_stress_level);
         backArrow = root.findViewById(R.id.frg_report_step2_back_arrow);
-//        condition2Container = root.findViewById(R.id.frg_report_step2_stress_reason_container);
-//        condition2Layout = root.findViewById(R.id.frg_report_step2_condition2_layout);
-//
-//
-//        condition2Img1 = root.findViewById(R.id.frg_report_step2_img1_);
-//        condition2Img2 = root.findViewById(R.id.frg_report_step2_img2);
-//        condition2Img3 = root.findViewById(R.id.frg_report_step2_img3);
-//        condition2Img4 = root.findViewById(R.id.frg_report_step2_img4);
-//        condition2Img5 = root.findViewById(R.id.frg_report_step2_img5);
-//        condition2txt1 = root.findViewById(R.id.frg_report_step2_txt1);
-//        condition2txt2 = root.findViewById(R.id.frg_report_step2_txt2);
-//        condition2txt3 = root.findViewById(R.id.frg_report_step2_txt3);
-//        condition2txt4 = root.findViewById(R.id.frg_report_step2_txt4);
-//        condition2txt5 = root.findViewById(R.id.frg_report_step2_txt5);
-//        categoryImgContainer1 = root.findViewById(R.id.frg_report_step2_img_container1);
-//        categoryImgContainer2 = root.findViewById(R.id.frg_report_step2_img_container2);
-//        categoryImgContainer3 = root.findViewById(R.id.frg_report_step2_img_container3);
-//        categoryImgContainer4 = root.findViewById(R.id.frg_report_step2_img_container4);
-//        categoryImgContainer5 = root.findViewById(R.id.frg_report_step2_img_container5);
+        condition2Container = root.findViewById(R.id.frg_report_step2_stress_condition2_container);
+        condition2Layout = root.findViewById(R.id.frg_report_step2_condition2_layout);
 
-        phoneListView = root.findViewById(R.id.frg_report_step2_listview_phone);
-        activityListView = root.findViewById(R.id.frg_report_step2_listview_activity);
-        socialListView = root.findViewById(R.id.frg_report_step2_listview_social);
-        locationListView = root.findViewById(R.id.frg_report_step2_listview_location);
-        sleepListView = root.findViewById(R.id.frg_report_step2_listview_sleep);
-        phoneContainer = root.findViewById(R.id.frg_report_step2_listview_phone_container);
-        activityContainer = root.findViewById(R.id.frg_report_step2_listview_activity_container);
-        socialContainer = root.findViewById(R.id.frg_report_step2_listview_social_container);
-        locationContainer = root.findViewById(R.id.frg_report_step2_listview_location_container);
-        sleepContainer = root.findViewById(R.id.frg_report_step2_listview_sleep_container);
 
-        reasonContainer = root.findViewById(R.id.frg_report_step2_stress_reason_container);
+        condition2Img1 = root.findViewById(R.id.frg_report_step2_img1_);
+        condition2Img2 = root.findViewById(R.id.frg_report_step2_img2);
+        condition2Img3 = root.findViewById(R.id.frg_report_step2_img3);
+        condition2Img4 = root.findViewById(R.id.frg_report_step2_img4);
+        condition2Img5 = root.findViewById(R.id.frg_report_step2_img5);
+        condition2txt1 = root.findViewById(R.id.frg_report_step2_txt1);
+        condition2txt2 = root.findViewById(R.id.frg_report_step2_txt2);
+        condition2txt3 = root.findViewById(R.id.frg_report_step2_txt3);
+        condition2txt4 = root.findViewById(R.id.frg_report_step2_txt4);
+        condition2txt5 = root.findViewById(R.id.frg_report_step2_txt5);
+        categoryImgContainer1 = root.findViewById(R.id.frg_report_step2_img_container1);
+        categoryImgContainer2 = root.findViewById(R.id.frg_report_step2_img_container2);
+        categoryImgContainer3 = root.findViewById(R.id.frg_report_step2_img_container3);
+        categoryImgContainer4 = root.findViewById(R.id.frg_report_step2_img_container4);
+        categoryImgContainer5 = root.findViewById(R.id.frg_report_step2_img_container5);
 
+
+
+        txtReason = root.findViewById(R.id.frg_report_step2_txt_reason);
+        integrateListView = root.findViewById(R.id.frg_report_step2_listview_integrate);
+        integrateContainer =  root.findViewById(R.id.frg_report_step2_listview_integrate_container);
+
+//        phoneListView = root.findViewById(R.id.frg_report_step2_listview_phone);
+//        activityListView = root.findViewById(R.id.frg_report_step2_listview_activity);
+//        socialListView = root.findViewById(R.id.frg_report_step2_listview_social);
+//        locationListView = root.findViewById(R.id.frg_report_step2_listview_location);
+//        sleepListView = root.findViewById(R.id.frg_report_step2_listview_sleep);
+//        phoneContainer = root.findViewById(R.id.frg_report_step2_listview_phone_container);
+//        activityContainer = root.findViewById(R.id.frg_report_step2_listview_activity_container);
+//        socialContainer = root.findViewById(R.id.frg_report_step2_listview_social_container);
+//        locationContainer = root.findViewById(R.id.frg_report_step2_listview_location_container);
+//        sleepContainer = root.findViewById(R.id.frg_report_step2_listview_sleep_container);
+
+        reasonContainer = root.findViewById(R.id.frg_report_step2_reason_container);
         noFeatureTextview = root.findViewById(R.id.frg_report_step2_no_features);
 
         txtStressLevel = root.findViewById(R.id.txt_stress_level);
         txtStressLevel.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
+
+
+
 
         // todo 이 파일 안에서 달력에 그리는거 구현해야합니다.
         materialCalendarView = root.findViewById(R.id.calendarView);
@@ -312,21 +329,23 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             String hiddenDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(timestamp);
             hiddenDateView.setText(hiddenDateStr + "의");
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration1));
-
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
 
             int stressLv = stressLevels.get(timestamp).second;
 
+            Log.d(TAG, String.valueOf(timestamp));
+            Log.d(TAG,timestampStressFeaturesMap.toString());
             String feature_ids = null;
             if (object != null) {
                 try {
                     feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                    Log.d(TAG, feature_ids);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-            if (feature_ids != null) {
+            feature_ids = "1-low 9-low 14-low 18-low 28-low 13-low 20-low ";
+            if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
+                Log.d(TAG, "feature_ids : " + feature_ids);
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
                 hiddenViewUpdate(feature_ids, stressLv);
@@ -346,7 +365,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             hiddenDateView.setText(hiddenDateStr + "의");
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration2));
 
-            Log.d(TAG,timestampStressFeaturesMap.toString());
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
             int stressLv = stressLevels.get(timestamp).second;
             String feature_ids = null;
@@ -357,12 +375,15 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            } 
+            }
+            Log.d(TAG, String.valueOf(timestamp));
+            Log.d(TAG,timestampStressFeaturesMap.toString());
+            Log.d(TAG,feature_ids);
 
-            if (feature_ids != null) {
-                defaultContainer.setVisibility(View.INVISIBLE);
-                hiddenContainer.setVisibility(View.VISIBLE);
-                hiddenViewUpdate(feature_ids, stressLv);
+            if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
+                    defaultContainer.setVisibility(View.INVISIBLE);
+                    hiddenContainer.setVisibility(View.VISIBLE);
+                    hiddenViewUpdate(feature_ids, stressLv);
             } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
@@ -391,10 +412,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            if (feature_ids != null) {
-                defaultContainer.setVisibility(View.INVISIBLE);
-                hiddenContainer.setVisibility(View.VISIBLE);
-                hiddenViewUpdate(feature_ids, stressLv);
+            if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
+                    defaultContainer.setVisibility(View.INVISIBLE);
+                    hiddenContainer.setVisibility(View.VISIBLE);
+                    hiddenViewUpdate(feature_ids, stressLv);
             } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
@@ -423,10 +444,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            if (feature_ids != null) {
-                defaultContainer.setVisibility(View.INVISIBLE);
-                hiddenContainer.setVisibility(View.VISIBLE);
-                hiddenViewUpdate(feature_ids, stressLv);
+            if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
+                    defaultContainer.setVisibility(View.INVISIBLE);
+                    hiddenContainer.setVisibility(View.VISIBLE);
+                    hiddenViewUpdate(feature_ids, stressLv);
             } else {
                 Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
             }
@@ -520,6 +541,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // region (3) daily comment
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
+
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
@@ -546,6 +568,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             txtStressLevel.setVisibility(View.VISIBLE);
                         });
                     }
+
+
                 } else{
                     if(isAdded()){
                         requireActivity().runOnUiThread(() -> {
@@ -835,7 +859,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             Log.d(TAG,values.toString());
                             for (int n = 0; n < values.size(); n++) {
                                 String value = null;
-                                //@jeognin : 마음기록 제대로 안 보이는 문제 수정 20.12.29
+                                //@jeongin : 마음기록 제대로 안 보이는 문제 수정 20.12.29
 //                                if(dataSourceId == SUBMITTED){
 //                                    value = values.get(n).toString("UTF-8");
 //                                }else{
@@ -843,6 +867,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 //                                }
 
                                 value = values.get(n).toString("UTF-8");
+
                                 int dayNum = 0;
                                 long timestamp = 0;
                                 int emaOrder = -1;
@@ -861,7 +886,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                 } else {
                                     // prediction
                                     try {
-                                        JSONObject cells = new JSONObject(value);
+                                        JSONObject cells = new JSONObject(value);  
                                         timestamp = fixTimestamp(timestamps.get(n), cells.getJSONObject("1").getInt("ema_order"));
                                         c.setTimeInMillis(timestamp);
                                         timestampStressFeaturesMap.put(c.getTimeInMillis(), cells);
@@ -1003,11 +1028,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         //@ji : 20.12.26 featureViewUpdate()내용으로 아래 수정
 
         ArrayList<String> integrateReason = new ArrayList<>();
-        ArrayList<String> phoneReason = new ArrayList<>();
-        ArrayList<String> activityReason = new ArrayList<>();
-        ArrayList<String> socialReason = new ArrayList<>();
-        ArrayList<String> locationReason = new ArrayList<>();
-        ArrayList<String> sleepReason = new ArrayList<>();
+//        ArrayList<String> phoneReason = new ArrayList<>();
+//        ArrayList<String> activityReason = new ArrayList<>();
+//        ArrayList<String> socialReason = new ArrayList<>();
+//        ArrayList<String> locationReason = new ArrayList<>();
+//        ArrayList<String> sleepReason = new ArrayList<>();
         boolean noFeatures = false;
 
         if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
@@ -1045,11 +1070,20 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length - 1];
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
-
+//                ListView phoneListView;
+//                ListView activityListView;
+//                ListView socialListView;
+//                ListView locationListView;
+//                ListView sleepListView;
+//                LinearLayout phoneContainer;
+//                LinearLayout activityContainer;
+//                LinearLayout socialContainer;
+//                LinearLayout locationContainer;
+//                LinearLayout sleepContainer;
                 if (category <= CATEGORY_ACTIVITY_END_INDEX) {
-                    activityReason.add(context.getResources().getString(resId));
-//                    condition2Img4.setAlpha(1.0f);
-//                    condition2txt4.setTextColor(requireContext().getColor(R.color.textColor_default));
+                   // activityReason.add(context.getResources().getString(resId));
+                    condition2Img4.setAlpha(1.0f);
+                    condition2txt4.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer4.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1062,9 +1096,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE) {
-                    socialReason.add(context.getResources().getString(resId));
-//                    condition2Img2.setAlpha(1.0f);
-//                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    //socialReason.add(context.getResources().getString(resId));
+                    condition2Img2.setAlpha(1.0f);
+                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1077,10 +1111,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category == CATEGORY_SNS_APP_USAGE) {
-                    String text = String.format(context.getResources().getString(resId), applicationName);
-                    socialReason.add(text);
-//                    condition2Img2.setAlpha(1.0f);
-//                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
+//                    String text = String.format(context.getResources().getString(resId), applicationName);
+//                    socialReason.add(text);
+                    condition2Img2.setAlpha(1.0f);
+                    condition2txt2.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer2.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1093,8 +1127,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_LOCATION_END_INDEX) {
-//                    condition2Img3.setAlpha(1.0f);
-//                    condition2txt3.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    condition2Img3.setAlpha(1.0f);
+                    condition2txt3.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer3.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1107,8 +1141,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else if (category <= CATEGORY_UNLOCK_DURATION_APP_USAGE) {
-//                    condition2Img1.setAlpha(1.0f);
-//                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    condition2Img1.setAlpha(1.0f);
+                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1122,9 +1156,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     }
                 } else if (category <= CATEGORY_FOOD_APP_USAGE) {
                     String text = String.format(context.getResources().getString(resId), applicationName);
-                    phoneReason.add(text);
-//                    condition2Img1.setAlpha(1.0f);
-//                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
+                    //phoneReason.add(text);
+                    condition2Img1.setAlpha(1.0f);
+                    condition2txt1.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer1.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1137,9 +1171,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             break;
                     }
                 } else {
-                    sleepReason.add(context.getResources().getString(resId));
-//                    condition2Img5.setAlpha(1.0f);
-//                    condition2txt5.setTextColor(requireContext().getColor(R.color.textColor_default));
+                   // sleepReason.add(context.getResources().getString(resId));
+                    condition2Img5.setAlpha(1.0f);
+                    condition2txt5.setTextColor(requireContext().getColor(R.color.textColor_default));
                     switch (stressLevl){
                         case STRESS_LV1:
                             categoryImgContainer5.setBackgroundColor(requireContext().getColor(R.color.color_low_bg));
@@ -1165,7 +1199,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             }
         }
 
-        //ListView integrateListView = root.findViewById(R.id.me_listview_integrate);
+
 
 //        ListView phoneListView = view.findViewById(R.id.me_listview_phone);
 //        ListView activityListView = view.findViewById(R.id.me_listview_activity);
@@ -1173,110 +1207,126 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 //        ListView locationListView = view.findViewById(R.id.me_listview_location);
 //        ListView sleepListView = view.findViewById(R.id.me_listview_sleep);
 
-       // LinearLayout integrateContainer = root.findViewById(R.id.me_listview_integrate_container);
 
-//        LinearLayout phoneContainer = view.findViewById(R.id.me_listview_phone_container);/
+//        LinearLayout phoneContainer = view.findViewById(R.id.me_listview_phone_container);
+//        LinearLayout activityContainer = view.findViewById(R.id.me_listview_activity_container);
 //        LinearLayout socialContainer = view.findViewById(R.id.me_listview_social_container);
 //        LinearLayout locationContainer = view.findViewById(R.id.me_listview_location_container);
 //        LinearLayout sleepContainer = view.findViewById(R.id.me_listview_sleep_container);
 
-      //  TextView noFeatureTextview = root.findViewById(R.id.stress_report_no_features);
 
         // 스트레스 리스트뷰랑 엮여지는 어댑터
         ArrayAdapter<String> integrateAdapter = new ArrayAdapter<>(
                 context, R.layout.item_feature_ids, integrateReason
         );
 
-        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
-                context, R.layout.item_feature_ids, phoneReason
-        );
-        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
-                context, R.layout.item_feature_ids, activityReason
-        );
-        ArrayAdapter<String> socialAdapter = new ArrayAdapter<>(
-                context, R.layout.item_feature_ids, socialReason
-        );
-        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
-                context, R.layout.item_feature_ids, locationReason
-        );
-        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<>(
-                context, R.layout.item_feature_ids, sleepReason
-        );
+//        ArrayAdapter<String> phoneAdapter = new ArrayAdapter<>(
+//                context, R.layout.item_feature_ids, phoneReason
+//        );
+//        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
+//                context, R.layout.item_feature_ids, activityReason
+//        );
+//        ArrayAdapter<String> socialAdapter = new ArrayAdapter<>(
+//                context, R.layout.item_feature_ids, socialReason
+//        );
+//        ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
+//                context, R.layout.item_feature_ids, locationReason
+//        );
+//        ArrayAdapter<String> sleepAdapter = new ArrayAdapter<>(
+//                context, R.layout.item_feature_ids, sleepReason
+//        );
 
         if (noFeatures) {
-            phoneContainer.setVisibility(View.GONE);
-            activityContainer.setVisibility(View.GONE);
-            socialContainer.setVisibility(View.GONE);
-            locationContainer.setVisibility(View.GONE);
-            sleepContainer.setVisibility(View.GONE);
+           integrateContainer.setVisibility(View.GONE);
+            condition2Container.setVisibility(View.GONE);
+//            phoneContainer.setVisibility(View.GONE);
+//            activityContainer.setVisibility(View.GONE);
+//            socialContainer.setVisibility(View.GONE);
+//            locationContainer.setVisibility(View.GONE);
+//            sleepContainer.setVisibility(View.GONE);
             noFeatureTextview.setVisibility(View.VISIBLE);
         } else {
-            phoneListView.setAdapter(phoneAdapter);
-            activityListView.setAdapter(activityAdapter);
-            socialListView.setAdapter(socialAdapter);
-            locationListView.setAdapter(locationAdapter);
-            sleepListView.setAdapter(sleepAdapter);
+            integrateListView.setAdapter(integrateAdapter);
+            condition2Container.setVisibility(View.VISIBLE);
+//            phoneListView.setAdapter(phoneAdapter);
+//            activityListView.setAdapter(activityAdapter);
+//            socialListView.setAdapter(socialAdapter);
+//            locationListView.setAdapter(locationAdapter);
+//            sleepListView.setAdapter(sleepAdapter);
             noFeatureTextview.setVisibility(View.GONE);
 
-//            if (integrateReason.isEmpty())
-//                integrateContainer.setVisibility(View.GONE);
+            if (integrateReason.isEmpty()) {
+              integrateContainer.setVisibility(View.GONE);
+            }
+            else {
+                setListViewHeightBasedOnChildren(integrateListView);
+                integrateContainer.setVisibility(View.VISIBLE);
+            }
+
+//            if (phoneReason.isEmpty())
+//                phoneContainer.setVisibility(View.GONE);
 //            else {
-//                setListViewHeightBasedOnChildren(integrateListView);
-//                integrateContainer.setVisibility(View.VISIBLE);
+//                setListViewHeightBasedOnChildren(phoneListView);
+//                phoneContainer.setVisibility(View.VISIBLE);
 //            }
-
-            if (phoneReason.isEmpty())
-                phoneContainer.setVisibility(View.GONE);
-            else {
-                setListViewHeightBasedOnChildren(phoneListView);
-                phoneContainer.setVisibility(View.VISIBLE);
-            }
-
-            if (activityReason.isEmpty())
-                activityContainer.setVisibility(View.GONE);
-            else {
-                setListViewHeightBasedOnChildren(activityListView);
-                activityContainer.setVisibility(View.VISIBLE);
-            }
-
-            if (socialReason.isEmpty())
-                socialContainer.setVisibility(View.GONE);
-            else {
-                setListViewHeightBasedOnChildren(socialListView);
-                socialContainer.setVisibility(View.VISIBLE);
-            }
-
-            if (locationReason.isEmpty())
-                locationContainer.setVisibility(View.GONE);
-            else {
-                setListViewHeightBasedOnChildren(locationListView);
-                locationContainer.setVisibility(View.VISIBLE);
-            }
-            if (sleepReason.isEmpty())
-                sleepContainer.setVisibility(View.GONE);
-            else {
-                setListViewHeightBasedOnChildren(sleepListView);
-                sleepContainer.setVisibility(View.VISIBLE);
-            }
-
+//
+//            if (activityReason.isEmpty())
+//                activityContainer.setVisibility(View.GONE);
+//            else {
+//                setListViewHeightBasedOnChildren(activityListView);
+//                activityContainer.setVisibility(View.VISIBLE);
+//            }
+//
+//            if (socialReason.isEmpty())
+//                socialContainer.setVisibility(View.GONE);
+//            else {
+//                setListViewHeightBasedOnChildren(socialListView);
+//                socialContainer.setVisibility(View.VISIBLE);
+//            }
+//
+//            if (locationReason.isEmpty())
+//                locationContainer.setVisibility(View.GONE);
+//            else {
+//                setListViewHeightBasedOnChildren(locationListView);
+//                locationContainer.setVisibility(View.VISIBLE);
+//            }
+//            if (sleepReason.isEmpty())
+//                sleepContainer.setVisibility(View.GONE);
+//            else {
+//                setListViewHeightBasedOnChildren(sleepListView);
+//                sleepContainer.setVisibility(View.VISIBLE);
+//            }
         }
-
 
         switch (stressLevl) {
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                condition2Container.setVisibility(View.GONE);
+                reasonContainer.setVisibility(View.VISIBLE);
+                txtReason.setVisibility(View.INVISIBLE);
                 break;
             case STRESS_LV2:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                condition2Container.setVisibility(View.VISIBLE);
+                reasonContainer.setVisibility(View.GONE);
+                txtReason.setVisibility(View.VISIBLE);
+                txtReason.setText("제가 참고한 데이터는요,");
                 break;
             case STRESS_LV3:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                condition2Container.setVisibility(View.GONE);
+                reasonContainer.setVisibility(View.VISIBLE);
+                txtReason.setVisibility(View.VISIBLE);
+                txtReason.setText("당신은 스트레스가 높을 때,");
                 break;
         }
 

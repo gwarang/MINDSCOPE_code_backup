@@ -327,7 +327,7 @@
             android:layout_marginTop="24dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:text="@string/string_stress_why"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/textColor_default"
             android:textSize="@dimen/my_text_size3"

@@ -436,6 +436,31 @@ public class CareChildFragment1 extends Fragment {
         dateTextView.setText(date_text + "의");
         hiddenDateView.setText(date_text);
 
+        //정각에만 데이터 보이게 하기 위해서 비교를 위한 timestamp
+        Calendar now_cal = Calendar.getInstance();
+        long now = now_cal.getTimeInMillis();
+        now_cal.set(Calendar.HOUR_OF_DAY,11);
+        now_cal.set(Calendar.MINUTE,0);
+        now_cal.set(Calendar.SECOND,0);
+        long case_time1 = now_cal.getTimeInMillis();
+
+        now_cal.set(Calendar.HOUR_OF_DAY,15);
+        now_cal.set(Calendar.MINUTE,0);
+        now_cal.set(Calendar.SECOND,0);
+        long case_time2 = now_cal.getTimeInMillis();
+
+        now_cal.set(Calendar.HOUR_OF_DAY,19);
+        now_cal.set(Calendar.MINUTE,0);
+        now_cal.set(Calendar.SECOND,0);
+        long case_time3 = now_cal.getTimeInMillis();
+
+        now_cal.set(Calendar.HOUR_OF_DAY,23);
+        now_cal.set(Calendar.MINUTE,0);
+        now_cal.set(Calendar.SECOND,0);
+        long case_time4 = now_cal.getTimeInMillis();
+
+
+
         // each stress level view update
         if (predictionArray != null) {
             for (short order = 0; order < 4; order++) {
@@ -449,132 +474,156 @@ public class CareChildFragment1 extends Fragment {
                             case STRESS_LV1:
                                 switch (order + 1) {
                                     case ORDER1:
-                                        stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
-                                        stressTextview1.setText(getResources().getString(R.string.string_low));
-                                        stressImg1.setVisibility(View.VISIBLE);
-                                        stressTextview1.setVisibility(View.VISIBLE);
-                                        arrowBtn1.setVisibility(View.VISIBLE); // "condition" 1일때는 안보이게
-                                        feature_ids1 = featre_ids_result;
-                                        order1StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
+                                        if(now >= case_time1) {
+                                            stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
+                                            stressTextview1.setText(getResources().getString(R.string.string_low));
+                                            stressImg1.setVisibility(View.VISIBLE);
+                                            stressTextview1.setVisibility(View.VISIBLE);
+                                            arrowBtn1.setVisibility(View.VISIBLE); // "condition" 1일때는 안보이게
+                                            feature_ids1 = featre_ids_result;
+                                            order1StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
+                                        }
                                         break;
                                     case ORDER2:
-                                        stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
-                                        stressTextview2.setText(getResources().getString(R.string.string_low));
-                                        stressImg2.setVisibility(View.VISIBLE);
-                                        stressTextview2.setVisibility(View.VISIBLE);
-                                        arrowBtn2.setVisibility(View.VISIBLE);
-                                        feature_ids2 = featre_ids_result;
-                                        order2StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV1 ORDER2 feature_ids2: " + feature_ids2);
+                                        if(now >= case_time2) {
+                                            stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
+                                            stressTextview2.setText(getResources().getString(R.string.string_low));
+                                            stressImg2.setVisibility(View.VISIBLE);
+                                            stressTextview2.setVisibility(View.VISIBLE);
+                                            arrowBtn2.setVisibility(View.VISIBLE);
+                                            feature_ids2 = featre_ids_result;
+                                            order2StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV1 ORDER2 feature_ids2: " + feature_ids2);
+                                        }
                                         break;
                                     case ORDER3:
-                                        stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
-                                        stressTextview3.setText(getResources().getString(R.string.string_low));
-                                        stressImg3.setVisibility(View.VISIBLE);
-                                        stressTextview3.setVisibility(View.VISIBLE);
-                                        arrowBtn3.setVisibility(View.VISIBLE);
-                                        feature_ids3 = featre_ids_result;
-                                        order3StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV1 ORDER3 feature_ids3: " + feature_ids3);
+                                        if(now >= case_time3) {
+                                            stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
+                                            stressTextview3.setText(getResources().getString(R.string.string_low));
+                                            stressImg3.setVisibility(View.VISIBLE);
+                                            stressTextview3.setVisibility(View.VISIBLE);
+                                            arrowBtn3.setVisibility(View.VISIBLE);
+                                            feature_ids3 = featre_ids_result;
+                                            order3StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV1 ORDER3 feature_ids3: " + feature_ids3);
+                                        }
                                         break;
                                     case ORDER4:
+                                        if(now >= case_time3) {
                                         stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
-                                        stressTextview4.setText(getResources().getString(R.string.string_low));
-                                        stressImg4.setVisibility(View.VISIBLE);
-                                        stressTextview4.setVisibility(View.VISIBLE);
-                                        arrowBtn4.setVisibility(View.VISIBLE);
-                                        feature_ids4 = featre_ids_result;
-                                        order4StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV1 ORDER4 feature_ids4: " + feature_ids4);
+                                            stressTextview4.setText(getResources().getString(R.string.string_low));
+                                            stressImg4.setVisibility(View.VISIBLE);
+                                            stressTextview4.setVisibility(View.VISIBLE);
+                                            arrowBtn4.setVisibility(View.VISIBLE);
+                                            feature_ids4 = featre_ids_result;
+                                            order4StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV1 ORDER4 feature_ids4: " + feature_ids4);
+                                        }
                                         break;
                                 }
                                 break;
                             case STRESS_LV2:
                                 switch (order + 1) {
                                     case ORDER1:
-                                        stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
-                                        stressTextview1.setText(getResources().getString(R.string.string_littlehigh));
-                                        stressImg1.setVisibility(View.VISIBLE);
-                                        stressTextview1.setVisibility(View.VISIBLE);
-                                        arrowBtn1.setVisibility(View.VISIBLE);
-                                        feature_ids1 = featre_ids_result;
-                                        order1StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV2 ORDER1 feature_ids1: " + feature_ids1);
+                                        if(now >= case_time1) {
+                                            stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
+                                            stressTextview1.setText(getResources().getString(R.string.string_littlehigh));
+                                            stressImg1.setVisibility(View.VISIBLE);
+                                            stressTextview1.setVisibility(View.VISIBLE);
+                                            arrowBtn1.setVisibility(View.VISIBLE);
+                                            feature_ids1 = featre_ids_result;
+                                            order1StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV2 ORDER1 feature_ids1: " + feature_ids1);
+                                        }
                                         break;
                                     case ORDER2:
-                                        stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
-                                        stressTextview2.setText(getResources().getString(R.string.string_littlehigh));
-                                        stressImg2.setVisibility(View.VISIBLE);
-                                        stressTextview2.setVisibility(View.VISIBLE);
-                                        arrowBtn2.setVisibility(View.VISIBLE);
-                                        feature_ids2 = featre_ids_result;
-                                        order2StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV2 ORDER2 feature_ids2: " + feature_ids2);
+                                        if(now >= case_time2) {
+                                            stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
+                                            stressTextview2.setText(getResources().getString(R.string.string_littlehigh));
+                                            stressImg2.setVisibility(View.VISIBLE);
+                                            stressTextview2.setVisibility(View.VISIBLE);
+                                            arrowBtn2.setVisibility(View.VISIBLE);
+                                            feature_ids2 = featre_ids_result;
+                                            order2StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV2 ORDER2 feature_ids2: " + feature_ids2);
+                                        }
                                         break;
                                     case ORDER3:
-                                        stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
-                                        stressTextview3.setText(getResources().getString(R.string.string_littlehigh));
-                                        stressImg3.setVisibility(View.VISIBLE);
-                                        stressTextview3.setVisibility(View.VISIBLE);
-                                        arrowBtn3.setVisibility(View.VISIBLE);
-                                        feature_ids3 = featre_ids_result;
-                                        order3StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV2 ORDER3 feature_ids3: " + feature_ids3);
+                                        if(now >= case_time3) {
+                                            stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
+                                            stressTextview3.setText(getResources().getString(R.string.string_littlehigh));
+                                            stressImg3.setVisibility(View.VISIBLE);
+                                            stressTextview3.setVisibility(View.VISIBLE);
+                                            arrowBtn3.setVisibility(View.VISIBLE);
+                                            feature_ids3 = featre_ids_result;
+                                            order3StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV2 ORDER3 feature_ids3: " + feature_ids3);
+                                        }
                                         break;
                                     case ORDER4:
-                                        stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
-                                        stressTextview4.setText(getResources().getString(R.string.string_littlehigh));
-                                        stressImg4.setVisibility(View.VISIBLE);
-                                        stressTextview4.setVisibility(View.VISIBLE);
-                                        arrowBtn4.setVisibility(View.VISIBLE);
-                                        feature_ids4 = featre_ids_result;
-                                        order4StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV2 ORDER4 feature_ids4: " + feature_ids4);
+                                        if(now >= case_time4) {
+                                            stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
+                                            stressTextview4.setText(getResources().getString(R.string.string_littlehigh));
+                                            stressImg4.setVisibility(View.VISIBLE);
+                                            stressTextview4.setVisibility(View.VISIBLE);
+                                            arrowBtn4.setVisibility(View.VISIBLE);
+                                            feature_ids4 = featre_ids_result;
+                                            order4StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV2 ORDER4 feature_ids4: " + feature_ids4);
+                                        }
                                         break;
                                 }
                                 break;
                             case STRESS_LV3:
                                 switch (order + 1) {
                                     case ORDER1:
-                                        stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
-                                        stressTextview1.setText(getResources().getString(R.string.string_high));
-                                        stressImg1.setVisibility(View.VISIBLE);
-                                        stressTextview1.setVisibility(View.VISIBLE);
-                                        arrowBtn1.setVisibility(View.VISIBLE);
-                                        feature_ids1 = featre_ids_result;
-                                        order1StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV3 ORDER1 feature_ids1: " + feature_ids1);
+                                        if(now >= case_time1) {
+                                            stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
+                                            stressTextview1.setText(getResources().getString(R.string.string_high));
+                                            stressImg1.setVisibility(View.VISIBLE);
+                                            stressTextview1.setVisibility(View.VISIBLE);
+                                            arrowBtn1.setVisibility(View.VISIBLE);
+                                            feature_ids1 = featre_ids_result;
+                                            order1StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV3 ORDER1 feature_ids1: " + feature_ids1);
+                                        }
                                         break;
                                     case ORDER2:
-                                        stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
-                                        stressTextview2.setText(getResources().getString(R.string.string_high));
-                                        stressImg2.setVisibility(View.VISIBLE);
-                                        stressTextview2.setVisibility(View.VISIBLE);
-                                        arrowBtn2.setVisibility(View.VISIBLE);
-                                        feature_ids2 = featre_ids_result;
-                                        order2StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV3 ORDER2 feature_ids2: " + feature_ids2);
+                                        if(now >= case_time2) {
+                                            stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
+                                            stressTextview2.setText(getResources().getString(R.string.string_high));
+                                            stressImg2.setVisibility(View.VISIBLE);
+                                            stressTextview2.setVisibility(View.VISIBLE);
+                                            arrowBtn2.setVisibility(View.VISIBLE);
+                                            feature_ids2 = featre_ids_result;
+                                            order2StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV3 ORDER2 feature_ids2: " + feature_ids2);
+                                        }
                                         break;
                                     case ORDER3:
-                                        stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
-                                        stressTextview3.setText(getResources().getString(R.string.string_high));
-                                        stressImg3.setVisibility(View.VISIBLE);
-                                        stressTextview3.setVisibility(View.VISIBLE);
-                                        arrowBtn3.setVisibility(View.VISIBLE);
-                                        feature_ids3 = featre_ids_result;
-                                        order3StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV3 ORDER3 feature_ids3: " + feature_ids3);
+                                        if(now >= case_time3) {
+                                            stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
+                                            stressTextview3.setText(getResources().getString(R.string.string_high));
+                                            stressImg3.setVisibility(View.VISIBLE);
+                                            stressTextview3.setVisibility(View.VISIBLE);
+                                            arrowBtn3.setVisibility(View.VISIBLE);
+                                            feature_ids3 = featre_ids_result;
+                                            order3StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV3 ORDER3 feature_ids3: " + feature_ids3);
+                                        }
                                         break;
                                     case ORDER4:
-                                        stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
-                                        stressTextview4.setText(getResources().getString(R.string.string_high));
-                                        stressImg4.setVisibility(View.VISIBLE);
-                                        stressTextview4.setVisibility(View.VISIBLE);
-                                        arrowBtn4.setVisibility(View.VISIBLE);
-                                        feature_ids4 = featre_ids_result;
-                                        order4StressLevel = stressLevel;
-                                        Log.d(TAG, "STRESS_LV3 ORDER4 feature_ids4: " + feature_ids4);
+                                        if(now >= case_time4) {
+                                            stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
+                                            stressTextview4.setText(getResources().getString(R.string.string_high));
+                                            stressImg4.setVisibility(View.VISIBLE);
+                                            stressTextview4.setVisibility(View.VISIBLE);
+                                            arrowBtn4.setVisibility(View.VISIBLE);
+                                            feature_ids4 = featre_ids_result;
+                                            order4StressLevel = stressLevel;
+                                            Log.d(TAG, "STRESS_LV3 ORDER4 feature_ids4: " + feature_ids4);
+                                        }
                                         break;
                                 }
                                 break;
@@ -585,15 +634,35 @@ public class CareChildFragment1 extends Fragment {
                             switch (order + 1) {
                                 case ORDER1:
                                     checkBox1.setChecked(true);
+                                    if(now >= case_time1) {
+                                        checkBox1.setVisibility(View.VISIBLE);
+                                    }else{
+                                        checkBox1.setVisibility(View.INVISIBLE);
+                                    }
                                     break;
                                 case ORDER2:
                                     checkBox2.setChecked(true);
+                                    if(now >= case_time2) {
+                                        checkBox2.setVisibility(View.VISIBLE);
+                                    }else{
+                                        checkBox2.setVisibility(View.INVISIBLE);
+                                    }
                                     break;
                                 case ORDER3:
                                     checkBox3.setChecked(true);
+                                    if(now >= case_time3) {
+                                        checkBox3.setVisibility(View.VISIBLE);
+                                    }else{
+                                        checkBox3.setVisibility(View.INVISIBLE);
+                                    }
                                     break;
                                 case ORDER4:
                                     checkBox4.setChecked(true);
+                                    if(now >= case_time4) {
+                                        checkBox4.setVisibility(View.VISIBLE);
+                                    }else{
+                                        checkBox4.setVisibility(View.INVISIBLE);
+                                    }
                                     break;
                             }
                         } else {
@@ -613,9 +682,16 @@ public class CareChildFragment1 extends Fragment {
                             }
                         }
                     }
+
+
+
+
+
+
                 }
             }
         }
+        Log.d(TAG,"과연"+condition);
         if(condition <= 1){
             arrowBtn1.setVisibility(View.INVISIBLE);
             arrowBtn2.setVisibility(View.INVISIBLE);
@@ -625,6 +701,15 @@ public class CareChildFragment1 extends Fragment {
             arrowBtn2.setEnabled(false);
             arrowBtn3.setEnabled(false);
             arrowBtn4.setEnabled(false);
+        }else{
+            arrowBtn1.setVisibility(View.VISIBLE);
+            arrowBtn2.setVisibility(View.VISIBLE);
+            arrowBtn3.setVisibility(View.VISIBLE);
+            arrowBtn4.setVisibility(View.VISIBLE);
+            arrowBtn1.setEnabled(true);
+            arrowBtn2.setEnabled(true);
+            arrowBtn3.setEnabled(true);
+            arrowBtn4.setEnabled(true);
         }
     }
 

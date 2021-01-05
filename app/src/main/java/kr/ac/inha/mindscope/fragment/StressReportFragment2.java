@@ -303,6 +303,7 @@ public class StressReportFragment2 extends Fragment {
             default:
                 condition2Container.setVisibility(View.GONE);
                 condition3Container.setVisibility(View.VISIBLE);
+                reason.setText("당신은 스트레스가 높을 때,");
                 Log.d(TAG, "condition3");
                 break;
         }
