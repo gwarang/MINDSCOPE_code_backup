@@ -524,7 +524,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-                final int DAILY_COMMENT = 84;
+                final int DAILY_COMMENT = 33;
 
                 Calendar cal = Calendar.getInstance();
                 cal.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
