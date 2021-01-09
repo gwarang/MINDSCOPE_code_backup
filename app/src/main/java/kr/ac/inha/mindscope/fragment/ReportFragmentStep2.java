@@ -706,7 +706,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-                final int REWARD_POINTS = 58;
+                final int REWARD_POINTS = 26;
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
@@ -732,6 +732,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             if (cells.length != 3)
                                 continue;
                             allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+                            Log.d("test",allPointsMaps.toString());
 //                            points += Integer.parseInt(cells[2]);
                         }
                     }
@@ -746,8 +747,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 }
 
                 final int finalPoints = points;
-//                if(isAdded())
-//                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints))); // removed : changed sumPoints logic based on local sumPoints
+                if(isAdded())
+                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints))); // changed sumPoints logic based on server sumPoints
             }).start();
         }
     }
@@ -761,7 +762,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-                final int REWARD_POINTS = 58;
+                final int REWARD_POINTS = 26;
 
                 Calendar c = Calendar.getInstance();
                 c.set(day.getYear(), day.getMonth() - 1, day.getDay(), timeTheDayNumIsChanged, 0, 0);
@@ -784,7 +785,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 int dailyPoints = 0;
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    //@jeongin :  responseMessage.getSuccess() 가 false로 오고 있음 20.12.29
                     if (responseMessage.getSuccess()){
                         // checkByteString
                         for (ByteString value : responseMessage.getValueList()) {
@@ -836,11 +836,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                final int SUBMITTED = configPrefs.getInt("SELF_STRESS_REPORT", -1), PREDICTION = configPrefs.getInt("STRESS_PREDICTION", -1);
+                final int SUBMITTED = configPrefs.getInt("SELF_STRESS_REPORT", -1), PREDICTION = configPrefs.getInt("STRESS_PREDICTION", -1), SURVEY_EMA = configPrefs.getInt("SURVEY_EMA",-1);
                 synchronized (this){
                     stressLevels.clear();
                 }
-                for (int dataSourceId : new int[]{SUBMITTED, PREDICTION}) {
+                for (int dataSourceId : new int[]{SUBMITTED, PREDICTION, SURVEY_EMA}) {
                     EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(userId)
                             .setEmail(email)
@@ -852,6 +852,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             .build();
                     try {
                         EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                        Log.d("testt", responseMessage.toString());
                         if (responseMessage.getSuccess()) {
                             // checkByteString
                             List<ByteString> values = responseMessage.getValueList();
@@ -883,7 +884,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                     emaOrder = Integer.parseInt(cells[2]);
                                     timestamp = fixTimestamp(Long.parseLong(cells[0]), emaOrder);
                                     stressLevel = Integer.parseInt(cells[4]);
-                                } else {
+
+                                    Log.d("testt", value);
+
+                                } else if(dataSourceId == PREDICTION){
                                     // prediction
                                     try {
                                         JSONObject cells = new JSONObject(value);  
@@ -900,6 +904,15 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                     } catch (JSONException e) {
                                         continue;
                                     }
+                                }
+                                else //step1때 survey_ema 가져오기위해 추가 //2021.1.9 준영
+                                {
+                                    String[] cells = value.split(" ");
+                                    if (cells.length != 7)
+                                        continue;
+                                    emaOrder = Integer.parseInt(cells[1]);
+                                    timestamp = fixTimestamp(Long.parseLong(cells[0]),emaOrder);
+                                    stressLevel = Integer.parseInt(cells[6]);
                                 }
                                 if (stressLevel < 3) {
                                     c.setTimeInMillis(timestamp);
