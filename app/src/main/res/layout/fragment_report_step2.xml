@@ -539,10 +539,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/comment_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="37dp"
                     android:paddingVertical="13dp"
+                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/intervention_container">
 
                     <TextView

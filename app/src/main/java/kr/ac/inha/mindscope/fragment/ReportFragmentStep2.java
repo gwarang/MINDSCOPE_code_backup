@@ -128,6 +128,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ScrollView defaultContainer;
     ConstraintLayout hiddenContainer;
     ConstraintLayout dayDetailContainer;
+    ConstraintLayout comment_container;
+    ConstraintLayout condition3_container;
     ImageView hiddenStressImg;
     TextView hiddenDateView;
     TextView hiddenTimeView;
@@ -190,7 +192,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     // region override
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        SharedPreferences stepChangePrefs = requireContext().getSharedPreferences("stepChagne", Context.MODE_PRIVATE);
+        condition = stepChangePrefs.getInt("condition", 0);
     }
 
     @Override
@@ -231,6 +236,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         arrowResult2 = root.findViewById(R.id.arrow_result2);
         arrowResult3 = root.findViewById(R.id.arrow_result3);
         arrowResult4 = root.findViewById(R.id.arrow_result4);
+        comment_container = root.findViewById(R.id.comment_container);
         selectedDayComment = root.findViewById(R.id.selected_day_comment);
         dailyAverageStressLevelView = root.findViewById(R.id.frg_report_step2_img1);
         SharedPreferences prefs = requireContext().getSharedPreferences("points", Context.MODE_PRIVATE);
@@ -245,7 +251,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         backArrow = root.findViewById(R.id.frg_report_step2_back_arrow);
         condition2Container = root.findViewById(R.id.frg_report_step2_stress_condition2_container);
         condition2Layout = root.findViewById(R.id.frg_report_step2_condition2_layout);
-
+        condition3_container = root.findViewById(R.id.frg_report_condition3_container);
 
         condition2Img1 = root.findViewById(R.id.frg_report_step2_img1_);
         condition2Img2 = root.findViewById(R.id.frg_report_step2_img2);
@@ -343,7 +349,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            feature_ids = "1-low 9-low 14-low 18-low 28-low 13-low 20-low ";
             if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
                 Log.d(TAG, "feature_ids : " + feature_ids);
                 defaultContainer.setVisibility(View.INVISIBLE);
@@ -376,11 +381,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     e.printStackTrace();
                 }
             }
-            Log.d(TAG, String.valueOf(timestamp));
-            Log.d(TAG,timestampStressFeaturesMap.toString());
-            Log.d(TAG,feature_ids);
 
             if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
+                    Log.d(TAG,feature_ids);
                     defaultContainer.setVisibility(View.INVISIBLE);
                     hiddenContainer.setVisibility(View.VISIBLE);
                     hiddenViewUpdate(feature_ids, stressLv);
@@ -614,6 +617,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 channel.shutdown();
 
                 final String finalComment = lastComment;
+                if(finalComment.length()==0){
+                    comment_container.setVisibility(View.GONE);
+                }else{
+                    comment_container.setVisibility(View.VISIBLE);
+                }
                 if(isAdded())
                     requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
             }).start();
