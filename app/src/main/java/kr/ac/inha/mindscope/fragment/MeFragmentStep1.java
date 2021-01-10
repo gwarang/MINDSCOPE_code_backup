@@ -279,8 +279,6 @@ public class MeFragmentStep1 extends Fragment {
                         Calendar cal = Calendar.getInstance();
                         int curHours = cal.get(Calendar.HOUR_OF_DAY);
                         for (short i = 0; i < 4; i++) {
-                            Log.d(TAG,"ㄹㅇ");
-                            Log.d(TAG,curHours+" "+SUBMIT_HOUR[i]+" "+timeTheDayNumIsChanged+" "+emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false));
                             if (curHours >= SUBMIT_HOUR[i] || curHours < timeTheDayNumIsChanged) {
                                 if (!emaSubmitCheckPrefs.getBoolean("ema_submit_check_" + (i + 1), false)) {
                                     times[i].setText(getResources().getString(R.string.string_survey_incomplete));
