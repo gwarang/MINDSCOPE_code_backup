@@ -254,13 +254,11 @@ public class MeFragmentStep1 extends Fragment {
                         // checkByteString
                         List<ByteString> values = responseMessage.getValueList(); // SURVEY_EMA 의 데이터가 bytestring type의 값들의 리스트로 오게됨
 
-                        //초기화
-                        for (short i = 0; i < 4; i++) {
-                            editor.putBoolean("ema_submit_check_" + (i + 1), false);
-                            editor.apply();
-                        }
-
-                        for (ByteString value : values) {
+                            Log.d(TAG+"1", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_1" , false)));
+                            Log.d(TAG+"2", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_2" , false)));
+                            Log.d(TAG+"3", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_3" , false)));
+                            Log.d(TAG+"4", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_4", false)));
+        for (ByteString value : values) {
                             String[] splitValue = value.toString("UTF-8").split(" ");
                             editor.putBoolean("ema_submit_check_" + splitValue[1], true);
                             editor.apply();
@@ -442,6 +440,7 @@ public class MeFragmentStep1 extends Fragment {
 //                    startActivity(intent);
 //                }
 //            }
+
             if (ema_order > 0 && !submits[ema_order - 1]) {
                 if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
                     Intent intent = new Intent(getActivity(), EMAActivity.class);

@@ -48,7 +48,12 @@ public class SplashActivity extends Activity {
         lastPagePrefsEditor.putInt("last_open_tab_position", 0);
         lastPagePrefsEditor.apply();
 
-
+        SharedPreferences emaSubmitCheckPrefs =getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = emaSubmitCheckPrefs.edit();
+        for(int i =0;i<4;i++) {
+            editor.putBoolean("ema_submit_check_" + (i+1), false);
+            editor.apply();
+        }
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             SharedPreferences stepChangePrefs = getSharedPreferences("stepChange", MODE_PRIVATE);
