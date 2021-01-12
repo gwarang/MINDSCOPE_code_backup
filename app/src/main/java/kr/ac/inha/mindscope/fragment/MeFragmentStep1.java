@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,6 +71,7 @@ public class MeFragmentStep1 extends Fragment {
     private TextView attdView;
     private TextView versionNameTextView;
     private RelativeLayout timeContainer;
+    private int PointCheck;
     static boolean runningUpdateUi;
 
     @Override
@@ -254,11 +256,11 @@ public class MeFragmentStep1 extends Fragment {
                         // checkByteString
                         List<ByteString> values = responseMessage.getValueList(); // SURVEY_EMA 의 데이터가 bytestring type의 값들의 리스트로 오게됨
 
-                            Log.d(TAG+"1", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_1" , false)));
-                            Log.d(TAG+"2", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_2" , false)));
-                            Log.d(TAG+"3", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_3" , false)));
-                            Log.d(TAG+"4", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_4", false)));
-        for (ByteString value : values) {
+                        Log.d(TAG+"1", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_1" , false)));
+                        Log.d(TAG+"2", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_2" , false)));
+                        Log.d(TAG+"3", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_3" , false)));
+                        Log.d(TAG+"4", String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_4", false)));
+                        for (ByteString value : values) {
                             String[] splitValue = value.toString("UTF-8").split(" ");
                             editor.putBoolean("ema_submit_check_" + splitValue[1], true);
                             editor.apply();
@@ -294,21 +296,80 @@ public class MeFragmentStep1 extends Fragment {
     }
 
     public void loadAllPoints() {
+        //서버와 포인트 동기화 과정
+        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = emaSubmitCheckPrefs.edit();
+        if (Tools.isNetworkAvailable()) {
+            new Thread(() -> {
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
+                final int REWARD_POINTS = 26;
 
-        // todo 동기화 하는 과정  앱을 삭제하면 SP가 다 날라감. 그래서 나중에는 서버하고 동기화하는 과정을 추가해주셔야한다.
-        SharedPreferences pointsPrefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
-        int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
-        long daynum = pointsPrefs.getLong("daynum", 0);
-        int localTodayPoints = 0;
-        for (int i = 1; i<=4; i++){
-            localTodayPoints += pointsPrefs.getInt("day_" + daynum + "_order_" + i, 0);
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                Calendar c = Calendar.getInstance();
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
+                        .setUserId(userId)
+                        .setEmail(email)
+                        .setTargetEmail(email)
+                        .setTargetCampaignId(campaignId)
+                        .setTargetDataSourceId(REWARD_POINTS)
+                        .setFromTimestamp(0)
+                        .setTillTimestamp(c.getTimeInMillis())
+                        .build();
+                int points = 0;
+                HashMap<Long, Integer> allPointsMaps = new HashMap<>();
+                try {
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getSuccess()){
+                        // checkByteString
+                        for (ByteString value : responseMessage.getValueList()) {
+                            String valueStr = value.toString("UTF-8");
+                            String[] cells = valueStr.split(" ");
+                            if (cells.length != 3)
+                                continue;
+                            allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
+                            Log.d("test",allPointsMaps.toString());
+//                            points += Integer.parseInt(cells[2]);
+                        }
+                    }
+                } catch (StatusRuntimeException | IOException e) {
+                    e.printStackTrace();
+                }
+                channel.shutdown();
+
+
+                for(Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()){
+                    points += elem.getValue();
+                }
+
+                final int finalPoints = points;
+                if(isAdded())
+                    requireActivity().runOnUiThread(() -> sumPointsView.setText(String.format(Locale.getDefault(), "%,d", finalPoints))); // changed sumPoints logic based on server sumPoints
+            }).start();
         }
-
-        sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
-        todayPointsView.setText(String.format(Locale.getDefault(), "%d", localTodayPoints));
-        Log.d(TAG, "Me1 point");
-
-
+        //daily point check. ema가 제출됐는지 확인해서 point추가
+        PointCheck = 0;
+        for(int i=0;i<4;i++) {
+            if(emaSubmitCheckPrefs.getBoolean("ema_submit_check_"+(i+1), false) == true)
+            {
+                PointCheck += 250;
+            }
+            Log.d(TAG + (i+1), String.valueOf(emaSubmitCheckPrefs.getBoolean("ema_submit_check_"+(i+1), false)));
+        }
+        todayPointsView.setText(String.format(Locale.getDefault(), "%d", PointCheck));
+//        SharedPreferences pointsPrefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
+//        int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
+//        long daynum = pointsPrefs.getLong("daynum", 0);
+//        int localTodayPoints = 0;
+//        for (int i = 1; i<=4; i++){
+//            localTodayPoints += pointsPrefs.getInt("day_" + daynum + "_order_" + i, 0);
+//        }
+//
+//        sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
+//        todayPointsView.setText(String.format(Locale.getDefault(), "%d", localTodayPoints));
 //        Log.d(TAG, "start loadAllPoints");
 //        Context context = requireContext();
 //        allPointsMaps.clear();
