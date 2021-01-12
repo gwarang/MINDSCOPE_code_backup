@@ -322,6 +322,7 @@ public class StressReportFragment2 extends Fragment {
 //        ArrayList<String> locationReason = new ArrayList<>();
 //        ArrayList<String> sleepReason = new ArrayList<>();
 
+
         boolean noFeatures = false;
 
         if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {

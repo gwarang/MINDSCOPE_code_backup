@@ -206,7 +206,11 @@ public class EMAActivity extends AppCompatActivity {
         todayNum = getDayNum();
 
         Calendar cal = Calendar.getInstance();
-        if(cal.get(Calendar.HOUR_OF_DAY) < 1){
+        Log.d(TAG,"??");
+        Log.d(TAG,String.valueOf(cal.get(Calendar.HOUR_OF_DAY)));
+
+        //@jeongin : 11시 이전이면 이전 날짜가 보이도록 수정
+        if(cal.get(Calendar.HOUR_OF_DAY) < 11){
             cal.add(Calendar.DATE, -1);
         }
 
