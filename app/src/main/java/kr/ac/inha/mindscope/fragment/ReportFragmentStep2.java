@@ -101,7 +101,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private static final int tileWidth = 45;
     private static final int tileHeight = 45;
     int curCondition;
-
     static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
     static HashMap<CalendarDay, Integer> dailyAverageStressLevels = new HashMap<>();
     static HashMap<CalendarDay, ArrayList<Triple<Long, Integer, Integer>>> dailyStressLevelClusters = new HashMap<>();
