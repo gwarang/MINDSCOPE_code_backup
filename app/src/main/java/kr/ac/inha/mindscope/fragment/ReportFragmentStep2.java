@@ -246,7 +246,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                         e.printStackTrace();
                     }
                 }
-                feature_ids ="17-low 12-low";
+                //feature_ids ="17-low 12-low";
                 if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
                     Log.d(TAG, "feature_ids : " + feature_ids);
                     defaultContainer.setVisibility(View.INVISIBLE);
