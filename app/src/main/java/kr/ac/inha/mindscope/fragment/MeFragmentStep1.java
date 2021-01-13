@@ -170,6 +170,7 @@ public class MeFragmentStep1 extends Fragment {
         if (firstviewshow == 1 && isFirstStartStep1DialogShowing){
             new Handler().postDelayed(new Runnable() {
                 @Override
+
                 public void run() {
                     startEmaActivityWhenNotSubmitted();
                 }

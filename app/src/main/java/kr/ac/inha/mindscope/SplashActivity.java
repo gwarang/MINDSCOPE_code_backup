@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
@@ -148,6 +151,21 @@ public class SplashActivity extends Activity {
                 }
 
             }
+
+            //현재 버전 표시
+
+            String version = "Unknown";
+            PackageInfo packageInfo;
+
+            try {
+                packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
+                version = packageInfo.versionName;
+                Toast.makeText(this, "현재 버전: " +version, Toast.LENGTH_SHORT).show();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+
 
             Intent intent = new Intent(this, AuthenticationActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

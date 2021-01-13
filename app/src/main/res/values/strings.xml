@@ -141,10 +141,10 @@
     <string name="time_duration2">11:00 &#8211; 03:00</string>
     <string name="time_duration3">03:00 &#8211; 07:00</string>
     <string name="time_duration4">07:00 &#8211; 11:00</string>
-    <string name="time_step2_duration1">07:00 AM부터 11:00 AM까지의</string>
-    <string name="time_step2_duration2">11:00 AM부터 03:00 PM까지의</string>
-    <string name="time_step2_duration3">03:00 PM부터 07:00 PM까지의</string>
-    <string name="time_step2_duration4">07:00 PM부터 11:00 PM까지의</string>
+    <string name="time_step2_duration1">07:00 AM - 11:00 AM </string>
+    <string name="time_step2_duration2">11:00 AM - 03:00 PM </string>
+    <string name="time_step2_duration3">03:00 PM - 07:00 PM </string>
+    <string name="time_step2_duration4">07:00 PM - 11:00 PM </string>
     <string name="time_report_duration1">During 07:00 AM - 11:00 AM</string>
     <string name="time_report_duration2">During 11:00 AM - 03:00 PM</string>
     <string name="time_report_duration3">During 03:00 PM - 07:00 PM</string>

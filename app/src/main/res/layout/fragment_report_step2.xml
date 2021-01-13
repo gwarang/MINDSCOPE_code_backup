@@ -599,16 +599,16 @@
         android:paddingTop="?attr/actionBarSize"
         android:visibility="gone">
 
-        <ImageButton
-            android:id="@+id/frg_report_step2_back_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:background="#00000000"
-            android:src="@drawable/ic_baseline_arrow_back_24"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/textColor_default_light" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/frg_report_step2_back_arrow"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="20dp"-->
+<!--            android:background="#00000000"-->
+<!--            android:src="@drawable/ic_baseline_arrow_back_24"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:tint="@color/textColor_default_light" />-->
 
         <ImageView
             android:id="@+id/frg_report_step2_hidden_img1"
@@ -860,6 +860,7 @@
             app:layout_constraintTop_toTopOf="@id/frg_report_condition3_container" />
 
 
+
         <!-- 스트레스 레벨에따라 텍스트 바뀜 -->
         <TextView
             android:id="@+id/frg_report_step2_txt_reason"
@@ -907,6 +908,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
+                    <!-- step1일때 태그 보여주는 부분-->
+                    <TextView
+                        android:id="@+id/frg_report_step1_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/notosanscjkkrmedium"
+                        android:includeFontPadding="false"
+                        android:text="tags"
+                        android:paddingVertical="50dp"
+                        android:textAlignment="center"
+                        android:textSize="@dimen/my_text_size3"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/frg_report_condition3_container"
+                        app:layout_constraintEnd_toEndOf="@id/frg_report_condition3_container"
+                        app:layout_constraintStart_toStartOf="@id/frg_report_condition3_container"
+                        app:layout_constraintTop_toTopOf="@id/frg_report_condition3_container" />
 
                     <LinearLayout
                         android:id="@+id/frg_report_step2_listview_integrate_container"
@@ -1001,7 +1019,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/color_white"
         android:elevation="10dp"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -1013,22 +1031,40 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/fragment_me_step2_btn_help"
+            android:id="@+id/fragment_me_step2_btn_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/ic_help"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/frg_report_toolbar_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="@drawable/ic_help"
+                android:background="#00000000"
+                android:fontFamily="@font/notosanscjkkrmedium"
+                android:includeFontPadding="false"
+                android:text="확인"
+                android:visibility="gone"
+                android:textColor="@color/textColor_blue"
+                android:textSize="@dimen/my_text_size3"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/fragment_report_app_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/navigation_third"
                 android:textSize="@dimen/my_text_size5"
+                android:layout_marginLeft="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

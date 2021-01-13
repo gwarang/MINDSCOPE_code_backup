@@ -16,7 +16,9 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -89,6 +91,7 @@ import static kr.ac.inha.mindscope.fragment.StressReportFragment2.setListViewHei
  */
 public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListener {
     // region variables
+
     private static final String TAG = "ReportFragmentStep2";
     private static final String ACTION_CLICK_HELP = "CLICK_HELP";
     private static final String ACTION_CLICK_DAY = "CLICK_DAY";
@@ -97,12 +100,17 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
     private static final int tileWidth = 45;
     private static final int tileHeight = 45;
+    int curCondition;
+
     static HashMap<Long, Pair<Integer, Integer>> stressLevels = new HashMap<>();
     static HashMap<CalendarDay, Integer> dailyAverageStressLevels = new HashMap<>();
     static HashMap<CalendarDay, ArrayList<Triple<Long, Integer, Integer>>> dailyStressLevelClusters = new HashMap<>();
     static HashMap<Long, JSONObject> timestampStressFeaturesMap = new HashMap<>();
+    static HashMap<Long, String> selectedDailyTags = new HashMap<>();
     private static MaterialCalendarView materialCalendarView;
+    Button frg_report_toolbar_btn;
     ImageView fragmentMeStep2BtnHelp;
+    TextView fragment_report_app_title;
     TextView dateView;
     TextView txtStressLevel;
     TextView sumPointsView;
@@ -156,7 +164,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     RelativeLayout categoryImgContainer5;
 
     ScrollView reasonContainer;
-    ImageButton backArrow;
+    //ImageButton backArrow;
     ArrayList<String> predictionArray;
     ArrayList<String> selfReportArray;
     private long joinTimestamp;
@@ -164,16 +172,16 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private CalendarDay chooseDay;
     SharedPreferences lastPagePrefs;
     TextView noFeatureTextview;
+    TextView tagsTextview;
 
     ListView integrateListView;
     LinearLayout integrateContainer;
 
     
-    //@ji: 화살표 클릭했을때 리스너
+    //@jeongin: 화살표 클릭했을때 리스너
     class ArrowBtnClickListener implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-
             Calendar c = Calendar.getInstance();
             switch(v.getTag().toString()){
                 case "1": //7:00 ~ 11:00
@@ -195,7 +203,22 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
             }
             c.set(Calendar.MILLISECOND, 0);
+            
+            //@jeongin: 선택한 날짜에서 컨디션 계산하기
             long timestamp = c.getTimeInMillis();
+            long diff = timestamp - joinTimestamp;
+            if(diff < Tools.CONDITION_EXPIRE_DURATION1){
+                curCondition = 0;
+            }
+            else if(diff < Tools.CONDITION_EXPIRE_DURATION2){
+                curCondition = 3;
+            }
+            else if(diff < Tools.CONDITION_EXPIRE_DURATION3){
+                curCondition = 2;
+            }
+            else{
+                curCondition = 1;
+            }
 
             String hiddenDateStr = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(timestamp);
             hiddenDateView.setText(hiddenDateStr + "의");
@@ -205,25 +228,40 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
             Log.d(TAG, String.valueOf(timestamp));
             Log.d(TAG,timestampStressFeaturesMap.toString());
-            String feature_ids = null;
-            if (object != null) {
-                try {
-                    feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            //feature_ids ="17-low 12-low";
-            if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
-                Log.d(TAG, "feature_ids : " + feature_ids);
+
+            if(curCondition<1){
+                //step1일때 태그 가져와서 보여주기
                 defaultContainer.setVisibility(View.INVISIBLE);
                 hiddenContainer.setVisibility(View.VISIBLE);
-                hiddenViewUpdate(feature_ids, stressLv);
-            } else {
-                Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
-            }
-            Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 1);
+                hiddenViewUpdateStep1(stressLv,Integer.parseInt(v.getTag().toString()));
+                fragment_report_app_title.setText("나의 태그");
 
+            }else{
+                //step2일때 상세화면
+                String feature_ids = null;
+                if (object != null) {
+                    try {
+                        feature_ids = object.getJSONObject(String.valueOf(stressLv)).getString("feature_ids");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                feature_ids ="17-low 12-low";
+                if (feature_ids != null && !feature_ids.equals("NO_FEATURES")) {
+                    Log.d(TAG, "feature_ids : " + feature_ids);
+                    defaultContainer.setVisibility(View.INVISIBLE);
+                    hiddenContainer.setVisibility(View.VISIBLE);
+                    hiddenViewUpdateStep2(feature_ids, stressLv);
+                    fragment_report_app_title.setText("스트레스 리포트");
+                } else {
+                    Toast.makeText(requireContext(), getResources().getString(R.string.string_no_detail_report), Toast.LENGTH_LONG).show();
+                }
+                Tools.saveApplicationLog(requireContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 1);
+
+            }
+
+            fragmentMeStep2BtnHelp.setVisibility(View.GONE);
+            frg_report_toolbar_btn.setVisibility(View.VISIBLE);
         }
     }
 
@@ -242,14 +280,16 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     // region override
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        SharedPreferences stepChangePrefs = requireContext().getSharedPreferences("stepChagne", Context.MODE_PRIVATE);
-        condition = stepChangePrefs.getInt("condition", 0);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        SharedPreferences stepChangePrefs = requireContext().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+        condition = stepChangePrefs.getInt("condition", 0);
+        Log.d(TAG,"condition"+condition);
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_report_step2, container, false);
         try {
@@ -267,7 +307,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         String date = DateFormat.format("yyyy-MM-dd", firstDayCal).toString();
 
         Log.d(TAG, "firstdate calendar " + date);
-
+        frg_report_toolbar_btn = root.findViewById(R.id.frg_report_toolbar_btn);
+        fragment_report_app_title = root.findViewById(R.id.fragment_report_app_title);
         sumPointsView = root.findViewById(R.id.summary_point_my);
         dailyPointsView = root.findViewById(R.id.point_day);
         checkBoxEmaOrder1 = root.findViewById(R.id.ch_report1);
@@ -298,7 +339,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         hiddenDateView = root.findViewById(R.id.frg_report_step2_date1);
         hiddenTimeView = root.findViewById(R.id.frg_report_step2_time1);
         hiddenStressLevelView = root.findViewById(R.id.frg_report_step2_txt_stress_level);
-        backArrow = root.findViewById(R.id.frg_report_step2_back_arrow);
+       // backArrow = root.findViewById(R.id.frg_report_step2_back_arrow);
         condition2Container = root.findViewById(R.id.frg_report_step2_stress_condition2_container);
         condition2Layout = root.findViewById(R.id.frg_report_step2_condition2_layout);
         condition3_container = root.findViewById(R.id.frg_report_condition3_container);
@@ -328,7 +369,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         reasonContainer = root.findViewById(R.id.frg_report_step2_reason_container);
         noFeatureTextview = root.findViewById(R.id.frg_report_step2_no_features);
-
+        tagsTextview = root.findViewById(R.id.frg_report_step1_tags);
         txtStressLevel = root.findViewById(R.id.txt_stress_level);
         txtStressLevel.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
 
@@ -363,7 +404,12 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             startActivity(intent);
         });
 
-
+        frg_report_toolbar_btn.setOnClickListener((v)->{
+            fragmentMeStep2BtnHelp.setVisibility(View.VISIBLE);
+            frg_report_toolbar_btn.setVisibility(View.GONE);
+            defaultContainer.setVisibility(View.VISIBLE);
+            hiddenContainer.setVisibility(View.INVISIBLE);
+        });
 
 
         // set up per time-slot stress level button clicks
@@ -374,10 +420,12 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         arrowResult3.setOnClickListener(arrowBtnClickListener);
         arrowResult4.setOnClickListener(arrowBtnClickListener);
 
-        backArrow.setOnClickListener(view -> {
-            defaultContainer.setVisibility(View.VISIBLE);
-            hiddenContainer.setVisibility(View.INVISIBLE);
-        });
+//        backArrow.setOnClickListener(view -> {
+//            defaultContainer.setVisibility(View.VISIBLE);
+//            hiddenContainer.setVisibility(View.INVISIBLE);
+//            fragmentMeStep2BtnHelp.setVisibility(View.VISIBLE);
+//            frg_report_toolbar_btn.setVisibility(View.GONE);
+//        });
 
         loadAllStressLevelsFromServer();
         loadAllPoints();
@@ -398,6 +446,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         Date currentTime = c.getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
+
+        // dailyTags (step1 hiddenView)
+        if(curCondition<1)
+            loadDailyTags(c);
 
         // region (1) daily points
         loadDailyPoints(day);
@@ -678,6 +730,69 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             }).start();
         }
     }
+    public void loadDailyTags(Calendar day) {
+        Log.d(TAG,"loadDailyTags");
+        if (Tools.isNetworkAvailable()) {
+            new Thread(() -> {
+                HashMap<Long, String> dailyTagMaps = new HashMap<>();
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
+                final int REPORT_TAGS = 27;
+
+                Calendar c = day;
+                //11:00 ~ 24:00 데이터 가져옴
+                c.set(chooseDay.getYear(), chooseDay.getMonth() - 1, chooseDay.getDay(), 11, 0, 0);
+                c.set(Calendar.MILLISECOND, 0);
+                long fromTimestamp = c.getTimeInMillis();
+                c.add(Calendar.HOUR_OF_DAY, 13);
+                long tillTimestamp = c.getTimeInMillis();
+
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
+                        .setUserId(userId)
+                        .setEmail(email)
+                        .setTargetEmail(email)
+                        .setTargetCampaignId(campaignId)
+                        .setTargetDataSourceId(REPORT_TAGS)
+                        .setFromTimestamp(fromTimestamp)
+                        .setTillTimestamp(tillTimestamp)
+                        .build();
+                try {
+                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+                    if (responseMessage.getSuccess()){
+                        Log.d(TAG,"after responseMessage.getSuccess()");
+                        Log.d(TAG,responseMessage.getValueList().toString());
+                        // checkByteString
+                        for (ByteString value : responseMessage.getValueList()) {
+                            String valueStr = value.toString("UTF-8");
+                            Log.d(TAG,valueStr);
+                            String[] cells = valueStr.split(" ");
+                            if (cells.length != 4)
+                                continue;
+                            if(dailyTagMaps.get(Long.parseLong(cells[2]))!=null){
+                                dailyTagMaps.put(Long.parseLong(cells[2]),dailyTagMaps.get(Long.parseLong(cells[2]))+" "+cells[3]);
+                            }else{
+                                dailyTagMaps.put(Long.parseLong(cells[2]), cells[3]);
+                            }
+                            Log.d(TAG,dailyTagMaps.toString());
+                        }
+                    }
+
+                } catch (StatusRuntimeException | IOException e) {
+                    e.printStackTrace();
+                }
+                selectedDailyTags = dailyTagMaps;
+                channel.shutdown();
+//                if(isAdded())
+//                    requireActivity().runOnUiThread(() -> tagsTextview.setText(finalDailyTags));
+            }).start();
+        }
+
+
+    }
 
     public void loadDailyPoints(CalendarDay day) {
         Log.d(TAG,"loadDailyPoints");
@@ -953,8 +1068,52 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private boolean isSubmission(long timestamp) {
         return Objects.requireNonNull(stressLevels.get(timestamp)).first != -1;
     }
+    
+    
+    //@jeongin : step1 일때 태그 보여주는 상세 화면 업데이트  21.01.13
+    public void hiddenViewUpdateStep1(int stressLevl,int order){
+        Context context = requireContext();
 
-    public void hiddenViewUpdate(String feature_ids, int stressLevl) {
+        ConstraintLayout.LayoutParams layoutParams =
+                new ConstraintLayout.LayoutParams(
+                        ConstraintLayout.LayoutParams.MATCH_PARENT,ConstraintLayout.LayoutParams.WRAP_CONTENT
+                );
+        layoutParams.topToBottom  = hiddenStressLevelView.getId();
+
+        switch (stressLevl) {
+            case STRESS_LV1:
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
+                hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                break;
+            case STRESS_LV2:
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
+                hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                break;
+            case STRESS_LV3:
+                hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
+                hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                break;
+        }
+
+        condition3_container.setVisibility(View.VISIBLE);
+        condition2Container.setVisibility(View.GONE);
+        integrateContainer.setVisibility(View.GONE);
+
+        layoutParams.bottomToTop = condition3_container.getId();
+        txtReason.setLayoutParams(layoutParams);
+        txtReason.setText("나의 태그");
+        txtReason.setVisibility(View.VISIBLE);
+
+        Log.d(TAG,"아니"+selectedDailyTags.toString());
+        Log.d(TAG,"아니"+selectedDailyTags.get((long)order));
+        tagsTextview.setText((selectedDailyTags.get((long)order)==null)? "태그가 없어요" : selectedDailyTags.get((long)order));
+        tagsTextview.setVisibility(View.VISIBLE);
+    }
+    //@jeongin: step2일때 스트레스 레벨별 상세화면 업데이트 20.12.26
+    public void hiddenViewUpdateStep2(String feature_ids, int stressLevl) {
         Context context = requireContext();
 
         // 아래 도움말은 child1 기준 약간씩 다름
@@ -964,7 +1123,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         // child1_container2 는 condition3의 UI -> fragment_me_step2.xml의 stress_reason_container 참고해서 수정
         // frg_me_step2.xml 파일의 me_condition2_container 참고해서 condition2의 UI 구성
 
-        //@ji : 20.12.26 featureViewUpdate()내용으로 아래 수정
+        //@jeongin : 20.12.26 featureViewUpdate()내용으로 아래 수정
 
         ArrayList<String> integrateReason = new ArrayList<>();
         boolean noFeatures = false;
@@ -1160,7 +1319,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
                 condition3_container.setVisibility(View.VISIBLE);
                 condition2Container.setVisibility(View.GONE);
-                txtReason.setVisibility(View.INVISIBLE);
+                txtReason.setText(" ");
                 break;
             case STRESS_LV2:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
