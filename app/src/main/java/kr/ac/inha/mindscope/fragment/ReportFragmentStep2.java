@@ -97,7 +97,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     private static final String ACTION_CLICK_DAY = "CLICK_DAY";
     private static final String ACTION_CLICK_DETAIL_REPORT = "CLICK_DETAIL_REPORT";
 
-
     private static final int tileWidth = 45;
     private static final int tileHeight = 45;
     int curCondition;
