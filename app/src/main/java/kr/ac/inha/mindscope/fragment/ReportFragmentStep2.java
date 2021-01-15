@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Html;
 import android.text.format.DateFormat;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -41,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -79,6 +84,8 @@ import static kr.ac.inha.mindscope.Tools.CATEGORY_LOCATION_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SNS_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_SOCIAL_END_INDEX_EXCEPT_SNS_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_UNLOCK_DURATION_APP_USAGE;
+import static kr.ac.inha.mindscope.Tools.STRESS_DO_DIFF_INTERVENTION;
+import static kr.ac.inha.mindscope.Tools.STRESS_DO_INTERVENTION;
 import static kr.ac.inha.mindscope.Tools.timeTheDayNumIsChanged;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.CONDITION1;
 import static kr.ac.inha.mindscope.fragment.StressReportFragment2.CONDITION2;
@@ -176,7 +183,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ListView integrateListView;
     LinearLayout integrateContainer;
 
-    
+    ArrayList<String[]> dailyPerformedInterventions;
+
+
     //@jeongin: 화살표 클릭했을때 리스너
     class ArrowBtnClickListener implements View.OnClickListener{
         @Override
@@ -516,6 +525,21 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 checkBox.setChecked(false);
         // endregion
 
+        //Thread 안에서 UI를 고치기위한 핸들러 생성
+        final Handler handler = new Handler(){
+
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case 0:
+                        comment_container.setVisibility(View.VISIBLE);
+                        break;
+                    case 1:
+                        comment_container.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        };
+
         // region (3) daily comment
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
@@ -592,11 +616,14 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 channel.shutdown();
 
                 final String finalComment = lastComment;
-                if(finalComment.isEmpty()){
-                    comment_container.setVisibility(View.GONE);
+                //핸들러이용 Thread 밖에서 UI 수정
+                Message msg = handler.obtainMessage();
+                if(finalComment.length()==0){
+                    msg.what = 1;
                 }else{
-                    comment_container.setVisibility(View.VISIBLE);
+                    msg.what = 0;
                 }
+                handler.sendMessage(msg);
                 if(isAdded())
                     requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
             }).start();
@@ -1422,6 +1449,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         }
 
     }
+    
 
     // region decorators
     public static class LowStressDecorator implements DayViewDecorator {

@@ -29,10 +29,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/navigation_first"
+                android:fontFamily="@font/notosanscjkkrmedium"
+                android:textStyle="normal"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:textSize="@dimen/my_text_size5"/>
+                android:textSize="20sp"
+                android:textColor="#636363"
+                />
 
             <Button
                 android:id="@+id/step_test_btn"
@@ -84,10 +88,13 @@
         app:layout_constraintTop_toBottomOf="@id/frg_me_app_bar"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="24dp"
-        android:textSize="@dimen/my_text_size1"
-        android:fontFamily="@font/notosanscjkkrlight"
+        android:fontFamily="@font/notosanscjkkrregular"
         android:includeFontPadding="false"
-        android:text="dummy date"/>
+        android:textStyle="normal"
+        android:textSize="16sp"
+        android:textColor="#636363"
+        android:lineSpacingExtra="8sp"
+        tools:text="2020년 12월 20일 (일)"/>
 
     <TextView
         android:layout_marginHorizontal="24dp"
@@ -95,10 +102,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/frg_me_date"
-        android:text="오늘의 설문 참여 현황"
-        android:fontFamily="@font/notosanscjkkrregular"
+        android:text="설문 참여 현황"
+        android:fontFamily="@font/notosanscjkkrlight"
         android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size3"/>
+        android:textStyle="normal"
+        android:textSize="14sp"
+        android:textColor="#636363"
+        android:lineSpacingExtra="6sp"/>
 
 
 
