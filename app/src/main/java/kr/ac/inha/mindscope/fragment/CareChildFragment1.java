@@ -108,13 +108,13 @@ public class CareChildFragment1 extends Fragment {
     TextView hiddenTimeView;
     TextView hiddenStressLevelView;
     ListView integrateListView;
-//    ListView phoneListView;
+    //    ListView phoneListView;
 //    ListView activityListView;
 //    ListView socialListView;
 //    ListView locationListView;
 //    ListView sleepListView;
     LinearLayout integrateContainer;
-//    LinearLayout phoneContainer;
+    //    LinearLayout phoneContainer;
 //    LinearLayout activityContainer;
 //    LinearLayout socialContainer;
 //    LinearLayout locationContainer;
@@ -159,14 +159,17 @@ public class CareChildFragment1 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences stepChangePrefs = requireContext().getSharedPreferences("stepChagne", Context.MODE_PRIVATE);
+        SharedPreferences stepChangePrefs = requireContext().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         condition = stepChangePrefs.getInt("condition", 0);
+
+        Log.d(TAG,"condition  "+condition);
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_care_child1, container, false);
         Context context = getContext();
@@ -329,6 +332,8 @@ public class CareChildFragment1 extends Fragment {
 //        locationContainer = view.findViewById(R.id.child1_listview_location_container);
 //        sleepContainer = view.findViewById(R.id.child1_listview_sleep_container);
 
+
+        condition2Container = view.findViewById(R.id.child1_condition2_container);
         condition2Img1 = view.findViewById(R.id.child1_stress_report_img1);
         condition2Img2 = view.findViewById(R.id.child1_stress_report_img2);
         condition2Img3 = view.findViewById(R.id.child1_stress_report_img3);
@@ -483,6 +488,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids1 = featre_ids_result;
                                             order1StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
+                                        }else{
+                                            arrowBtn1.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER2:
@@ -495,6 +502,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids2 = featre_ids_result;
                                             order2StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV1 ORDER2 feature_ids2: " + feature_ids2);
+                                        }else{
+                                            arrowBtn2.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER3:
@@ -507,11 +516,13 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids3 = featre_ids_result;
                                             order3StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV1 ORDER3 feature_ids3: " + feature_ids3);
+                                        }else{
+                                            arrowBtn3.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER4:
                                         if(now >= case_time3) {
-                                        stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
+                                            stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                                             stressTextview4.setText(getResources().getString(R.string.string_low));
                                             stressImg4.setVisibility(View.VISIBLE);
                                             stressTextview4.setVisibility(View.VISIBLE);
@@ -519,6 +530,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids4 = featre_ids_result;
                                             order4StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV1 ORDER4 feature_ids4: " + feature_ids4);
+                                        }else{
+                                            arrowBtn4.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                 }
@@ -535,6 +548,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids1 = featre_ids_result;
                                             order1StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV2 ORDER1 feature_ids1: " + feature_ids1);
+                                        }else{
+                                            arrowBtn1.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER2:
@@ -547,6 +562,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids2 = featre_ids_result;
                                             order2StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV2 ORDER2 feature_ids2: " + feature_ids2);
+                                        }else{
+                                            arrowBtn2.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER3:
@@ -559,6 +576,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids3 = featre_ids_result;
                                             order3StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV2 ORDER3 feature_ids3: " + feature_ids3);
+                                        }else{
+                                            arrowBtn3.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER4:
@@ -571,6 +590,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids4 = featre_ids_result;
                                             order4StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV2 ORDER4 feature_ids4: " + feature_ids4);
+                                        }else{
+                                            arrowBtn4.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                 }
@@ -587,6 +608,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids1 = featre_ids_result;
                                             order1StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV3 ORDER1 feature_ids1: " + feature_ids1);
+                                        }else{
+                                            arrowBtn1.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER2:
@@ -599,6 +622,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids2 = featre_ids_result;
                                             order2StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV3 ORDER2 feature_ids2: " + feature_ids2);
+                                        }else{
+                                            arrowBtn2.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER3:
@@ -611,6 +636,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids3 = featre_ids_result;
                                             order3StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV3 ORDER3 feature_ids3: " + feature_ids3);
+                                        }else{
+                                            arrowBtn3.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                     case ORDER4:
@@ -623,6 +650,8 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids4 = featre_ids_result;
                                             order4StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV3 ORDER4 feature_ids4: " + feature_ids4);
+                                        }else{
+                                            arrowBtn4.setVisibility(View.INVISIBLE);
                                         }
                                         break;
                                 }
@@ -691,6 +720,7 @@ public class CareChildFragment1 extends Fragment {
                 }
             }
         }
+        Log.d(TAG,"이건 또 왜 안 떠");
         Log.d(TAG,"과연"+condition);
         if(condition <= 1){
             arrowBtn1.setVisibility(View.INVISIBLE);
@@ -702,10 +732,10 @@ public class CareChildFragment1 extends Fragment {
             arrowBtn3.setEnabled(false);
             arrowBtn4.setEnabled(false);
         }else{
-            arrowBtn1.setVisibility(View.VISIBLE);
-            arrowBtn2.setVisibility(View.VISIBLE);
-            arrowBtn3.setVisibility(View.VISIBLE);
-            arrowBtn4.setVisibility(View.VISIBLE);
+//            arrowBtn1.setVisibility(View.VISIBLE);
+//            arrowBtn2.setVisibility(View.VISIBLE);
+//            arrowBtn3.setVisibility(View.VISIBLE);
+//            arrowBtn4.setVisibility(View.VISIBLE);
             arrowBtn1.setEnabled(true);
             arrowBtn2.setEnabled(true);
             arrowBtn3.setEnabled(true);

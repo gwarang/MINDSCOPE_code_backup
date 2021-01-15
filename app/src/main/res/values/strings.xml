@@ -355,8 +355,8 @@
 
     <string name="when_no_intervention_performed">아직 스트레스를 해소하지 않았습니다!\n스트레스를 해소해보세요!</string>
 
-    <string name="stress_report_lv0">당신은 스트레스가 낮을 때,</string>
-    <string name="stress_report_lv1">당신은 스트레스가 조금 높을 때,</string>
+    <string name="stress_report_lv0"></string>
+    <string name="stress_report_lv1">제가 참고한 데이터는요,</string>
     <string name="stress_report_lv2">당신은 스트레스가 높을 때,</string>
 
 </resources>

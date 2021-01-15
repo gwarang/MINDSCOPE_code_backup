@@ -235,25 +235,7 @@ public class MeFragmentStep2 extends Fragment {
         categoryImgContainer5 = view.findViewById(R.id.me_stress_report_img_container5);
 //        versionNameTextView = view.findViewById(R.id.version_name_step2);
 //        versionNameTextView.setText(getVersionInfo(requireContext()));
-        switch (condition){
-            case CONDITION1:
-//                submitReport();
-                txtReason.setVisibility(View.INVISIBLE);
-                condition2Container.setVisibility(View.GONE); // 조건 2 컨테이너
-                reasonContainer.setVisibility(View.GONE); // 조건 3 컨테이너
-                break;
-            case CONDITION2:
-                condition2Container.setVisibility(View.VISIBLE);
-                reasonContainer.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "condition2");
-                break;
-            case CONDITION3:
-            default:
-                condition2Container.setVisibility(View.GONE);
-                reasonContainer.setVisibility(View.VISIBLE);
-                Log.d(TAG, "condition3");
-                break;
-        }
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -263,7 +245,6 @@ public class MeFragmentStep2 extends Fragment {
         String[] splitResult = stressResult.split(",");
         Log.d(TAG,splitResult.toString());
 
-        Log.d(TAG,"ㅇㅇㅇ");
         Log.d(TAG,splitResult.toString());
         long reportTimestamp = Long.parseLong(splitResult[0]);
         stressLevel = Integer.parseInt(splitResult[1]);
@@ -277,7 +258,7 @@ public class MeFragmentStep2 extends Fragment {
 //        int day_num = 18;
 //        int ema_order = 2;
 //        float accuracy = (float) 0.25;
-//        String feature_ids = "0-general_0 7-general_0 11-general_0 17-general_0 28-general_0 ";
+  //      String feature_ids = "0-general_0 7-general_0 11-general_0 17-general_0 28-general_0 ";
 //        boolean model_tag = true;
 
         Log.d(TAG, "데이터 "+reportTimestamp+" "+stressLevel+" "+day_num+" "+ema_order+" "+accuracy+" "+feature_ids+" "+model_tag+" ");
@@ -646,6 +627,26 @@ public class MeFragmentStep2 extends Fragment {
 //                setListViewHeightBasedOnChildren(sleepListView);
 //                sleepContainer.setVisibility(View.VISIBLE);
 //            }
+        }
+
+        switch (condition){
+            case CONDITION1:
+//                submitReport();
+                txtReason.setVisibility(View.INVISIBLE);
+                condition2Container.setVisibility(View.GONE); // 조건 2 컨테이너
+                reasonContainer.setVisibility(View.GONE); // 조건 3 컨테이너
+                break;
+            case CONDITION2:
+                condition2Container.setVisibility(View.VISIBLE);
+                reasonContainer.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "condition2");
+                break;
+            case CONDITION3:
+            default:
+                condition2Container.setVisibility(View.GONE);
+                reasonContainer.setVisibility(View.VISIBLE);
+                Log.d(TAG, "condition3");
+                break;
         }
 
     }

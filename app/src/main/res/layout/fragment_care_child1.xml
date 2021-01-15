@@ -53,9 +53,9 @@
             android:layout_margin="20dp"
             android:background="#00000000"
             android:src="@drawable/ic_baseline_arrow_back_24"
-            android:tint="@color/textColor_default_light"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/textColor_default_light" />
 
         <ImageView
             android:id="@+id/child1_step2_img1"
@@ -76,6 +76,7 @@
             android:layout_height="0dp"
             android:layout_marginHorizontal="14dp"
             android:layout_marginBottom="20dp"
+            android:layout_marginTop="5dp"
             android:background="@color/color_low_bg"
             android:fillViewport="true"
             android:orientation="vertical"
@@ -309,7 +310,7 @@
             android:layout_marginTop="24dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:text="@string/string_stress_why"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/textColor_default"
             android:textSize="@dimen/my_text_size3"
