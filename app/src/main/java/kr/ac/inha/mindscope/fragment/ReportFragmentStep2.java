@@ -46,6 +46,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.BreakIterator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -139,11 +140,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ImageButton arrowResult3;
     ImageButton arrowResult4;
     TextView selectedDayComment;
+    TextView selectedDayIntervention;
     ScrollView defaultContainer;
     ConstraintLayout hiddenContainer;
     ConstraintLayout dayDetailContainer;
     ConstraintLayout comment_container;
     ConstraintLayout condition3_container;
+    ConstraintLayout intervention_container;
     ImageView hiddenStressImg;
     TextView hiddenDateView;
     TextView hiddenTimeView;
@@ -334,6 +337,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         arrowResult3 = root.findViewById(R.id.arrow_result3);
         arrowResult4 = root.findViewById(R.id.arrow_result4);
         comment_container = root.findViewById(R.id.comment_container);
+        intervention_container = root.findViewById(R.id.intervention_container);
+        selectedDayIntervention= root.findViewById(R.id.selected_day_intervention);
         selectedDayComment = root.findViewById(R.id.selected_day_comment);
         dailyAverageStressLevelView = root.findViewById(R.id.frg_report_step2_img1);
         SharedPreferences prefs = requireContext().getSharedPreferences("points", Context.MODE_PRIVATE);
@@ -461,7 +466,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
 
         // dailyTags (step1 hiddenView)
-        if(curCondition<1)
+        if (curCondition < 1)
             loadDailyTags(c);
 
         // region (1) daily points
@@ -525,8 +530,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 checkBox.setChecked(false);
         // endregion
 
-        //Thread 안에서 UI를 고치기위한 핸들러 생성
-        final Handler handler = new Handler(){
+
+        // region (3) daily comment
+        //Thread 안에서 UI를 고치기위한 핸들러 생성  0:코멘트 보여줄때 1:코멘트 없을때 2:스트레스해소 보여줄때 3:스트레스해소 없을때
+        final Handler handler = new Handler() {
 
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -536,11 +543,15 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     case 1:
                         comment_container.setVisibility(View.GONE);
                         break;
+                    case 2:
+                        intervention_container.setVisibility(View.VISIBLE);
+                        break;
+                    case 3:
+                        intervention_container.setVisibility(View.INVISIBLE);
+                        break;
                 }
             }
         };
-
-        // region (3) daily comment
         if (Tools.isNetworkAvailable()) {
             new Thread(() -> {
 
@@ -564,7 +575,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                             R.string.string_stress_level_high
                     };
                     int stressLevel = dailyAverageStressLevels.get(day);
-                    if(isAdded()){
+                    if (isAdded()) {
                         requireActivity().runOnUiThread(() -> {
                             txtStressLevel.setText(Html.fromHtml(getResources().getString(stressLevelStrings[stressLevel])));
                             txtStressLevel.setVisibility(View.VISIBLE);
@@ -572,8 +583,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     }
 
 
-                } else{
-                    if(isAdded()){
+                } else {
+                    if (isAdded()) {
                         requireActivity().runOnUiThread(() -> {
                             txtStressLevel.setVisibility(View.GONE); // should never happen
                         });
@@ -596,7 +607,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 String lastComment = "";
                 try {
                     EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getSuccess()){
+                    if (responseMessage.getSuccess()) {
                         // checkByteString
                         for (ByteString value : responseMessage.getValueList()) {
                             String valueStr = value.toString("UTF-8");
@@ -618,13 +629,13 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 final String finalComment = lastComment;
                 //핸들러이용 Thread 밖에서 UI 수정
                 Message msg = handler.obtainMessage();
-                if(finalComment.length()==0){
+                if (finalComment.length() == 0) {
                     msg.what = 1;
-                }else{
+                } else {
                     msg.what = 0;
                 }
                 handler.sendMessage(msg);
-                if(isAdded())
+                if (isAdded())
                     requireActivity().runOnUiThread(() -> selectedDayComment.setText(finalComment.length() == 0 ? "[N/A]" : finalComment));
             }).start();
         }
@@ -645,6 +656,97 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             dailyAverageStressLevelView.setVisibility(View.GONE);
         }
         // endregion
+
+        // region (5) daily stress_intervention 2021-01-17 이준영
+        if (Tools.isNetworkAvailable()) {
+            new Thread(() -> {
+                dailyPerformedInterventions = new ArrayList<>();
+                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", MODE_PRIVATE);
+                SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", MODE_PRIVATE);
+
+                Calendar cal = Calendar.getInstance();
+                cal.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                long fromTimestamp = cal.getTimeInMillis();
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+                long tillTimestamp = cal.getTimeInMillis();
+
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+
+                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+
+
+                EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
+                        .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
+                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
+                        .setTargetDataSourceId(configPrefs.getInt("STRESS_INTERVENTION", -1))
+                        .setFromTimestamp(fromTimestamp)
+                        .setTillTimestamp(tillTimestamp)
+                        .build();
+
+                try {
+                    final EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(retrieveFilteredEMARecordsRequestMessage);
+                    if (responseMessage.getSuccess()) {
+                        // checkByteString
+                        List<ByteString> values = responseMessage.getValueList();
+                        if (!values.isEmpty()) {
+                            Log.d(TAG, "intervention list " + values);
+                            for (ByteString value : values) {
+                                String[] splitValue = value.toString(StandardCharsets.UTF_8).split(" ");
+
+                                if (splitValue.length != 4)
+                                    continue;
+
+                                if (splitValue[1] != null && !splitValue[1].equals("") && !splitValue[1].equals("NOT_SELECT_INTERVENTION")
+                                        && (((Integer.parseInt(splitValue[2]) == STRESS_DO_INTERVENTION)
+                                        || (Integer.parseInt(splitValue[2]) == STRESS_DO_DIFF_INTERVENTION)))) {
+                                    Log.d(TAG, "intervention is : " + splitValue[1]);
+                                    dailyPerformedInterventions.add(splitValue);
+                                } else {
+                                    Log.d(TAG, "no intervention");
+                                }
+                            }
+
+                        } else {
+                            Log.d(TAG, "values empty");
+                        }
+                    }
+                } catch (StatusRuntimeException | NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                StringBuilder dailyIntervention = new StringBuilder();
+                ArrayList<String> dailyInterventionList = new ArrayList<>();
+                String data;
+                for (int i=0;i<dailyPerformedInterventions.size();i++) {
+                    data = dailyPerformedInterventions.get(i)[1];
+                    if(!dailyInterventionList.contains(data)) {
+                        if (i == 0) {
+                            dailyIntervention.append(String.format("%s", data.replace("_", " ")));
+                        } else {
+                            dailyIntervention.append(String.format(",%s", data.replace("_", " ")));
+                        }
+                        dailyInterventionList.add(data);
+                    }
+                }
+                Message msg = handler.obtainMessage();
+                if (dailyIntervention.toString().length() == 0) {
+                    msg.what = 3;
+                } else {
+                    msg.what = 2;
+                }
+                handler.sendMessage(msg);
+                if(isAdded()){
+                    requireActivity().runOnUiThread(() -> selectedDayIntervention.setText(dailyIntervention.toString().length() == 0 ? "[N/A]" : dailyIntervention.toString()));
+                    Log.d(TAG, dailyIntervention.toString());
+                }
+                channel.shutdown();
+            }).start();
+        } else {
+            Toast.makeText(requireContext(), requireContext().getResources().getString(R.string.when_network_unable), Toast.LENGTH_SHORT).show();
+        }
+
 
         materialCalendarView.invalidateDecorators();
         selectedDay = day;
