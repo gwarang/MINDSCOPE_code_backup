@@ -296,9 +296,8 @@ public class MeFragmentStep2 extends Fragment {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
                     }
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
-                    condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                    //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
-                    txtReason.setVisibility(View.INVISIBLE);
                     break;
                 case STRESS_LV2:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -307,10 +306,8 @@ public class MeFragmentStep2 extends Fragment {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
                     }
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
-                    condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                    //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
-                    txtReason.setVisibility(View.VISIBLE);
-                    txtReason.setText("제가 참고한 데이터는요,");
                     break;
                 case STRESS_LV3:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -319,10 +316,8 @@ public class MeFragmentStep2 extends Fragment {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
                     }
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
-                    condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                    //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
-                    txtReason.setVisibility(View.VISIBLE);
-                    txtReason.setText("당신은 스트레스가 높을 때,");
                     break;
             }
 
@@ -639,6 +634,8 @@ public class MeFragmentStep2 extends Fragment {
             case CONDITION2:
                 condition2Container.setVisibility(View.VISIBLE);
                 reasonContainer.setVisibility(View.INVISIBLE);
+                txtReason.setText("제가 참고한 데이터는요,");
+                txtReason.setVisibility(View.VISIBLE);
                 Log.d(TAG, "condition2");
                 break;
             case CONDITION3:
@@ -646,6 +643,19 @@ public class MeFragmentStep2 extends Fragment {
                 condition2Container.setVisibility(View.GONE);
                 reasonContainer.setVisibility(View.VISIBLE);
                 Log.d(TAG, "condition3");
+
+                switch (stressLevel){
+                    case STRESS_LV1:
+                        txtReason.setText("당신은 스트레스가 낮을 때,");
+                        break;
+                    case STRESS_LV2:
+                        txtReason.setText("당신은 스트레스가 조금 높을 때,");
+                        break;
+                    case STRESS_LV3:
+                        txtReason.setText("당신은 스트레스가 높을 때,");
+                        break;
+                }
+                txtReason.setVisibility(View.VISIBLE);
                 break;
         }
 

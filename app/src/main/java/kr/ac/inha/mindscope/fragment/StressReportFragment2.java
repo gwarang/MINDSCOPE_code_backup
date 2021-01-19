@@ -222,18 +222,19 @@ public class StressReportFragment2 extends Fragment {
 //            correctnessView.setText(getResources().getString(R.string.string_prediction_incorrect));
 //        }
 
-        switch (reportAnswer){
-            case 0:
-                reason.setText(R.string.stress_report_lv0);
-                break;
-            case 1:
-                reason.setText(R.string.stress_report_lv1);
-                break;
-            case 2:
-                reason.setText(R.string.stress_report_lv2);
-                break;
-            default:
-        }
+//        switch (reportAnswer){
+//            case 0:
+//                reason.setText(R.string.stress_report_lv0);
+//                break;
+//            case 1:
+//                reason.setText(R.string.stress_report_lv1);
+//                break;
+//            case 2:
+//
+//                reason.setText(R.string.stress_report_lv2);
+//                break;
+//            default:
+//        }
 
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(reportTimestamp);
@@ -527,11 +528,6 @@ public class StressReportFragment2 extends Fragment {
 
         if (noFeatures) {
             integrateContainer.setVisibility(View.GONE);
-//            phoneContainer.setVisibility(View.GONE);
-//            activityContainer.setVisibility(View.GONE);
-//            socialContainer.setVisibility(View.GONE);
-//            locationContainer.setVisibility(View.GONE);
-//            sleepContainer.setVisibility(View.GONE);
             noFeatureTextview.setVisibility(View.VISIBLE);
             analysisResult = NO_FEATURES_ANALYSIS_RESULT;
             analysisSelectContainer.setVisibility(View.INVISIBLE);

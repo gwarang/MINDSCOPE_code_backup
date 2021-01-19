@@ -189,6 +189,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     ArrayList<String[]> dailyPerformedInterventions;
 
 
+
     //@jeongin: 화살표 클릭했을때 리스너
     class ArrowBtnClickListener implements View.OnClickListener{
         @Override
@@ -1307,6 +1308,18 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         ArrayList<String> integrateReason = new ArrayList<>();
         boolean noFeatures = false;
 
+        RelativeLayout[] categoryContainers = new RelativeLayout[]{categoryImgContainer1, categoryImgContainer2, categoryImgContainer3, categoryImgContainer4, categoryImgContainer5};
+        ImageView[] categoryImages = new ImageView[]{condition2Img1,condition2Img2,condition2Img3,condition2Img4,condition2Img5};
+        TextView[] categoryTextViews = new TextView[]{condition2txt1,condition2txt2,condition2txt3,condition2txt4,condition2txt5};
+
+        //container image, container UI 초기화
+        for(RelativeLayout container : categoryContainers)
+            container.setBackgroundColor(Color.TRANSPARENT);
+        for(ImageView image : categoryImages)
+            image.setAlpha(0.3f);
+        for(TextView text : categoryTextViews)
+            text.setTextColor(requireContext().getColor(R.color.border_btn_gray));
+
         if (feature_ids.equals("") || feature_ids.equals("NO_FEATURES")) {
             Log.d(TAG, "feature_ids is empty");
             noFeatures = true;
@@ -1513,7 +1526,9 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 break;
         }
 
-        switch (condition){
+        Log.d(TAG,"selected c : "+curCondition);
+
+        switch (curCondition){
             case CONDITION1:
                 //nothing
                 break;
