@@ -229,6 +229,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             Log.d(TAG,"뭐냐고;"+timestampStressFeaturesMap.toString());
 
 
+            Log.d(TAG,"이게 왜  "+curCondition);
             if(curCondition<=1){
                 //step1일때 태그 가져와서 보여주기
                 defaultContainer.setVisibility(View.INVISIBLE);
@@ -239,6 +240,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 fragmentMeStep2BtnHelp.setVisibility(View.GONE);
                 frg_report_toolbar_btn.setVisibility(View.VISIBLE);
             }else{
+                tagsTextview.setVisibility(View.GONE);
+                integrateContainer.setVisibility(View.VISIBLE);
                 //step2일때 상세화면
                 String feature_ids = null;
                 if (object != null) {
