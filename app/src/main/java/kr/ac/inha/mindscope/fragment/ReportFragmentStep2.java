@@ -226,10 +226,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             JSONObject object = timestampStressFeaturesMap.get(timestamp);
 
             Log.d(TAG, String.valueOf(timestamp));
-            Log.d(TAG,"뭐냐고;"+timestampStressFeaturesMap.toString());
-
-
-            Log.d(TAG,"이게 왜  "+curCondition);
             if(curCondition<=1){
                 //step1일때 태그 가져와서 보여주기
                 defaultContainer.setVisibility(View.INVISIBLE);
@@ -1315,7 +1311,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         ImageView[] categoryImages = new ImageView[]{condition2Img1,condition2Img2,condition2Img3,condition2Img4,condition2Img5};
         TextView[] categoryTextViews = new TextView[]{condition2txt1,condition2txt2,condition2txt3,condition2txt4,condition2txt5};
 
-        //container image, container UI 초기화
+        //@jeongin: container image, container UI 초기화
         for(RelativeLayout container : categoryContainers)
             container.setBackgroundColor(Color.TRANSPARENT);
         for(ImageView image : categoryImages)

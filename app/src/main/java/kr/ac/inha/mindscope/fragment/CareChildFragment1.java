@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -425,6 +426,7 @@ public class CareChildFragment1 extends Fragment {
 
     }
 
+
     public void updateUI() {
 
         if (predictionArray == null) {
@@ -441,7 +443,11 @@ public class CareChildFragment1 extends Fragment {
         dateTextView.setText(date_text + "의");
         hiddenDateView.setText(date_text);
 
-        //정각에만 데이터 보이게 하기 위해서 비교를 위한 timestamp
+
+
+
+
+        //@jeongin : 정각에만 데이터 보이게 하기 위해서 비교를 위한 timestamp
         Calendar now_cal = Calendar.getInstance();
         long now = now_cal.getTimeInMillis();
         now_cal.set(Calendar.HOUR_OF_DAY,11);
@@ -475,11 +481,11 @@ public class CareChildFragment1 extends Fragment {
                             && stressLvArray[order] == Integer.parseInt(predictionTokens[PREDICTION_STRESSLV_INDEX])) {
                         int stressLevel = stressLvArray[order];
                         String featre_ids_result = predictionTokens[PREDICTION_FEATUREIDS_INDEX];
+
                         switch (stressLevel) {
                             case STRESS_LV1:
                                 switch (order + 1) {
                                     case ORDER1:
-                                        if(now >= case_time1) {
                                             stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                                             stressTextview1.setText(getResources().getString(R.string.string_low));
                                             stressImg1.setVisibility(View.VISIBLE);
@@ -488,12 +494,12 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids1 = featre_ids_result;
                                             order1StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV1 ORDER1 feature_ids1: " + feature_ids1);
-                                        }else{
-                                            arrowBtn1.setVisibility(View.INVISIBLE);
-                                        }
+//                                        }else{
+//                                            arrowBtn1.setVisibility(View.INVISIBLE);
+//                                        }
                                         break;
                                     case ORDER2:
-                                        if(now >= case_time2) {
+                                        if(now < case_time1 || now >= case_time2) {
                                             stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                                             stressTextview2.setText(getResources().getString(R.string.string_low));
                                             stressImg2.setVisibility(View.VISIBLE);
@@ -507,7 +513,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER3:
-                                        if(now >= case_time3) {
+                                        if(now < case_time1 || now >= case_time3) {
                                             stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                                             stressTextview3.setText(getResources().getString(R.string.string_low));
                                             stressImg3.setVisibility(View.VISIBLE);
@@ -521,7 +527,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER4:
-                                        if(now >= case_time3) {
+                                        if(now < case_time1 || now >= case_time3) {
                                             stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                                             stressTextview4.setText(getResources().getString(R.string.string_low));
                                             stressImg4.setVisibility(View.VISIBLE);
@@ -539,7 +545,7 @@ public class CareChildFragment1 extends Fragment {
                             case STRESS_LV2:
                                 switch (order + 1) {
                                     case ORDER1:
-                                        if(now >= case_time1) {
+                                        if(now < case_time1 || now >= case_time1) {
                                             stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                                             stressTextview1.setText(getResources().getString(R.string.string_littlehigh));
                                             stressImg1.setVisibility(View.VISIBLE);
@@ -553,7 +559,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER2:
-                                        if(now >= case_time2) {
+                                        if(now < case_time1 || now >= case_time2) {
                                             stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                                             stressTextview2.setText(getResources().getString(R.string.string_littlehigh));
                                             stressImg2.setVisibility(View.VISIBLE);
@@ -567,7 +573,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER3:
-                                        if(now >= case_time3) {
+                                        if(now < case_time1 || now >= case_time3) {
                                             stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                                             stressTextview3.setText(getResources().getString(R.string.string_littlehigh));
                                             stressImg3.setVisibility(View.VISIBLE);
@@ -581,7 +587,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER4:
-                                        if(now >= case_time4) {
+                                        if(now < case_time1 || now >= case_time4) {
                                             stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                                             stressTextview4.setText(getResources().getString(R.string.string_littlehigh));
                                             stressImg4.setVisibility(View.VISIBLE);
@@ -599,7 +605,7 @@ public class CareChildFragment1 extends Fragment {
                             case STRESS_LV3:
                                 switch (order + 1) {
                                     case ORDER1:
-                                        if(now >= case_time1) {
+//                                        if(now >= case_time1) {
                                             stressImg1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                                             stressTextview1.setText(getResources().getString(R.string.string_high));
                                             stressImg1.setVisibility(View.VISIBLE);
@@ -608,12 +614,12 @@ public class CareChildFragment1 extends Fragment {
                                             feature_ids1 = featre_ids_result;
                                             order1StressLevel = stressLevel;
                                             Log.d(TAG, "STRESS_LV3 ORDER1 feature_ids1: " + feature_ids1);
-                                        }else{
-                                            arrowBtn1.setVisibility(View.INVISIBLE);
-                                        }
+//                                        }else{
+//                                            arrowBtn1.setVisibility(View.INVISIBLE);
+//                                        }
                                         break;
                                     case ORDER2:
-                                        if(now >= case_time2) {
+                                        if(now < case_time1 || now >= case_time2) {
                                             stressImg2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                                             stressTextview2.setText(getResources().getString(R.string.string_high));
                                             stressImg2.setVisibility(View.VISIBLE);
@@ -627,7 +633,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER3:
-                                        if(now >= case_time3) {
+                                        if(now < case_time1 || now >= case_time3) {
                                             stressImg3.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                                             stressTextview3.setText(getResources().getString(R.string.string_high));
                                             stressImg3.setVisibility(View.VISIBLE);
@@ -641,7 +647,7 @@ public class CareChildFragment1 extends Fragment {
                                         }
                                         break;
                                     case ORDER4:
-                                        if(now >= case_time4) {
+                                        if(now < case_time1 || now >= case_time4) {
                                             stressImg4.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                                             stressTextview4.setText(getResources().getString(R.string.string_high));
                                             stressImg4.setVisibility(View.VISIBLE);
@@ -663,15 +669,11 @@ public class CareChildFragment1 extends Fragment {
                             switch (order + 1) {
                                 case ORDER1:
                                     checkBox1.setChecked(true);
-                                    if(now >= case_time1) {
-                                        checkBox1.setVisibility(View.VISIBLE);
-                                    }else{
-                                        checkBox1.setVisibility(View.INVISIBLE);
-                                    }
+                                    checkBox1.setVisibility(View.VISIBLE);
                                     break;
                                 case ORDER2:
                                     checkBox2.setChecked(true);
-                                    if(now >= case_time2) {
+                                    if(now < case_time1 || now >= case_time2) {
                                         checkBox2.setVisibility(View.VISIBLE);
                                     }else{
                                         checkBox2.setVisibility(View.INVISIBLE);
@@ -679,7 +681,7 @@ public class CareChildFragment1 extends Fragment {
                                     break;
                                 case ORDER3:
                                     checkBox3.setChecked(true);
-                                    if(now >= case_time3) {
+                                    if(now < case_time1 || now >= case_time3) {
                                         checkBox3.setVisibility(View.VISIBLE);
                                     }else{
                                         checkBox3.setVisibility(View.INVISIBLE);
@@ -687,7 +689,7 @@ public class CareChildFragment1 extends Fragment {
                                     break;
                                 case ORDER4:
                                     checkBox4.setChecked(true);
-                                    if(now >= case_time4) {
+                                    if(now < case_time1 || now >= case_time4) {
                                         checkBox4.setVisibility(View.VISIBLE);
                                     }else{
                                         checkBox4.setVisibility(View.INVISIBLE);
@@ -720,8 +722,6 @@ public class CareChildFragment1 extends Fragment {
                 }
             }
         }
-        Log.d(TAG,"이건 또 왜 안 떠");
-        Log.d(TAG,"과연"+condition);
         if(condition <= 1){
             arrowBtn1.setVisibility(View.INVISIBLE);
             arrowBtn2.setVisibility(View.INVISIBLE);
@@ -790,7 +790,17 @@ public class CareChildFragment1 extends Fragment {
 //        ArrayList<String> locationReason = new ArrayList<>();
 //        ArrayList<String> sleepReason = new ArrayList<>();
 
+        RelativeLayout[] categoryContainers = new RelativeLayout[]{categoryImgContainer1, categoryImgContainer2, categoryImgContainer3, categoryImgContainer4, categoryImgContainer5};
+        ImageView[] categoryImages = new ImageView[]{condition2Img1,condition2Img2,condition2Img3,condition2Img4,condition2Img5};
+        TextView[] categoryTextViews = new TextView[]{condition2txt1,condition2txt2,condition2txt3,condition2txt4,condition2txt5};
 
+        //@jeongin: container image, container UI 초기화
+        for(RelativeLayout container : categoryContainers)
+            container.setBackgroundColor(Color.TRANSPARENT);
+        for(ImageView image : categoryImages)
+            image.setAlpha(0.3f);
+        for(TextView text : categoryTextViews)
+            text.setTextColor(requireContext().getColor(R.color.border_btn_gray));
 
         boolean noFeatures = false;
 
