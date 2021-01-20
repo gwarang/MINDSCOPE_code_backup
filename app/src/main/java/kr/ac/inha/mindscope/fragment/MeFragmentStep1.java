@@ -468,33 +468,34 @@ public class MeFragmentStep1 extends Fragment {
     }
 
     public void startEmaActivityWhenNotSubmitted() {
-        SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
-        SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
-        SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
-        boolean[] submits = {
-                emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false),
-                emaSubmitCheckPrefs.getBoolean("ema_submit_check_2", false),
-                emaSubmitCheckPrefs.getBoolean("ema_submit_check_3", false),
-                emaSubmitCheckPrefs.getBoolean("ema_submit_check_4", false),
-        };
-        Calendar cal = Calendar.getInstance();
-        int curHour = cal.get(Calendar.HOUR_OF_DAY);
-        if(curHour < timeTheDayNumIsChanged){
-            cal.add(Calendar.DATE, -1);
-            cal.set(Calendar.HOUR_OF_DAY, 23);
-            cal.set(Calendar.MINUTE, 59);
-            cal.set(Calendar.SECOND, 59);
-            cal.set(Calendar.MILLISECOND, 0);
-        }
-        int todayDate = cal.get(Calendar.DATE);
-        if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1)) {
-            for (short i = 0; i < 4; i++) {
-                emaSubmitEditor.putBoolean("ema_submit_check_" + (i + 1), false);
-                emaSubmitEditor.apply();
+        if (isAdded()){
+            SharedPreferences emaSubmitCheckPrefs = requireActivity().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
+            SharedPreferences stepChangePrefs = requireActivity().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
+            SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
+            boolean[] submits = {
+                    emaSubmitCheckPrefs.getBoolean("ema_submit_check_1", false),
+                    emaSubmitCheckPrefs.getBoolean("ema_submit_check_2", false),
+                    emaSubmitCheckPrefs.getBoolean("ema_submit_check_3", false),
+                    emaSubmitCheckPrefs.getBoolean("ema_submit_check_4", false),
+            };
+            Calendar cal = Calendar.getInstance();
+            int curHour = cal.get(Calendar.HOUR_OF_DAY);
+            if(curHour < timeTheDayNumIsChanged){
+                cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.HOUR_OF_DAY, 23);
+                cal.set(Calendar.MINUTE, 59);
+                cal.set(Calendar.SECOND, 59);
+                cal.set(Calendar.MILLISECOND, 0);
             }
-        }
-        int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
-        for (short i = 0; i < 4; i++) {
+            int todayDate = cal.get(Calendar.DATE);
+            if (todayDate != emaSubmitCheckPrefs.getInt("emaSubmitDate", -1)) {
+                for (short i = 0; i < 4; i++) {
+                    emaSubmitEditor.putBoolean("ema_submit_check_" + (i + 1), false);
+                    emaSubmitEditor.apply();
+                }
+            }
+            int ema_order = Tools.getEMAOrderFromRangeAfterEMA(cal);
+            for (short i = 0; i < 4; i++) {
 //            if ((curHour == EMA_NOTIF_HOURS[i] || curHour == EMA_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && ema_order > 0 && !submits[ema_order - 1]) {
 //                if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
 //                    Intent intent = new Intent(getActivity(), EMAActivity.class);
@@ -503,15 +504,17 @@ public class MeFragmentStep1 extends Fragment {
 //                }
 //            }
 
-            if (ema_order > 0 && !submits[ema_order - 1]) {
-                if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
-                    Intent intent = new Intent(getActivity(), EMAActivity.class);
-                    intent.putExtra("ema_order", ema_order);
-                    startActivity(intent);
+                if (ema_order > 0 && !submits[ema_order - 1]) {
+                    if(stepChangePrefs.getBoolean("step1FirstAfter11o'clock", false)){
+                        Intent intent = new Intent(getActivity(), EMAActivity.class);
+                        intent.putExtra("ema_order", ema_order);
+                        startActivity(intent);
+                    }
                 }
             }
+            loadAllPoints();
         }
-        loadAllPoints();
+
 //        updateEmaResponseView();
     }
 
