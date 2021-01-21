@@ -1045,17 +1045,17 @@ public class CareChildFragment1 extends Fragment {
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_low_container, requireActivity().getTheme()));
                 break;
             case STRESS_LV2:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_container, requireActivity().getTheme()));
                 break;
             case STRESS_LV3:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
-                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
+                reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_container, requireActivity().getTheme()));
                 break;
         }
 

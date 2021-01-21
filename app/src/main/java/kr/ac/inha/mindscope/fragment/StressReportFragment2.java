@@ -269,19 +269,19 @@ public class StressReportFragment2 extends Fragment {
             case STRESS_LV1:
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_low, requireActivity().getTheme()));
                 stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_low)));
-                reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
+                reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_low_container, requireActivity().getTheme()));
 //                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_low_bg, requireActivity().getTheme()));
                 break;
             case STRESS_LV2:
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_littlehigh, requireActivity().getTheme()));
                 stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_littlehigh)));
-                reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
+                reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_container, requireActivity().getTheme()));
 //                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_littlehigh_bg, requireActivity().getTheme()));
                 break;
             case STRESS_LV3:
                 stressImg.setImageDrawable(getResources().getDrawable(R.drawable.icon_high, requireActivity().getTheme()));
                 stressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_result_high)));
-                reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
+                reasonCondition3Container.setBackgroundColor(getResources().getColor(R.color.color_high_container, requireActivity().getTheme()));
 //                reasonCondition2Container.setBackgroundColor(getResources().getColor(R.color.color_high_bg, requireActivity().getTheme()));
                 break;
         }

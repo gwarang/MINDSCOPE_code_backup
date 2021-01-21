@@ -46,9 +46,14 @@
     <color name="color_point_bg">#f1f5fa</color>
 
 <!--    <color name="color_low_bg">#f7f9fc</color>-->
-    <color name="color_low_bg">#f7f9fc</color>
-    <color name="color_littlehigh_bg">#fefcf2</color>
-    <color name="color_high_bg">#f9f4f5</color>
+    <color name="color_low_bg">#dbeefe</color>
+    <color name="color_littlehigh_bg">#fff9d9</color>
+    <color name="color_high_bg">#fae1e5</color>
+
+    <color name="color_low_container">#f7f9fc</color>
+    <color name="color_littlehigh_container">#fefdf8</color>
+    <color name="color_high_container">#f9f4f5</color>
+
 
     <color name="color_low">#86a9d5</color>
     <color name="color_littlehigh">#e6ca62</color>
