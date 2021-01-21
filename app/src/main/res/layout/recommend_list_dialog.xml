@@ -25,20 +25,44 @@
         android:layout_weight="10"
         android:scrollbars="vertical"
         android:id="@+id/intervention_list_view"
-        />
+        >
 
-    <Button
-        android:layout_marginVertical="12dp"
-        android:id="@+id/intervention_list_btn"
-        android:layout_width="115dp"
-        android:layout_height="32dp"
-        android:text="확인"
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:layout_gravity="center"
-        android:textColor="@color/color_white"
-        android:stateListAnimator="@null"
-        android:fontFamily="@font/notosanscjkkrregular"
-        android:includeFontPadding="false"
-        android:textSize="@dimen/my_text_size2"
-        android:background="@drawable/btn_start_enable"/>
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/intervention_list_btn2"
+            android:layout_width="115dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/btn_cancel_enable"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:stateListAnimator="@null"
+            android:text="취소"
+            android:textColor="#5999E3"
+            android:textSize="@dimen/my_text_size2" />
+
+        <Button
+            android:id="@+id/intervention_list_btn"
+            android:layout_width="115dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginVertical="7dp"
+            android:background="@drawable/btn_start_enable"
+            android:fontFamily="@font/notosanscjkkrregular"
+            android:includeFontPadding="false"
+            android:stateListAnimator="@null"
+            android:text="확인"
+            android:textColor="@color/color_white"
+            android:textSize="@dimen/my_text_size2" />
+
+    </LinearLayout>
 
 </LinearLayout>

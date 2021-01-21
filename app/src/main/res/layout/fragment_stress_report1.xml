@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,8 +10,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/frg_report_app_bar"
@@ -78,37 +78,43 @@
             android:id="@+id/report_step2_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/report_step2_time"
             android:layout_marginBottom="6dp"
-            android:text="test"
-            android:textAlignment="center"
             android:fontFamily="@font/notosanscjkkrlight"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size1"/>
+            android:text="2020년 12월 24일 (목)"
+            android:textAlignment="center"
+            android:textColor="#7a7a7a"
+            android:textSize="@dimen/my_text_size1"
+            app:layout_constraintBottom_toTopOf="@id/report_step2_time" />
+
         <TextView
             android:id="@+id/report_step2_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/report_step2_result"
             android:layout_marginBottom="3dp"
-            android:text="test"
-            android:textAlignment="center"
-            android:fontFamily="@font/notosanscjkkrlight"
+            android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size1"/>
+            android:text="오전 11:00부터 오후 03:00까지의"
+            android:textAlignment="center"
+            android:textColor="#636363"
+            android:textSize="@dimen/fsv_contents_text_size"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@id/report_step2_result" />
+
         <TextView
             android:id="@+id/report_step2_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="3dp"
-            android:textAlignment="center"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
-            android:textSize="@dimen/my_text_size3"/>
+            android:text="@string/string_stress_report_low"
+            android:textAlignment="center"
+            android:textSize="@dimen/fsv_contents_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txt_actual_stress_question"

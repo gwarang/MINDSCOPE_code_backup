@@ -38,7 +38,7 @@ public class RecommendDialog extends Dialog {
     TextView title;
     RecyclerView recyclerView;
     RadioButton radioButton;
-    Button button;
+    Button button_confirm, button_cancel;
     Context context;
 
     public RecommendDialog(@NonNull Context context) {
@@ -57,8 +57,17 @@ public class RecommendDialog extends Dialog {
         setContentView(R.layout.recommend_list_dialog);
 
         title = findViewById(R.id.intervention_list_title);
-        button = findViewById(R.id.intervention_list_btn);
-        button.setOnClickListener(mBtnListener);
+        button_confirm = findViewById(R.id.intervention_list_btn);
+        button_cancel = findViewById(R.id.intervention_list_btn2);
+        button_confirm.setOnClickListener(mBtnListener);
+        button_cancel.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+                    public void onClick(View view)
+            {
+                dismiss();
+            }
+        });
 
         recyclerView = findViewById(R.id.intervention_list_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));

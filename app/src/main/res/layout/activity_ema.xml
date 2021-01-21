@@ -42,20 +42,26 @@
                 android:id="@+id/ema_date_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginTop="85dp"
+                android:fontFamily="@font/notosanscjkkrlight"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="6sp"
                 android:text="test date"
                 android:textAlignment="center"
-                android:textColor="@color/textColor_default"
-                android:textSize="14sp" />
+                android:textColor="@color/textColor_default_light"
+                android:textSize="14sp"
+                android:textStyle="normal" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/ema_number_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="23dp"
+                android:layout_marginBottom="96dp"
+                android:fontFamily="@font/notosanscjkkrregular"
                 android:textAlignment="center"
-                android:textColor="@color/textColor_blue"
-                android:textSize="14sp" />
+                android:textColor="@color/textColor_default"
+                android:textSize="16sp"
+                android:textStyle="normal" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_1"
@@ -64,7 +70,7 @@
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
+                app:cardCornerRadius="1dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -78,6 +84,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:lineSpacingExtra="8sp"
+                        android:textStyle="normal"
+                        android:fontFamily="@font/notosanscjkkrregular"
                         android:text="@string/ema_question_1"
                         android:textColor="#636363"
                         android:textSize="16sp" />
@@ -339,6 +347,7 @@
                         android:layout_margin="10dp"
                         android:lineSpacingExtra="8sp"
                         android:text="@string/ema_question_5"
+                        android:fontFamily="@font/notosanscjkkrregular"
                         android:textColor="#636363"
                         android:textSize="16sp"
                         android:textAlignment="center"/>
