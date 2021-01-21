@@ -166,7 +166,6 @@ public class SplashActivity extends Activity {
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-            loadAllPoints();
 
 
 
@@ -187,60 +186,5 @@ public class SplashActivity extends Activity {
     public void onBackPressed() {
         // remove back pressed
     }
-    public void loadAllPoints() {
-        //서버와 포인트 동기화 과정
-        SharedPreferences PointPrefs = getApplicationContext().getSharedPreferences("points", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editorPoint = PointPrefs.edit();
-        if (Tools.isNetworkAvailable()) {
-            new Thread(() -> {
-                SharedPreferences loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
-                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
-                int campaignId = Integer.parseInt(getApplicationContext().getString(R.string.stress_campaign_id));
-                final int REWARD_POINTS = 26;
 
-                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
-                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
-                Calendar c = Calendar.getInstance();
-                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
-                        .setUserId(userId)
-                        .setEmail(email)
-                        .setTargetEmail(email)
-                        .setTargetCampaignId(campaignId)
-                        .setTargetDataSourceId(REWARD_POINTS)
-                        .setFromTimestamp(0)
-                        .setTillTimestamp(c.getTimeInMillis())
-                        .build();
-                int points = 0;
-                HashMap<Long, Integer> allPointsMaps = new HashMap<>();
-                try {
-                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
-                    if (responseMessage.getSuccess()) {
-                        // checkByteString
-                        for (ByteString value : responseMessage.getValueList()) {
-                            String valueStr = value.toString("UTF-8");
-                            String[] cells = valueStr.split(" ");
-                            if (cells.length != 3)
-                                continue;
-                            allPointsMaps.put(Long.parseLong(cells[0]), Integer.parseInt(cells[2]));
-                            Log.d("test", allPointsMaps.toString());
-//                            points += Integer.parseInt(cells[2]);
-                        }
-                    }
-                } catch (StatusRuntimeException | IOException e) {
-                    e.printStackTrace();
-                }
-                channel.shutdown();
-
-
-                for (Map.Entry<Long, Integer> elem : allPointsMaps.entrySet()) {
-                    points += elem.getValue();
-                }
-                final int finalPoints = points;
-                Log.d("포인트",String.valueOf(finalPoints));
-                editorPoint.putInt("sumPoints",finalPoints);
-                editorPoint.apply();
-            }).start();
-        }
-    }
 }
