@@ -694,7 +694,8 @@
                             android:id="@+id/frg_report_step2_img_container1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="6dp">
+                            android:layout_marginHorizontal="0dp"
+                            android:padding="5dp">
 
                             <ImageView
                                 android:id="@+id/frg_report_step2_img1_"
@@ -724,7 +725,8 @@
                             android:id="@+id/frg_report_step2_img_container2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="6dp">
+                            android:layout_marginHorizontal="0dp"
+                            android:padding="4.5dp">
 
                             <ImageView
                                 android:id="@+id/frg_report_step2_img2"
@@ -754,7 +756,8 @@
                             android:id="@+id/frg_report_step2_img_container3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="6dp">
+                            android:layout_marginHorizontal="0dp"
+                            android:padding="4.5dp">
 
                             <ImageView
                                 android:id="@+id/frg_report_step2_img3"
@@ -784,7 +787,8 @@
                             android:id="@+id/frg_report_step2_img_container4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="6dp">
+                            android:layout_marginHorizontal="0dp"
+                            android:padding="4.5dp">
 
                             <ImageView
                                 android:id="@+id/frg_report_step2_img4"
@@ -814,7 +818,8 @@
                             android:id="@+id/frg_report_step2_img_container5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="6dp">
+                            android:layout_marginHorizontal="0dp"
+                            android:padding="4.5dp">
 
                             <ImageView
                                 android:id="@+id/frg_report_step2_img5"

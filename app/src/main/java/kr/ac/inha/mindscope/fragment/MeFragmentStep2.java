@@ -80,6 +80,7 @@ public class MeFragmentStep2 extends Fragment {
     public int stressLevel;
     ScrollView reasonContainer;
     ConstraintLayout condition2Container;
+    ConstraintLayout date_container;
     LinearLayout condition2Layout;
     ImageView stressImg;
     ConstraintLayout allContainer;
@@ -204,6 +205,7 @@ public class MeFragmentStep2 extends Fragment {
 //                Tools.sendStressInterventionNoti(context);
 //            }
 //        });
+        date_container = view.findViewById(R.id.frg_me_date_container);
         before11hoursTextView = view.findViewById(R.id.frg_me_step2_before_time);
         firstStartBefore11hoursContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
         reasonContainer = view.findViewById(R.id.stress_reason_container);
@@ -295,7 +297,7 @@ public class MeFragmentStep2 extends Fragment {
                     } else {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
                     }
-                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_container, context.getTheme()));
                     //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
                     break;
@@ -305,7 +307,7 @@ public class MeFragmentStep2 extends Fragment {
                     } else {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
                     }
-                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_container, context.getTheme()));
                     //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
                     break;
@@ -315,7 +317,7 @@ public class MeFragmentStep2 extends Fragment {
                     } else {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
                     }
-                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                    reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_container, context.getTheme()));
                     //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
                     break;
@@ -360,6 +362,7 @@ public class MeFragmentStep2 extends Fragment {
 //        feature_ids = "18-low 14-low 5-low";
         // todo test
 //        feature_ids = "1-low 9-low 14-low 18-low 28-low 13-low 20-low ";
+
         Log.e(TAG, "feature_ids: " + feature_ids);
 
 
@@ -563,71 +566,16 @@ public class MeFragmentStep2 extends Fragment {
 //                context, R.layout.item_feature_ids, sleepReason
 //        );
 
-        if (noFeatures) {
-            integrateContainer.setVisibility(View.GONE);
-            condition2Container.setVisibility(View.GONE);
-//            phoneContainer.setVisibility(View.GONE);
-//            activityContainer.setVisibility(View.GONE);
-//            socialContainer.setVisibility(View.GONE);
-//            locationContainer.setVisibility(View.GONE);
-//            sleepContainer.setVisibility(View.GONE);
-            noFeatureTextview.setVisibility(View.VISIBLE);
-        } else {
-            integrateListView.setAdapter(integrateAdapter);
-            condition2Container.setVisibility(View.VISIBLE);
-//            phoneListView.setAdapter(phoneAdapter);
-//            activityListView.setAdapter(activityAdapter);
-//            socialListView.setAdapter(socialAdapter);
-//            locationListView.setAdapter(locationAdapter);
-//            sleepListView.setAdapter(sleepAdapter);
-            noFeatureTextview.setVisibility(View.GONE);
 
-            if (integrateReason.isEmpty())
-                integrateContainer.setVisibility(View.GONE);
-            else {
-                setListViewHeightBasedOnChildren(integrateListView);
-                integrateContainer.setVisibility(View.VISIBLE);
-            }
 
-//            if (phoneReason.isEmpty())
-//                phoneContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(phoneListView);
-//                phoneContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (activityReason.isEmpty())
-//                activityContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(activityListView);
-//                activityContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (socialReason.isEmpty())
-//                socialContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(socialListView);
-//                socialContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (locationReason.isEmpty())
-//                locationContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(locationListView);
-//                locationContainer.setVisibility(View.VISIBLE);
-//            }
-//            if (sleepReason.isEmpty())
-//                sleepContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(sleepListView);
-//                sleepContainer.setVisibility(View.VISIBLE);
-//            }
-        }
 
+
+        Log.d(TAG,"condition "+ condition);
         switch (condition){
             case CONDITION1:
 //                submitReport();
-                txtReason.setVisibility(View.INVISIBLE);
+
+                txtReason.setText("");
                 condition2Container.setVisibility(View.GONE); // 조건 2 컨테이너
                 reasonContainer.setVisibility(View.GONE); // 조건 3 컨테이너
                 break;
@@ -636,6 +584,26 @@ public class MeFragmentStep2 extends Fragment {
                 reasonContainer.setVisibility(View.INVISIBLE);
                 txtReason.setText("제가 참고한 데이터는요,");
                 txtReason.setVisibility(View.VISIBLE);
+
+                if (noFeatures) {
+                    integrateContainer.setVisibility(View.GONE);
+                    condition2Container.setVisibility(View.GONE);
+                    reasonContainer.setVisibility(View.VISIBLE);
+                    noFeatureTextview.setVisibility(View.VISIBLE);
+                } else {
+                    integrateListView.setAdapter(integrateAdapter);
+                    condition2Container.setVisibility(View.VISIBLE);
+                    noFeatureTextview.setVisibility(View.GONE);
+
+                    if (integrateReason.isEmpty())
+                        integrateContainer.setVisibility(View.GONE);
+                    else {
+                        setListViewHeightBasedOnChildren(integrateListView);
+                        integrateContainer.setVisibility(View.VISIBLE);
+                    }
+                }
+
+
                 Log.d(TAG, "condition2");
                 break;
             case CONDITION3:
@@ -655,9 +623,27 @@ public class MeFragmentStep2 extends Fragment {
                         txtReason.setText("당신은 스트레스가 높을 때,");
                         break;
                 }
+                if (noFeatures) {
+                    integrateContainer.setVisibility(View.GONE);
+                    condition2Container.setVisibility(View.GONE);
+                    noFeatureTextview.setVisibility(View.VISIBLE);
+                } else {
+                    integrateListView.setAdapter(integrateAdapter);
+                   // condition2Container.setVisibility(View.VISIBLE);
+                    noFeatureTextview.setVisibility(View.GONE);
+
+                    if (integrateReason.isEmpty())
+                        integrateContainer.setVisibility(View.GONE);
+                    else {
+                        setListViewHeightBasedOnChildren(integrateListView);
+                        integrateContainer.setVisibility(View.VISIBLE);
+                    }
+                }
+
                 txtReason.setVisibility(View.VISIBLE);
                 break;
         }
+
 
     }
 

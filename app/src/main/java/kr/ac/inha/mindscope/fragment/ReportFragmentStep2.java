@@ -529,7 +529,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             for (CheckBox checkBox : checkBoxes)
                 checkBox.setChecked(false);
         // endregion
-
+    
+        //@jeongin : condition 1 일때 상세보기 보이지 않도록
+        if(curCondition == 1)
+            for (ImageButton imageButton : imageButtons)
+                imageButton.setVisibility(View.INVISIBLE);
 
         // region (3) daily comment
         //Thread 안에서 UI를 고치기위한 핸들러 생성  0:코멘트 보여줄때 1:코멘트 없을때 2:스트레스해소 보여줄때 3:스트레스해소 없을때
@@ -1047,6 +1051,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                     stressLevel = Integer.parseInt(cells[4]);
 
                                     Log.d("fixed timestamp", "timestamp : "+timestamp);
+                                    Log.d("stressLevel", "stressLevel : "+stressLevel);
 
 
                                 } else if(dataSourceId == PREDICTION){
@@ -1122,7 +1127,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         //@jeongin: step2 11시에 데이터 날짜 밀려서 저장 되는 것 방지용
         int curCondition = calculateDateCondition(c);
 
-        if(curCondition<=1){
+        if(curCondition<1){
             if (c.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged) {
                 c.add(Calendar.DATE, -1);
             }
@@ -1215,17 +1220,17 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_container, context.getTheme()));
                 break;
             case STRESS_LV2:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_container, context.getTheme()));
                 break;
             case STRESS_LV3:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_container, context.getTheme()));
                 break;
         }
 
@@ -1275,6 +1280,8 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             Log.d(TAG, "feature_ids is empty");
             noFeatures = true;
         } else {
+            //Log.d(TAG, "넘어온 feature_ids : " + feature_ids);
+
             String[] featureArray = feature_ids.split(" ");
 
             for (int i = 0; i < featureArray.length; i++) {
@@ -1459,20 +1466,20 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_low)));
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_container, context.getTheme()));
 
                 txtReason.setText(" ");
                 break;
             case STRESS_LV2:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_littlehigh));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_littlehigh)));
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_container, context.getTheme()));
 
                 break;
             case STRESS_LV3:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
-                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
+                reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_container, context.getTheme()));
 
                 break;
         }
@@ -1481,7 +1488,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
         switch (curCondition){
             case CONDITION1:
-                //nothing
+                //화살표 안보이도록
+                ImageButton[] imageButtons = new ImageButton[]{arrowResult1, arrowResult2, arrowResult3, arrowResult4};
+                for (ImageButton imageButton : imageButtons)
+                    imageButton.setVisibility(View.INVISIBLE);
                 break;
             case CONDITION2:
                 condition2Container.setVisibility(View.VISIBLE);
