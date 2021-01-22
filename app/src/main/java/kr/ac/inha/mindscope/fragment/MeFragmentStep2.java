@@ -82,7 +82,9 @@ public class MeFragmentStep2 extends Fragment {
     ConstraintLayout condition2Container;
     ConstraintLayout date_container;
     LinearLayout condition2Layout;
+    LinearLayout condition1_container;
     ImageView stressImg;
+    ImageView stressImg2;
     ConstraintLayout allContainer;
     ConstraintLayout firstStartBefore11hoursContainer;
     TextView before11hoursTextView;
@@ -91,6 +93,9 @@ public class MeFragmentStep2 extends Fragment {
     SharedPreferences lastPagePrefs;
     private ImageButton btnMap;
     private TextView dateView;
+    private TextView condition1_date;
+    private TextView condition1_time;
+    private TextView condition1_stress_level;
     private TextView timeView;
     private TextView stressLvView;
     private TextView txtReason;
@@ -139,6 +144,7 @@ public class MeFragmentStep2 extends Fragment {
         init(view);
         try {
             stressResult = getStressResult(context);
+            Log.d(TAG,"stressResult : "+stressResult);
             if (stressResult != null)
                 updateUi(view, stressResult);
             else {
@@ -205,7 +211,14 @@ public class MeFragmentStep2 extends Fragment {
 //                Tools.sendStressInterventionNoti(context);
 //            }
 //        });
+
         date_container = view.findViewById(R.id.frg_me_date_container);
+        condition1_container = view.findViewById(R.id.condition1_container);
+        condition1_date = view.findViewById(R.id.condition1_date);
+        condition1_time = view.findViewById(R.id.condition1_time);
+        condition1_stress_level = view.findViewById(R.id.condition1_stress_level);
+        stressImg2 = view.findViewById(R.id.frg_me_step2_img2);
+
         before11hoursTextView = view.findViewById(R.id.frg_me_step2_before_time);
         firstStartBefore11hoursContainer = view.findViewById(R.id.frg_me_step2_before_11hours_container);
         reasonContainer = view.findViewById(R.id.stress_reason_container);
@@ -294,32 +307,41 @@ public class MeFragmentStep2 extends Fragment {
                 case STRESS_LV1:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low)));
+                        condition1_stress_level.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low)));
                     } else {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
+                        condition1_stress_level.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_low), Html.FROM_HTML_MODE_LEGACY));
                     }
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_low_container, context.getTheme()));
                     //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_low_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
+                    stressImg2.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_low, context.getTheme()));
                     break;
                 case STRESS_LV2:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh)));
+                        condition1_stress_level.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh)));
                     } else {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
+                        condition1_stress_level.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_littlehigh), Html.FROM_HTML_MODE_LEGACY));
                     }
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_container, context.getTheme()));
                     //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_littlehigh_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
+                    stressImg2.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_littlehigh, context.getTheme()));
                     break;
                 case STRESS_LV3:
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high)));
+                        condition1_stress_level.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high)));
                     } else {
                         stressLvView.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
+                        condition1_stress_level.setText(Html.fromHtml(context.getResources().getString(R.string.string_stress_level_high), Html.FROM_HTML_MODE_LEGACY));
                     }
                     reasonContainer.setBackgroundColor(context.getResources().getColor(R.color.color_high_container, context.getTheme()));
                     //condition2Layout.setBackgroundColor(context.getResources().getColor(R.color.color_high_bg, context.getTheme()));
                     stressImg.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
+                    stressImg2.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_high, context.getTheme()));
                     break;
             }
 
@@ -328,19 +350,25 @@ public class MeFragmentStep2 extends Fragment {
             currentTime.setTime(reportTimestamp);
             String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.KOREA).format(currentTime);
             dateView.setText(date_text);
+            condition1_date.setText(date_text);
 
             lastReportHours = cal.get(Calendar.HOUR_OF_DAY);
 
             if (lastReportHours >= 22) {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration4));
+                condition1_time.setText(context.getResources().getString(R.string.time_report_duration4));
             } else if (lastReportHours >= 18) {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration3));
+                condition1_time.setText(context.getResources().getString(R.string.time_report_duration3));
             } else if (lastReportHours >= 14) {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration2));
+                condition1_time.setText(context.getResources().getString(R.string.time_report_duration2));
             } else if (lastReportHours >= 10) {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration1));
+                condition1_time.setText(context.getResources().getString(R.string.time_report_duration1));
             } else {
                 timeView.setText(context.getResources().getString(R.string.time_report_duration4));
+                condition1_time.setText(context.getResources().getString(R.string.time_report_duration4));
             }
         }
 
@@ -571,9 +599,12 @@ public class MeFragmentStep2 extends Fragment {
 
 
         Log.d(TAG,"condition "+ condition);
+        conditionUI(condition);
+
         switch (condition){
             case CONDITION1:
 //                submitReport();
+
 
                 txtReason.setText("");
                 condition2Container.setVisibility(View.GONE); // 조건 2 컨테이너
@@ -647,6 +678,26 @@ public class MeFragmentStep2 extends Fragment {
 
     }
 
+    public void conditionUI(int con){
+        switch(con){
+            case CONDITION1:
+                stressImg.setVisibility(View.GONE);
+                date_container.setVisibility(View.INVISIBLE);
+                stressLvView.setVisibility(View.GONE);
+                stressImg2.setVisibility(View.VISIBLE);
+                condition1_container.setVisibility(View.VISIBLE);
+                break;
+            case CONDITION2:
+            case CONDITION3:
+            default:
+                stressImg.setVisibility(View.VISIBLE);
+                date_container.setVisibility(View.VISIBLE);
+                stressImg2.setVisibility(View.GONE);
+                stressLvView.setVisibility(View.VISIBLE);
+                condition1_container.setVisibility(View.GONE);
+                break;
+        }
+    }
     public String getStressResult(Context context) throws IOException {
         String stressResult = null;
         FileInputStream fis = context.openFileInput(STRESS_PREDICTION_RESULT);

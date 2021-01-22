@@ -428,25 +428,6 @@ public class CareChildFragment1 extends Fragment {
 
 
     public void updateUI() {
-
-        if (predictionArray == null) {
-            Calendar calendar = Calendar.getInstance();
-//            String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());
-            defaultContainer.setVisibility(View.INVISIBLE);
-            beforeStartStep2Container.setVisibility(View.VISIBLE);
-            beforeStartStep2TextView.setText(getResources().getString(R.string.string_when_no_prediction));
-
-        }
-
-        Date currentTime = new Date(timestamp);
-        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
-        dateTextView.setText(date_text + "의");
-        hiddenDateView.setText(date_text);
-
-
-
-
-
         //@jeongin : 정각에만 데이터 보이게 하기 위해서 비교를 위한 timestamp
         Calendar now_cal = Calendar.getInstance();
         long now = now_cal.getTimeInMillis();
@@ -469,6 +450,27 @@ public class CareChildFragment1 extends Fragment {
         now_cal.set(Calendar.MINUTE,0);
         now_cal.set(Calendar.SECOND,0);
         long case_time4 = now_cal.getTimeInMillis();
+
+
+        if (now < case_time1 || predictionArray == null) {
+            Calendar calendar = Calendar.getInstance();
+//            String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());
+            defaultContainer.setVisibility(View.INVISIBLE);
+            beforeStartStep2Container.setVisibility(View.VISIBLE);
+            beforeStartStep2TextView.setText(getResources().getString(R.string.string_when_no_prediction));
+
+        }
+
+        Date currentTime = new Date(timestamp);
+        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
+        dateTextView.setText(date_text + "의");
+        hiddenDateView.setText(date_text);
+
+
+
+
+
+
 
 
 
