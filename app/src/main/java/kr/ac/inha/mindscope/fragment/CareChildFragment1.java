@@ -451,8 +451,7 @@ public class CareChildFragment1 extends Fragment {
         now_cal.set(Calendar.SECOND,0);
         long case_time4 = now_cal.getTimeInMillis();
 
-
-        if (now < case_time1 || predictionArray == null) {
+        if (predictionArray == null || predictionArray.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
 //            String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());
             defaultContainer.setVisibility(View.INVISIBLE);
@@ -475,7 +474,7 @@ public class CareChildFragment1 extends Fragment {
 
 
         // each stress level view update
-        if (predictionArray != null) {
+        if (predictionArray != null && !predictionArray.isEmpty()) {
             for (short order = 0; order < 4; order++) {
                 for (String prediction : predictionArray) {
                     String[] predictionTokens = prediction.split(",");
