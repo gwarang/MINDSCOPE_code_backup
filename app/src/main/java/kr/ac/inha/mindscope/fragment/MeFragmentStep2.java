@@ -607,8 +607,8 @@ public class MeFragmentStep2 extends Fragment {
 
 
                 txtReason.setText("");
-                condition2Container.setVisibility(View.GONE); // 조건 2 컨테이너
-                reasonContainer.setVisibility(View.GONE); // 조건 3 컨테이너
+                condition2Container.setVisibility(View.INVISIBLE); // 조건 2 컨테이너
+                reasonContainer.setVisibility(View.INVISIBLE); // 조건 3 컨테이너
                 break;
             case CONDITION2:
                 condition2Container.setVisibility(View.VISIBLE);
