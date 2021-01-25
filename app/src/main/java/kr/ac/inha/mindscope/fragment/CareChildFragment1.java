@@ -669,31 +669,23 @@ public class CareChildFragment1 extends Fragment {
                         if (selfStressReportWithOrderIndex[order] != NON_SELF_STRESS_LV) {
                             switch (order + 1) {
                                 case ORDER1:
-                                    checkBox1.setChecked(true);
-                                    checkBox1.setVisibility(View.VISIBLE);
+                                    if(now < case_time1 || now >= case_time1) {
+                                        checkBox1.setChecked(true);
+                                    }
                                     break;
                                 case ORDER2:
-                                    checkBox2.setChecked(true);
                                     if(now < case_time1 || now >= case_time2) {
-                                        checkBox2.setVisibility(View.VISIBLE);
-                                    }else{
-                                        checkBox2.setVisibility(View.INVISIBLE);
+                                        checkBox2.setChecked(true);
                                     }
                                     break;
                                 case ORDER3:
-                                    checkBox3.setChecked(true);
                                     if(now < case_time1 || now >= case_time3) {
-                                        checkBox3.setVisibility(View.VISIBLE);
-                                    }else{
-                                        checkBox3.setVisibility(View.INVISIBLE);
+                                        checkBox3.setChecked(true);
                                     }
                                     break;
                                 case ORDER4:
-                                    checkBox4.setChecked(true);
                                     if(now < case_time1 || now >= case_time4) {
-                                        checkBox4.setVisibility(View.VISIBLE);
-                                    }else{
-                                        checkBox4.setVisibility(View.INVISIBLE);
+                                        checkBox4.setChecked(true);
                                     }
                                     break;
                             }

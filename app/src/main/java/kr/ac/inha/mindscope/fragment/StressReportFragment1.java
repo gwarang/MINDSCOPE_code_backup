@@ -305,17 +305,29 @@ public class StressReportFragment1 extends Fragment {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
         } else {
-            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
-                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
-                long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-                long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
-                fromCalendar.setTimeInMillis(fromTimestampYesterday);
-                tillCalendar.setTimeInMillis(tillTimestampYesterday);
+
+            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                fromCalendar.add(Calendar.DATE, -1);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
             } else {
-                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
-                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+                tillCalendar.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
+                tillCalendar.add(Calendar.DATE, 1);
             }
+
+//            if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0] - REPORT_DURATION) {
+//                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+//                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+//                long fromTimestampYesterday = fromCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+//                long tillTimestampYesterday = tillCalendar.getTimeInMillis() - TIMESTAMP_ONE_DAY;
+//                fromCalendar.setTimeInMillis(fromTimestampYesterday);
+//                tillCalendar.setTimeInMillis(tillTimestampYesterday);
+//            } else {
+//                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
+//                tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
+//            }
+
         }
         fromCalendar.set(Calendar.MINUTE, 0);
         fromCalendar.set(Calendar.SECOND, 0);
@@ -334,11 +346,6 @@ public class StressReportFragment1 extends Fragment {
         }
         //endregion
 
-        // todo 이거 지워야함
-//        if(predictionArray.isEmpty()){
-//            stressResult = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
-//            Log.d(TAG, "완전1 " + stressResult);
-//        }
 
         for (String result : predictionArray) {
             // todo test
