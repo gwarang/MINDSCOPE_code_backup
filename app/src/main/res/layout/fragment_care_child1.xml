@@ -312,13 +312,14 @@
             android:id="@+id/child1_txt_reason"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:text=""
             android:textAlignment="center"
             android:textColor="@color/textColor_default"
-            android:textSize="@dimen/my_text_size3"
+            android:textSize="@dimen/my_text_size1"
             app:layout_constraintBottom_toTopOf="@id/child1_stress_reason_container"
             app:layout_constraintTop_toBottomOf="@id/child1_txt_stress_level" />
 

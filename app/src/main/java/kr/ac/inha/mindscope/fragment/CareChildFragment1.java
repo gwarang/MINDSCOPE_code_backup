@@ -38,6 +38,9 @@ import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
 import kr.ac.inha.mindscope.Tools;
 
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV1;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV2;
+import static kr.ac.inha.mindscope.StressReportActivity.STRESS_LV3;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_ACTIVITY_END_INDEX;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_ENTERTAIN_APP_USAGE;
 import static kr.ac.inha.mindscope.Tools.CATEGORY_FOOD_APP_USAGE;
@@ -95,6 +98,7 @@ public class CareChildFragment1 extends Fragment {
     TextView stressTextview2;
     TextView stressTextview3;
     TextView stressTextview4;
+    TextView txtReason;
     ImageButton arrowBtn1;
     ImageButton arrowBtn2;
     ImageButton arrowBtn3;
@@ -303,6 +307,7 @@ public class CareChildFragment1 extends Fragment {
         stressImg4 = view.findViewById(R.id.child1_img_report_result4);
 
 
+        txtReason = view.findViewById(R.id.child1_txt_reason);
         stressTextview1 = view.findViewById(R.id.child1_txt_report_result1);
         stressTextview2 = view.findViewById(R.id.child1_txt_report_result2);
         stressTextview3 = view.findViewById(R.id.child1_txt_report_result3);
@@ -477,6 +482,8 @@ public class CareChildFragment1 extends Fragment {
 
         // each stress level view update
         if (predictionArray != null && !predictionArray.isEmpty()) {
+
+
             for (short order = 0; order < 4; order++) {
                 for (String prediction : predictionArray) {
                     String[] predictionTokens = prediction.split(",");
@@ -715,7 +722,11 @@ public class CareChildFragment1 extends Fragment {
 
 
                 }
+
+
             }
+
+
         }
         if(condition <= 1){
             arrowBtn1.setVisibility(View.INVISIBLE);
@@ -736,6 +747,8 @@ public class CareChildFragment1 extends Fragment {
             arrowBtn3.setEnabled(true);
             arrowBtn4.setEnabled(true);
         }
+
+
     }
 
     public float getAvgStress(Context context) throws IOException {
@@ -1051,6 +1064,31 @@ public class CareChildFragment1 extends Fragment {
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_high));
                 hiddenStressLevelView.setText(Html.fromHtml(getResources().getString(R.string.string_stress_level_high)));
                 reasonContainer.setBackgroundColor(getResources().getColor(R.color.color_high_container, requireActivity().getTheme()));
+                break;
+        }
+
+        switch (condition){
+            case CONDITION1:
+                txtReason.setText("");
+                break;
+            case CONDITION2:
+                txtReason.setText("제가 참고한 데이터는요,");
+                break;
+            case CONDITION3:
+            default:
+                switch (stressLevl){
+                    case STRESS_LV1:
+                        txtReason.setText("당신은 스트레스가 낮을 때,");
+                        break;
+                    case STRESS_LV2:
+                        txtReason.setText("당신은 스트레스가 조금 높을 때,");
+                        break;
+                    case STRESS_LV3:
+                        txtReason.setText("당신은 스트레스가 높을 때,");
+                        break;
+                }
+
+                Log.d(TAG, "condition3");
                 break;
         }
 
