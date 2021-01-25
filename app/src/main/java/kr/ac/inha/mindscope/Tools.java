@@ -568,6 +568,8 @@ public class Tools {
         notiCal.set(Calendar.MINUTE, 0);
         notiCal.set(Calendar.SECOND, 0);
         notiCal.set(Calendar.MILLISECOND, 0);
+
+
         if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
             cal.add(Calendar.DATE, -1);
             cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -579,6 +581,8 @@ public class Tools {
         for (int i = 0; i < EMA_NOTIF_HOURS.length; i++) {
             notiCal.set(Calendar.HOUR_OF_DAY, EMA_NOTIF_HOURS[i]);
             long notiTimestamp = notiCal.getTimeInMillis();
+//            if (notiTimestamp == EMA_NOTIF_HOURS[0] && curTimestamp < notiTimestamp)
+//                return 4;
             if(notiTimestamp <= curTimestamp && curTimestamp < notiTimestamp + REPORT_RESPONSE_EXPIRE_TIME * 1000)
                 return i + 1;
         }

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -40,6 +41,15 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.protobuf.ByteString;
+
+import inha.nsl.easytrack.ETServiceGrpc;
+import inha.nsl.easytrack.EtService;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
+import kr.ac.inha.mindscope.AuthenticationActivity;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.MapsActivity;
 import kr.ac.inha.mindscope.R;
@@ -718,8 +728,8 @@ public class MeFragmentStep2 extends Fragment {
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] + 3);
         } else {
             if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
-                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
                 fromCalendar.add(Calendar.DATE, -1);
+                fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
                 tillCalendar.set(Calendar.HOUR_OF_DAY, timeTheDayNumIsChanged - 1);
             } else {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
@@ -801,6 +811,7 @@ public class MeFragmentStep2 extends Fragment {
                     true);
         }
 
+        Log.d(TAG,"stressResult : "+stressResult);
         return stressResult;
     }
 
@@ -814,6 +825,12 @@ public class MeFragmentStep2 extends Fragment {
                 selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false),
                 selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false),
         };
+
+        Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
+        Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
+        Log.d(TAG,"3 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false));
+        Log.d(TAG,"4 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false));
+
         Calendar cal = Calendar.getInstance();
         int curHour = cal.get(Calendar.HOUR_OF_DAY);
         if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
@@ -830,7 +847,99 @@ public class MeFragmentStep2 extends Fragment {
                 reportSubmitEditor.apply();
             }
         }
+
+        Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
+        Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
+        Log.d(TAG,"3 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false));
+        Log.d(TAG,"4 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false));
+
+
+//        if (Tools.isNetworkAvailable()) {
+//            new Thread(() -> {
+//                SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+//                int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
+//                String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+//                int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
+//                final int SELF_STRESS_REPORT = 24;
+//
+//                Calendar time = Calendar.getInstance();
+//                if(time.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+//                    time.add(Calendar.DATE, -1);
+//                }
+//
+//                time.set(Calendar.HOUR_OF_DAY, 23);
+//                time.set(Calendar.MINUTE, 0);
+//                time.set(Calendar.SECOND, 0);
+//                time.set(Calendar.MILLISECOND, 0);
+//
+//                long fromTimestamp = time.getTimeInMillis();
+//
+//                time.add(Calendar.DATE, 1);
+//                time.set(Calendar.HOUR_OF_DAY, 10);
+//                time.set(Calendar.MINUTE, 59);
+//                time.set(Calendar.SECOND, 0);
+//                time.set(Calendar.MILLISECOND, 0);
+//
+//                long tillTimestamp = time.getTimeInMillis();
+//
+//                ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
+//                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
+//                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
+//                        .setUserId(userId)
+//                        .setEmail(email)
+//                        .setTargetEmail(email)
+//                        .setTargetCampaignId(campaignId)
+//                        .setTargetDataSourceId(SELF_STRESS_REPORT)
+//                        .setFromTimestamp(fromTimestamp)
+//                        .setTillTimestamp(tillTimestamp)
+//                        .build();
+//                try {
+//                    EtService.RetrieveFilteredDataRecords.Response responseMessage = stub.retrieveFilteredDataRecords(requestMessage);
+//                    if (responseMessage.getSuccess()){
+//                        Log.d(TAG,"after responseMessage.getSuccess()");
+//                        Log.d(TAG,responseMessage.getValueList().toString());
+//                        // checkByteString
+//                        for (ByteString value : responseMessage.getValueList()) {
+//                            String valueStr = value.toString("UTF-8");
+//                            Log.d(TAG,valueStr);
+//                            String[] cells = valueStr.split(" ");
+//
+//                            for (short i = 0; i < 4; i++) {
+//                                reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
+//                                reportSubmitEditor.apply();
+//                            }
+//
+//                            reportSubmitEditor.putBoolean("self_report_submit_check_" + cells[2], true);
+//                            reportSubmitEditor.apply();
+//                        }
+//                    }
+//
+//                } catch (StatusRuntimeException | IOException e) {
+//                    e.printStackTrace();
+//                }
+//                channel.shutdown();
+////                if(isAdded())
+////                    requireActivity().runOnUiThread(() -> tagsTextview.setText(finalDailyTags));
+//            }).start();
+//
+//
+//            int report_order = Tools.getReportOrderFromRangeAfterReport(cal);
+//            for (short i = 0; i < 4; i++) {
+////            if ((curHour == REPORT_NOTIF_HOURS[i] || curHour == REPORT_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && report_order > 0 && !submits[report_order-1]) {
+////                Intent intent = new Intent(getActivity(), StressReportActivity.class);
+////                startActivity(intent);
+////            }
+//                Log.d(TAG,"?? : "+ submits[report_order-1]);
+//                if (report_order > 0 && !submits[report_order-1]) {
+//                    Log.d(TAG,"아니");
+//                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
+//                    startActivity(intent);
+//                }
+//            }
+//        }
+
         int report_order = Tools.getReportOrderFromRangeAfterReport(cal);
+        Log.d(TAG,"report_order : "+report_order);
         for (short i = 0; i < 4; i++) {
 //            if ((curHour == REPORT_NOTIF_HOURS[i] || curHour == REPORT_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && report_order > 0 && !submits[report_order-1]) {
 //                Intent intent = new Intent(getActivity(), StressReportActivity.class);
@@ -841,6 +950,7 @@ public class MeFragmentStep2 extends Fragment {
                 startActivity(intent);
             }
         }
+
     }
 
     private void updateStressReportSubmit() {

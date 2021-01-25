@@ -184,6 +184,7 @@ public class CareChildFragment1 extends Fragment {
         }
 
         selfStressReportWithOrderIndex = new int[]{NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV, NON_SELF_STRESS_LV};
+        Log.d(TAG,"selfReportArray : "+selfReportArray);
         if (selfReportArray != null && !selfReportArray.isEmpty()) {
             for (String selfReportStr : selfReportArray) {
                 String[] result = selfReportStr.split(",");
@@ -451,6 +452,7 @@ public class CareChildFragment1 extends Fragment {
         now_cal.set(Calendar.SECOND,0);
         long case_time4 = now_cal.getTimeInMillis();
 
+        Log.d(TAG,"predictionArray : "+ predictionArray);
         if (predictionArray == null || predictionArray.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
 //            String date_text2 = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(calendar.getTimeInMillis());

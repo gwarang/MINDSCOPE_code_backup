@@ -56,6 +56,7 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
+
         <ImageView
             android:id="@+id/frg_report_step2_img"
             android:layout_width="118dp"
@@ -455,7 +456,14 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+        <LinearLayout
+            android:id="@+id/redirect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:visibility="gone"
+            android:orientation="horizontal">
+        </LinearLayout>
     </RelativeLayout>
 
 </FrameLayout>

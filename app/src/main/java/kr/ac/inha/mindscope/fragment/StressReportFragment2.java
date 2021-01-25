@@ -35,6 +35,9 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.appbar.AppBarLayout;
+
 import kr.ac.inha.mindscope.DbMgr;
 import kr.ac.inha.mindscope.MainActivity;
 import kr.ac.inha.mindscope.R;
@@ -116,6 +119,8 @@ public class StressReportFragment2 extends Fragment {
     RelativeLayout categoryImgContainer3;
     RelativeLayout categoryImgContainer4;
     RelativeLayout categoryImgContainer5;
+    LinearLayout redirect;
+    AppBarLayout frg_report_app_bar;
     //endregion
 
 
@@ -179,6 +184,8 @@ public class StressReportFragment2 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stress_report2, container, false);
         Context context = requireContext();
+        frg_report_app_bar = view.findViewById(R.id.frg_report_app_bar);
+        redirect = view.findViewById(R.id.redirect);
         loadingLayout = view.findViewById(R.id.loading_frame_stress_report);
         loadingLayout.setVisibility(View.GONE);
 //        correctnessView = view.findViewById(R.id.txt_yes_no);
@@ -292,9 +299,13 @@ public class StressReportFragment2 extends Fragment {
 
         switch (condition){
             case CONDITION1:
+                frg_report_app_bar.setVisibility(View.GONE);
+                redirect.setVisibility(View.VISIBLE);
                 submitReport();
                 break;
             case CONDITION2:
+                frg_report_app_bar.setVisibility(View.VISIBLE);
+                redirect.setVisibility(View.GONE);
                 condition2Container.setVisibility(View.VISIBLE);
                 condition3Container.setVisibility(View.GONE);
                 reason.setText("제가 참고한 데이터는요,");
@@ -302,6 +313,8 @@ public class StressReportFragment2 extends Fragment {
                 break;
             case CONDITION3:
             default:
+                frg_report_app_bar.setVisibility(View.VISIBLE);
+                redirect.setVisibility(View.GONE);
                 condition2Container.setVisibility(View.GONE);
                 condition3Container.setVisibility(View.VISIBLE);
                 switch (reportAnswer){

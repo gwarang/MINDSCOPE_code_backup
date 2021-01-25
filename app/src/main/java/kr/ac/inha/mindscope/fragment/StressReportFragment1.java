@@ -79,7 +79,7 @@ public class StressReportFragment1 extends Fragment {
             if (noStressReport) {
 
                 // todo 스트레스 리포트 제대로 도착하지 않은경우에도 로그 남기는 것 추가하기
-
+                Log.d(TAG,"no stresss report !");
                 Calendar cal = Calendar.getInstance();
                 order = Tools.getReportOrderFromRangeAfterReport(cal);
                 SharedPreferences reportSubmitCheckPrefs = requireContext().getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
@@ -172,7 +172,7 @@ public class StressReportFragment1 extends Fragment {
             e.printStackTrace();
         }
 //                gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
-
+        Log.d(TAG,"stressReportStr : "+stressReportStr);
         if (stressReportStr == null) {
             noStressReport = true;
             Calendar cal = Calendar.getInstance();
@@ -305,7 +305,6 @@ public class StressReportFragment1 extends Fragment {
             fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - REPORT_DURATION);
             tillCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
         } else {
-
             if (fromCalendar.get(Calendar.HOUR_OF_DAY) < REPORT_NOTIF_HOURS[0]) {
                 fromCalendar.set(Calendar.HOUR_OF_DAY, REPORT_NOTIF_HOURS[reportOrder - 1] - 1);
                 fromCalendar.add(Calendar.DATE, -1);
