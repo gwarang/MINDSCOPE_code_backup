@@ -461,6 +461,41 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 (EE)", Locale.getDefault()).format(currentTime);
         dateView.setText(date_text);
 
+
+        //@jeongin : 정각에만 데이터 보이게 하기 위해서 비교를 위한 timestamp
+        //선택 날짜가 오늘이면 시간대별로 체크해서 해당 시간대에만 결과가 보이도록 수정
+
+        Calendar now = Calendar.getInstance();
+        Calendar selected_cal = Calendar.getInstance();
+        selected_cal.set(day.getYear(), day.getMonth() - 1, day.getDay(), 0, 0, 0);
+
+        long selected_date = selected_cal.get(Calendar.DATE);
+        long now_date = now.get(Calendar.DATE);
+
+        long now_time = now.getTimeInMillis();
+
+        selected_cal.set(Calendar.HOUR_OF_DAY,11);
+        selected_cal.set(Calendar.MINUTE,0);
+        selected_cal.set(Calendar.SECOND,0);
+        long case_time1 = selected_cal.getTimeInMillis();
+
+        selected_cal.set(Calendar.HOUR_OF_DAY,15);
+        selected_cal.set(Calendar.MINUTE,0);
+        selected_cal.set(Calendar.SECOND,0);
+        long case_time2 = selected_cal.getTimeInMillis();
+
+        selected_cal.set(Calendar.HOUR_OF_DAY,19);
+        selected_cal.set(Calendar.MINUTE,0);
+        selected_cal.set(Calendar.SECOND,0);
+        long case_time3 = selected_cal.getTimeInMillis();
+
+        selected_cal.set(Calendar.HOUR_OF_DAY,23);
+        selected_cal.set(Calendar.MINUTE,0);
+        selected_cal.set(Calendar.SECOND,0);
+        long case_time4 = selected_cal.getTimeInMillis();
+
+        long case_times[] = {case_time1,case_time2,case_time3,case_time4};
+
         //@jeongin: 선택한 날짜에서 컨디션 계산하기
         curCondition = calculateDateCondition(c);
 
@@ -514,13 +549,27 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     // detection
                     int index = findTimestampIndex(timestamp, ranges);
                     if (index > -1 && index < imageViews.length) {
-                        textViews[index].setVisibility(View.VISIBLE);
-                        textViews[index].setText(stressLevelTexts[stressLevel]);
+                        // @jeongin : 선택된 날짜가 오늘일때 각 시간대 이전에 예측 결과가 보이지 않도록함 /21.01.26
+                        if(selected_date == now_date){
+                            if(now_time >= case_times[index]){
+                                textViews[index].setVisibility(View.VISIBLE);
+                                textViews[index].setText(stressLevelTexts[stressLevel]);
 
-                        imageViews[index].setVisibility(View.VISIBLE);
-                        imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
+                                imageViews[index].setVisibility(View.VISIBLE);
+                                imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
 
-                        imageButtons[index].setVisibility(View.VISIBLE);
+                                imageButtons[index].setVisibility(View.VISIBLE);
+
+                            }
+                        }else{
+                            textViews[index].setVisibility(View.VISIBLE);
+                            textViews[index].setText(stressLevelTexts[stressLevel]);
+
+                            imageViews[index].setVisibility(View.VISIBLE);
+                            imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
+
+                            imageButtons[index].setVisibility(View.VISIBLE);
+                        }
                     }
                 }
                 // endregion
@@ -1033,7 +1082,6 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                                 value = values.get(n).toString("UTF-8");
 
-                                Log.d("testt", "어허 : "+value);
                                 int dayNum = 0;
                                 long timestamp = 0;
                                 int emaOrder = -1;

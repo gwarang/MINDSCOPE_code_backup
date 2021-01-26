@@ -220,9 +220,6 @@ public class StressReportFragment2 extends Fragment {
         categoryImgContainer5 = view.findViewById(R.id.stress_report_img_container5);
 
 
-        if (feature_ids != null)
-            featureViewUpdate(feature_ids, view);
-
 //        if (stressLevel == reportAnswer) {
 //            correctnessView.setText(getResources().getString(R.string.string_prediction_correct));
 //        } else {
@@ -331,6 +328,11 @@ public class StressReportFragment2 extends Fragment {
                 Log.d(TAG, "condition3");
                 break;
         }
+
+
+
+        if (feature_ids != null)
+            featureViewUpdate(feature_ids, view);
 
         return view;
     }
@@ -539,11 +541,20 @@ public class StressReportFragment2 extends Fragment {
 //                requireContext(), R.layout.item_feature_ids, sleepReason
 //        );
 
+        if(integrateReason.isEmpty())
+            integrateContainer.setVisibility(View.GONE);
+        else{
+            setListViewHeightBasedOnChildren(integrateListView);
+            integrateContainer.setVisibility(View.VISIBLE);
+        }
+
         if (noFeatures) {
             integrateContainer.setVisibility(View.GONE);
             noFeatureTextview.setVisibility(View.VISIBLE);
             analysisResult = NO_FEATURES_ANALYSIS_RESULT;
             analysisSelectContainer.setVisibility(View.INVISIBLE);
+            condition2Container.setVisibility(View.GONE);
+            condition3Container.setVisibility(View.VISIBLE);
         } else {
             integrateListView.setAdapter(integrateAdapter);
 //            phoneListView.setAdapter(phoneAdapter);
@@ -553,12 +564,7 @@ public class StressReportFragment2 extends Fragment {
 //            sleepListView.setAdapter(sleepAdapter);
             noFeatureTextview.setVisibility(View.GONE);
 
-            if(integrateReason.isEmpty())
-                integrateContainer.setVisibility(View.GONE);
-            else{
-                setListViewHeightBasedOnChildren(integrateListView);
-                integrateContainer.setVisibility(View.VISIBLE);
-            }
+
 
 //            if (phoneReason.isEmpty())
 //                phoneContainer.setVisibility(View.GONE);
