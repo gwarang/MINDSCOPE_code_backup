@@ -1014,6 +1014,7 @@ public class Tools {
         SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
         SharedPreferences.Editor editor = stepChangePrefs.edit();
+        String join = "1611586800000";
 
         if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(context.getString(R.string.grpc_host), Integer.parseInt(context.getString(R.string.grpc_port))).usePlaintext().build();
@@ -1034,7 +1035,7 @@ public class Tools {
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);
                     cal.set(Calendar.MILLISECOND, 0);
-                    editor.putLong("join_timestamp", cal.getTimeInMillis());
+                    editor.putLong("join_timestamp",  Long.parseLong(join));
                     editor.apply();
                     firstDayTimestamp = cal.getTimeInMillis();
                 }
