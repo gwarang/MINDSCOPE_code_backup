@@ -1497,6 +1497,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
               integrateContainer.setVisibility(View.GONE);
             }
             else {
+                Log.d(TAG,"integrateListView : "+integrateListView);
                 setListViewHeightBasedOnChildren(integrateListView);
                 integrateContainer.setVisibility(View.VISIBLE);
             }

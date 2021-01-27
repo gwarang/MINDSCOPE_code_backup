@@ -294,6 +294,7 @@ public class StressReportFragment2 extends Fragment {
         noBtn.setOnClickListener(noClickListener);
         reportBtn.setOnClickListener(reportClickListener);
 
+        Log.d(TAG,"condition :"+condition);
         switch (condition){
             case CONDITION1:
                 loadingLayout.setVisibility(View.VISIBLE);
@@ -385,6 +386,7 @@ public class StressReportFragment2 extends Fragment {
                 }
 
                 String strID = "@string/feature_" + splitArray[0] + splitArray[splitArray.length - 1];
+                Log.d(TAG," MainActivity.getInstance() : "+ MainActivity.getInstance());
                 String packName = MainActivity.getInstance().getPackageName();
                 int resId = context.getResources().getIdentifier(strID, "string", packName);
 
@@ -610,17 +612,20 @@ public class StressReportFragment2 extends Fragment {
         ListAdapter listAdapter = listView.getAdapter();
 
         int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            totalHeight += listItem.getMeasuredHeight();
-        }
+        Log.d(TAG,"listAdapter : "+listAdapter);
+        if(listAdapter != null) {
+            for (int i = 0; i < listAdapter.getCount(); i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                totalHeight += listItem.getMeasuredHeight();
+            }
 
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
+            params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+            listView.setLayoutParams(params);
+            listView.requestLayout();
+        }
     }
 
     View.OnClickListener reportClickListener = new View.OnClickListener() {
