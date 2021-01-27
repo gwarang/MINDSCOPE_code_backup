@@ -841,6 +841,7 @@ public class MeFragmentStep2 extends Fragment {
             cal.set(Calendar.MILLISECOND, 0);
         }
         int todayDate = cal.get(Calendar.DATE);
+        Log.d(TAG,"todayDate : "+ todayDate +" reportSubmitDate : "+selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1));
         if (todayDate != selfReportSubmitCheckPrefs.getInt("reportSubmitDate", -1)) {
             for (short i = 0; i < 4; i++) {
                 reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
@@ -848,10 +849,6 @@ public class MeFragmentStep2 extends Fragment {
             }
         }
 
-        Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
-        Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
-        Log.d(TAG,"3 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false));
-        Log.d(TAG,"4 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false));
 
 
 //        if (Tools.isNetworkAvailable()) {
@@ -867,7 +864,7 @@ public class MeFragmentStep2 extends Fragment {
 //                    time.add(Calendar.DATE, -1);
 //                }
 //
-//                time.set(Calendar.HOUR_OF_DAY, 23);
+//                time.set(Calendar.HOUR_OF_DAY, 11);
 //                time.set(Calendar.MINUTE, 0);
 //                time.set(Calendar.SECOND, 0);
 //                time.set(Calendar.MILLISECOND, 0);
@@ -903,14 +900,10 @@ public class MeFragmentStep2 extends Fragment {
 //                            String valueStr = value.toString("UTF-8");
 //                            Log.d(TAG,valueStr);
 //                            String[] cells = valueStr.split(" ");
-//
-//                            for (short i = 0; i < 4; i++) {
-//                                reportSubmitEditor.putBoolean("self_report_submit_check_" + (i + 1), false);
-//                                reportSubmitEditor.apply();
-//                            }
-//
+//                            Log.d(TAG,"submitted : "+ cells[2]);
 //                            reportSubmitEditor.putBoolean("self_report_submit_check_" + cells[2], true);
 //                            reportSubmitEditor.apply();
+//                            submitted[Integer.parseInt(cells[2])-1] = true;
 //                        }
 //                    }
 //
@@ -923,15 +916,18 @@ public class MeFragmentStep2 extends Fragment {
 //            }).start();
 //
 //
+//            Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
+//            Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
+//            Log.d(TAG,"3 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false));
+//            Log.d(TAG,"4 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false));
+//
 //            int report_order = Tools.getReportOrderFromRangeAfterReport(cal);
 //            for (short i = 0; i < 4; i++) {
 ////            if ((curHour == REPORT_NOTIF_HOURS[i] || curHour == REPORT_NOTIF_HOURS[i]+1 || curHour < timeTheDayNumIsChanged) && report_order > 0 && !submits[report_order-1]) {
 ////                Intent intent = new Intent(getActivity(), StressReportActivity.class);
 ////                startActivity(intent);
 ////            }
-//                Log.d(TAG,"?? : "+ submits[report_order-1]);
-//                if (report_order > 0 && !submits[report_order-1]) {
-//                    Log.d(TAG,"아니");
+//                if (report_order > 0 && !submitted[report_order-1]) {
 //                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
 //                    startActivity(intent);
 //                }

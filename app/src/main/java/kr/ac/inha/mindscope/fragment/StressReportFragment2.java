@@ -296,6 +296,7 @@ public class StressReportFragment2 extends Fragment {
 
         switch (condition){
             case CONDITION1:
+                loadingLayout.setVisibility(View.VISIBLE);
                 frg_report_app_bar.setVisibility(View.GONE);
                 redirect.setVisibility(View.VISIBLE);
                 submitReport();
@@ -745,6 +746,8 @@ public class StressReportFragment2 extends Fragment {
         new Thread(() -> requireActivity().runOnUiThread(() -> loadingLayout.setVisibility(View.VISIBLE))).start();
 
         Tools.updatePoint(context);
+
+        Log.d(TAG,"order : "+order);
         if (order == REPORTNUM4) {
             SharedPreferences stressReportPrefs = context.getSharedPreferences("stressReport", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = stressReportPrefs.edit();
