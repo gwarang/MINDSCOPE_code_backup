@@ -844,6 +844,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         c.set(day.get(Calendar.YEAR), day.get(Calendar.MONTH), day.get(Calendar.DAY_OF_MONTH), 11, 00, 0);
         long timestampForCondition = c.getTimeInMillis();
         long joinTimestamp = stepChangePrefs.getLong("join_timestamp", 0);
+
         long diff = timestampForCondition - joinTimestamp;
         int curCondition = 0;
         if(diff < Tools.CONDITION_EXPIRE_DURATION1){

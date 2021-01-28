@@ -72,6 +72,7 @@ import static kr.ac.inha.mindscope.services.MainService.ZATURI_RESPONSE_EXPIRE_T
 
 public class Tools {
 
+    public static int no_reprot_intent_cnt = 0;
     private static final String TAG = "Tools";
     public static final String ACTION_OPEN_PAGE = "OPEN_PAGE";
     public static final String ACTION_CLICK_SAVE_BUTTON = "CLICK_SAVE_BUTTON";

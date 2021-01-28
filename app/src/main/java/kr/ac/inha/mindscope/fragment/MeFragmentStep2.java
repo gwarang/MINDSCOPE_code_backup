@@ -825,6 +825,7 @@ public class MeFragmentStep2 extends Fragment {
                 selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false),
                 selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false),
         };
+        boolean[] submitted = {false,false,false,false};
 
         Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
         Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
@@ -849,7 +850,12 @@ public class MeFragmentStep2 extends Fragment {
             }
         }
 
+        Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
+        Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
+        Log.d(TAG,"3 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false));
+        Log.d(TAG,"4 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false));
 
+        Log.d(TAG,"stressResult : "+ stressResult);
 
 //        if (Tools.isNetworkAvailable()) {
 //            new Thread(() -> {
@@ -915,11 +921,7 @@ public class MeFragmentStep2 extends Fragment {
 ////                    requireActivity().runOnUiThread(() -> tagsTextview.setText(finalDailyTags));
 //            }).start();
 //
-//
-//            Log.d(TAG,"1 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_1", false));
-//            Log.d(TAG,"2 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_2", false));
-//            Log.d(TAG,"3 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_3", false));
-//            Log.d(TAG,"4 : "+ selfReportSubmitCheckPrefs.getBoolean("self_report_submit_check_4", false));
+//            Log.d(TAG,"submitted : "+submitted);
 //
 //            int report_order = Tools.getReportOrderFromRangeAfterReport(cal);
 //            for (short i = 0; i < 4; i++) {
@@ -928,8 +930,17 @@ public class MeFragmentStep2 extends Fragment {
 ////                startActivity(intent);
 ////            }
 //                if (report_order > 0 && !submitted[report_order-1]) {
-//                    Intent intent = new Intent(getActivity(), StressReportActivity.class);
-//                    startActivity(intent);
+//                    if(stressResult == null){
+//                        if(Tools.no_reprot_intent_cnt == 0){
+//                            Tools.no_reprot_intent_cnt++;
+//                            Intent intent = new Intent(getActivity(), StressReportActivity.class);
+//                            startActivity(intent);
+//                        }
+//                    }else{
+//                        Intent intent = new Intent(getActivity(), StressReportActivity.class);
+//                        startActivity(intent);
+//                    }
+//
 //                }
 //            }
 //        }
@@ -964,14 +975,20 @@ public class MeFragmentStep2 extends Fragment {
         BufferedReader bufferedReader = new BufferedReader(isr);
         String line;
 
+        Calendar cal = Calendar.getInstance();
         Calendar startToday = Calendar.getInstance();
         Calendar endToday = Calendar.getInstance();
+
+        if(cal.get(Calendar.HOUR_OF_DAY) < timeTheDayNumIsChanged){
+            startToday.add(Calendar.DATE, -1);
+        }
+
         endToday.add(Calendar.DATE, 1);
 
-        startToday.set(Calendar.HOUR_OF_DAY, 1);
+        startToday.set(Calendar.HOUR_OF_DAY, 11);
         startToday.set(Calendar.MINUTE, 0);
         startToday.set(Calendar.SECOND, 0);
-        endToday.set(Calendar.HOUR_OF_DAY, 0);
+        endToday.set(Calendar.HOUR_OF_DAY, 10);
         endToday.set(Calendar.MINUTE, 59);
         endToday.set(Calendar.SECOND, 59);
 
