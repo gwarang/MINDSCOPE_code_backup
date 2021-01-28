@@ -948,8 +948,8 @@ public class Tools {
         int stepCheck = stepChangePrefs.getInt("stepCheck", 0);
 
         //2021-01-27으로 condition3으로 시작을 위해 조인날짜 고정
-        String join = "1611586800000";
-        joinTimestamp = Long.parseLong(join);
+//        String join = "1611586800000";
+//        joinTimestamp = Long.parseLong(join);
         long diff = curTimestamp - joinTimestamp;
         SharedPreferences.Editor stepEditor = stepChangePrefs.edit();
 //        if (diff >= STEP0_EXPIRE_TIMESTAMP_VALUE && diff < STEP1_EXPIRE_TIMESTAMP_VALUE) { // 이전에는 step0가 존재했지만 이젠 존재 x
@@ -1014,7 +1014,7 @@ public class Tools {
         SharedPreferences loginPrefs = context.getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
         SharedPreferences stepChangePrefs = context.getSharedPreferences("stepChange", MODE_PRIVATE);
         SharedPreferences.Editor editor = stepChangePrefs.edit();
-        String join = "1611586800000";
+//        String join = "1611586800000";
 
         if (Tools.isNetworkAvailable()) {
             ManagedChannel channel = ManagedChannelBuilder.forAddress(context.getString(R.string.grpc_host), Integer.parseInt(context.getString(R.string.grpc_port))).usePlaintext().build();
@@ -1035,7 +1035,7 @@ public class Tools {
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);
                     cal.set(Calendar.MILLISECOND, 0);
-                    editor.putLong("join_timestamp",  Long.parseLong(join));
+                    editor.putLong("join_timestamp", cal.getTimeInMillis());
                     editor.apply();
                     firstDayTimestamp = cal.getTimeInMillis();
                 }
