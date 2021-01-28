@@ -14,9 +14,9 @@
             android:id="@+id/frg_report_app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_centerHorizontal="true"
             android:background="@color/bg_toolbar"
-            android:elevation="10dp"
-            android:layout_centerHorizontal="true">
+            android:elevation="10dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -61,77 +61,76 @@
             android:id="@+id/frg_report_step2_img"
             android:layout_width="118dp"
             android:layout_height="118dp"
+            android:layout_below="@id/frg_report_app_bar"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="43dp"
             android:adjustViewBounds="true"
-            android:src="@drawable/icon_low"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/frg_report_app_bar"/>
-
+            android:src="@drawable/icon_low" />
 
 
         <TextView
             android:id="@+id/txt_stress_day"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/frg_report_step2_img"
             android:layout_marginTop="6dp"
             android:fontFamily="@font/notosanscjkkrlight"
             android:includeFontPadding="false"
             android:text="stress level day"
             android:textAlignment="center"
-            android:textSize="@dimen/my_text_size1"
             android:textColor="@color/textColor_default_light"
-            android:layout_below="@id/frg_report_step2_img" />
+            android:textSize="@dimen/my_text_size1" />
 
         <TextView
             android:id="@+id/txt_stress_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txt_stress_day"
             android:layout_marginTop="3dp"
             android:fontFamily="@font/notosanscjkkrlight"
             android:includeFontPadding="false"
             android:text="stress level time"
             android:textAlignment="center"
-            android:textSize="@dimen/my_text_size1"
             android:textColor="@color/textColor_default_light"
-            android:layout_below="@id/txt_stress_day" />
+            android:textSize="@dimen/my_text_size1" />
 
         <TextView
             android:id="@+id/txt_stress_level"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txt_stress_time"
             android:layout_marginTop="1dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:text="stress level txt"
             android:textAlignment="center"
-            android:textSize="@dimen/my_text_size1"
-            android:layout_below="@id/txt_stress_time" />
+            android:textSize="@dimen/my_text_size1" />
 
 
         <TextView
             android:id="@+id/txt_reason"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txt_stress_level"
             android:layout_marginTop="30dp"
             android:fontFamily="@font/notosanscjkkrregular"
             android:includeFontPadding="false"
             android:text="스트레스 레벨에 따라 text 변함"
             android:textAlignment="center"
-            android:textSize="@dimen/my_text_size3"
             android:textColor="@color/textColor_42"
-            android:layout_below="@id/txt_stress_level"
-             />
+            android:textSize="@dimen/my_text_size3" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/condition3_container"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical"
+            android:layout_above="@+id/btn_container"
             android:layout_below="@id/txt_reason"
-            app:layout_constraintVertical_weight="1"
-            >
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="40dp"
+            android:orientation="vertical"
+            app:layout_constraintVertical_weight="1">
 
             <ScrollView
                 android:id="@+id/stress_report_reason_container"
@@ -162,8 +161,8 @@
                             android:id="@+id/listview_integrate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:dividerHeight="0dp"
-                            android:divider="#ffffff"/>
+                            android:divider="#ffffff"
+                            android:dividerHeight="0dp" />
 
                     </LinearLayout>
 
@@ -193,24 +192,24 @@
             android:id="@+id/condition2_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txt_reason"
             android:layout_marginTop="5dp"
             android:orientation="vertical"
-            android:layout_below="@id/txt_reason"
-            app:layout_constraintVertical_weight="1"
-            android:visibility="gone">
+            android:visibility="gone"
+            app:layout_constraintVertical_weight="1">
 
             <LinearLayout
                 android:id="@+id/condition2_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:paddingVertical="25dp"
                 android:layout_marginHorizontal="14dp"
+                android:gravity="center"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:paddingVertical="25dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <RelativeLayout
                     android:id="@+id/stress_report_img_container1"
@@ -223,22 +222,22 @@
                         android:id="@+id/stress_report_img1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/mobile"
+                        android:layout_centerInParent="true"
                         android:alpha="0.3"
-                        android:layout_centerInParent="true"/>
+                        android:src="@drawable/mobile" />
 
                     <TextView
                         android:id="@+id/stress_report_txt1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
                         android:layout_below="@id/stress_report_img1"
-                        android:text="휴대폰 사용"
-                        android:textColor="@color/border_btn_gray"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="3dp"
                         android:fontFamily="@font/notosanscjkkrregular"
                         android:includeFontPadding="false"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="@dimen/my_text_size0"/>
+                        android:text="휴대폰 사용"
+                        android:textColor="@color/border_btn_gray"
+                        android:textSize="@dimen/my_text_size0" />
 
 
                 </RelativeLayout>
@@ -254,22 +253,22 @@
                         android:id="@+id/stress_report_img2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/social"
+                        android:layout_centerInParent="true"
                         android:alpha="0.3"
-                        android:layout_centerInParent="true"/>
+                        android:src="@drawable/social" />
 
                     <TextView
                         android:id="@+id/stress_report_txt2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
                         android:layout_below="@id/stress_report_img2"
-                        android:text="소셜 활동"
-                        android:textColor="@color/border_btn_gray"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="3dp"
                         android:fontFamily="@font/notosanscjkkrregular"
                         android:includeFontPadding="false"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="@dimen/my_text_size0"/>
+                        android:text="소셜 활동"
+                        android:textColor="@color/border_btn_gray"
+                        android:textSize="@dimen/my_text_size0" />
 
 
                 </RelativeLayout>
@@ -285,22 +284,22 @@
                         android:id="@+id/stress_report_img3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:alpha="0.3"
-                        android:src="@drawable/place"
-                        android:layout_centerInParent="true"/>
+                        android:src="@drawable/place" />
 
                     <TextView
                         android:id="@+id/stress_report_txt3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
                         android:layout_below="@id/stress_report_img3"
-                        android:text="장소 이동"
-                        android:textColor="@color/border_btn_gray"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="3dp"
                         android:fontFamily="@font/notosanscjkkrregular"
                         android:includeFontPadding="false"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="@dimen/my_text_size0"/>
+                        android:text="장소 이동"
+                        android:textColor="@color/border_btn_gray"
+                        android:textSize="@dimen/my_text_size0" />
 
 
                 </RelativeLayout>
@@ -316,22 +315,22 @@
                         android:id="@+id/stress_report_img4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:alpha="0.3"
-                        android:src="@drawable/physical"
-                        android:layout_centerInParent="true"/>
+                        android:src="@drawable/physical" />
 
                     <TextView
                         android:id="@+id/stress_report_txt4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
                         android:layout_below="@id/stress_report_img4"
-                        android:text="신체 활동"
-                        android:textColor="@color/border_btn_gray"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="3dp"
                         android:fontFamily="@font/notosanscjkkrregular"
                         android:includeFontPadding="false"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="@dimen/my_text_size0"/>
+                        android:text="신체 활동"
+                        android:textColor="@color/border_btn_gray"
+                        android:textSize="@dimen/my_text_size0" />
 
 
                 </RelativeLayout>
@@ -347,22 +346,22 @@
                         android:id="@+id/stress_report_img5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/sleep"
+                        android:layout_centerInParent="true"
                         android:alpha="0.3"
-                        android:layout_centerInParent="true"/>
+                        android:src="@drawable/sleep" />
 
                     <TextView
                         android:id="@+id/stress_report_txt5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
                         android:layout_below="@id/stress_report_img5"
-                        android:text="수면"
-                        android:textColor="@color/border_btn_gray"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="3dp"
                         android:fontFamily="@font/notosanscjkkrregular"
                         android:includeFontPadding="false"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="@dimen/my_text_size0"/>
+                        android:text="수면"
+                        android:textColor="@color/border_btn_gray"
+                        android:textSize="@dimen/my_text_size0" />
 
 
                 </RelativeLayout>
@@ -376,9 +375,9 @@
             android:id="@+id/btn_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="40dp"
-            android:layout_alignParentBottom="true">
+            android:layout_marginBottom="40dp">
 
             <Button
                 android:id="@+id/btn_correct"
@@ -435,9 +434,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
-            android:visibility="gone"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"
+            android:visibility="gone"></LinearLayout>
 
 
         <LinearLayout

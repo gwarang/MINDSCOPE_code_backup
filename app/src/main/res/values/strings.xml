@@ -19,7 +19,8 @@
     <string name="success_auth_and_connect_campaign_msg">Successfully authorized and connected to the EasyTrack campaign!</string>
 
 
-    <string name="stress_campaign_id" translatable="false">3</string>
+<!--    <string name="stress_campaign_id" translatable="false">3</string>-->
+    <string name="stress_campaign_id" translatable="false">4</string>
 
     <string name="app_name">MINDSCOPE</string>
     <string name="ConnectionEstablishedMsg">Connection established</string>
