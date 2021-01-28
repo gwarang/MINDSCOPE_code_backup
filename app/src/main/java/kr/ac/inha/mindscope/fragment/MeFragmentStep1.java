@@ -303,6 +303,7 @@ public class MeFragmentStep1 extends Fragment {
         SharedPreferences pointsPrefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
         int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
         sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
+        Log.d("aaaa",String.valueOf(localSumPoints));
         //daily point check. ema가 제출됐는지 확인해서 point추가
         PointCheck = 0;
         for(int i=0;i<4;i++) {

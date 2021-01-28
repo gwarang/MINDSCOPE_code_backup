@@ -43,7 +43,9 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         Context context = getApplicationContext();
-
+        SharedPreferences PointPrefs = getApplicationContext().getSharedPreferences("points", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorPoint = PointPrefs.edit();
+        editorPoint.putInt("firstCheck",0);
         Log.d("SplashActivity", "onCreate");
 
         // 앱 완전 종료시 첫화면으로 뜨도록 초기화 하는 코드

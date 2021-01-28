@@ -162,11 +162,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         mContext = this;
         setContentView(R.layout.activity_main);
-
+        SharedPreferences PointPrefs = getApplicationContext().getSharedPreferences("points", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorPoint = PointPrefs.edit();
+        int pointcheck = PointPrefs.getInt("firstCheck",0);
         checkVersionInfo();
         getFirebaseToken();
-        loadAllPoints();
-
+        if(pointcheck == 0) {
+            loadAllPoints();
+        }
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             // "get_point" 라는 intent가 있으면 포인트 얻었다는 팝업창 보여주기
@@ -524,6 +527,7 @@ public class MainActivity extends AppCompatActivity {
         pointsEditor.putInt("todayPoints", 0);
         pointsEditor.putInt("sumPoints", 0);
         pointsEditor.putLong("daynum", 0);
+        pointsEditor.putInt("firstCheck",0);
         pointsEditor.apply();
     }
 
@@ -732,6 +736,7 @@ public class MainActivity extends AppCompatActivity {
                 final int finalPoints = points;
                 Log.d("포인트",String.valueOf(finalPoints));
                 editorPoint.putInt("sumPoints",finalPoints);
+                editorPoint.putInt("firstCheck",1);
                 editorPoint.apply();
             }).start();
         }

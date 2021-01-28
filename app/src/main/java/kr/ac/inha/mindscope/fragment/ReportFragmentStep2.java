@@ -451,7 +451,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay day, boolean selected) {
 
-
+        loadAllPoints();
         // [Kevin] 선택된 날짜의 stress 보고서 보여주기
         chooseDay = day;
         Log.d(TAG, "Seleted Date: " + day);
@@ -899,6 +899,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
         SharedPreferences pointsPrefs = requireActivity().getSharedPreferences("points", Context.MODE_PRIVATE);
         int localSumPoints = pointsPrefs.getInt("sumPoints", 0);
         sumPointsView.setText(String.format(Locale.getDefault(), "%d", localSumPoints));
+        Log.d("aaaaa",String.valueOf(localSumPoints));
     }
     public void loadDailyTags(Calendar day) {
         Log.d(TAG,"loadDailyTags");

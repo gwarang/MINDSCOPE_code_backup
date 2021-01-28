@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -46,6 +47,7 @@ public class PointCustomDialog extends Dialog {
         SharedPreferences stepChangePrefs = getContext().getSharedPreferences("stepChange", Context.MODE_PRIVATE);
         SharedPreferences pointsPrefs = getContext().getSharedPreferences("points", Context.MODE_PRIVATE);
         sumPoints = pointsPrefs.getInt("sumPoints", 0);
+        Log.d("aaaaaa",String.valueOf(sumPoints));
         long dayNum = pointsPrefs.getLong("daynum", 0);
         todayPoints = 0;
         for(int i=1; i<=4; i++){
