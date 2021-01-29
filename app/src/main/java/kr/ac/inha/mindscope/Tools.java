@@ -87,11 +87,11 @@ public class Tools {
     public static final int CATEGORY_FOOD_APP_USAGE = 27;
     public static final long STEP0_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 0 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;  // step0 이제 쓰이지 않음
     //todo 2-2-2 적용
-    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 10 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 55 * 1 * 1000;  //todo STEP1 만료기간
-    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 10 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //todo condition 기간 변경은 맨 앞에 60 * 60 * 24 * 날짜 * 1000에서 날짜부분 변경
-    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 15 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 20 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;
-    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 25 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //condition 끝나는 기간 = 실험 종료 기간을 나타낸 거지만 쓰이지 않음
+    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 12 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 55 * 1 * 1000;  //todo STEP1 만료기간
+    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 12 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //todo condition 기간 변경은 맨 앞에 60 * 60 * 24 * 날짜 * 1000에서 날짜부분 변경
+    public static final long CONDITION_EXPIRE_DURATION2 = 60 * 60 * 24 * 17 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION3 = 60 * 60 * 24 * 22 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000;
+    public static final long CONDITION_EXPIRE_DURATION4 = 60 * 60 * 24 * 27 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //condition 끝나는 기간 = 실험 종료 기간을 나타낸 거지만 쓰이지 않음
 
 //    public static final long STEP1_EXPIRE_TIMESTAMP_VALUE = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 55 * 1 * 1000;  //todo STEP1 만료기간
 //    public static final long CONDITION_EXPIRE_DURATION1 = 60 * 60 * 24 * 6 * 1000 + 60 * 60 * 10 * 1 * 1000 + 60 * 50 * 1 * 1000; //todo condition 기간 변경은 맨 앞에 60 * 60 * 24 * 날짜 * 1000에서 날짜부분 변경
