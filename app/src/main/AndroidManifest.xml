@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="kr.ac.inha.mindscope">
+    <queries>
+        <package android:name="inha.nsl.easytrack" />
+    </queries>
+
 
     <application
         android:allowBackup="false"
