@@ -549,9 +549,26 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                     // detection
                     int index = findTimestampIndex(timestamp, ranges);
                     if (index > -1 && index < imageViews.length) {
-                        // @jeongin : 선택된 날짜가 오늘일때 각 시간대 이전에 예측 결과가 보이지 않도록함 /21.01.26
-                        if(selected_date == now_date){
-                            if(now_time >= case_times[index]){
+
+                        //@jeongin : step1일때 예측 결과 있어도 보이지 않도록 함 //21.02.10
+                        if(curCondition == 0){
+                            textViews[index].setVisibility(View.INVISIBLE);
+                            imageViews[index].setVisibility(View.INVISIBLE);
+                            imageButtons[index].setVisibility(View.INVISIBLE);
+                        }else{
+                            // @jeongin : 선택된 날짜가 오늘일때 각 시간대 이전에 예측 결과가 보이지 않도록함 /21.01.26
+                            if(selected_date == now_date){
+                                if(now_time >= case_times[index]){
+                                    textViews[index].setVisibility(View.VISIBLE);
+                                    textViews[index].setText(stressLevelTexts[stressLevel]);
+
+                                    imageViews[index].setVisibility(View.VISIBLE);
+                                    imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
+
+                                    imageButtons[index].setVisibility(View.VISIBLE);
+
+                                }
+                            }else{
                                 textViews[index].setVisibility(View.VISIBLE);
                                 textViews[index].setText(stressLevelTexts[stressLevel]);
 
@@ -559,17 +576,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                                 imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
 
                                 imageButtons[index].setVisibility(View.VISIBLE);
-
                             }
-                        }else{
-                            textViews[index].setVisibility(View.VISIBLE);
-                            textViews[index].setText(stressLevelTexts[stressLevel]);
-
-                            imageViews[index].setVisibility(View.VISIBLE);
-                            imageViews[index].setImageResource(stressLevelImageResources[stressLevel]);
-
-                            imageButtons[index].setVisibility(View.VISIBLE);
                         }
+
+
                     }
                 }
                 // endregion
@@ -1083,6 +1093,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 //                                }
 
                                 value = values.get(n).toString("UTF-8");
+                                Log.d("value","value : "+value);
 
                                 int dayNum = 0;
                                 long timestamp = 0;

@@ -46,7 +46,7 @@
     <string name="ema_question_2">2. In the past 4 hours, did you feel bad because something unexpected happened?</string>
     <string name="ema_question_3">3. For the past 4 hours, did you feel you were controlling everything?</string>
     <string name="ema_question_4">4. In the past four hours, have you successfully dealt with annoying things?</string>
-    <string name="ema_question_5">What is your stress level in the last 4 hours?</string>
+    <string name="ema_question_5">What is your stress level during the above period?</string>
 
     <string name="ema_answer_1">전혀 그렇지 않다</string>
     <string name="ema_answer_2">약간 그렇지 않다</string>

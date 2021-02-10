@@ -38,7 +38,7 @@
     <string name="ema_question_2">2. 지난 4시간 동안, 예상치 못한 일이 생겨서 기분이 나빠졌나요?</string>
     <string name="ema_question_3">3. 지난 4시간 동안 매사를 잘 컨트롤 하고 있다고 느꼈나요?</string>
     <string name="ema_question_4">4. 지난 4시간 동안 짜증나고 성가신 일들을 성공적으로 처리하였나요?</string>
-    <string name="ema_question_5">지난 4시간 동안 당신의 스트레스 수준은 다음중 무엇인가요?</string>
+    <string name="ema_question_5">위 기간 동안 당신의 스트레스 수준은 다음 중 무엇인가요?</string>
 
     <string name="ema_answer_1">전혀 그렇지 않다</string>
     <string name="ema_answer_2">약간 그렇지 않다</string>

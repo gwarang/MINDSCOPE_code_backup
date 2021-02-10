@@ -979,16 +979,16 @@ public class Tools {
             stepEditor.putInt("condition", 0);
         }
         else if(diff < CONDITION_EXPIRE_DURATION2){
-            newCondition = 3;
-            stepEditor.putInt("condition", 3);
+            newCondition = 1;
+            stepEditor.putInt("condition", 1);
         }
         else if(diff < CONDITION_EXPIRE_DURATION3){
             newCondition = 2;
             stepEditor.putInt("condition", 2);
         }
         else{
-            newCondition = 1;
-            stepEditor.putInt("condition", 1);
+            newCondition = 3;
+            stepEditor.putInt("condition", 3);
         }
         stepEditor.apply();
         if(curCondition != newCondition){

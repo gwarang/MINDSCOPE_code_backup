@@ -1,8 +1,13 @@
 package kr.ac.inha.mindscope.services;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +36,12 @@ class AudioFeatureRecorder {
 
     AudioFeatureRecorder(final Context con) {
         Utils.logThreadSignature(TAG + " AudioFeatureRecorder constructor");
+        //권한 없을때 오류 나는 부분
+//        int permission = ContextCompat.checkSelfPermission(con, Manifest.permission.RECORD_AUDIO);
+//        if(permission == PackageManager.PERMISSION_DENIED){ // 권한 없어서 요청
+//                Log.d(TAG,"오디오 권한 꺼짐!");
+//
+//        }else{
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(SAMPLING_RATE, AUDIO_BUFFER_SIZE, 512);
         final SilenceDetector silenceDetector = new SilenceDetector(SILENCE_THRESHOLD, false);
 
@@ -63,6 +74,11 @@ class AudioFeatureRecorder {
             Log.d(TAG, "Dispatcher is NULL: ");
         dispatcher.addAudioProcessor(silenceDetector);
         dispatcher.addAudioProcessor(mainAudioProcessor);
+//        }
+
+
+
+
     }
 
     void start() {
