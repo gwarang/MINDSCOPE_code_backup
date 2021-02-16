@@ -230,7 +230,7 @@ public class CareChildFragment1 extends Fragment {
             hiddenContainer.setVisibility(View.VISIBLE);
             hiddenViewUpdate(feature_ids1, order1StressLevel);
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration1));
-            selectHiddenViewContentsByCondition();
+            //selectHiddenViewContentsByCondition();
             Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 1);
         });
         arrowBtn2.setOnClickListener(view13 -> {
@@ -238,7 +238,7 @@ public class CareChildFragment1 extends Fragment {
             hiddenContainer.setVisibility(View.VISIBLE);
             hiddenViewUpdate(feature_ids2, order2StressLevel);
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration2));
-            selectHiddenViewContentsByCondition();
+           // selectHiddenViewContentsByCondition();
             Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 2);
         });
         arrowBtn3.setOnClickListener(view14 -> {
@@ -246,7 +246,7 @@ public class CareChildFragment1 extends Fragment {
             hiddenContainer.setVisibility(View.VISIBLE);
             hiddenViewUpdate(feature_ids3, order3StressLevel);
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration3));
-            selectHiddenViewContentsByCondition();
+            //selectHiddenViewContentsByCondition();
             Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 3);
         });
         arrowBtn4.setOnClickListener(view15 -> {
@@ -254,7 +254,7 @@ public class CareChildFragment1 extends Fragment {
             hiddenContainer.setVisibility(View.VISIBLE);
             hiddenViewUpdate(feature_ids4, order4StressLevel);
             hiddenTimeView.setText(getResources().getString(R.string.time_step2_duration4));
-            selectHiddenViewContentsByCondition();
+            //selectHiddenViewContentsByCondition();
             Tools.saveApplicationLog(getContext(), TAG, ACTION_CLICK_DETAIL_REPORT, 4);
         });
 
@@ -989,66 +989,7 @@ public class CareChildFragment1 extends Fragment {
 //                requireActivity(), R.layout.item_feature_ids, sleepReason
 //        );
 
-        if (noFeatures) {
-            integrateContainer.setVisibility(View.GONE);
-//            phoneContainer.setVisibility(View.GONE);
-//            activityContainer.setVisibility(View.GONE);
-//            socialContainer.setVisibility(View.GONE);
-//            locationContainer.setVisibility(View.GONE);
-//            sleepContainer.setVisibility(View.GONE);
-            noFeatureTextview.setVisibility(View.VISIBLE);
-        } else {
-            integrateListView.setAdapter(integrateAdapter);
-//            phoneListView.setAdapter(phoneAdapter);
-//            activityListView.setAdapter(activityAdapter);
-//            socialListView.setAdapter(socialAdapter);
-//            locationListView.setAdapter(locationAdapter);
-//            sleepListView.setAdapter(sleepAdapter);
-            noFeatureTextview.setVisibility(View.GONE);
 
-            if(integrateReason.isEmpty())
-                integrateContainer.setVisibility(View.GONE);
-            else{
-                setListViewHeightBasedOnChildren(integrateListView);
-                integrateContainer.setVisibility(View.VISIBLE);
-            }
-
-//            if (phoneReason.isEmpty())
-//                phoneContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(phoneListView);
-//                phoneContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (activityReason.isEmpty())
-//                activityContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(activityListView);
-//                activityContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (socialReason.isEmpty())
-//                socialContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(socialListView);
-//                socialContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (locationReason.isEmpty())
-//                locationContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(locationListView);
-//                locationContainer.setVisibility(View.VISIBLE);
-//            }
-//
-//            if (sleepReason.isEmpty())
-//                sleepContainer.setVisibility(View.GONE);
-//            else {
-//                setListViewHeightBasedOnChildren(sleepListView);
-//                sleepContainer.setVisibility(View.VISIBLE);
-//            }
-
-        }
         switch (stressLevl) {
             case STRESS_LV1:
                 hiddenStressImg.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_low));
@@ -1072,10 +1013,15 @@ public class CareChildFragment1 extends Fragment {
                 txtReason.setText("");
                 break;
             case CONDITION2:
+                condition2Container.setVisibility(View.VISIBLE);
+                reasonContainer.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "condition2");
                 txtReason.setText("제가 참고한 데이터는요,");
                 break;
             case CONDITION3:
             default:
+                condition2Container.setVisibility(View.GONE);
+                reasonContainer.setVisibility(View.VISIBLE);
                 switch (stressLevl){
                     case STRESS_LV1:
                         txtReason.setText("당신은 스트레스가 낮을 때,");
@@ -1092,24 +1038,41 @@ public class CareChildFragment1 extends Fragment {
                 break;
         }
 
-    }
+        if (noFeatures) {
+            condition2Container.setVisibility(View.GONE);
+            integrateContainer.setVisibility(View.GONE);
+            noFeatureTextview.setVisibility(View.VISIBLE);
+            reasonContainer.setVisibility(View.VISIBLE);
+        } else {
+            integrateListView.setAdapter(integrateAdapter);
+            noFeatureTextview.setVisibility(View.GONE);
 
-    public void selectHiddenViewContentsByCondition(){
-        switch (condition){
-            case CONDITION1:
-                // nothing
-                break;
-            case CONDITION2:
-                condition2Container.setVisibility(View.VISIBLE);
-                reasonContainer.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "condition2");
-                break;
-            case CONDITION3:
-            default:
-                condition2Container.setVisibility(View.GONE);
-                reasonContainer.setVisibility(View.VISIBLE);
-                Log.d(TAG, "condition3");
-                break;
+            if(integrateReason.isEmpty())
+                integrateContainer.setVisibility(View.GONE);
+            else{
+                setListViewHeightBasedOnChildren(integrateListView);
+                integrateContainer.setVisibility(View.VISIBLE);
+            }
+
         }
     }
+
+//    public void selectHiddenViewContentsByCondition(){
+//        switch (condition){
+//            case CONDITION1:
+//                // nothing
+//                break;
+//            case CONDITION2:
+//                condition2Container.setVisibility(View.VISIBLE);
+//                reasonContainer.setVisibility(View.INVISIBLE);
+//                Log.d(TAG, "condition2");
+//                break;
+//            case CONDITION3:
+//            default:
+//                condition2Container.setVisibility(View.GONE);
+//                reasonContainer.setVisibility(View.VISIBLE);
+//                Log.d(TAG, "condition3");
+//                break;
+//        }
+//    }
 }

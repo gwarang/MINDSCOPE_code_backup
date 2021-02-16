@@ -4,11 +4,17 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.google.android.datatransport.Encoding;
+
+import java.nio.channels.Channel;
+import java.nio.channels.Channels;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,51 +40,53 @@ class AudioFeatureRecorder {
     private AudioDispatcher dispatcher;
     // endregion
 
-    AudioFeatureRecorder(final Context con) {
+    AudioFeatureRecorder(final Context con){
         Utils.logThreadSignature(TAG + " AudioFeatureRecorder constructor");
-        //권한 없을때 오류 나는 부분
-//        int permission = ContextCompat.checkSelfPermission(con, Manifest.permission.RECORD_AUDIO);
-//        if(permission == PackageManager.PERMISSION_DENIED){ // 권한 없어서 요청
-//                Log.d(TAG,"오디오 권한 꺼짐!");
-//
-//        }else{
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(SAMPLING_RATE, AUDIO_BUFFER_SIZE, 512);
-        final SilenceDetector silenceDetector = new SilenceDetector(SILENCE_THRESHOLD, false);
 
-        AudioProcessor mainAudioProcessor = new AudioProcessor() {
+        int permission = ContextCompat.checkSelfPermission(con, Manifest.permission.RECORD_AUDIO);
+        Log.d(TAG,"RECORD_AUDIO permission : "+permission);
+        if(permission == PackageManager.PERMISSION_DENIED){ // 권한 없어서 요청
+                Log.d(TAG,"오디오 권한 꺼짐!");
 
-            @Override
-            public void processingFinished() {
-                Utils.logThreadSignature(TAG + " AudioFeatureRecorder processingFinished()");
+        }else{
+            //권한 없을때 오류 나는 부분
+            try{
+                dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(SAMPLING_RATE, AUDIO_BUFFER_SIZE, 512);
+                final SilenceDetector silenceDetector = new SilenceDetector(SILENCE_THRESHOLD, false);
+
+                AudioProcessor mainAudioProcessor = new AudioProcessor() {
+
+                    @Override
+                    public void processingFinished() {
+                        Utils.logThreadSignature(TAG + " AudioFeatureRecorder processingFinished()");
+                    }
+
+                    @Override
+                    public boolean process(AudioEvent audioEvent) {
+                        //                Utils.logThreadSignature(TAG + " AudioFeatureRecorder process");
+                        if (silenceDetector.currentSPL() >= -110.0D) {
+                            SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+                            if (DbMgr.getDB() == null)
+                                DbMgr.init(con);
+                            int dataSourceId = prefs.getInt("AUDIO_LOUDNESS", -1);
+                            assert dataSourceId != -1;
+                            long curTimestamp = System.currentTimeMillis();
+                            DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, silenceDetector.currentSPL());
+                            //                    Log.d(TAG, curTimestamp + " " + silenceDetector.currentSPL() + "");
+                        }
+                        return true;
+                    }
+                };
+
+
+                if (dispatcher == null)
+                    Log.d(TAG, "Dispatcher is NULL: ");
+                dispatcher.addAudioProcessor(silenceDetector);
+                dispatcher.addAudioProcessor(mainAudioProcessor);
+            }catch (Exception e){
+                Log.d(TAG,"audio connection : "+e);
             }
-
-            @Override
-            public boolean process(AudioEvent audioEvent) {
-//                Utils.logThreadSignature(TAG + " AudioFeatureRecorder process");
-                if (silenceDetector.currentSPL() >= -110.0D) {
-                    SharedPreferences prefs = con.getSharedPreferences("Configurations", Context.MODE_PRIVATE);
-                    if (DbMgr.getDB() == null)
-                        DbMgr.init(con);
-                    int dataSourceId = prefs.getInt("AUDIO_LOUDNESS", -1);
-                    assert dataSourceId != -1;
-                    long curTimestamp = System.currentTimeMillis();
-                    DbMgr.saveMixedData(dataSourceId, curTimestamp, 1.0f, curTimestamp, silenceDetector.currentSPL());
-//                    Log.d(TAG, curTimestamp + " " + silenceDetector.currentSPL() + "");
-                }
-                return true;
-            }
-        };
-
-
-        if (dispatcher == null)
-            Log.d(TAG, "Dispatcher is NULL: ");
-        dispatcher.addAudioProcessor(silenceDetector);
-        dispatcher.addAudioProcessor(mainAudioProcessor);
-//        }
-
-
-
-
+       }
     }
 
     void start() {
