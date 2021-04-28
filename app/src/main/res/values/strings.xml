@@ -19,8 +19,34 @@
     <string name="success_auth_and_connect_campaign_msg">Successfully authorized and connected to the EasyTrack campaign!</string>
 
 
-<!--    <string name="stress_campaign_id" translatable="false">3</string>-->
-    <string name="stress_campaign_id" translatable="false">4</string>
+    <!--<string name="stress_campaign_id" translatable="false">3</string>-->
+    <string name="stress_campaign_id" translatable="false">0</string>
+
+
+    <!-- Data sources -->
+    <string name="ACTIVITY_RECOGNITION" translatable="false">26</string>
+    <string name="ACTIVITY_TRANSITION" translatable="false">27</string>
+    <string name="APPLICATION_LOG" translatable="false">28</string>
+    <string name="APPLICATION_USAGE" translatable="false">29</string>
+    <string name="APP_VERSION" translatable="false">24</string>
+    <string name="AUDIO_LOUDNESS" translatable="false">30</string>
+    <string name="CALLS" translatable="false">31</string>
+    <string name="CONDITIONS" translatable="false">40</string>
+    <string name="DAILY_COMMENT" translatable="false">32</string>
+    <string name="GEOFENCE" translatable="false">33</string>
+    <string name="LOCATIONS_LIST" translatable="false">34</string>
+    <string name="LOCATIONS_MANUAL" translatable="false">35</string>
+    <string name="LOCATION_GPS" translatable="false">36</string>
+    <string name="REASON_FOR_ANSWER" translatable="false">23</string>
+    <string name="REPORT_TAGS" translatable="false">22</string>
+    <string name="REWARD_POINTS" translatable="false">37</string>
+    <string name="SCREEN_ON_OFF" translatable="false">21</string>
+    <string name="SELF_STRESS_REPORT" translatable="false">39</string>
+    <string name="STRESS_INTERVENTION" translatable="false">20</string>
+    <string name="STRESS_LVL_THRESHOLDS" translatable="false">19</string>
+    <string name="STRESS_PREDICTION" translatable="false">38</string>
+    <string name="SURVEY_EMA" translatable="false">38</string>
+    <string name="UNLOCK_DURATION" translatable="false">17</string>
 
     <string name="app_name">MINDSCOPE</string>
     <string name="ConnectionEstablishedMsg">Connection established</string>

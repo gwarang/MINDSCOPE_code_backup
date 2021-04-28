@@ -377,7 +377,7 @@ public class CareChildFragment2 extends Fragment {
 
                 EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                         .setTargetDataSourceId(configPrefs.getInt("STRESS_INTERVENTION", -1))

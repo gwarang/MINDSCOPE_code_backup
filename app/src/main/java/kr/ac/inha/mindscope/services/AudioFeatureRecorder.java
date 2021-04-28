@@ -91,7 +91,11 @@ class AudioFeatureRecorder {
 
     void start() {
         Log.d(TAG, "Started: AudioFeatureRecorder");
-        executor.execute(dispatcher);
+        try {
+            executor.execute(dispatcher);
+        }catch(Exception e){
+            Log.d(TAG,e.toString());
+        }
         started = true;
     }
 

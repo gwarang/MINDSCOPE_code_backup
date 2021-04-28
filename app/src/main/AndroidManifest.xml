@@ -147,7 +147,9 @@
             android:name=".services.InterventionService"
             android:enabled="true"
             android:exported="true" />
-        <service android:name=".services.MainService" />
+
+        <!--<service android:name=".services.MainService" />-->
+
         <service
             android:name=".services.MainService"
             android:foregroundServiceType="location|camera|microphone" />

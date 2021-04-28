@@ -123,6 +123,7 @@ public class StressReportFragment1 extends Fragment {
                     }
 
                     Log.d(TAG, String.format(Locale.KOREA, "data: %d %d %d %d %.2f %s", stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
+
                     ((StressReportActivity) requireActivity()).replaceFragment(StressReportFragment2.newInstance(reportTimestamp, stressLevel, reportAnswer, day_num, order, accuracy, feature_ids));
 
                     Tools.saveApplicationLog(getContext(), TAG, Tools.ACTION_CLICK_COMPLETE_BUTTON, reportAnswer);
@@ -162,16 +163,19 @@ public class StressReportFragment1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_stress_report1, null);
         Context context = getContext();
         String stressReportStr = null;
         try {
             assert context != null;
             stressReportStr = getStressResult(context);
+            Log.d(TAG,"stressReportStr : "+stressReportStr);
         } catch (IOException e) {
             e.printStackTrace();
         }
-//                gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
+
+        //gettingStressReportFromGRPC(); // get Stress Report Result from gRPC server;
         Log.d(TAG,"stressReportStr : "+stressReportStr);
         if (stressReportStr == null) {
             noStressReport = true;
@@ -348,13 +352,15 @@ public class StressReportFragment1 extends Fragment {
 
         for (String result : predictionArray) {
             // todo test
-//            result = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
+            Log.d(TAG,"result : "+result);
+      //     result = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
             String[] splitResult = result.split(",");
             if (Boolean.parseBoolean(splitResult[6])) {
                 stressResult = result;
-//                stressResult = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
+     //          stressResult = "1599629400000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
             }
         }
+       // stressResult = "1613023800000,2,23,2,0.00,1-low 9-low 14-low 18-low 28-low 13-low 20-low ,true";
         return stressResult;
     }
 

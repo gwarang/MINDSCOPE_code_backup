@@ -10,23 +10,27 @@ message LoginWithGoogle{
   message Response{
     bool success = 1;
     int32 userId = 2;
+    string sessionKey = 3;
   }
 }
-message LoginDashboard {
-  message Request{
-    string email = 1;
-    string name = 2;
-    string dashboardKey = 3;
-  }
-  message Response{
-    bool success = 1;
-    int32 userId = 2;
-  }
-}
+
+//message LoginDashboard {
+//  message Request{
+//    string email = 1;
+//    string name = 2;
+//    string dashboardKey = 3;
+//  }
+//  message Response{
+//    bool success = 1;
+//    int32 userId = 2;
+//  }
+//}
+
+
 message BindUserToCampaign {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
   }
   message Response{
@@ -38,7 +42,7 @@ message BindUserToCampaign {
 message RetrieveParticipants {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
   }
   message Response{
@@ -51,20 +55,19 @@ message RetrieveParticipants {
 message RetrieveParticipantStats {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     string targetEmail = 3;
     int32 targetCampaignId = 4;
   }
   message Response{
     bool success = 1;
-    int32 activeCampaignId = 2;
-    int64 campaignJoinTimestamp = 3;
-    int64 lastSyncTimestamp = 4;
-    int64 lastHeartbeatTimestamp = 5;
-    int32 amountOfSubmittedDataSamples = 6;
-    repeated int32 dataSourceId = 7;
-    repeated int32 perDataSourceAmountOfData = 8;
-    repeated int64 perDataSourceLastSyncTimestamp = 9;
+    int64 campaignJoinTimestamp = 2;
+    int64 lastSyncTimestamp = 3;
+    int64 lastHeartbeatTimestamp = 4;
+    int32 amountOfSubmittedDataSamples = 5;
+    repeated int32 dataSourceId = 6;
+    repeated int32 perDataSourceAmountOfData = 7;
+    repeated int64 perDataSourceLastSyncTimestamp = 8;
   }
 }
 
@@ -72,14 +75,13 @@ message RetrieveParticipantStats {
 message RegisterCampaign {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
     string name = 4;
     string notes = 5;
     string configJson = 6;
     int64 startTimestamp = 7;
     int64 endTimestamp = 8;
-    int32 removeInactiveUsersTimeout = 9;
   }
   message Response{
     bool success = 1;
@@ -89,7 +91,7 @@ message RegisterCampaign {
 message DeleteCampaign {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
   }
   message Response{
@@ -99,7 +101,7 @@ message DeleteCampaign {
 message RetrieveCampaigns {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     bool myCampaignsOnly = 3;
   }
   message Response{
@@ -109,7 +111,6 @@ message RetrieveCampaigns {
     repeated string notes = 4;
     repeated int64 startTimestamp = 5;
     repeated int64 endTimestamp = 6;
-    repeated int32 removeInactiveUsersTimeout = 7;
     repeated string creatorEmail = 8;
     repeated string configJson = 9;
     repeated int32 participantCount = 10;
@@ -118,7 +119,7 @@ message RetrieveCampaigns {
 message RetrieveCampaign {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
   }
   message Response{
@@ -137,7 +138,7 @@ message RetrieveCampaign {
 message BindDataSource {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     string name = 3;
     string iconName = 4;
   }
@@ -150,7 +151,7 @@ message BindDataSource {
 message RetrieveDataSources {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
   }
   message Response{
     bool success = 1;
@@ -161,11 +162,12 @@ message RetrieveDataSources {
   }
 }
 
+
 // data management module
 message SubmitDataRecord {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
     int64 timestamp = 4;
     int32 dataSource = 5;
@@ -179,7 +181,7 @@ message SubmitDataRecord {
 message SubmitDataRecords {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
     repeated int64 timestamp = 4;
     repeated int32 dataSource = 5;
@@ -193,7 +195,7 @@ message SubmitDataRecords {
 message RetrieveKNextDataRecords {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     string targetEmail = 3;
     int32 targetCampaignId = 4;
     int32 targetDataSourceId = 5;
@@ -202,21 +204,20 @@ message RetrieveKNextDataRecords {
   }
   message Response{
     bool success = 1;
-    repeated int32 id = 2;
-    repeated int64 timestamp = 3;
-    repeated int32 dataSource = 4;
-    repeated bytes value = 5;
+    repeated int64 timestamp = 2;
+    repeated bytes value = 4;
   }
 }
 message RetrieveFilteredDataRecords{
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     string targetEmail = 3;
     int32 targetCampaignId = 4;
     int32 targetDataSourceId = 5;
     int64 fromTimestamp = 6;
     int64 tillTimestamp = 7;
+    bool simplifyIfTooLarge = 8;
   }
   message Response{
     bool success = 1;
@@ -228,7 +229,7 @@ message RetrieveFilteredDataRecords{
 message DownloadDumpfile{
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
     string targetEmail = 4;
   }
@@ -242,7 +243,7 @@ message DownloadDumpfile{
 message SubmitHeartbeat {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     int32 campaignId = 3;
   }
   message Response{
@@ -254,36 +255,54 @@ message SubmitHeartbeat {
 message SubmitDirectMessage {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
     string targetEmail = 3;
     string subject = 4;
     string content = 5;
   }
   message Response{
     bool success = 1;
+    int32 id = 2;
   }
 }
 message RetrieveUnreadDirectMessages {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
   }
   message Response{
     bool success = 1;
-    repeated string sourceEmail = 2;
-    repeated int64 timestamp = 3;
-    repeated string subject = 4;
-    repeated string content = 5;
+    repeated int32 id = 2;
+    repeated int32 campaignId = 3;
+    repeated string sourceEmail = 4;
+    repeated int64 timestamp = 5;
+    repeated string subject = 6;
+    repeated string content = 7;
   }
 }
+message SubmitNotification {
+  message Request{
+    int32 userId = 1;
+    string sessionKey = 2;
+    int32 campaignId = 3;
+    int64 timestamp = 4;
+    string subject = 5;
+    string content = 6;
+  }
+  message Response{
+    bool success = 1;
+    int32 id = 2;
+  }
+}
+
 message RetrieveUnreadNotifications {
   message Request{
     int32 userId = 1;
-    string email = 2;
+    string sessionKey = 2;
   }
   message Response{
     bool success = 1;
-    repeated int32 notificationId = 2;
+    repeated int32 id = 2;
     repeated int32 campaignId = 3;
     repeated int64 timestamp = 4;
     repeated string subject = 5;
@@ -295,7 +314,7 @@ message RetrieveUnreadNotifications {
 service ETService {
   // user management module
   rpc loginWithGoogle (LoginWithGoogle.Request) returns (LoginWithGoogle.Response) {}
-  rpc loginDashboard (LoginDashboard.Request) returns (LoginDashboard.Response) {}
+  //rpc loginDashboard (LoginDashboard.Request) returns (LoginDashboard.Response) {}
   rpc bindUserToCampaign (BindUserToCampaign.Request) returns (BindUserToCampaign.Response) {}
   rpc retrieveParticipants (RetrieveParticipants.Request) returns (RetrieveParticipants.Response) {}
   rpc retrieveParticipantStats (RetrieveParticipantStats.Request) returns (RetrieveParticipantStats.Response) {}
@@ -323,6 +342,7 @@ service ETService {
   // communication management module
   rpc submitDirectMessage (SubmitDirectMessage.Request) returns (SubmitDirectMessage.Response) {}
   rpc retrieveUnreadDirectMessages (RetrieveUnreadDirectMessages.Request) returns (RetrieveUnreadDirectMessages.Response) {}
+  rpc submitNotification (SubmitNotification.Request) returns (SubmitNotification.Response) {}
   rpc retrieveUnreadNotifications (RetrieveUnreadNotifications.Request) returns (RetrieveUnreadNotifications.Response) {}
 }
 

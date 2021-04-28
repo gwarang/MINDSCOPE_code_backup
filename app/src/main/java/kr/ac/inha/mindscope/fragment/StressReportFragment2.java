@@ -143,6 +143,7 @@ public class StressReportFragment2 extends Fragment {
         }
         bundle.putString("feature_ids", feature_ids);
         fragment2.setArguments(bundle);
+        Log.d(TAG, "????"+ String.valueOf(reportAnswer));
         return fragment2;
     }
 
@@ -182,7 +183,9 @@ public class StressReportFragment2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_stress_report2, container, false);
+
         Context context = requireContext();
         frg_report_app_bar = view.findViewById(R.id.frg_report_app_bar);
         redirect = view.findViewById(R.id.redirect);

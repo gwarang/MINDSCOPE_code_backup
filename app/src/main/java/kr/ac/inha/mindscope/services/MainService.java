@@ -292,13 +292,13 @@ public class MainService extends Service {
 
                         loginPrefs = getSharedPreferences("UserLogin", MODE_PRIVATE);
                         int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                        String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
 
                         try {
                             do {
                                 EtService.SubmitDataRecord.Request submitDataRecordRequestMessage = EtService.SubmitDataRecord.Request.newBuilder()
                                         .setUserId(userId)
-                                        .setEmail(email)
+                                        .setSessionKey(sessionKey)
                                         .setDataSource(cursor.getInt(cursor.getColumnIndex("dataSourceId")))
                                         .setTimestamp(cursor.getLong(cursor.getColumnIndex("timestamp")))
                                         .setValue(ByteString.copyFrom(cursor.getString(cursor.getColumnIndex("data")), StandardCharsets.UTF_8))

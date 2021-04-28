@@ -88,7 +88,7 @@ public class SplashActivity extends Activity {
 
                     EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                            .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                             .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                             .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                             .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1)) // 가지고 오고 싶은 데이터베이스 이름이나 코드

@@ -242,7 +242,7 @@ public class MeFragmentStep1 extends Fragment {
                 Log.d(TAG, "Me1");
                 EtService.RetrieveFilteredDataRecords.Request retrieveFilteredDataRecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                         .setTargetDataSourceId(configPrefs.getInt("SURVEY_EMA", -1)) // 여기가 원하는 데이터소스 불러오려고 설정하는 부분
@@ -342,7 +342,7 @@ public class MeFragmentStep1 extends Fragment {
 //                        Calendar c = Calendar.getInstance();
 //                        EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
 //                                .setUserId(userId)
-//                                .setEmail(email)
+//                                .setSessionKey(sessionKey)
 //                                .setTargetEmail(email)
 //                                .setTargetCampaignId(campaignId)
 //                                .setTargetDataSourceId(REWARD_POINTS)

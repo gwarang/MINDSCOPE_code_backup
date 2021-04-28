@@ -74,7 +74,7 @@ public class StressReportDownloader extends Worker {
 
                 EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                         .setTargetDataSourceId(configPrefs.getInt("STRESS_PREDICTION", -1))
@@ -136,7 +136,7 @@ public class StressReportDownloader extends Worker {
                 if (fromTimestamp == 0) {
                     EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage2 = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                            .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                             .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                             .setTargetCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                             .setTargetDataSourceId(configPrefs.getInt("SELF_STRESS_REPORT", -1))

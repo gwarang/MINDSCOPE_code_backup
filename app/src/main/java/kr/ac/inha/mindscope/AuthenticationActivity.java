@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -39,7 +40,7 @@ public class AuthenticationActivity extends Activity {
     public static final String TAG = "AuthenticationActivity";
     private SharedPreferences loginPrefs;
 
-    public static final String user_id = "userId", usrEmail = "email", name = "fullname";
+    public static final String user_id = "userId", usrEmail = "email", name = "fullname", sessionKey="sessionKey";
     // endregion
 
     @Override
@@ -50,6 +51,11 @@ public class AuthenticationActivity extends Activity {
 
         context = getApplicationContext();
 
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        SharedPreferences.Editor editor = prefs.edit();
+//        editor.clear();
+//        editor.commit();
+//
         if (authAppIsNotInstalled()) {
             Toast.makeText(this, context.getResources().getString(R.string.install_easy_track_msg), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -109,9 +115,20 @@ public class AuthenticationActivity extends Activity {
         if (requestCode == RC_OPEN_ET_AUTHENTICATOR) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
-                    final String fullName = data.getStringExtra("fullName");
+                    Log.d(TAG,"data : "+data);
+                    Log.d(TAG,"getExtras : "+data.getExtras());
+                    Log.d(TAG,"fullName : "+data.getStringExtra("fullName"));
+                    Log.d(TAG,"email : "+data.getStringExtra("email"));
+                    Log.d(TAG,"sessionKey : "+data.getStringExtra("sessionKey"));
+                    Log.d(TAG,"userId : "+data.getIntExtra("userId", -1));
+
+                    //final String fullName = data.getStringExtra("fullName");
                     final String email = data.getStringExtra("email");
+                    final String session_Key = data.getStringExtra("sessionKey");
                     final int userId = data.getIntExtra("userId", -1);
+
+
+                    Log.d(TAG,"sessionKey : "+session_Key);
 
                     new Thread(() -> {
                         Utils.logThreadSignature(TAG + " onActivityResult");
@@ -123,19 +140,21 @@ public class AuthenticationActivity extends Activity {
                         ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                         EtService.BindUserToCampaign.Request requestMessage = EtService.BindUserToCampaign.Request.newBuilder()
                                 .setUserId(userId)
-                                .setEmail(email)
+                                .setSessionKey(session_Key)
                                 .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                                 .build();
 
                         try {
                             final EtService.BindUserToCampaign.Response responseMessage = stub.bindUserToCampaign(requestMessage);
+                            Log.d(TAG,"responseMessage.getSuccess() : " +responseMessage.getSuccess());
                             if (responseMessage.getSuccess())
                                 runOnUiThread(() -> {
                                     Toast.makeText(AuthenticationActivity.this, context.getResources().getString(R.string.success_auth_and_connect_campaign_msg), Toast.LENGTH_SHORT).show();
                                     loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", MODE_PRIVATE);
                                     SharedPreferences.Editor editor = loginPrefs.edit();
-                                    editor.putString(name, fullName);
+                                   // editor.putString(name, fullName);
                                     editor.putString(usrEmail, email);
+                                    editor.putString(sessionKey, session_Key);
                                     editor.putInt(user_id, userId);
                                     if (!loginPrefs.getBoolean("logged_in", false)) {
                                         resetGeofences();
@@ -177,6 +196,7 @@ public class AuthenticationActivity extends Activity {
             getPackageManager().getPackageInfo("inha.nsl.easytrack", 0);
             return false;
         } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG,"authentic error : "+ e);
             return true;
         }
     }

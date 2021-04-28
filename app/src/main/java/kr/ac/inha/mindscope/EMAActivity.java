@@ -368,6 +368,8 @@ public class EMAActivity extends AppCompatActivity {
             notificationManager.cancel(EMA_NOTI_ID);
         }
 
+        Log.d(TAG,"아니 ; "+ emaOrder);
+
         SharedPreferences emaSubmitCheckPrefs = getSharedPreferences("SubmitCheck", Context.MODE_PRIVATE);
         SharedPreferences.Editor emaSubmitEditor = emaSubmitCheckPrefs.edit();
         String emaSubmit = "ema_submit_check_" + emaOrder;

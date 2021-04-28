@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         int pointcheck = PointPrefs.getInt("firstCheck",0);
         checkVersionInfo();
         getFirebaseToken();
+
         if(pointcheck == 0) {
             loadAllPoints();
         }
@@ -461,7 +462,7 @@ public class MainActivity extends AppCompatActivity {
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 EtService.RetrieveCampaign.Request retrieveCampaignRequestMessage = EtService.RetrieveCampaign.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                         .setCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                         .build();
 
@@ -693,15 +694,17 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences loginPrefs = getApplicationContext().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
                 int campaignId = Integer.parseInt(getApplicationContext().getString(R.string.stress_campaign_id));
-                final int REWARD_POINTS = 26;
+                final int REWARD_POINTS = Integer.parseInt(getApplicationContext().getString(R.string.REWARD_POINTS));
+                //Log.d(TAG,"REWARD : "+ String.valueOf(configPrefs.getInt("REWARD_POINTS",-1)));
 
                 ManagedChannel channel = ManagedChannelBuilder.forAddress(getString(R.string.grpc_host), Integer.parseInt(getString(R.string.grpc_port))).usePlaintext().build();
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 Calendar c = Calendar.getInstance();
                 EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
-                        .setEmail(email)
+                        .setSessionKey(sessionKey)
                         .setTargetEmail(email)
                         .setTargetCampaignId(campaignId)
                         .setTargetDataSourceId(REWARD_POINTS)
@@ -781,7 +784,7 @@ public class MainActivity extends AppCompatActivity {
 //                        Calendar c = Calendar.getInstance();
 //                        EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
 //                                .setUserId(userId)
-//                                .setEmail(email)
+//                                .setSessionKey(sessionKey)
 //                                .setTargetEmail(email)
 //                                .setTargetCampaignId(campaignId)
 //                                .setTargetDataSourceId(REWARD_POINTS)

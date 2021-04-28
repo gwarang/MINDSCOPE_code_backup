@@ -889,7 +889,7 @@ public class MeFragmentStep2 extends Fragment {
 //                ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 //                EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
 //                        .setUserId(userId)
-//                        .setEmail(email)
+//                        .setSessionKey(sessionKey)
 //                        .setTargetEmail(email)
 //                        .setTargetCampaignId(campaignId)
 //                        .setTargetDataSourceId(SELF_STRESS_REPORT)

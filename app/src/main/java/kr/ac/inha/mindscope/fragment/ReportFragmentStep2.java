@@ -619,8 +619,11 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             new Thread(() -> {
 
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
+
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
                 final int DAILY_COMMENT = 33;
 
@@ -659,10 +662,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
-                        .setEmail(email)
+                        .setSessionKey(sessionKey)
                         .setTargetEmail(email)
                         .setTargetCampaignId(campaignId)
-                        .setTargetDataSourceId(DAILY_COMMENT)
+                        .setTargetDataSourceId(configPrefs.getInt("DAILY_COMMENT",-1))
                         .setFromTimestamp(fromTimestamp)
                         .setTillTimestamp(tillTimestamp)
                         .build();
@@ -741,7 +744,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
 
                 EtService.RetrieveFilteredDataRecords.Request retrieveFilteredEMARecordsRequestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                        .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                        .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                         .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                         .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                         .setTargetDataSourceId(configPrefs.getInt("STRESS_INTERVENTION", -1))
@@ -886,7 +889,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
             EtService.RetrieveParticipantStats.Request retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStats.Request.newBuilder()
                     .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetCampaignId(Integer.parseInt(getString(R.string.stress_campaign_id)))
                     .build();
@@ -917,8 +920,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
             new Thread(() -> {
                 HashMap<Long, String> dailyTagMaps = new HashMap<>();
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
+                SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
                 final int REPORT_TAGS = 27;
 
@@ -934,10 +939,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
-                        .setEmail(email)
+                        .setSessionKey(sessionKey)
                         .setTargetEmail(email)
                         .setTargetCampaignId(campaignId)
-                        .setTargetDataSourceId(REPORT_TAGS)
+                        .setTargetDataSourceId(configPrefs.getInt("REPORT_TAGS",-1))
                         .setFromTimestamp(fromTimestamp)
                         .setTillTimestamp(tillTimestamp)
                         .build();
@@ -983,8 +988,12 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
-                final int REWARD_POINTS = 26;
+                final int REWARD_POINTS = Integer.parseInt(requireContext().getString(R.string.REWARD_POINTS));
+                SharedPreferences configPrefs = requireActivity().getSharedPreferences("Configurations", MODE_PRIVATE);
+
+                Log.d(TAG,"REWARD : "+configPrefs.getInt("REWARD_POINTS",-1));
 
                 Calendar c = Calendar.getInstance();
                 c.set(day.getYear(), day.getMonth() - 1, day.getDay(), timeTheDayNumIsChanged, 0, 0);
@@ -997,10 +1006,10 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                 EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                         .setUserId(userId)
-                        .setEmail(email)
+                        .setSessionKey(sessionKey)
                         .setTargetEmail(email)
                         .setTargetCampaignId(campaignId)
-                        .setTargetDataSourceId(REWARD_POINTS)
+                        .setTargetDataSourceId(configPrefs.getInt("REWARD_POINTS",-1))
                         .setFromTimestamp(fromTimestamp)
                         .setTillTimestamp(tillTimestamp)
                         .build();
@@ -1044,6 +1053,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 SharedPreferences loginPrefs = requireActivity().getSharedPreferences("UserLogin", Context.MODE_PRIVATE);
                 int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
                 String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
                 int campaignId = Integer.parseInt(requireContext().getString(R.string.stress_campaign_id));
 
                 Calendar c = Calendar.getInstance();
@@ -1065,7 +1075,7 @@ public class ReportFragmentStep2 extends Fragment implements OnDateSelectedListe
                 for (int dataSourceId : new int[]{SUBMITTED, PREDICTION, SURVEY_EMA}) {
                     EtService.RetrieveFilteredDataRecords.Request requestMessage = EtService.RetrieveFilteredDataRecords.Request.newBuilder()
                             .setUserId(userId)
-                            .setEmail(email)
+                            .setSessionKey(sessionKey)
                             .setTargetEmail(email)
                             .setTargetCampaignId(campaignId)
                             .setTargetDataSourceId(dataSourceId)

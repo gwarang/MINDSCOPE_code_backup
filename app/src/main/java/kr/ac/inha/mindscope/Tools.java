@@ -413,7 +413,8 @@ public class Tools {
             if (!AppUseDb.initialized) {
                 AppUseDb.init(con);
             }
-            if (usageStats.getTotalTimeInForeground() > 0 && !usageStats.getPackageName().contains(launcher_packageName)) {
+            if (usageStats.getTotalTimeInForeground() > 0 && !usageStats.getPackageName().contains(launcher_packageName) ) {
+                Log.d(TAG,"실행 중 : "+usageStats.getPackageName());
                 AppUseDb.saveAppUsageStat(usageStats.getPackageName(), usageStats.getLastTimeUsed(), usageStats.getTotalTimeInForeground());
             }
         }
@@ -496,7 +497,7 @@ public class Tools {
                     ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
                     EtService.SubmitHeartbeat.Request submitHeartbeatRequestMessage = EtService.SubmitHeartbeat.Request.newBuilder()
                             .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                            .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                            .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                             .setCampaignId(Integer.parseInt(con.getString(R.string.stress_campaign_id)))
                             .build();
                     try {
@@ -848,13 +849,13 @@ public class Tools {
                         ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
 
                         int userId = loginPrefs.getInt(AuthenticationActivity.user_id, -1);
-                        String email = loginPrefs.getString(AuthenticationActivity.usrEmail, null);
+                        String sessionKey = loginPrefs.getString(AuthenticationActivity.sessionKey, null);
 
                         try {
                             do {
                                 EtService.SubmitDataRecord.Request submitDataRecordRequestMessage = EtService.SubmitDataRecord.Request.newBuilder()
                                         .setUserId(userId)
-                                        .setEmail(email)
+                                        .setSessionKey(sessionKey)
                                         .setDataSource(cursor.getInt(1))
                                         .setTimestamp(cursor.getLong(2))
                                         .setValue(ByteString.copyFrom(cursor.getString(4), StandardCharsets.UTF_8)) // checkByteString
@@ -1017,7 +1018,7 @@ public class Tools {
             ETServiceGrpc.ETServiceBlockingStub stub = ETServiceGrpc.newBlockingStub(channel);
             EtService.RetrieveParticipantStats.Request retrieveParticipantStatisticsRequestMessage = EtService.RetrieveParticipantStats.Request.newBuilder()
                     .setUserId(loginPrefs.getInt(AuthenticationActivity.user_id, -1))
-                    .setEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
+                    .setSessionKey(loginPrefs.getString(AuthenticationActivity.sessionKey, null))
                     .setTargetEmail(loginPrefs.getString(AuthenticationActivity.usrEmail, null))
                     .setTargetCampaignId(Integer.parseInt(context.getString(R.string.stress_campaign_id)))
                     .build();
