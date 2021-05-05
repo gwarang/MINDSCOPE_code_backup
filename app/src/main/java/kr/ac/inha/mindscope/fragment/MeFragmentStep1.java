@@ -149,6 +149,17 @@ public class MeFragmentStep1 extends Fragment {
             startActivity(intent);
         });
 
+//        Button crashButton = new Button(context);
+//        crashButton.setText("Crash!");
+//        crashButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View view) {
+//                throw new RuntimeException("Test Crash"); // Force a crash
+//            }
+//        });
+//
+//        getActivity().addContentView(crashButton, new ViewGroup.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT,
+//                ViewGroup.LayoutParams.WRAP_CONTENT));
         return root;
     }
 

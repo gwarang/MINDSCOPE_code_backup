@@ -49,7 +49,7 @@ class AudioFeatureRecorder {
                 Log.d(TAG,"오디오 권한 꺼짐!");
 
         }else{
-            //권한 없을때 오류 나는 부분
+
             try{
                 dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(SAMPLING_RATE, AUDIO_BUFFER_SIZE, 512);
                 final SilenceDetector silenceDetector = new SilenceDetector(SILENCE_THRESHOLD, false);
@@ -91,11 +91,9 @@ class AudioFeatureRecorder {
 
     void start() {
         Log.d(TAG, "Started: AudioFeatureRecorder");
-        try {
-            executor.execute(dispatcher);
-        }catch(Exception e){
-            Log.d(TAG,e.toString());
-        }
+        //[jungin] 중단되는 부분 수정
+        if (dispatcher == null)
+            executor.execute(dispatcher); 
         started = true;
     }
 
