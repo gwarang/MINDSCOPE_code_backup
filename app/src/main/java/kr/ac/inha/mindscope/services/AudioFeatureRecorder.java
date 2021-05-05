@@ -92,7 +92,7 @@ class AudioFeatureRecorder {
     void start() {
         Log.d(TAG, "Started: AudioFeatureRecorder");
         //[jungin] 중단되는 부분 수정
-        if (dispatcher == null)
+        if (dispatcher != null)
             executor.execute(dispatcher); 
         started = true;
     }
