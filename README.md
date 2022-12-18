@@ -1,5 +1,12 @@
 # MINDSCOPE
 
+## [연구 소개 페이지](https://haesookim.info/MindScope/)
+마인드스코프는 스마트폰 사용 데이터를 활용하여 자동화, 개인화된 모델을 생성하고, 이를 바탕으로 사용자의 현재 스트레스 수준을 예측 및 분석하기 위해 만들어졌습니다.
+사용자는 이를 바탕으로 자신의 스트레스 상태와 원인들을 수시로 돌아볼 수 있으며, 더욱 효율적인 스트레스 및 정신건강 관리가 가능합니다.
+
+
+---
+
 Instructions for installing and using the application:
 
 1.  Install the application by clicking on .apk file and press install.
